@@ -9,6 +9,7 @@ from PIL import Image
 from gif_pipeline import encode, verify, natural, sha
 from sprite_export import export as sprites
 from video_export import export as video
+from music_sync import mux_music
 
 FORMATS = {'gif', 'apng', 'png', 'sprite', 'mov', 'webm', 'mp4'}
 
@@ -24,6 +25,14 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
     if out.exists(): raise FileExistsError('Use a new output directory')
     if not formats or not set(formats) <= FORMATS: raise ValueError('Unknown output format')
     plan = json.loads(plan_path.read_text())
+    music = plan.get('music')
+    if music and not set(formats) & {'mov','webm','mp4'}:
+        raise ValueError('Music requires MOV, WebM or MP4; GIF/APNG/sprites are silent')
+    beatmap = None
+    if 'beatmap' in plan:
+        beatmap = json.loads((plan_path.parent/plan['beatmap']).read_text())['beats_ms']
+        if not beatmap or any(not isinstance(v,(int,float)) or not math.isfinite(v) or v<0 for v in beatmap) or any(b<=a for a,b in zip(beatmap,beatmap[1:])):
+            raise ValueError('beats_ms must be finite, nonnegative and strictly increasing')
     items = []; segments = []
     def resolve(name): return (plan_path.parent / name).resolve()
     def load_animation(name):
@@ -32,13 +41,42 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
         times = data['durations_ms']
         if not files or len(files) != len(times): raise ValueError('Animation frames/timing mismatch')
         return files, [duration(v) for v in times]
-    for segment in plan['segments']:
+    def edit_animation(segment):
+        files,times=load_animation(segment['manifest'])
+        begin=segment.get('in_ms',0);end=segment.get('out_ms',sum(times))
+        if not isinstance(begin,(int,float)) or not isinstance(end,(int,float)) or not math.isfinite(begin+end) or begin<0 or end<=begin or end>sum(times) or begin%10 or end%10:
+            raise ValueError('Invalid animation in_ms/out_ms')
+        selected=[];clipped=[];cursor=0
+        for file,t in zip(files,times):
+            amount=min(cursor+t,end)-max(cursor,begin)
+            if amount>0:selected.append(file);clipped.append(duration(amount))
+            cursor+=t
+        speed=segment.get('speed',1)
+        if not isinstance(speed,(int,float)) or not math.isfinite(speed) or speed<=0:raise ValueError('Speed must be positive')
+        target=segment.get('duration_ms') if segment['type']=='animation' else None
+        if target is not None and 'speed' in segment:raise ValueError('Choose duration fitting or speed, not both')
+        target=duration(target) if target is not None else round(sum(clipped)/speed/10)*10
+        if target!=sum(clipped):
+            edges=[0];acc=0
+            for t in clipped:
+                acc+=t;edges.append(round(acc/sum(clipped)*target/10)*10)
+            clipped=[duration(b-a) for a,b in zip(edges,edges[1:])]
+        return selected,clipped
+    for original in plan['segments']:
+        segment=dict(original)
+        if 'end_beat' in segment:
+            index=segment['end_beat']
+            if beatmap is None or type(index) is not int or not 0<=index<len(beatmap):raise ValueError('Invalid zero-based end_beat')
+            if 'duration_ms' in segment:raise ValueError('Choose end_beat or duration_ms')
+            if segment.get('ending')=='complete_cycle':raise ValueError('Complete-cycle ending cannot guarantee a beat cut')
+            offset=music.get('in_ms',0) if music else 0
+            segment['duration_ms']=round((beatmap[index]-offset)/10)*10-sum(t for _,t in items)
         start = len(items)
         if segment['type'] == 'animation':
-            files, times = load_animation(segment['manifest'])
+            files, times = edit_animation(segment)
             items.extend(zip(files, times))
         elif segment['type'] == 'loop':
-            files, times = load_animation(segment['manifest'])
+            files, times = edit_animation(segment)
             requested = duration(segment['duration_ms'])
             ending = segment.get('ending', 'exact')
             if ending not in ('exact','complete_cycle'):
@@ -69,7 +107,8 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
                 file = items[-1][0]
             items.append((file, duration(segment['duration_ms'])))
         else: raise ValueError('Supported segment types: animation, still, loop')
-        segments.append({'requested_duration_ms':segment.get('duration_ms'),
+        segments.append({'edit':original, 'start_ms':sum(t for _,t in items[:start]),
+                         'requested_duration_ms':segment.get('duration_ms'),
                          'ending':segment.get('ending','exact') if segment['type']=='loop' else None,
                          'type':segment['type'], 'start_frame':start, 'end_frame_exclusive':len(items),
                          'duration_ms':sum(t for _,t in items[start:])})
@@ -103,7 +142,12 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
             qc['apng_duration_ms']=actual
         if 'sprite' in formats: qc['sprite']=sprites(root/'frames',root/'manifest.json',root/'sprites')['qc']
         for fmt in ('mov','webm','mp4'):
-            if fmt in formats: qc[fmt]=video(root/'frames',root/'manifest.json',root/('animation.'+fmt),background)
+            if fmt in formats:
+                qc[fmt]=video(root/'frames',root/'manifest.json',root/('animation.'+fmt),background)
+                if music:
+                    qc[fmt]['audio']=mux_music(root/('animation.'+fmt),resolve(music['file']),sum(times),
+                                              music.get('in_ms',0),music.get('gain_db',0),
+                                              music.get('fade_in_ms',30),music.get('fade_out_ms',30))
         (root/'qc.json').write_text(json.dumps(qc,indent=2)+'\n')
         root.rename(out)
     return {'frames':len(items),'duration_ms':sum(times),'formats':list(formats),'out':str(out)}

@@ -62,6 +62,16 @@ The bundled [sprite exporter](references/sprites.md) packs multi-page RGBA sheet
 
 See [SKILL.md](SKILL.md), [transparency and delivery choices](references/transparency.md), and the [export reference](references/export.md).
 
+### Music and beat-synced editing
+
+Input music to generate a waveform and editable BPM/beat candidates, then cut prepared animation to selected musical accents. The bundled editor supports **trim, split/reorder, speed or duration fitting, beat-aligned ends, stills and timed loops**. Export a video with one continuous music track; MOV/WebM/MP4 support sound, while GIF/APNG/sprites remain silent.
+
+Automatic BPM is a heuristic, not guaranteed downbeat detection. Override BPM/offset or edit beat timestamps, and review the result by listening. Align actual action events rather than assuming a clip boundary places every attack on beat. The local workflow is informed by lyrica-studio's separation of music analysis and timeline editing; that project is not a dependency. This is not a graphical editor or automatic full-MV generator.
+
+> Use $video-gif-studio with this song and these animations. Analyze the beat candidates, make the main attack land on a suitable accent, trim and arrange the shots, and export an MP4 with the original music. Preserve pixel-art edges and show the timing plan and unresolved sync checks.
+
+See [music input, beat maps and editing](references/music.md).
+
 ### Timed still images
 
 Insert a picture for a chosen duration: **animation → last-frame hold for 2 seconds → next animation**, or use a separate image / the next clip's first frame. The bundled [timeline composer](references/timeline.md) joins prepared frames with exact hold durations and exports GIF by default, or APNG, sprites, MOV, WebM and opaque MP4. No Grok generation is needed for a completely static hold.
