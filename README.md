@@ -28,6 +28,10 @@
 
 [MP4 with music](examples/neon-zen-pv/final.mp4) · [Story and production record](examples/neon-zen-pv/README.md)
 
+## Purpose
+
+**Turn a simple description into the animation or related assets you want.** Provide text, reference images, video or music, and let the skill plan the script, motion, effects, editing and export—or handle just one step. Create GIFs, videos, APNGs and game sprites with less manual coordination. Complex results may still need review and refinement.
+
 ## Main workflow
 
 ```mermaid

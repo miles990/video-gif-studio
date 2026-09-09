@@ -28,6 +28,10 @@
 
 [有聲 MP4](examples/neon-zen-pv/final.mp4) · [腳本與製作紀錄](examples/neon-zen-pv/README.zh-TW.md)
 
+## 目的
+
+**用簡單描述，方便地製作想要的動畫與相關素材。** 提供文字、參考圖、影片或音樂，讓 skill 規劃腳本、動作、特效、剪輯與輸出，也能只做其中一步。減少手動串接工具的工作，製作 GIF、影片、APNG 與遊戲用 Sprite；複雜成果仍可能需要檢查與調整。
+
 ## 主要工作流
 
 ```mermaid
