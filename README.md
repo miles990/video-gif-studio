@@ -87,6 +87,14 @@ Describe what you want; let the skill choose the script, motion, duration, camer
 
 **GIF has binary transparency.** Use RGBA PNG/APNG for soft edges and fading effects, or alpha-capable MOV/WebM. **MP4 is opaque.** Game assets favor PNG frames and sprite sheets; pixel art preserves its logical grid and nearest-neighbor scaling.
 
+### Simple video editing
+
+Trim, split and reorder clips, adjust speed or duration, join segments, insert stills, repeat loops for a set time, and add music with beat-aligned editing. **These edits run locally without Grok or new video generation.** Codex operates the tools; there is no graphical editor, and music sync needs playback review.
+
+> Use $video-gif-studio to trim these videos, arrange the clips, hold the last frame for 2 seconds, add this music and export an MP4. Decide the pacing for me.
+
+See [timeline editing](references/timeline.md) and [music and beat alignment](references/music.md).
+
 ### Special use: continuously extend a video
 
 **In principle, repeated generation and stitching can keep extending a video without a fixed total-duration ceiling.** Use the last frame and suitable consistency references to generate the next segment, review the join, then append and repeat. This uses multiple generation requests, not one unlimited-length request.
