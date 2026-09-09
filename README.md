@@ -1,47 +1,49 @@
 # Video GIF Studio
 
-支援有／無參考圖的角色動畫製作 skill：透過 **Grok 產生動作參考影片**，再由 **Codex 搭配 GPT-Image-2.5** 製作以角色一致性為目標的透明背景 GIF。
+**English** | [繁體中文](README.zh-TW.md)
 
-授權：[MIT](LICENSE)
+A character animation skill with optional image references. Use **Grok to generate motion reference videos**, then **Codex with GPT-Image-2.5** to create transparent-background GIFs with a focus on consistent character appearance.
 
-## 安裝方法
+License: [MIT](LICENSE)
 
-把下面這段交給 Codex 或其他具備本機操作能力的 AI：
+## Installation
 
-> 請幫我安裝 https://github.com/miles990/video-gif-studio 的 Codex skill。請先讀取 references/install.md，完成 skill 註冊、Python 依賴安裝與 doctor 驗證；保留既有安裝和資料，並分別告知本機 GIF 工具與 Grok 影片生成是否就緒。
+Give this request to Codex or another AI assistant with access to your local environment:
 
-AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若為私人狀態，安裝者需具備存取權。安裝後在 Codex 下一次對話回合使用 `$video-gif-studio`。
+> Install the Codex skill from https://github.com/miles990/video-gif-studio. Read references/install.md first, register the skill, install its Python dependencies, and run the doctor check. Preserve any existing installation and data. Report local GIF tool readiness and Grok video generation readiness separately.
 
-## 需求
+See the [AI installation instructions](references/install.md). If the repository is private, you need access to it. After installation, use `$video-gif-studio` on your next Codex turn.
 
-- **Codex + GPT-Image-2.5**：Codex 負責流程執行、動作安排、去背與 GIF 輸出；GPT-Image-2.5 用於角色圖生成與外觀一致性。執行環境需提供該圖片模型；模型可用性以實際環境為準。
-- **Grok**：已登入且具備影片生成權限與額度；repo 已內建影片提交、查詢與下載功能，使用官方 Grok CLI 登入，詳見 [Grok 使用方式](references/grok.md)。
-- **本機環境**：Python 3.11 或以上、`requirements.txt` 套件，以及 FFmpeg／ffprobe。
+## Requirements
 
-已有影片或透明 PNG 畫格時，可直接轉檔，不必再次呼叫 Grok。
+- **Codex + GPT-Image-2.5**: Codex coordinates the workflow, motion timing, background removal, and GIF export. GPT-Image-2.5 is used for character image generation and appearance consistency. Your environment must provide access to this image model; availability depends on your setup.
+- **Grok**: A signed-in account with video generation access and available quota. Video submission, polling, and downloading are built into this repository; authentication uses the official Grok CLI. See [Grok usage](references/grok.md).
+- **Local tools**: Python 3.11 or later, the packages in `requirements.txt`, and FFmpeg/ffprobe.
 
-## 使用方法
+Existing videos or transparent PNG frames can be converted locally without another Grok generation request.
 
-製作流程：**Grok 動作參考影片 → Codex 與 GPT-Image-2.5 角色製作 → 連續畫格、透明背景與 GIF 輸出**。以相同角色設定與參考圖維持外觀一致，並檢查動作銜接。
+## Usage
 
-提供參考圖：
+Workflow: **Grok motion reference video → character production with Codex and GPT-Image-2.5 → continuous frames, transparent backgrounds, and GIF export**. Reuse character specifications and references to maintain appearance consistency, and inspect motion transitions.
 
-> 使用 $video-gif-studio，參考這張人物圖，製作自然連續動作的透明 GIF。
+With a reference image:
 
-不提供參考圖：
+> Use $video-gif-studio to create a transparent GIF with natural, continuous motion based on this character image.
 
-> 使用 $video-gif-studio，設計原創小機器人揮手，生成連續影片並製作透明 GIF。
+Without a reference image:
 
-調整既有影片：
+> Use $video-gif-studio to design an original small robot waving, generate continuous video, and create a transparent GIF.
 
-> 使用 $video-gif-studio，把這段影片製成透明 GIF，調整動作速度並驗證輸出。
+With an existing video:
 
-完整流程見 [SKILL.md](SKILL.md)，工具參數見 [輸出說明](references/export.md)。
+> Use $video-gif-studio to turn this video into a transparent GIF, adjust the motion speed, and verify the output.
 
-## 成功範例
+See [SKILL.md](SKILL.md) for the full workflow and the [export reference](references/export.md) for tool options.
 
-**坐姿換腿：Grok 影片 → 透明 GIF。** 實際成品為 9.93 秒，保留人物與椅子的連續動作。此既有範例直接擷取 Grok 影片畫格製作，並非 GPT-Image-2.5 逐格重繪。
+## Successful Example
 
-![坐姿換腿透明 GIF](examples/seated-leg-switch/final.gif)
+**Seated leg switch: Grok video → transparent GIF.** This delivered 9.93-second animation preserves continuous character and chair movement. This existing example uses frames extracted directly from the Grok video; it was not redrawn frame by frame with GPT-Image-2.5.
 
-[下載 GIF](examples/seated-leg-switch/final.gif) · [參考圖](examples/seated-leg-switch/reference.png) · [提示詞](examples/seated-leg-switch/prompt.txt) · [來源影片](examples/seated-leg-switch/source.mp4) · [製作紀錄與驗證](examples/seated-leg-switch/README.md)
+![Transparent seated leg-switch GIF](examples/seated-leg-switch/final.gif)
+
+[Download GIF](examples/seated-leg-switch/final.gif) · [Reference image](examples/seated-leg-switch/reference.png) · [Prompt](examples/seated-leg-switch/prompt.txt) · [Source video](examples/seated-leg-switch/source.mp4) · [Production record and verification](examples/seated-leg-switch/README.md)
