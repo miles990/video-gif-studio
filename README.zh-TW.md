@@ -59,6 +59,8 @@ flowchart TD
 
 ## 安裝方法
 
+AI 會檢查並自行下載安裝缺少的 Python、必要套件、FFmpeg／ffprobe 與 OAuth 所需的 Grok CLI，再驗證是否就緒；需要 Grok 登入時，由你完成帳號授權。
+
 把這段交給 AI 助理：
 
 > 請安裝 https://github.com/miles990/video-gif-studio 的 Codex skill。依 references/install.md 操作，保留既有資料，安裝依賴並執行 doctor 驗證，分別回報本機工具與 Grok 是否就緒。

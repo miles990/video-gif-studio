@@ -59,6 +59,8 @@ Codex coordinates the workflow. Available image tools create characters or expli
 
 ## Installation
 
+The AI checks and downloads missing tools, including Python, required packages, FFmpeg/ffprobe and the Grok CLI for OAuth, then verifies readiness. You complete any required Grok login authorization.
+
 Give this request to your AI assistant:
 
 > Install the Codex skill from https://github.com/miles990/video-gif-studio. Follow references/install.md, preserve existing data, install dependencies and run the doctor check. Report local tools and Grok readiness separately.

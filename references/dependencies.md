@@ -1,6 +1,6 @@
 # Managed dependencies and local foreground separation
 
-The repo owns the integration and setup code. Third-party engines are installed into its isolated runtime; they are not rewritten or relicensed as this project's code. Python 3.11+, Codex/image-generation access and Grok account access remain external prerequisites.
+The repo owns the integration and setup code. Third-party engines are installed into its isolated runtime; they are not rewritten or relicensed as this project's code. Python 3.11+ remains an upstream runtime: the AI installation workflow downloads it when missing via the [bootstrap instructions](install.md#python-bootstrap-when-missing). Codex/image-generation access and Grok account authorization remain external requirements.
 
 ## Media runtime
 
