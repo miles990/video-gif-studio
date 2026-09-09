@@ -28,6 +28,8 @@ Use at modest delivery resolutions first: all RGBA frames remain in memory. Long
 
 A technically passed export still needs visual checks for alpha correctness, quantization banding, source flicker, edge contamination and motion. GIF has binary transparency and at most 256 palette entries. APNG preserves full-color and soft alpha but may be large or unsupported by a target app. Preserve the original source when testing app-specific playback.
 
+Default framing includes the full character, weapon and complete VFX lifetime. If cropping is needed, derive one common crop from the union of all reviewed foreground/effect extents with margin, not separate per-frame boxes; keep detached particles and late decay. Do not trim the timeline while effects are still disappearing merely to meet a preferred duration. Inspect original and decoded frames for spatial clipping and incomplete decay; see [motion.md](motion.md). A larger output canvas cannot recover content already missing from the generated source.
+
 ## Pixel-style video export
 
 For a user-selected video route with pixel-style artwork:
