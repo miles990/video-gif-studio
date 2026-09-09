@@ -1,23 +1,25 @@
-# 實例：坐姿換腿影片轉透明 GIF
+# Example: Seated Leg-Switch Video to Transparent GIF
 
-![最後輸出](final.gif)
+**English** | [繁體中文](README.zh-TW.md)
 
-這是本次實際產出的成品，收錄為**連續影片轉 GIF 與透明色修復**的驗證範例。原圖、模型提示詞或編碼檢查不能單獨保證人體結構與主觀自然度；首尾也尚非完全無縫。
+![Final output](final.gif)
 
-## 實際資料與步驟
+This is the actual delivered animation, included as a verified example of **continuous video-to-GIF conversion and transparency handling**. A reference image, model prompt, or encoding check alone cannot establish anatomical correctness or perceived naturalness. The loop endpoints are not completely seamless.
 
-1. [reference.png](reference.png)：真正上傳給 Grok 的唯一參考圖。角色參考了先前的照片設計，但原始照片沒有直接上傳給 Grok。
-2. [prompt.txt](prompt.txt)：實際英文提示詞，包括 adapter 附加的 preserve contract。提示詞有要求固定底座；影片實際產生了轉動，使用者認為自然，因此成品保留實際轉動。
-3. [source.mp4](source.mp4)：Grok 12.04 秒、960×960、24 fps 影片，無重編碼複製影片串流並移除生成音訊。
-4. 從影片擷取 289 格，以相同畫布去除洋紅底，得到透明 RGBA；沒有獨立重畫姿勢、光流補幀或固定椅腳合成。
-5. [timing.json](timing.json)：實際逐格來源索引及毫秒時長。換腳階段最高 1.4×、漸進變速，坐定時維持 1×。最後 9.93 秒。
-6. [final.gif](final.gif)：使用獨立透明索引修復破圖的實際交付檔，640×640。保留原檔，不以後來通用工具的重新編碼冒充同一檔案。
-7. [verification.json](verification.json)：289 格的 GIF alpha 與 RGBA 二值遮罩完全一致，新增透明破洞為 0；[manifest.json](manifest.json) 保存來源與檔案 SHA-256。
+## Actual Assets and Workflow
 
-## 修正證據
+1. [reference.png](reference.png): The only reference image uploaded to Grok. The character design drew on an earlier photograph, but that original photograph was not uploaded to Grok.
+2. [prompt.txt](prompt.txt): The actual English prompt, including the preserve contract appended by the adapter used at the time. The prompt requested a fixed chair base, but the generated video included rotation. The user found that movement natural, so the delivered animation preserves it.
+3. [source.mp4](source.mp4): The 12.04-second Grok video at 960×960 and 24 fps. The video stream was copied without re-encoding, and generated audio was removed.
+4. All 289 frames were extracted onto the same canvas. The magenta background was removed to produce transparent RGBA frames. No poses were independently redrawn, no optical-flow frames were synthesized, and no fixed chair base was composited into the final version.
+5. [timing.json](timing.json): The actual source-frame indices and durations in milliseconds. Leg-switch phases reach 1.4× speed with gradual transitions; settled phases remain at 1×. The final duration is 9.93 seconds.
+6. [final.gif](final.gif): The actual delivered 640×640 GIF with a dedicated transparency index. This original file is preserved rather than replaced with a later export from the generalized tool.
+7. [verification.json](verification.json): Across 289 frames, decoded GIF alpha exactly matches the thresholded RGBA masks, with zero additional transparent holes. [manifest.json](manifest.json) records provenance and asset SHA-256 hashes.
 
-![左：修正前；右：修正後](before-after.png)
+## Verification Evidence
 
-左側手指及大腿的黑點，是皮膚陰影被 GIF 誤用為透明色；透明 PNG 並無相同缺損。修正為 255 個前景顏色加 1 個專用透明索引，並解碼最終 GIF 逐格核對。沒有用去噪或外框掩蓋問題。
+![Left: before; right: after](before-after.png)
 
-本範例驗證一個實際案例，不把 12 秒、1.4×、洋紅底或坐姿換腿視為通用預設。通用腳本的色盤訓練、可調去背與變速介面已抽象化，因此重新編碼可能不同於此保留成品。
+The black marks on the fingers and thighs on the left came from skin-shadow colors being treated as GIF transparency. The transparent PNG frames did not have those defects. The corrected export uses 255 foreground colors plus one dedicated transparent index, with every decoded GIF frame checked against its source mask. No denoising or added outline was used to conceal the issue.
+
+This example validates one production case. Its 12-second source duration, 1.4× speed, magenta background, and seated leg-switch action are not universal defaults. The generalized script exposes different palette-training, keying, and timing controls, so a new export may differ from this preserved deliverable.
