@@ -1,6 +1,6 @@
 # Export interface
 
-Choose preservation/repair mode and delivery format using [transparency.md](transparency.md). The CLI exports selected RGBA frames, GIF and optional APNG; it does not redraw frames, run temporal matting, pack atlases or create engine resources. Preserve fractional alpha upstream; the GIF encoder's binary cutoff does not apply to saved RGBA/APNG frames.
+Choose preservation/repair mode and delivery format using [transparency.md](transparency.md). The CLI exports selected RGBA frames, GIF and optional APNG; it does not redraw frames, run temporal matting, create engine resources. The separate [sprite exporter](sprites.md) packs sheets with timing and pivot metadata. Preserve fractional alpha upstream; the GIF encoder's binary cutoff does not apply to saved RGBA/APNG frames.
 
 From the skill root (replace paths with actual input and a new output directory):
 

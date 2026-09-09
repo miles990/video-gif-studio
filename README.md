@@ -50,13 +50,15 @@ These are workflow choices, not command-line flags. The bundled keyer handles un
 
 For soft edges, hair, smoke and fading effects, retain **RGBA PNG / APNG** masters. **GIF only supports fully transparent or fully opaque pixels** and is a compatibility preview. Pixel art can still use partial alpha; hard pixel edges and transparent glow need different treatment.
 
-For games, request **PNG frames and a sprite sheet/atlas**, and name the engine if known. The bundled exporter already provides PNG frames and a timing/provenance manifest; **atlas packing, game-ready event/pivot/movement metadata and engine integration require additional implementation**. Character/effect separation is not guaranteed from a composited video.
+Choose any combination of **GIF**, **APNG**, **RGBA PNG frames**, **Sprite Sheet**, or a **complete asset pack**. These output options are separate from the transparency modes above. Without a selection, sharing defaults to GIF plus an RGBA/APNG master; game use defaults to PNG frames and sheets with metadata.
 
-> Use $video-gif-studio for a Godot character attack. Preserve artwork, retain partial alpha, export PNG frames and an APNG preview, and prepare an engine-specific atlas plan. Report what is actually ready to import.
+The bundled [sprite exporter](references/sprites.md) packs multi-page RGBA sheets with frame rectangles, durations and a fixed pivot. Page size, padding, integer scale reduction and pivot are configurable. Engine importers, gameplay events, hitboxes and root-motion tracks require separate implementation. Character/effect separation is not guaranteed from a composited video.
+
+> Use $video-gif-studio for a Godot character attack. Preserve artwork, retain partial alpha, export PNG frames and an APNG preview, and export a sprite sheet with timing metadata. Report which engine integration steps remain.
 
 See [SKILL.md](SKILL.md), [transparency and delivery choices](references/transparency.md), and the [export reference](references/export.md).
 
-## Successful Example
+## Examples
 
 **Seated leg switch: Grok video → transparent GIF.** This delivered 9.93-second animation preserves continuous character and chair movement. This existing example uses frames extracted directly from the Grok video; it was not redrawn frame by frame with GPT-Image-2.5.
 
@@ -69,3 +71,11 @@ See [SKILL.md](SKILL.md), [transparency and delivery choices](references/transpa
 ![Original robot wave without a reference image](examples/robot-wave-no-reference/final.gif)
 
 [Download GIF](examples/robot-wave-no-reference/final.gif) · [Production, prompts and verification](examples/robot-wave-no-reference/README.md)
+
+**Chibi running dash attack.** Small running steps, directional sword trails and recovery to guard; 3.23 seconds, 112 frames. GIF and soft-alpha APNG are included. Endpoint frames were inspected; full-speed loop review remains pending.
+
+![Chibi running dash attack](examples/chibi-running-dash/final.gif)
+
+[Download GIF](examples/chibi-running-dash/final.gif) · [Download APNG](examples/chibi-running-dash/final.apng) · [Production, prompt and verification](examples/chibi-running-dash/README.md)
+
+[Sprite pack (PNG + sheets + JSON)](examples/chibi-running-dash/sprites.zip)

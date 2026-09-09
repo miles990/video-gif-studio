@@ -1,0 +1,51 @@
+{
+  "model": "grok-imagine-video-1.5",
+  "request_id": "ab307328-5dcf-9eb3-93a1-1e9699dc29c5",
+  "generation_duration_seconds": 6,
+  "resolution": "720p",
+  "reference_roles": {
+    "reference.png": "Reused original generated knight; padded canvas; identical first and last frame supplied via REST image and last_frame."
+  },
+  "transport": "Bundled OAuth client with production-local subclass adding last_frame; not a bundled CLI flag.",
+  "character_model": "Original image tool did not expose exact version; not attributed to GPT-Image-2.5.",
+  "effects": "Grok generated; no local VFX overlays",
+  "processing": {
+    "key": "FF00FF",
+    "tolerance": 0.2,
+    "softness": 0.18,
+    "pixel_width": 256,
+    "pixel_scale": 3,
+    "edge_rgb": "Approximate magenta unmix on fractional-alpha edges only; alpha retained.",
+    "timing": "timing.json",
+    "palette": "Shared GIF palette; separate reserved transparency index"
+  },
+  "files": {
+    "motion-prompt.txt": "f5850d284e8686dbb06ad221527ae790d2c2c3f6bc54b02aacb308e40054da97",
+    "final.apng": "32eb1b395da937763184cad370bb2e07069d2b38ca2523dcfb5aa1aadda82489",
+    "source.mp4": "2141609f0634bf7568dbd7bd53d714b4d3d3828495620082e3d2ac79b2bf4e00",
+    "timing.json": "5cbba9d3bedb097d9c2abba399ee8bf1115a4d2edcf7ca811b1466365a56b99f",
+    "sprites.zip": "bb806184fda33c34aab1a4070b00131c80015d2359dc21d24dfcb9118a6ddc11",
+    "reference.png": "d295b192fd71235ac5ebd437b151be4de83a9a2c22b840d96d6a58f6fa8934bf",
+    "contact.jpg": "494ed8e6a80723f7e00dcb90ea0fa13233923421cca0be2b44b29e4a1ede0237",
+    "README.md": "8799e24e133f094f44fc837b8cd0e7c0eec7db05038b3c73887b8797ac350a38",
+    "final.gif": "9f8c30100b1ff5346bb3b4c38f562d0323153025bfce5481346a525efa41bcfb",
+    "README.zh-TW.md": "2fde8e24946be0c6688344d0bda248b0c455c56b649c3cf3e612f88b68353e44",
+    "verification.json": "4367f9e50e13290fca010871fabeb7323e00c8d12c65bc5bb5ba965fb0f94c89",
+    "sprite-sheet.png": "00bcf20f9eb306a9fc578f4cd396baffbbd66b4d2285896a07a400c07a695f36"
+  },
+  "sprite_export": {
+    "frame_size": [
+      256,
+      256
+    ],
+    "frames": 112,
+    "pages": 3,
+    "pivot": [
+      128,
+      222
+    ],
+    "scale_divisor": 3,
+    "qc": "all decoded crops match RGBA frames",
+    "engine_validation": "not performed"
+  }
+}
