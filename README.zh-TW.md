@@ -62,7 +62,7 @@ flowchart TD
 ## 需求
 
 - **Codex**；建立角色圖或關鍵幀時，另需可用圖片生成工具。
-- **Grok** — 預設使用，但非必要依賴；此路徑需登入、影片權限與額度。[連線設定](references/grok.md)。
+- **Grok** — 預設使用，但非必要依賴。登入 [Grok Imagine 網站](https://grok.com/imagine) 即可使用網站影片生成功能，再匯入下載的影片，不必設定 API key 或 CLI；依帳號權限與額度使用。Repo 的自動連線工具則另用 CLI OAuth 或 API key 登入。[連線設定](references/grok.md)。
 - **Python 3.11+** — 安裝器管理 Python 套件，並在支援平台下載缺少的 FFmpeg／ffprobe。[依賴說明](references/dependencies.md)。
 
 ## 使用方法

@@ -2,7 +2,11 @@
 
 This repo includes `scripts/grok_client.py`: it reads the official Grok CLI OAuth session, refreshes it through the CLI when expired, submits I2V requests to xAI, checks job progress and downloads the result. No external project, Python adapter or custom module path is required.
 
-## Authentication
+## Website use (no API key or CLI)
+
+Sign in to [Grok Imagine](https://grok.com/imagine), generate the requested video within the account’s available access and limits, and import the downloaded file into the local workflow. This website route does not require the bundled API client. Browser-assisted operation requires an available browser tool and the user’s signed-in session; it is not a bundled browser automation feature. Website login alone does not authenticate the CLI client below. See the [official website availability announcement](https://x.ai/news/grok-imagine-video-1-5).
+
+## Authentication for the bundled client
 
 Install the official Grok CLI through its supported installation method if it is absent. Run `grok login` to complete the interactive sign-in. The bundled client reads OAuth/OIDC records from `~/.grok/auth.json`; it never writes or prints tokens. Expired sessions with refresh information invoke `grok models` once as the official credential refresh broker, with output suppressed. There is no implicit API-key fallback or browser-cookie route.
 

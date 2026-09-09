@@ -62,7 +62,7 @@ See [installation instructions](references/install.md). Then invoke `$video-gif-
 ## Requirements
 
 - **Codex**, plus an available image-generation tool when creating character images or keyframes.
-- **Grok** — default but optional; video access, authentication and quota are required for this route. [Connection setup](references/grok.md).
+- **Grok** — default but optional. Sign in to [Grok Imagine](https://grok.com/imagine) to generate video on the website, then import the downloaded video; no API key or CLI is needed for website use. Account access and limits apply. The bundled automatic client uses separate CLI OAuth or API-key authentication. [Connection setup](references/grok.md).
 - **Python 3.11+** — the installer manages Python packages and missing FFmpeg/ffprobe on supported platforms. [Dependencies](references/dependencies.md).
 
 ## Usage
