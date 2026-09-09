@@ -81,7 +81,11 @@ See [installation instructions](references/install.md). Then invoke `$video-gif-
 
 **GIF has binary transparency.** Use RGBA PNG/APNG for soft edges and fading effects, or alpha-capable MOV/WebM. **MP4 is opaque.** Game assets favor PNG frames and sprite sheets; pixel art preserves its logical grid and nearest-neighbor scaling.
 
-Long videos use multiple generated segments coordinated by Codex, with joins reviewed before assembly. Automatic chain execution and multi-reference/edit/extend CLI modes are not bundled.
+### Special use: continuously extend a video
+
+**In principle, repeated generation and stitching can keep extending a video without a fixed total-duration ceiling.** Use the last frame and suitable consistency references to generate the next segment, review the join, then append and repeat. This uses multiple generation requests, not one unlimited-length request.
+
+Each task needs a target duration, segment count or budget. Actual length is constrained by quota, cost, compute/storage and accumulated continuity drift. Codex coordinates the process; automatic chain execution and multi-reference/edit/extend CLI modes are not bundled. See [continuation workflow](references/chain.md).
 
 Details: [Skill](SKILL.md) · [Transparency](references/transparency.md) · [Pixel art](references/pixel-art.md) · [Sprites](references/sprites.md) · [Video export](references/video-export.md) · [Timeline](references/timeline.md) · [Music](references/music.md) · [Continuation](references/chain.md)
 

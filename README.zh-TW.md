@@ -81,7 +81,11 @@ flowchart TD
 
 **GIF 只能全透明或全不透明。** 柔邊與消散特效使用 RGBA PNG／APNG，或支援 Alpha 的 MOV／WebM；**MP4 不保留透明度**。遊戲素材優先使用 PNG 畫格與圖集；像素風保留原生像素格，採最近鄰縮放。
 
-長影片由 Codex 協調多段生成，檢查接點後組合；自動 chain 執行器與多參考圖／影片編輯／延伸 CLI 模式尚未內建。
+### 特殊用法：持續延長影片
+
+**理論上可透過反覆生成與串接，持續延長影片，沒有固定的總時長上限。** 使用尾幀與合適的一致性參考圖生成下一段，檢查接點後接上，再重複此流程；這是多次生成，不是單次請求產出無限長影片。
+
+每次任務仍須設定目標時長、段數或預算；實際受額度、成本、運算／儲存資源與累積的畫面一致性偏差限制。流程由 Codex 協調，自動 chain 執行器與多參考圖／影片編輯／延伸 CLI 模式尚未內建。詳見[接續流程](references/chain.md)。
 
 詳細說明：[Skill](SKILL.md) · [透明處理](references/transparency.md) · [像素風](references/pixel-art.md) · [Sprite](references/sprites.md) · [影片輸出](references/video-export.md) · [時間軸](references/timeline.md) · [音樂](references/music.md) · [接續生成](references/chain.md)
 
