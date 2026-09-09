@@ -87,6 +87,12 @@ Describe what you want; let the skill choose the script, motion, duration, camer
 
 **GIF has binary transparency.** Use RGBA PNG/APNG for soft edges and fading effects, or alpha-capable MOV/WebM. **MP4 is opaque.** Game assets favor PNG frames and sprite sheets; pixel art preserves its logical grid and nearest-neighbor scaling.
 
+### Script and storyboard planning
+
+Provide a theme or mood and let the skill plan the story, shots, durations, camera angles, character actions, effects, transitions and generation prompts. Music accents can be planned when relevant; precise beat timing needs the audio. **You can request only a script and storyboard, without generating video.**
+
+> Use $video-gif-studio to plan a 30-second anime PV about saying goodbye and starting again. Decide the creative details; output only the script and storyboard.
+
 ### Simple video editing
 
 Trim, split and reorder clips, adjust speed or duration, join segments, insert stills, repeat loops for a set time, and add music with beat-aligned editing. **These edits run locally without Grok or new video generation.** Codex operates the tools; there is no graphical editor, and music sync needs playback review.
