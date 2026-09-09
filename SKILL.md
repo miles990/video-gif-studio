@@ -7,6 +7,10 @@ description: Create and refine continuous-motion GIFs from generated or existing
 
 Deliver an inspectable animation, its source lineage and a reproducible export. Preserve the user's latest motion, appearance and camera preferences. Reference images are optional; an existing video can be sufficient. Do not inherit this skill's founding character, pose, color, duration, or chair constraints into unrelated work.
 
+## Requirements
+
+The complete AI generation workflow requires **Codex + Grok**: Codex runs this skill, directs the motion, uses available image generation when needed, and processes/verifies the output; Grok supplies generated continuous video. Grok must be authenticated and have usable video-generation entitlement/quota. This version connects through the existing MV Studio OAuth adapter described in [references/grok.md](references/grok.md). Do not imply the repository provides accounts, subscriptions or credits. Existing video/RGBA conversion can run locally without a new Grok call. Alternative providers are an explicit adaptation, not a bundled dependency.
+
 ## Select the route
 
 - **Existing video:** inspect it first; keep actual continuous frames when the action is usable. Diagnose before regenerating.

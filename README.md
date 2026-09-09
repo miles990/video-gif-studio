@@ -2,6 +2,17 @@
 
 可重用的 Codex skill：從參考圖、原創人物或既有影片，製作動作連續、時長可調、透明色正確的 GIF。
 
+## 使用需求
+
+**完整的 AI 生成流程需要 Codex + Grok。**
+
+- **Codex**：執行此 skill、設計動作與提示詞、建立或處理參考圖，以及製作和驗證 GIF。需要建立新圖片時，須有可用的圖片生成功能。
+- **Grok**：生成連續動作影片。需要已登入的 Grok 帳號，以及可用的影片生成權限與額度；本版透過既有 MV Studio `motiongen.py` OAuth adapter 連接，詳見 [Grok 設定與使用方式](references/grok.md)。
+- **本機處理環境**：Python 3 與 `requirements.txt` 中的套件；檢查、轉換影片時需要 FFmpeg／ffprobe。
+
+已有影片或透明 PNG 畫格時，可以只執行本機轉檔工具，不必再次呼叫 Grok。此 repo 不包含 Codex／Grok 帳號、訂閱或生成額度。
+
+
 
 ## 成功範例
 
