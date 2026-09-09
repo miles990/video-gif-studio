@@ -62,6 +62,14 @@ The bundled [sprite exporter](references/sprites.md) packs multi-page RGBA sheet
 
 See [SKILL.md](SKILL.md), [transparency and delivery choices](references/transparency.md), and the [export reference](references/export.md).
 
+### Timed still images
+
+Insert a picture for a chosen duration: **animation → last-frame hold for 2 seconds → next animation**, or use a separate image / the next clip's first frame. The bundled [timeline composer](references/timeline.md) joins prepared frames with exact hold durations and exports GIF by default, or APNG, sprites, MOV, WebM and opaque MP4. No Grok generation is needed for a completely static hold.
+
+A still freezes effects as well as the character. Breathing, blinking or particles that keep moving need an animated segment. Shared canvas sizes are required; the tool does not stretch or blur pixel art to fit.
+
+> Use $video-gif-studio to hold this animation's last frame for 2 seconds, then append the next animation. Export GIF and MP4 with a white background.
+
 ### Reference and continuation options
 
 Use an existing video to create an APNG preview and PNG frames, then choose references for the next step:

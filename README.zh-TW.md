@@ -62,6 +62,14 @@ AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若
 
 完整流程見 [SKILL.md](SKILL.md)，另見 [透明處理與交付選擇](references/transparency.md) 和 [輸出說明](references/export.md)。
 
+### 靜止畫面與停留時長
+
+可插入指定時長的圖片：**動畫 → 尾幀停留 2 秒 → 下一段動畫**，也可選另一張圖或下一段首幀。內建[時間軸組合工具](references/timeline.md)可串接已準備的畫格與精確停留時長，預設輸出 GIF，亦可選 APNG、Sprite、MOV、WebM 與不透明 MP4。完全靜止的停留不需要 Grok 重新生成。
+
+靜止會連同特效一起暫停；呼吸、眨眼或繼續消散的粒子需要動畫片段。素材須使用相同畫布大小，工具不會為了對齊而拉伸或模糊像素畫。
+
+> 使用 $video-gif-studio，讓這段動畫的尾幀停留 2 秒，再接下一段動畫，輸出 GIF 與白底 MP4。
+
 ### 參考圖與接續選項
 
 可先將既有影片製作成 APNG 預覽與 PNG 畫格，再選擇下一階段使用的參考方式：
