@@ -24,7 +24,9 @@ Existing videos or transparent PNG frames can be converted locally without anoth
 
 ## Usage
 
-Workflow: **Reference or generated character → Grok continuous motion and requested effects → background removal → RGBA PNG frames, optional APNG and GIF preview**. Existing videos can enter at the background-removal step. Unless specified otherwise, use plausible anatomy, weight transfer and motivated displacement; keep the full character, weapon and effects visible through dissipation. Grok designs and generates requested effects. Requested seamless loops require visual boundary review.
+Workflow: **Reference or generated character → Grok continuous motion and requested effects → background removal → RGBA PNG frames, optional APNG and GIF preview**. Existing videos can enter at the background-removal step. Unless specified otherwise, use plausible anatomy, weight transfer and motivated displacement; keep the full character, weapon and effects visible through dissipation. Requested seamless loops require visual boundary review.
+
+**Effects default to Grok.** When effects are requested and no specific design or generation source is specified, let Grok design and generate them in the motion video. Codex directs their timing, physical cause and effect, readability and complete framing, then handles background removal and export. Follow any explicit effect design or source provided by the user.
 
 With a reference image:
 
