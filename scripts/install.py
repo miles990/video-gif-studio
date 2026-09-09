@@ -12,7 +12,7 @@ import venv
 NAME = 'video-gif-studio'
 
 
-def install(source, skills_dir, skip_deps=False, adapter=None):
+def install(source, skills_dir, skip_deps=False):
     source = Path(source).resolve()
     if not (source/'SKILL.md').is_file() or not (source/'requirements.txt').is_file():
         raise ValueError('Source is not a complete video-gif-studio checkout')
@@ -42,15 +42,8 @@ def install(source, skills_dir, skip_deps=False, adapter=None):
         probe = subprocess.run([str(python),'-c','import PIL, numpy, cv2'],capture_output=True)
         if probe.returncode:
             subprocess.run([str(python),'-m','pip','install','-r',str(target/'requirements.txt')],check=True)
-        subprocess.run([str(python),str(target/'scripts/gif_pipeline.py'),'--help'],check=True,stdout=subprocess.DEVNULL)
-    if adapter:
-        adapter = Path(adapter).expanduser().resolve()
-        if not adapter.is_file():
-            raise ValueError('Grok adapter does not exist; no setting written')
-        config_path = target/'local-settings.json'
-        config = json.loads(config_path.read_text()) if config_path.exists() else {}
-        config['grok_adapter'] = str(adapter)
-        config_path.write_text(json.dumps(config,indent=2)+'\n')
+        for script in ('gif_pipeline.py','grok_video.py'):
+            subprocess.run([str(python),str(target/'scripts'/script),'--help'],check=True,stdout=subprocess.DEVNULL)
     result = {'skill':str(target),'skill_registered':(target/'SKILL.md').is_file(),
               'python':str(python),'dependencies':'not checked (--skip-deps)' if skip_deps else 'ready',
               'note':'Grok generation entitlement and credits are not verified by installation'}
@@ -61,11 +54,10 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source',type=Path,default=Path(__file__).resolve().parents[1])
     ap.add_argument('--skills-dir',type=Path,default=Path(os.environ.get('CODEX_HOME',str(Path.home()/'.codex')))/'skills')
-    ap.add_argument('--grok-adapter',type=Path,help='Optional existing official OAuth adapter path, stored locally')
     ap.add_argument('--skip-deps',action='store_true',help='Registration-only test; does not claim runtime readiness')
     args=ap.parse_args()
     try:
-        result=install(args.source,args.skills_dir,args.skip_deps,args.grok_adapter)
+        result=install(args.source,args.skills_dir,args.skip_deps)
     except (ValueError,OSError,subprocess.CalledProcessError) as exc:
         raise SystemExit(f'Install incomplete: {exc}') from None
     print(json.dumps(result,ensure_ascii=False,indent=2))

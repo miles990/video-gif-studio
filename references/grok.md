@@ -1,21 +1,32 @@
-# Grok provider route
+# Built-in Grok connection
 
-The founding production used an existing MV Studio `tools/mv-studio/motiongen.py` adapter to call Grok Imagine Video 1.5 through OAuth REST. The installed `grok` CLI acted as authentication broker, not as a video prompt agent. The actual source was one generated character still; the original photo was not uploaded. Do not describe inherited visual resemblance as actual multi-reference input.
+This repo includes `scripts/grok_client.py`: it reads the official Grok CLI OAuth session, refreshes it through the CLI when expired, submits I2V requests to xAI, checks job progress and downloads the result. No external project, Python adapter or custom module path is required.
 
-Locate the user's available adapter; do not assume a particular checkout or home directory. This skill's wrapper accepts its path explicitly, through `VIDEO_GIF_GROK_ADAPTER`, or through the installer's local configuration and checks its Python function contract. It neither bundles credentials nor reads browser cookies. If unavailable, use an available first-class provider tool or explain the dependency. Do not install plugins, switch billing routes or unofficial session bridges implicitly.
+## Authentication
+
+Install the official Grok CLI through its supported installation method if it is absent. Run `grok login` to complete the interactive sign-in. The bundled client reads OAuth/OIDC records from `~/.grok/auth.json`; it never writes or prints tokens. Expired sessions with refresh information invoke `grok models` once as the official credential refresh broker, with output suppressed. No ambient API key or browser cookie route is used.
+
+Run the installed virtual environment's Python:
 
 ```sh
-python3 scripts/grok_video.py --adapter /path/to/motiongen.py \
-  --image ./start.png --prompt ./prompt.txt --duration 10 --resolution 720p \
-  --out ./generation-01 --submit
-python3 scripts/grok_video.py --adapter /path/to/motiongen.py \
-  --out ./generation-01 --resume
+.venv/bin/python scripts/doctor.py
+.venv/bin/python scripts/grok_video.py --image ./start.png --prompt ./prompt.txt \
+  --duration 10 --resolution 720p --out ./generation-01 --submit
+.venv/bin/python scripts/grok_video.py --out ./generation-01 --resume
 ```
 
-Submit once, retain job ID immediately, then poll with `--resume` at a measured interval (e.g. 15–30s). Keep user-facing updates during long jobs. Each resume checks once; `downloaded` exits idempotently after checking the output hash. Treat failed/cancelled/moderated/expired jobs as terminal. After a bounded wait (e.g. 15 minutes), retain the job and report pending rather than creating another. Never repeat a `submission-unresolved` request without reconciling provider state.
+`doctor` only checks local OAuth metadata and runtime availability; it does not prove generation entitlement, model availability or remaining quota. Login file structure/model capability may change: diagnose an unsupported format explicitly, never silently substitute credentials. Defaults reflect the proven production model, not guaranteed current limits or prices.
 
-Check live model, duration, image and resolution support before a new generation; defaults are historical, not a promise of current capability or price. Usage returned by the provider is recorded without interpreting unknown units as dollars. Authentication failures and spending-limit failures are distinct. Do not log bearer tokens or signed delivery URLs. Preview/report privacy before publishing artifacts.
+## Job handling
 
-Without a reference, create an original start image with the available image generator, inspect it, then use this I2V route. The wrapper does not implement or claim validated text-to-video or multi-reference video input. Other providers may support those modes; inspect their actual API/tool before using them.
+Submit once after authorization; the ledger reserves the attempt before the network request. A returned job ID is persisted immediately. Poll with `--resume` at a measured interval such as 15–30 seconds, with user updates during long waits. Each resume checks once. `downloaded` exits idempotently after verifying the output hash. Failed/cancelled/moderated/rejected/expired jobs are terminal.
 
-Testing the wrapper with fake adapter responses verifies local request/ledger behavior only. New real generations cost time/quota and are not part of routine skill validation unless requested.
+If submission has no confirmed response, preserve `submission-unresolved` and reconcile provider state before another generation. HTTP 4xx rejection records its bounded status/code; spending-limit failures never trigger a login loop, route switch or automatic resubmission. After a bounded wait (e.g. 15 minutes), retain the job and report pending rather than submitting another.
+
+A failed download can be resumed using the same job. Download requests never forward the API bearer to the media server. Signed delivery URLs and raw provider error messages are omitted from the job ledger. Usage is stored in provider units without an invented dollar conversion.
+
+## Inputs and validation boundaries
+
+The client implements image-to-video. Without a reference, use the available image generator to create an original start image, inspect it, then animate it. Do not claim this client supports pure text-to-video or multiple uploaded references.
+
+The founding production used the equivalent OAuth REST route; its generated source is preserved in the example. The bundled implementation is tested with mocked authentication, request, status and download responses. Routine installation/tests do not create a new paid video; live generation remains a separate authorized action.

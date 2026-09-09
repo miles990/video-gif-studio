@@ -15,7 +15,7 @@ AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若
 ## 需求
 
 - **Codex**：執行 skill、設計動作、處理參考圖及製作 GIF；建立新圖時需有可用的圖片生成功能。
-- **Grok**：已登入且具備影片生成權限與額度；本版需要既有 MV Studio `motiongen.py` OAuth adapter，詳見 [Grok 使用方式](references/grok.md)。
+- **Grok**：已登入且具備影片生成權限與額度；repo 已內建影片提交、查詢與下載功能，使用官方 Grok CLI 登入，詳見 [Grok 使用方式](references/grok.md)。
 - **本機環境**：Python 3.11 或以上、`requirements.txt` 套件，以及 FFmpeg／ffprobe。
 
 已有影片或透明 PNG 畫格時，可直接轉檔，不必再次呼叫 Grok。

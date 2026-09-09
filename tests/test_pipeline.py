@@ -60,29 +60,6 @@ class ExportTests(unittest.TestCase):
             self.assertEqual(arr[14,14,3],0)
 
 
-class ProviderTests(unittest.TestCase):
-    def test_submit_record_and_resume_without_second_submission(self):
-        with tempfile.TemporaryDirectory() as d:
-            p=Path(d)
-            (p/'fake.py').write_text('''API="test-api"
-def _fresh_oauth_session(): return {"token":"never-log-this"}
-def _data_uri(path): return "data:image/png;base64,mock"
-def _request(url,token,method="GET",body=None):
- if method=="POST": return {"request_id":"test-job"}
- return {"status":"pending","progress":20}
-''')
-            (p/'image.png').write_bytes(b'fake image for transport mock')
-            (p/'prompt.txt').write_text('A moving original object.')
-            cmd=[sys.executable,str(ROOT/'scripts/grok_video.py'),'--adapter',str(p/'fake.py'),'--out',str(p/'run')]
-            r=subprocess.run(cmd+['--submit','--image',str(p/'image.png'),'--prompt',str(p/'prompt.txt')],capture_output=True,text=True)
-            self.assertEqual(r.returncode,0,r.stderr)
-            r=subprocess.run(cmd+['--resume'],capture_output=True,text=True)
-            self.assertEqual(r.returncode,0,r.stderr)
-            self.assertNotIn('never-log-this',r.stdout+r.stderr+(p/'run/job.json').read_text())
-            self.assertEqual(json.loads((p/'run/job.json').read_text())['request_id'],'test-job')
-            r=subprocess.run(cmd+['--submit','--image',str(p/'image.png'),'--prompt',str(p/'prompt.txt')],capture_output=True,text=True)
-            self.assertNotEqual(r.returncode,0)
-
 
 if __name__=='__main__':
     unittest.main()

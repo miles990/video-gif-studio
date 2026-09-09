@@ -11,7 +11,7 @@ Deliver an inspectable animation, its source lineage and a reproducible export. 
 
 For installation requests, follow [references/install.md](references/install.md). Use this skill folder's `.venv/bin/python` (Windows: `.venv/Scripts/python.exe`) for its scripts; do not assume the current shell Python has the dependencies. `scripts/doctor.py` reports local readiness without spending generation quota.
 
-The complete AI generation workflow requires **Codex + Grok**: Codex runs this skill, directs the motion, uses available image generation when needed, and processes/verifies the output; Grok supplies generated continuous video. Grok must be authenticated and have usable video-generation entitlement/quota. This version connects through the existing MV Studio OAuth adapter described in [references/grok.md](references/grok.md). Do not imply the repository provides accounts, subscriptions or credits. Existing video/RGBA conversion can run locally without a new Grok call. Alternative providers are an explicit adaptation, not a bundled dependency.
+The complete AI generation workflow requires **Codex + Grok**: Codex runs this skill, directs the motion, uses available image generation when needed, and processes/verifies the output; Grok supplies generated continuous video. Grok must be authenticated and have usable video-generation entitlement/quota. This version includes its own OAuth REST client, using the official Grok CLI for sign-in and credential refresh as described in [references/grok.md](references/grok.md). Do not imply the repository provides accounts, subscriptions or credits. Existing video/RGBA conversion can run locally without a new Grok call. Alternative providers are an explicit adaptation, not a bundled dependency.
 
 ## Select the route
 
@@ -20,7 +20,7 @@ The complete AI generation workflow requires **Codex + Grok**: Codex runs this s
 - **No reference:** author an original subject and motion brief. When a stable character is useful, generate a start image using the available image-generation tool, inspect it, then animate it. Direct text-to-video is an alternative only if the active provider supports it; do not claim an untested route is verified.
 - **Natural articulated movement:** prefer a continuous video source over independently generated pose sheets. Independent images, crossfades and optical-flow interpolation cannot reliably invent missing joint paths.
 
-For generated raster art, follow the available image-generation tool's instructions; do not replace requested artwork with procedural placeholders. For a chosen video provider, check its live capabilities, authentication, supported inputs and pricing exposure. Read [references/grok.md](references/grok.md) for the included Grok adapter and its limits. A missing provider must be reported, not hidden behind an unrelated static animation.
+For generated raster art, follow the available image-generation tool's instructions; do not replace requested artwork with procedural placeholders. For a chosen video provider, check its live capabilities, authentication, supported inputs and pricing exposure. Read [references/grok.md](references/grok.md) for the bundled Grok client and its limits. A missing provider must be reported, not hidden behind an unrelated static animation.
 
 ## Direction and generation
 
