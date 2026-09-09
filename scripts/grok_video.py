@@ -23,13 +23,19 @@ def main(argv=None,client=None):
     ap.add_argument('--model',default='grok-imagine-video-1.5')
     ap.add_argument('--duration',type=int,default=10)
     ap.add_argument('--resolution',choices=['480p','720p','1080p'],default='720p')
+    ap.add_argument('--auth', choices=['oauth','api-key'], default=None, help='Explicit API-key mode avoids Grok CLI; resume inherits recorded mode')
     mode=ap.add_mutually_exclusive_group(required=True)
     mode.add_argument('--submit',action='store_true')
     mode.add_argument('--resume',action='store_true')
     args=ap.parse_args(argv)
-    client = client or GrokClient()
+    injected_client = client
     args.out.mkdir(parents=True,exist_ok=True)
     ledger=args.out/'job.json'
+    recorded = json.loads(ledger.read_text()) if args.resume else {}
+    auth_mode = args.auth or recorded.get('auth_mode', 'oauth')
+    if args.resume and args.auth and args.auth != recorded.get('auth_mode', 'oauth'):
+        ap.error('Resume must use the original authentication mode')
+    client = injected_client or GrokClient(auth_mode=auth_mode)
     if args.submit:
         if ledger.exists():
             ap.error('Job ledger exists: resume it; use a new attempt only after resolving this job')
@@ -37,7 +43,7 @@ def main(argv=None,client=None):
             ap.error('Supply image, prompt and valid duration; verify current model limits')
         prompt=args.prompt.read_text()
         data={'status':'submitting','model':args.model,'duration':args.duration,
-              'resolution':args.resolution,'prompt':prompt,'transport':'bundled-oauth-rest',
+              'resolution':args.resolution,'prompt':prompt,'auth_mode':auth_mode,'transport':'bundled-'+auth_mode+'-rest',
               'input_sha256':hashlib.sha256(args.image.read_bytes()).hexdigest(),
               'client_sha256':hashlib.sha256(Path(__file__).with_name('grok_client.py').read_bytes()).hexdigest()}
         client.token()  # Resolve login before recording any potentially submitted request.

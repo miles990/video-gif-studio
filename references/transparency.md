@@ -6,7 +6,7 @@ Select sensible defaults from the intended use; do not ask users to choose techn
 
 | Mode | Behavior | Boundary |
 | --- | --- | --- |
-| Auto (default) | Preserve source frames. Use existing alpha, a separable color key, or suitable temporal matting for a complex background. | Matting must be available and validated; the bundled CLI only includes a uniform-color keyer. Do not silently substitute redraw when extraction fails. |
+| Auto (default) | Preserve source frames. Use existing alpha, a separable color key, or suitable temporal matting for a complex background. | Matting must be available and validated; the bundled keyer handles uniform backgrounds; optional local `background_remove.py` offers rembg framewise masks, not a temporal model. Do not silently substitute redraw when extraction fails. |
 | Preserve artwork | Do not redraw the subject or invent replacement detail. Keep original RGB except disclosed, narrowly scoped spill correction; adjust alpha from the source. | Report unseparable areas and missing details rather than promising perfect extraction. |
 | AI repair/redraw | Use available image tools for the user-requested local repair or redraw, preferably limited to the affected area. | Explain potential changes to identity, anatomy, weapon paths and particle placement before switching from preservation when the user has not already selected repair. Recheck every affected transition. |
 

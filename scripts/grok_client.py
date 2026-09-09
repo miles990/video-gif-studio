@@ -3,6 +3,7 @@ import base64
 from datetime import datetime, timedelta, timezone
 import json
 import mimetypes
+import os
 from pathlib import Path
 import re
 import shutil
@@ -21,7 +22,10 @@ class ProviderError(RuntimeError):
 
 
 class GrokClient:
-    def __init__(self, auth_path=None):
+    def __init__(self, auth_path=None, auth_mode="oauth"):
+        if auth_mode not in ("oauth", "api-key"):
+            raise ValueError("Unknown authentication mode")
+        self.auth_mode = auth_mode
         self.auth_path = Path(auth_path) if auth_path else Path.home()/'.grok/auth.json'
 
     def session(self):
@@ -53,6 +57,11 @@ class GrokClient:
                 'generation_entitlement':'not checked'}
 
     def token(self):
+        if self.auth_mode == 'api-key':
+            key = os.environ.get('XAI_API_KEY', '').strip()
+            if not key:
+                raise RuntimeError('API-key mode requires XAI_API_KEY in your environment')
+            return key
         s = self.session()
         if s['token'] and not s['expired']:
             return s['token']

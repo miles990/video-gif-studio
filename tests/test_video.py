@@ -3,9 +3,11 @@ import json
 from pathlib import Path
 import shutil
 import tempfile
+import sys
 import unittest
 from PIL import Image
 
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 spec = importlib.util.spec_from_file_location('video',Path(__file__).resolve().parents[1]/'scripts/video_export.py')
 video = importlib.util.module_from_spec(spec);spec.loader.exec_module(video)
 

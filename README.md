@@ -17,8 +17,10 @@ See the [AI installation instructions](references/install.md). After installatio
 ## Requirements
 
 - **Codex**: Coordinates generation, motion timing, background removal and export. Character creation or AI repair also needs an available image-generation tool. **GPT-Image-2.5** may be used when your environment exposes it; verify the actual model and alpha output capability. Existing media conversion does not require an image model.
-- **Grok**: A signed-in account with video generation access and available quota. Video submission, polling, and downloading are built into this repository; authentication uses the official Grok CLI. See [Grok usage](references/grok.md).
-- **Local tools**: Python 3.11 or later, the packages in `requirements.txt`, and FFmpeg/ffprobe.
+- **Grok**: A signed-in account with video generation access and available quota. Video submission, polling, and downloading are built into this repository; OAuth authentication uses the official Grok CLI; explicitly selected API-key mode does not require it. See [Grok usage](references/grok.md).
+- **Local tools**: Python 3.11 or later, the installer manages the packages in `requirements.txt` and downloads FFmpeg/ffprobe when absent on supported platforms.
+
+See [managed dependencies and local background removal](references/dependencies.md). First installation/model use requires downloads; model services and credentials remain external.
 
 Existing videos or transparent PNG frames can be converted locally without another Grok generation request.
 
@@ -48,7 +50,7 @@ Choose a transparency workflow, or leave it on **Auto**:
 | **Preserve artwork** | Prioritize original character pixels and motion; report areas that cannot be cleanly separated. |
 | **AI repair/redraw** | Explicitly request image-model repair, accepting possible appearance changes and renewed temporal checks. |
 
-These are workflow choices, not command-line flags. The bundled keyer handles uniform-color backgrounds; temporal matting requires an additional tool. Changing the file format cannot recover detail already removed during matting.
+These are workflow choices, not command-line flags. The bundled keyer handles uniform-color backgrounds; an optional local rembg entry point handles foreground masking (`install.py --with-matting`). Its framewise masks require flicker review; it is not a temporal model. Changing the file format cannot recover detail already removed during matting.
 
 For soft edges, hair, smoke and fading effects, retain **RGBA PNG / APNG** masters. **GIF only supports fully transparent or fully opaque pixels** and is a compatibility preview. Pixel art can still use partial alpha; hard pixel edges and transparent glow need different treatment.
 

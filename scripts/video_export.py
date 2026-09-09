@@ -4,6 +4,7 @@ import argparse
 import json
 import math
 import subprocess
+from media_runtime import executable
 import tempfile
 from pathlib import Path
 import numpy as np
@@ -48,7 +49,7 @@ def export(frames, manifest, target, background="000000"):
     with tempfile.TemporaryDirectory(dir=target.parent) as tmp:
         encoded = Path(tmp) / ('encoded' + target.suffix.lower())
         with tempfile.TemporaryFile() as err:
-            cmd = ['ffmpeg', '-v', 'error', '-f', 'rawvideo', '-pixel_format', 'rgba', '-video_size', f'{w}x{h}', '-framerate', '100', '-i', 'pipe:0', '-an', *opts, str(encoded)]
+            cmd = [executable('ffmpeg'), '-v', 'error', '-f', 'rawvideo', '-pixel_format', 'rgba', '-video_size', f'{w}x{h}', '-framerate', '100', '-i', 'pipe:0', '-an', *opts, str(encoded)]
             proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=err)
             try:
                 for file, count in zip(files, repeats):
@@ -69,7 +70,7 @@ def export(frames, manifest, target, background="000000"):
                     proc.kill(); proc.wait()
             # Explicit libvpx decoding is required to exercise WebM alpha, rather than
             # accidentally validating an opaque decode from another VP9 decoder.
-            dec = ['ffmpeg', '-v', 'error', *(['-c:v', 'libvpx-vp9'] if webm else []), '-i', str(encoded), '-f', 'rawvideo', '-pix_fmt', 'rgba', 'pipe:1']
+            dec = [executable('ffmpeg'), '-v', 'error', *(['-c:v', 'libvpx-vp9'] if webm else []), '-i', str(encoded), '-f', 'rawvideo', '-pix_fmt', 'rgba', 'pipe:1']
             proc = subprocess.Popen(dec, stdout=subprocess.PIPE, stderr=err)
             worst = 0; frames_seen = 0
             try:
@@ -92,7 +93,7 @@ def export(frames, manifest, target, background="000000"):
             proc.stdout.close()
             if worst > 2:
                 raise RuntimeError(f'Alpha verification failed: max error {worst}/255')
-        probe = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','json',str(encoded)]))
+        probe = json.loads(subprocess.check_output([executable('ffprobe'),'-v','error','-show_entries','format=duration','-of','json',str(encoded)]))
         actual_ms = float(probe['format']['duration']) * 1000
         if abs(actual_ms - sum(durations)) > 10.01:
             raise RuntimeError('Container duration does not match source timing')

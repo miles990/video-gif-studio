@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import subprocess
+from media_runtime import executable
 import tempfile
 from pathlib import Path
 import numpy as np
@@ -15,7 +16,7 @@ def analyze(source, out, bpm=None, offset_ms=None):
     if out.exists(): raise FileExistsError('Use a new analysis directory')
     if bpm is not None and (not math.isfinite(bpm) or not 20 <= bpm <= 400): raise ValueError('BPM must be 20..400')
     if offset_ms is not None and (not math.isfinite(offset_ms) or offset_ms < 0): raise ValueError('Offset must be nonnegative')
-    raw=subprocess.check_output(['ffmpeg','-v','error','-i',str(source),'-vn','-ac','1','-ar','8000','-f','f32le','pipe:1'])
+    raw=subprocess.check_output([executable('ffmpeg'),'-v','error','-i',str(source),'-vn','-ac','1','-ar','8000','-f','f32le','pipe:1'])
     x=np.frombuffer(raw,dtype='<f4');total_ms=len(x)/8
     if not len(x): raise ValueError('No decoded audio')
     hop=80;count=len(x)//hop
@@ -55,7 +56,7 @@ def mux_music(movie, source, duration_ms, in_ms=0, gain_db=0, fade_in_ms=30, fad
         if not isinstance(v,(int,float)) or not math.isfinite(v) or v<0: raise ValueError('Invalid audio timing')
     if not math.isfinite(gain_db) or not -60<=gain_db<=20:raise ValueError('gain_db must be -60..20')
     if max(fade_in_ms,fade_out_ms)>duration_ms:raise ValueError('Audio fades exceed timeline')
-    probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','a:0','-show_entries','stream=codec_type','-show_entries','format=duration','-of','json',str(source)]))
+    probe=json.loads(subprocess.check_output([executable('ffprobe'),'-v','error','-select_streams','a:0','-show_entries','stream=codec_type','-show_entries','format=duration','-of','json',str(source)]))
     if not probe.get('streams') or in_ms>=float(probe['format']['duration'])*1000:raise ValueError('Audio missing or in_ms beyond source')
     sec=duration_ms/1000
     filt=f'atrim=start={in_ms/1000},asetpts=PTS-STARTPTS,volume={gain_db}dB,apad,atrim=duration={sec}'
@@ -64,12 +65,12 @@ def mux_music(movie, source, duration_ms, in_ms=0, gain_db=0, fade_in_ms=30, fad
     codec='libopus' if movie.suffix=='.webm' else ('pcm_s16le' if movie.suffix=='.mov' else 'aac')
     with tempfile.TemporaryDirectory(dir=movie.parent) as temp:
         target=Path(temp)/movie.name
-        subprocess.run(['ffmpeg','-v','error','-i',str(movie),'-i',str(source),'-map','0:v:0','-map','1:a:0','-c:v','copy','-af',filt,'-c:a',codec,'-t',str(sec),str(target)],check=True)
-        actual=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','stream=codec_type,codec_name','-show_entries','format=duration','-of','json',str(target)]))
+        subprocess.run([executable('ffmpeg'),'-v','error','-i',str(movie),'-i',str(source),'-map','0:v:0','-map','1:a:0','-c:v','copy','-af',filt,'-c:a',codec,'-t',str(sec),str(target)],check=True)
+        actual=json.loads(subprocess.check_output([executable('ffprobe'),'-v','error','-show_entries','stream=codec_type,codec_name','-show_entries','format=duration','-of','json',str(target)]))
         if {v['codec_type'] for v in actual['streams']}!={'video','audio'}:raise RuntimeError('Missing audio/video stream')
         if abs(float(actual['format']['duration'])*1000-duration_ms)>100:raise RuntimeError('Audio/video duration mismatch')
         # Force an actual audio decode, not only a container metadata check.
-        pcm=subprocess.check_output(['ffmpeg','-v','error','-i',str(target),'-vn','-ac','1','-ar','8000','-f','f32le','pipe:1'])
+        pcm=subprocess.check_output([executable('ffmpeg'),'-v','error','-i',str(target),'-vn','-ac','1','-ar','8000','-f','f32le','pipe:1'])
         if abs(len(pcm)/32-duration_ms)>100:raise RuntimeError('Decoded audio timeline mismatch')
         target.replace(movie)
     report={'source':str(source),'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'in_ms':in_ms,'gain_db':gain_db,'fade_in_ms':fade_in_ms,'fade_out_ms':fade_out_ms,'codec':codec,'decoded_audio_duration_ms':len(pcm)/32,'short_source':'padded with silence','video':'stream copied; soundtrack continuous across visual cuts'}
