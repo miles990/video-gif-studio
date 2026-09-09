@@ -70,6 +70,8 @@ A still freezes effects as well as the character. Breathing, blinking or particl
 
 > Use $video-gif-studio to hold this animation's last frame for 2 seconds, then append the next animation. Export GIF and MP4 with a white background.
 
+You can also set **how long a loop plays**, such as “walk loop for 5 seconds → hold for 1 second → attack.” Choose **exact duration** (default; may end mid-cycle) or **finish a complete cycle** (may exceed the requested time; actual duration is reported). This repeats existing animation locally without new generation. The source still needs a valid loop boundary. See [timed loops](references/timeline.md#loop-an-animation-for-a-duration).
+
 ### Reference and continuation options
 
 Use an existing video to create an APNG preview and PNG frames, then choose references for the next step:

@@ -37,6 +37,24 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
         if segment['type'] == 'animation':
             files, times = load_animation(segment['manifest'])
             items.extend(zip(files, times))
+        elif segment['type'] == 'loop':
+            files, times = load_animation(segment['manifest'])
+            requested = duration(segment['duration_ms'])
+            ending = segment.get('ending', 'exact')
+            if ending not in ('exact','complete_cycle'):
+                raise ValueError('Loop ending must be exact or complete_cycle')
+            cycle = sum(times)
+            if ending == 'complete_cycle':
+                items.extend(list(zip(files,times)) * math.ceil(requested/cycle))
+            else:
+                full, remaining = divmod(requested,cycle)
+                items.extend(list(zip(files,times)) * full)
+                for file,t in zip(files,times):
+                    if not remaining: break
+                    used = min(t,remaining)
+                    if used < 20:
+                        raise ValueError('Exact loop leaves a sub-20ms frame; adjust duration or use complete_cycle')
+                    items.append((file,used));remaining -= used
         elif segment['type'] == 'still':
             selectors = [key for key in ('image','manifest','previous') if key in segment]
             if len(selectors) != 1: raise ValueError('Still requires exactly one image, manifest or previous selector')
@@ -50,8 +68,10 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
                 if segment['previous'] != 'last' or not items: raise ValueError('previous:last needs a preceding segment')
                 file = items[-1][0]
             items.append((file, duration(segment['duration_ms'])))
-        else: raise ValueError('Supported segment types: animation, still')
-        segments.append({'type':segment['type'], 'start_frame':start, 'end_frame_exclusive':len(items),
+        else: raise ValueError('Supported segment types: animation, still, loop')
+        segments.append({'requested_duration_ms':segment.get('duration_ms'),
+                         'ending':segment.get('ending','exact') if segment['type']=='loop' else None,
+                         'type':segment['type'], 'start_frame':start, 'end_frame_exclusive':len(items),
                          'duration_ms':sum(t for _,t in items[start:])})
     if not items: raise ValueError('Timeline must contain at least one frame')
     # Preserve original alpha/canvas; mismatched inputs require deliberate preparation.

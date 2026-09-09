@@ -70,6 +70,8 @@ AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若
 
 > 使用 $video-gif-studio，讓這段動畫的尾幀停留 2 秒，再接下一段動畫，輸出 GIF 與白底 MP4。
 
+也可設定**一段 loop 動畫播放多久**，例如「走路循環 5 秒 → 停留 1 秒 → 攻擊」。可選「**精確時長**」（預設，可能停在一輪中途）或「**完整輪次結束**」（可能超過指定時長，會列出實際秒數）。這是本機重播既有動畫，不需要重新生成；來源本身仍須有合適的循環接點。詳見[定時循環](references/timeline.md#loop-an-animation-for-a-duration)。
+
 ### 參考圖與接續選項
 
 可先將既有影片製作成 APNG 預覽與 PNG 畫格，再選擇下一階段使用的參考方式：

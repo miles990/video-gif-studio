@@ -1,6 +1,6 @@
 # Local animation and still-image timeline
 
-Use `scripts/compose_timeline.py` to concatenate prepared animation frames and timed still images without another Grok call. A still can be an explicit image, the previous segment's last frame, or the first/last frame of a prepared animation. It freezes every pixel, including particles, light trails, hair and smoke. Breathing, blinking, idle movement or effects that keep dissipating require an actual animation segment, not a still.
+Use `scripts/compose_timeline.py` to concatenate prepared animation frames, timed loops and still images without another Grok call. A still can be an explicit image, the previous segment's last frame, or the first/last frame of a prepared animation. It freezes every pixel, including particles, light trails, hair and smoke. Breathing, blinking, idle movement or effects that keep dissipating require an actual animation segment, not a still.
 
 Create a JSON plan; relative paths resolve against the plan's directory:
 
@@ -29,3 +29,22 @@ GIF is the default. `--formats` accepts one or more of `gif apng png sprite mov 
 All inputs must use one canvas size. The tool rejects mismatched sizes instead of stretching, recentering, cropping or pixelating them implicitly. Prepare a shared canvas and consistent scale deliberately. It does not remove backgrounds from opaque stills. It retains alpha, image order and timing without transition blends, motion interpolation or audio. Outputs are staged before the new delivery directory is published; existing directories are never overwritten. Source paths in the manifest may be private; make portable copies before sharing.
 
 Review every join, particularly transitions between frozen and moving frames. Use a rested pose for a natural pause when appropriate; freezing a running pose mid-stride is an intentional freeze-frame, not natural idle. Removing duplicated boundary frames must not erase intended hold time. This helper composes prepared local assets; automatic Grok segment generation, video editing/extension and chain orchestration remain separate. Convert video segments to prepared frames first. It currently retains all images in memory, so use it for bounded timelines and use a streaming editing pipeline for long/high-resolution productions.
+
+## Loop an animation for a duration
+
+A loop segment repeats a prepared animation locally; it does not spend generation quota or synthesize new motion:
+
+```json
+{
+  "segments": [
+    {"type": "loop", "manifest": "walk/manifest.json", "duration_ms": 5000, "ending": "exact"},
+    {"type": "still", "previous": "last", "duration_ms": 1000},
+    {"type": "animation", "manifest": "attack/manifest.json"}
+  ]
+}
+```
+
+- `ending: exact` (default): stop at the requested duration, potentially within a cycle. The final frame duration is shortened; no frame blending or speed change is added. A remainder shorter than 20ms is rejected to avoid an unreliable tiny GIF delay; adjust the requested duration or choose complete-cycle ending. Durations use the same 10ms grid and per-segment bounds as stills.
+- `ending: complete_cycle`: repeat enough whole cycles to meet or exceed the requested duration. A 1.2-second cycle requested for 5 seconds plays five cycles for 6 seconds. The manifest records requested and actual duration.
+
+Preserve each cycle's original variable frame durations. A timed loop may appear anywhere in the timeline and be followed by a still, another loop or a different animation. `previous: last` selects the actual last played frame, including a partial-cycle endpoint. Review both the internal loop boundary and the transition into the next segment. Repetition does not make a nonseamless source seamless; report any source jump rather than adding a blind blend. Choose complete-cycle ending when a settled end pose matters more than exact runtime, subject to the user's explicit timing requirement. No default infinite repetition.

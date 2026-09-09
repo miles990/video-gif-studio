@@ -32,3 +32,24 @@ class TimelineTests(unittest.TestCase):
             p=Path(d);Image.new('RGBA',(8,8),(1,2,3,255)).save(p/'still.png')
             (p/'plan.json').write_text(json.dumps({'segments':[{'type':'still','image':'still.png','duration_ms':2000}]}))
             compose(p/'plan.json',p/'out',('gif','apng'))
+
+    def test_loop_exact_and_complete_cycles(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d);(p/'a/frames').mkdir(parents=True)
+            for i in range(2):Image.new('RGBA',(8,8),(i*255,20,60,255)).save(p/'a/frames'/f'{i:05d}.png')
+            (p/'a/manifest.json').write_text(json.dumps({'durations_ms':[30,70]}))
+            for ending,expected in [('exact',[30,70,30,70,30,20]),('complete_cycle',[30,70]*3)]:
+                (p/'plan.json').write_text(json.dumps({'segments':[{'type':'loop','manifest':'a/manifest.json','duration_ms':250,'ending':ending}]}))
+                compose(p/'plan.json',p/ending,('gif','apng'))
+                m=json.loads((p/ending/'manifest.json').read_text())
+                self.assertEqual(m['durations_ms'],expected)
+                self.assertEqual(m['segments'][0]['requested_duration_ms'],250)
+
+    def test_loop_tiny_remainder_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d);(p/'a/frames').mkdir(parents=True)
+            Image.new('RGBA',(8,8),(1,2,3,255)).save(p/'a/frames/00000.png')
+            (p/'a/manifest.json').write_text('{"durations_ms":[100]}')
+            (p/'plan.json').write_text(json.dumps({'segments':[{'type':'loop','manifest':'a/manifest.json','duration_ms':110}]}))
+            with self.assertRaises(ValueError):compose(p/'plan.json',p/'out')
+            self.assertFalse((p/'out').exists())
