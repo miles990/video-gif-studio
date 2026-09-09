@@ -49,7 +49,7 @@ Codex coordinates the workflow. Available image tools create characters or expli
 
 **Without Grok, GIF generation still works:** use available image-generated keyframes or existing media. Complex motion may need a video provider. See [fallback options](references/fallback.md).
 
-**Why this approach:** Continuous video provides intermediate movement that separate poses may miss. Processing its original frames reduces appearance drift from repeated redraws. RGBA masters retain soft transparency, while GIF provides a widely compatible preview; keyframe fallback keeps simple animation possible without Grok.
+**Why Grok:** We use Grok to generate continuous motion and effects together, providing intermediate movement for actions such as leg switches, weight shifts and attacks that separate pose images may miss. The repo already integrates its video submission, polling and download workflow. Codex then processes the original frames to reduce redraw-induced appearance drift, checks the result and exports it. Grok does not guarantee correct anatomy or physics; image-keyframe fallback remains available without it. RGBA masters preserve soft transparency, while GIF makes sharing convenient.
 
 ## Installation
 
