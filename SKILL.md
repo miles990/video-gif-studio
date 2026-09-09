@@ -7,6 +7,13 @@ description: Create and refine continuous-motion GIFs from generated or existing
 
 Deliver an inspectable animation, its source lineage and a reproducible export. Preserve the user's latest motion, appearance and camera preferences. Reference images are optional; an existing video can be sufficient. Do not inherit this skill's founding character, pose, color, duration, or chair constraints into unrelated work.
 
+## Defaults unless the user specifies otherwise
+
+- Motion follows plausible physics and visible cause and effect: support and weight transfer drive the body, the hand drives a held weapon, and cloth/particles follow with appropriate inertia. Effects never substitute for missing physical movement.
+- Human characters retain coherent anatomy, limb proportions, joint ranges, muscle and soft-tissue tension, perspective, foreshortening and occlusion throughout the motion. These defaults also apply to pixel art and stylized humans; explicitly requested exaggeration or nonphysical behavior overrides the relevant default.
+- When effects are requested, let **Grok design and generate them in the video**. Specify the action, causal timing, readability and background-separation constraints; leave effect shapes, colors and details to Grok unless the user supplies art direction. Do not invent effects for a task that did not request them. Local work defaults to matting, sampling, timing and encoding, not drawing or layering new effects. Record any user-requested exception and actual effect provenance.
+- A seamless-loop request remains an acceptance requirement through later revisions. Repeated playback is not seamlessness. A preview with a visible boundary mismatch is unfinished, even if encoding checks pass.
+
 ## Requirements
 
 For installation requests, follow [references/install.md](references/install.md). Use this skill folder's `.venv/bin/python` (Windows: `.venv/Scripts/python.exe`) for its scripts; do not assume the current shell Python has the dependencies. `scripts/doctor.py` reports local readiness without spending generation quota.
@@ -45,6 +52,8 @@ When motion is slow, distinguish **moving phase** from **settling pause**. "Natu
 For transparent output, prefer a separable constant background chosen to avoid subject colors, or source alpha. Magenta is useful, not mandatory. The included keyer is for uniform chroma backgrounds only; complex scenes need a temporal matting tool. Preserve interior negative spaces. Do not flood-fill every interior hole or erode the subject as a universal repair. Check masks over both dark and light backgrounds.
 
 Keep a shared canvas. Only stabilize measured unwanted camera drift; never recenter every frame by its bounding box, reshape anatomy, or pin a naturally moving prop without justification. Keep original camera/prop movement unless the brief calls for a change. Loop closure requires compatible pose, velocity and contact; do not label a visible end/start jump seamless.
+
+Read the loop and causal-review guidance in [references/motion.md](references/motion.md) before accepting articulated actions, effects or a requested seamless loop. Review actual weapon paths separately from effect trails. If a bounded corrective retry still fails, retain the unfinished status and explain the specific remaining defect rather than relabeling a preview as complete.
 
 ## Export and verify
 

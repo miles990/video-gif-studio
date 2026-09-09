@@ -189,6 +189,8 @@ def main():
     ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--fps', type=float, help='Required for PNG input, not a retiming override')
     ap.add_argument('--width', type=int, default=640)
+    ap.add_argument('--pixel-width', type=int, help='Optional raster grid width; overrides --width and never changes aspect ratio')
+    ap.add_argument('--pixel-scale', type=int, default=1, help='Integer nearest-neighbor enlargement after keying; requires --pixel-width')
     ap.add_argument('--key', help='Uniform background hex RGB, e.g. FF00FF; omit to preserve alpha')
     ap.add_argument('--tolerance', type=float, default=.15)
     ap.add_argument('--softness', type=float, default=.12)
@@ -199,11 +201,20 @@ def main():
         ap.error('Use an empty/new output directory; source assets are never overwritten')
     if args.width < 1 or args.tolerance < 0 or args.softness <= 0:
         ap.error('Invalid width or key settings')
+    if args.pixel_scale < 1 or (args.pixel_width is not None and args.pixel_width < 1):
+        ap.error('Pixel width and scale must be positive integers')
+    if args.pixel_scale != 1 and args.pixel_width is None:
+        ap.error('--pixel-scale requires --pixel-width')
     key = tuple(bytes.fromhex(args.key.lstrip('#'))) if args.key else None
     if key and len(key) != 3:
         ap.error('Key must have six hexadecimal digits')
     phases = json.loads(args.phases.read_text()) if args.phases else []
-    all_frames, fps = load_frames(args.source, args.fps, args.width, key, args.tolerance, args.softness)
+    all_frames, fps = load_frames(args.source, args.fps, args.pixel_width or args.width,
+                                  key, args.tolerance, args.softness)
+    raster_size = all_frames[0].size
+    if args.pixel_width and args.pixel_scale != 1:
+        all_frames = [im.resize((im.width*args.pixel_scale, im.height*args.pixel_scale),
+                                Image.Resampling.NEAREST) for im in all_frames]
     indices, durations = timing(len(all_frames), fps, phases)
     frames = [all_frames[i] for i in indices]
     args.out.mkdir(parents=True, exist_ok=True)
@@ -222,6 +233,9 @@ def main():
                 'source_indices': indices, 'durations_ms': durations, 'phases': phases,
                 'key_rgb': key, 'key_tolerance': args.tolerance, 'key_softness': args.softness,
                 'size': frames[0].size, 'transparency_index': 255,
+                'pixel_processing': {'requested_width': args.pixel_width,
+                                     'raster_size': raster_size, 'integer_scale': args.pixel_scale,
+                                     'enlargement': 'nearest' if args.pixel_width else None},
                 'script_sha256': sha(Path(__file__)), 'gif_sha256': sha(args.out/'animation.gif'), 'qc': qc}
     (args.out/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
     print(json.dumps(qc))

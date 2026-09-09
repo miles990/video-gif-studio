@@ -16,6 +16,34 @@ spec.loader.exec_module(pipeline)
 
 
 class ExportTests(unittest.TestCase):
+    def test_pixel_export_preserves_aspect_and_integer_blocks(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            source = root/'source'
+            source.mkdir()
+            a = np.full((20, 40, 4), [255, 0, 255, 255], dtype='uint8')
+            a[4:16, 8:32] = [200, 170, 130, 255]
+            Image.fromarray(a).save(source/'0.png')
+            target = root/'out'
+            subprocess.run([sys.executable, str(ROOT/'scripts/gif_pipeline.py'), str(source),
+                            '--fps', '24', '--key', 'FF00FF', '--pixel-width', '20',
+                            '--pixel-scale', '3', '--out', str(target)],
+                           check=True, capture_output=True)
+            result = np.array(Image.open(target/'frames/00000.png'))
+            self.assertEqual(result.shape, (30, 60, 4))
+            blocks = result[::3, ::3].repeat(3, axis=0).repeat(3, axis=1)
+            np.testing.assert_array_equal(result, blocks)
+            manifest = json.loads((target/'manifest.json').read_text())
+            self.assertEqual(manifest['pixel_processing']['raster_size'], [20, 10])
+            self.assertTrue(manifest['qc']['technical_pass'])
+
+    def test_impact_phase_keeps_event_and_extends_its_duration(self):
+        indices, durations = pipeline.timing(48, 24, [
+            {'start': 1, 'end': 25/24, 'speed': .5, 'ramp': 0}])
+        self.assertIn(24, indices)
+        self.assertIn(durations[indices.index(24)], (80, 90))
+        self.assertEqual(sum(durations), 2040)
+
     def test_opaque_skin_and_magenta_are_not_transparency(self):
         frames = []
         for offset in (0, 1, 2):

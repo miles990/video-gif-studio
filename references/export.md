@@ -27,3 +27,20 @@ Outputs: `animation.gif`, optional `animation.png` (APNG), numbered RGBA `frames
 Use at modest delivery resolutions first: all RGBA frames remain in memory. Long/high-resolution video should be cut to the intended asset or processed with a streaming implementation; this helper is for short animations. Keep the full-resolution source separately. PNG frame hashes are retained in the manifest, but full input paths can be private; redact portable share copies when needed.
 
 A technically passed export still needs visual checks for alpha correctness, quantization banding, source flicker, edge contamination and motion. GIF has binary transparency and at most 256 palette entries. APNG preserves full-color and soft alpha but may be large or unsupported by a target app. Preserve the original source when testing app-specific playback.
+
+## Pixel-style video export
+
+For a user-selected video route with pixel-style artwork:
+
+```sh
+python3 scripts/gif_pipeline.py ./source.mp4 --out ./pixel-run --key FF00FF \
+  --pixel-width 160 --pixel-scale 3 --phases ./timing.json --apng
+```
+
+`--pixel-width` overrides `--width`, downsamples only when the input is wider, and preserves aspect ratio. Keying happens on that raster; `--pixel-scale` then enlarges both dimensions by an integer using nearest-neighbor sampling. The manifest records the actual raster size. The example is 160 pixels wide enlarged 3×, not a mandatory size or a claim of hand-authored native pixel art. Video generation can still introduce drifting pixel clusters; inspect the final animation. Do not force nonsquare video into a square or normalize every pose's bounding box. Impact holds use the existing phase interface described in [motion.md](motion.md).
+
+## Matting and spill boundaries
+
+Preserve the user-selected foreground objects as well as the person. Person-only segmentation can remove a requested table, cup or chair, and independent masks can flicker across frames. Inspect interior gaps and fine edges over multiple backgrounds. Prefer separable generation backgrounds when available; complex scenes need temporal matting or reviewed masks.
+
+The bundled keyer does not repair spill. Do not promote a single production's fixed magenta threshold or nearest-color replacement into universal skin/hair cleanup: it may erase intended subject or effect colors. A task-specific cleanup must be explicitly limited to contaminated edges, preserve clean interiors and alpha topology, retain original RGB/masks, and be reviewed across time. Record that cleanup separately from generated effects. Do not copy private production assets into repository examples without user authorization.
