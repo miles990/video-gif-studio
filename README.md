@@ -2,7 +2,7 @@
 
 **English** | [繁體中文](README.zh-TW.md)
 
-A character animation skill with optional image references. Use **Grok to generate motion reference videos**, then **Codex with GPT-Image-2.5** to create transparent-background GIFs with a focus on consistent character appearance.
+A character animation skill with optional image references. **Codex** coordinates character creation, **Grok** motion and effect generation, background removal and transparent animation exports. Use **GPT-Image-2.5 when available**, or the image tool provided by your environment, for character creation or explicitly selected repair. Preserve continuous video frames by default.
 
 License: [MIT](LICENSE)
 
@@ -16,7 +16,7 @@ See the [AI installation instructions](references/install.md). If the repository
 
 ## Requirements
 
-- **Codex + GPT-Image-2.5**: Codex coordinates the workflow, motion timing, background removal, and GIF export. GPT-Image-2.5 is used for character image generation and appearance consistency. Your environment must provide access to this image model; availability depends on your setup.
+- **Codex**: Coordinates generation, motion timing, background removal and export. Character creation or AI repair also needs an available image-generation tool. **GPT-Image-2.5** may be used when your environment exposes it; verify the actual model and alpha output capability. Existing media conversion does not require an image model.
 - **Grok**: A signed-in account with video generation access and available quota. Video submission, polling, and downloading are built into this repository; authentication uses the official Grok CLI. See [Grok usage](references/grok.md).
 - **Local tools**: Python 3.11 or later, the packages in `requirements.txt`, and FFmpeg/ffprobe.
 
@@ -24,7 +24,7 @@ Existing videos or transparent PNG frames can be converted locally without anoth
 
 ## Usage
 
-Workflow: **Grok motion reference video → character production with Codex and GPT-Image-2.5 → continuous frames, transparent backgrounds, and GIF export**. Reuse character specifications and references to maintain appearance consistency, and inspect motion transitions.
+Workflow: **Reference or generated character → Grok continuous motion and requested effects → background removal → RGBA PNG frames, optional APNG and GIF preview**. Existing videos can enter at the background-removal step. Unless specified otherwise, use plausible anatomy, weight transfer and motivated displacement; keep the full character, weapon and effects visible through dissipation. Grok designs and generates requested effects. Requested seamless loops require visual boundary review.
 
 With a reference image:
 
@@ -38,7 +38,23 @@ With an existing video:
 
 > Use $video-gif-studio to turn this video into a transparent GIF, adjust the motion speed, and verify the output.
 
-See [SKILL.md](SKILL.md) for the full workflow and the [export reference](references/export.md) for tool options.
+Choose a transparency workflow, or leave it on **Auto**:
+
+| Mode | What it does |
+| --- | --- |
+| **Auto — default** | Preserve source frames; use alpha, color keying or suitable available temporal matting. No automatic frame-by-frame redraw. |
+| **Preserve artwork** | Prioritize original character pixels and motion; report areas that cannot be cleanly separated. |
+| **AI repair/redraw** | Explicitly request image-model repair, accepting possible appearance changes and renewed temporal checks. |
+
+These are workflow choices, not command-line flags. The bundled keyer handles uniform-color backgrounds; temporal matting requires an additional tool. Changing the file format cannot recover detail already removed during matting.
+
+For soft edges, hair, smoke and fading effects, retain **RGBA PNG / APNG** masters. **GIF only supports fully transparent or fully opaque pixels** and is a compatibility preview. Pixel art can still use partial alpha; hard pixel edges and transparent glow need different treatment.
+
+For games, request **PNG frames and a sprite sheet/atlas**, and name the engine if known. The bundled exporter already provides PNG frames and a timing/provenance manifest; **atlas packing, game-ready event/pivot/movement metadata and engine integration require additional implementation**. Character/effect separation is not guaranteed from a composited video.
+
+> Use $video-gif-studio for a Godot character attack. Preserve artwork, retain partial alpha, export PNG frames and an APNG preview, and prepare an engine-specific atlas plan. Report what is actually ready to import.
+
+See [SKILL.md](SKILL.md), [transparency and delivery choices](references/transparency.md), and the [export reference](references/export.md).
 
 ## Successful Example
 

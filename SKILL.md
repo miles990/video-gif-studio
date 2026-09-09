@@ -48,6 +48,8 @@ Preserve source files. Save prompts, ordered input roles and hashes, model/setti
 
 ## Inspect and refine
 
+For background removal or output selection, read [references/transparency.md](references/transparency.md). Default to **Auto**, preserving source motion and character pixels; keep graded alpha in RGBA masters and use APNG for soft-alpha animation, with GIF as a compatibility preview. Honor an explicit format request. Users may choose **Preserve artwork** or **AI repair/redraw**; these are workflow choices, not CLI flags. Do not automatically redraw every frame with GPT-Image-2.5 or another image model. Verify actual model access and alpha capability, and recheck temporal consistency after any requested repair. A game-use request should lead to PNG frames and an engine-appropriate asset plan, not a GIF-only delivery or an unsupported claim of a bundled atlas exporter.
+
 Watch the complete source at playback speed when a playback surface is available; separately inspect transition frames at useful resolution. Contact sheets cannot establish cadence. State when only frame inspection was available. Check joint paths, limb identity, contact, occlusion, shape continuity, subject detail, camera and prop motion. Use user feedback as evidence: do not "fix" a chair swivel or body counterbalance the user accepts as natural.
 
 When motion is slow, distinguish **moving phase** from **settling pause**. "Natural speed" is not automatically 1× generated speed. Apply smooth phase retiming when the path is sound; regenerate when the path is absent or anatomically wrong. Do not mask a bad transition with a cut, ping-pong playback or blended ghost limbs. Read [references/export.md](references/export.md) for exact CLI input and output behavior.
