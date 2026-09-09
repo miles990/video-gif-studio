@@ -54,7 +54,7 @@ For soft edges, hair, smoke and fading effects, retain **RGBA PNG / APNG** maste
 
 **Pixel art is processed on its logical pixel grid by default:** preserve color clusters and stepped contours, use integer nearest-neighbor scaling, and avoid blur or smoothing. Keep partial alpha where effects need it; pixel art does not require binary alpha everywhere. See [pixel-art handling](references/pixel-art.md).
 
-Choose any combination of **GIF**, **APNG**, **RGBA PNG frames**, **Sprite Sheet**, or a **complete asset pack**. These output options are separate from the transparency modes above. Without a selection, sharing defaults to GIF plus an RGBA/APNG master; game use defaults to PNG frames and sheets with metadata.
+Choose any combination of **GIF**, **APNG**, **RGBA PNG frames**, **Sprite Sheet**, **MOV**, **WebM**, **MP4**, or a **complete asset pack**. These output options are separate from the transparency modes above. **GIF is the default** when no format is specified. MOV (ProRes 4444) and WebM (VP9) are optional video exports with alpha verification; target-player support still needs checking. Long-video requests should use video output, optionally with a short GIF preview. **MP4 (H.264) does not retain transparency in this workflow**: transparent areas are composited over a chosen solid color (black by default). See [video export](references/video-export.md). For game use, prefer PNG frames and sheets with metadata.
 
 The bundled [sprite exporter](references/sprites.md) packs multi-page RGBA sheets with frame rectangles, durations and a fixed pivot. Page size, padding, integer scale reduction and pivot are configurable. Engine importers, gameplay events, hitboxes and root-motion tracks require separate implementation. Character/effect separation is not guaranteed from a composited video.
 
@@ -74,7 +74,7 @@ Use an existing video to create an APNG preview and PNG frames, then choose refe
 
 Select by action phase and intended edit, not fixed time intervals. Keep timestamps, frame roles and a contact sheet. APNG is the preview/master; selected references are static PNGs. Reference order does not guarantee motion order, and combined reference/pinned-frame limits must be checked for the actual model.
 
-Choose **reference pack only** or **continue generation**. Editing uses the original video through a supported edit route; generating from references and extending a video are distinct routes. A new clip from the last image is not automatically equivalent to video extension. Check pose, velocity, weight and visual consistency at each join. Repeated continuation needs a target duration, segment count or budget.
+Choose **reference pack only** or **continue generation**. Editing uses the original video through a supported edit route; generating from references and extending a video are distinct routes. A new clip from the last image is not automatically equivalent to video extension. Check pose, velocity, weight and visual consistency at each join. Repeated continuation needs a target duration, segment count or budget. **One request for a long video means multiple video-gif-studio runs:** Codex generates and reviews segments, then combines accepted segments into a long video. It is not one unlimited Grok request.
 
 > Use $video-gif-studio on this video. Prepare an APNG and choose suitable keyframes for a reference pack only; include timestamps and selection reasons.
 

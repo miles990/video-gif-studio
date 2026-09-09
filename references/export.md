@@ -48,3 +48,7 @@ python3 scripts/gif_pipeline.py ./source.mp4 --out ./pixel-run --key FF00FF \
 Preserve the user-selected foreground objects as well as the person. Person-only segmentation can remove a requested table, cup or chair, and independent masks can flicker across frames. Inspect interior gaps and fine edges over multiple backgrounds. Prefer separable generation backgrounds when available; complex scenes need temporal matting or reviewed masks.
 
 The bundled keyer does not repair spill. Do not promote a single production's fixed magenta threshold or nearest-color replacement into universal skin/hair cleanup: it may erase intended subject or effect colors. A task-specific cleanup must be explicitly limited to contaminated edges, preserve clean interiors and alpha topology, retain original RGB/masks, and be reviewed across time. Record that cleanup separately from generated effects. Do not copy private production assets into repository examples without user authorization.
+
+## Optional video containers
+
+GIF remains the default. For requested MOV/WebM output from the same RGBA frames and timing, use [video-export.md](video-export.md). The separate video exporter preserves the pipeline's 10ms timing through repeated frames, verifies decoded alpha and does not generate new motion.
