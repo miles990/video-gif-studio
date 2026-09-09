@@ -67,6 +67,10 @@ See [installation instructions](references/install.md). Then invoke `$video-gif-
 
 ## Usage
 
+Describe what you want; let the skill choose the script, motion, duration, camera, effects and export settings based on your intended use. Defaults are Grok generation and GIF output. It asks only for essential missing information or additional spending authorization.
+
+> Use $video-gif-studio to create a character animation. Decide the script, motion, duration, camera, effects and output format for me.
+
 > Use $video-gif-studio to create a transparent character GIF from this image, with natural motion and a seamless loop.
 
 > Use $video-gif-studio to create an original chibi swordswoman performing a dash attack with elaborate sword effects. Export APNG and a sprite sheet.
