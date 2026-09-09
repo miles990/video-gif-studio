@@ -30,7 +30,20 @@
 
 ## Main workflow
 
-**Reference image or original character → motion and timing plan → Grok video → background removal and frame processing → timing, loop and visual checks → GIF or other formats.**
+```mermaid
+flowchart TD
+    A["Reference image or original character"] --> B["Plan motion and timing"]
+    B --> C{"Generation route"}
+    C -->|"Default"| D["Grok video: motion and effects"]
+    C -->|"Grok unavailable or explicitly skipped"| E["Available image-generated keyframes"]
+    D --> F["Background removal when needed and frame processing"]
+    E --> F
+    V["Existing video or frames"] --> F
+    F --> G["Check timing, motion, loop joins and transparency"]
+    G --> H["GIF by default"]
+    G --> I["Optional: APNG, RGBA PNG or sprites"]
+    G --> J["Optional: alpha MOV/WebM or opaque MP4"]
+```
 
 Codex coordinates the workflow. Available image tools create characters or explicitly requested repairs; use GPT-Image-2.5 when exposed by the environment. **Grok is the default for new motion and unspecified effects.** Preserve source frames, plausible anatomy, weight transfer and complete effect framing.
 
