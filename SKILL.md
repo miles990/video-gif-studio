@@ -10,9 +10,11 @@ Deliver an inspectable animation, its source lineage and a reproducible export. 
 ## Defaults unless the user specifies otherwise
 
 - Motion follows plausible physics and visible cause and effect: support and weight transfer drive the body, the hand drives a held weapon, and cloth/particles follow with appropriate inertia. Effects never substitute for missing physical movement.
+- Let the action produce reasonable whole-body travel by default: stepping, lunging, advancing, retreating and returning to balance are allowed when motivated. Show coherent support, push-off, pelvis movement, weight acceptance and recovery. Do not prescribe stationary feet or an immobile lower body merely to simplify alignment or looping; a fixed camera/canvas does not mean a fixed character. Honor an explicitly requested in-place animation or movement limit while retaining plausible weight transfer within it.
 - Human characters retain coherent anatomy, limb proportions, joint ranges, muscle and soft-tissue tension, perspective, foreshortening and occlusion throughout the motion. These defaults also apply to pixel art and stylized humans; explicitly requested exaggeration or nonphysical behavior overrides the relevant default.
 - When effects are requested, let **Grok design and generate them in the video**. Specify the action, causal timing, readability and background-separation constraints; leave effect shapes, colors and details to Grok unless the user supplies art direction. Do not invent effects for a task that did not request them. Local work defaults to matting, sampling, timing and encoding, not drawing or layering new effects. Record any user-requested exception and actual effect provenance.
 - A seamless-loop request remains an acceptance requirement through later revisions. Repeated playback is not seamlessness. A preview with a visible boundary mismatch is unfinished, even if encoding checks pass.
+- For a loop that returns to its starting location, include a natural recovery and return path. Do not replace that path with per-frame recentering, position snapping or locked feet. Preserve intentional character travel during export.
 
 ## Requirements
 
