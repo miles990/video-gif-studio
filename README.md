@@ -2,7 +2,7 @@
 
 **English** | [繁體中文](README.zh-TW.md)
 
-A character animation skill with optional image references. **Codex** coordinates character creation, **Grok** motion and effect generation, background removal and transparent animation exports. Use **GPT-Image-2.5 when available**, or the image tool provided by your environment, for character creation or explicitly selected repair. Preserve continuous video frames by default.
+Create character GIFs with or without reference images. **Grok is used by default** for continuous motion and effects, aiming for more natural motion and stronger continuity, especially for complex actions. **Grok is not required:** if it is unavailable or you choose to skip it, Codex can use available image-generation tools for keyframes or existing media. Codex coordinates creation, timing, background removal and export. Use **GPT-Image-2.5 when available**, or the image tool exposed by your environment. Quality still depends on the source and review.
 
 License: [MIT](LICENSE)
 
@@ -17,7 +17,7 @@ See the [AI installation instructions](references/install.md). After installatio
 ## Requirements
 
 - **Codex**: Coordinates generation, motion timing, background removal and export. Character creation or AI repair also needs an available image-generation tool. **GPT-Image-2.5** may be used when your environment exposes it; verify the actual model and alpha output capability. Existing media conversion does not require an image model.
-- **Grok**: A signed-in account with video generation access and available quota. Video submission, polling, and downloading are built into this repository; OAuth authentication uses the official Grok CLI; explicitly selected API-key mode does not require it. See [Grok usage](references/grok.md).
+- **Grok (default generation route, optional dependency)**: Only the Grok video route needs a signed-in account with video generation access and available quota. Video submission, polling, and downloading are built into this repository; OAuth authentication uses the official Grok CLI; explicitly selected API-key mode does not require it. See [Grok usage](references/grok.md).
 - **Local tools**: Python 3.11 or later, the installer manages the packages in `requirements.txt` and downloads FFmpeg/ffprobe when absent on supported platforms.
 
 See [managed dependencies and local background removal](references/dependencies.md). First installation/model use requires downloads; model services and credentials remain external.
@@ -26,9 +26,9 @@ Existing videos or transparent PNG frames can be converted locally without anoth
 
 ## Usage
 
-Workflow: **Reference or generated character → Grok continuous motion and requested effects → background removal → RGBA PNG frames, optional APNG and GIF preview**. Existing videos can enter at the background-removal step. Unless specified otherwise, use plausible anatomy, weight transfer and motivated displacement; keep the full character, weapon and effects visible through dissipation. Requested seamless loops require visual boundary review.
+Workflow: **Reference or generated character → Grok video by default → background removal when needed → PNG frames, optional APNG and GIF**. If Grok is unavailable or explicitly skipped, new GIFs can still be created from generated keyframes; this is not limited to converting existing files. Existing videos can enter at the background-removal step. Unless specified otherwise, use plausible anatomy, weight transfer and motivated displacement; keep the full character, weapon and effects visible through dissipation. Requested seamless loops require visual boundary review.
 
-**Effects default to Grok.** When effects are requested and no specific design or generation source is specified, let Grok design and generate them in the motion video. Codex directs their timing, physical cause and effect, readability and complete framing, then handles background removal and export. Follow any explicit effect design or source provided by the user.
+**When Grok is available, effects default to Grok.** When effects are requested and no specific design or generation source is specified, let Grok design and generate them in the motion video. Codex directs their timing, physical cause and effect, readability and complete framing, then handles background removal and export. Follow any explicit effect design or source provided by the user.
 
 With a reference image:
 
@@ -103,6 +103,10 @@ Choose **reference pack only** or **continue generation**. Editing uses the orig
 > Continue this video for one segment using its last frame plus suitable consistency references. Preserve the character and pixel style, show a recovery followed by a new attack, then export APNG and sprites. Verify the available generation route and the join.
 
 These are **Codex-coordinated workflow options**. The repo bundles video-to-APNG/PNG export and single-image-to-video generation; automatic keyframe selection, a chain runner and multi-reference/edit/extend CLI modes are not yet bundled. See [chain workflow and capability boundaries](references/chain.md).
+
+### Fallback when Grok is unavailable
+
+Use Grok by default for new motion generation unless the user selects another route. Existing-media conversion does not need a new generation call. If it is unavailable or out of quota, Codex can reuse existing footage, generate consistent keyframes with an available image tool, or animate suitable existing layers. Simple blinks and expressions can still become GIFs; complex articulated motion may need a working video provider. The output identifies its actual source and limitations. No automatic repeated submissions or paid-provider/account switching. See [fallback workflow](references/fallback.md).
 
 ## Examples
 

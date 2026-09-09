@@ -1,4 +1,4 @@
 interface:
   display_name: "Video GIF Studio"
-  short_description: "Continuous-motion GIFs with reliable transparency and timing"
+  short_description: "GIFs with Grok by default and image-keyframe fallback"
   default_prompt: "Use $video-gif-studio to create or refine a GIF, with or without reference images, and verify its motion, timing, transparency, and palette."
