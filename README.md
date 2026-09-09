@@ -1,6 +1,6 @@
 # Video GIF Studio
 
-支援有／無參考圖的 Codex skill，從連續影片製作透明 GIF，包含動作設計、速度調整、去背與破圖檢查。
+支援有／無參考圖的 Codex skill，從連續影片製作透明 GIF，包含動作設計、速度調整、去背與輸出驗證。
 
 授權：[MIT](LICENSE)
 
@@ -32,18 +32,14 @@ AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若
 
 調整既有影片：
 
-> 使用 $video-gif-studio，把這段影片製成透明 GIF，調整動作速度並檢查破圖。
+> 使用 $video-gif-studio，把這段影片製成透明 GIF，調整動作速度並驗證輸出。
 
 完整流程見 [SKILL.md](SKILL.md)，工具參數見 [輸出說明](references/export.md)。
 
 ## 成功範例
 
-**坐姿換腿：Grok 影片 → 透明 GIF → 透明色破圖修復。** 實際成品為 9.93 秒，保留人物與椅子的連續動作。
+**坐姿換腿：Grok 影片 → 透明 GIF。** 實際成品為 9.93 秒，保留人物與椅子的連續動作。
 
 ![坐姿換腿透明 GIF](examples/seated-leg-switch/final.gif)
 
 [下載 GIF](examples/seated-leg-switch/final.gif) · [參考圖](examples/seated-leg-switch/reference.png) · [提示詞](examples/seated-leg-switch/prompt.txt) · [來源影片](examples/seated-leg-switch/source.mp4) · [製作紀錄與驗證](examples/seated-leg-switch/README.md)
-
-修正前後對照：左側為透明色誤判造成的黑點，右側為修復後。
-
-![GIF 修正前後對照](examples/seated-leg-switch/before-after.png)
