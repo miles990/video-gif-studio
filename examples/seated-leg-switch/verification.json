@@ -1,0 +1,9 @@
+{
+  "frames": 289,
+  "duration_ms": 9930,
+  "alpha_mismatch_pixels": 0,
+  "mean_visible_rgb_error": 3.5282944071855757,
+  "transparent_index": 255,
+  "palette": "255 foreground colors plus dedicated transparency",
+  "source_motion_and_timing": "unchanged 1.4x leg-switch version"
+}

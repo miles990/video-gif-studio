@@ -1,0 +1,77 @@
+{
+  "status": "verified GIF export example; source motion has documented limits",
+  "provider": "Grok OAuth REST",
+  "model": "grok-imagine-video-1.5",
+  "requested_duration_seconds": 12,
+  "requested_resolution": "720p",
+  "source_dimensions": [
+    960,
+    960
+  ],
+  "source_fps": 24,
+  "source_frames": 289,
+  "uploaded_reference_count": 1,
+  "uploaded_references": [
+    "reference.png"
+  ],
+  "reference_role": "generated character start frame; original photo was not uploaded",
+  "source_derivation": "video stream copied from Grok output; generated audio removed",
+  "final_duration_ms": 9930,
+  "final_dimensions": [
+    640,
+    640
+  ],
+  "motion_timing": "up to 1.4x during leg switches with smooth ramps; settling unchanged",
+  "chair": "original Grok chair movement preserved",
+  "verification": {
+    "frames": 289,
+    "duration_ms": 9930,
+    "alpha_mismatch_pixels": 0,
+    "mean_visible_rgb_error": 3.5282944071855757,
+    "transparent_index": 255,
+    "palette": "255 foreground colors plus dedicated transparency",
+    "source_motion_and_timing": "unchanged 1.4x leg-switch version"
+  },
+  "limitations": [
+    "loop endpoints differ",
+    "anatomy and natural speed not certified by technical QC",
+    "GIF gradients are quantized"
+  ],
+  "assets": [
+    {
+      "file": "before-after.png",
+      "sha256": "b51fb4b2ddf19f14958dae1f2fdef795840463fb40359885aa70906c3b9cab24",
+      "bytes": 375778
+    },
+    {
+      "file": "final.gif",
+      "sha256": "ad60a4a17dea967cac52780631046888872a8a5c08f9b399a251116ee23c110b",
+      "bytes": 19943604
+    },
+    {
+      "file": "prompt.txt",
+      "sha256": "d93be52ecb24a9654e0b9bada2483935cca91f656a240de3442c3df14e66cb93",
+      "bytes": 2455
+    },
+    {
+      "file": "reference.png",
+      "sha256": "f4bf5636e731b781777d7608b3abb3f428eb5c2b66bc212bb51bcd4456a07802",
+      "bytes": 201611
+    },
+    {
+      "file": "source.mp4",
+      "sha256": "d7d524be0878882a3f26e84320f13a8d3db6d1257c7d872c432fca4c4740b3db",
+      "bytes": 4243940
+    },
+    {
+      "file": "timing.json",
+      "sha256": "4cf1d630bdec83cabdce922e902d03bd8ecc2132bf50a5f2c5164d7328ad9e47",
+      "bytes": 4950
+    },
+    {
+      "file": "verification.json",
+      "sha256": "8b8c3848da0bd0da417bc754e357be8efed46abdd327777e680bbc7584416d31",
+      "bytes": 282
+    }
+  ]
+}
