@@ -59,3 +59,5 @@ Deliver the GIF inline, a download link and concise changes/limits. Retain sourc
 ## Worked production example
 
 When an actual reference-to-video-to-GIF case or transparency regression example would help, read [examples/seated-leg-switch/README.md](examples/seated-leg-switch/README.md). It contains the actual uploaded reference, full prompt, source video, final corrected GIF, timing and hashes. These are examples, not default character design, pose, speed or duration settings. Do not load its large media for unrelated tasks.
+
+For a no-user-reference example, see [examples/robot-wave-no-reference/README.md](examples/robot-wave-no-reference/README.md): an original start image, a real generation through the bundled Grok client, and a verified transparent GIF. Distinguish zero user references from the generated image used as the video's starting frame.

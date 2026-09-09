@@ -1,0 +1,61 @@
+{
+  "user_reference_count": 0,
+  "generated_start_images": 1,
+  "image_generation_tool": "built-in image_gen",
+  "image_model_version": "not exposed by tool",
+  "video_provider": "Grok OAuth REST through bundled grok_client.py",
+  "actual_model": "grok-imagine-video-1.5",
+  "gif_duration_ms": 6040,
+  "gif_frames": 145,
+  "gif_size": [
+    512,
+    512
+  ],
+  "assets": [
+    {
+      "file": "character.png",
+      "sha256": "e89b60a4db0a7f24a6f3c13498d1c74dcd16f32ae34c36aa37bed40432d21c24",
+      "bytes": 1262637
+    },
+    {
+      "file": "contact.png",
+      "sha256": "4a4de617b5ca9c2d9bdfd33b6b9dc5646ac1bf70cf402c1b025a62483de0cd40",
+      "bytes": 368216
+    },
+    {
+      "file": "export.json",
+      "sha256": "76892e90f41b018690bfa8f70a43d20ff2c8e72cf9f0742171bdd405858ef869",
+      "bytes": 3506
+    },
+    {
+      "file": "final.gif",
+      "sha256": "90ae27fa9db6673d96b02325b0c721c9a1ec4b6caafb449955b94e2e887f4586",
+      "bytes": 7000749
+    },
+    {
+      "file": "image-prompt.txt",
+      "sha256": "770c2d18aa4ec3159f46da461ef452972949942ff4f6a9771044485faa146398",
+      "bytes": 10
+    },
+    {
+      "file": "job.json",
+      "sha256": "145b5862ccb54314bab80fe5b1d809587b5c257b2b1c9b9b4a2ae347853298ba",
+      "bytes": 1912
+    },
+    {
+      "file": "motion-prompt.txt",
+      "sha256": "056f9789ba3a981c829853eee417b100458ae17ef8f8922d64c08b86821b0cea",
+      "bytes": 1362
+    },
+    {
+      "file": "production.json",
+      "sha256": "0f8b679f25308bf1abd544f3a998e4789a1abdb45d0e8d7d0bdef794ac4506d2",
+      "bytes": 789
+    },
+    {
+      "file": "source.mp4",
+      "sha256": "5e03ce32b412bfd85e1808cb41ed8aeae6fe6da425e7041644da6558dc5d277b",
+      "bytes": 1759210
+    }
+  ]
+}

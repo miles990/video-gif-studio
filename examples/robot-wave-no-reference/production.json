@@ -1,0 +1,31 @@
+{
+  "user_reference_images": 0,
+  "subject": "Original ivory-and-orange robot greeting",
+  "start_image_generation": "built-in image_gen; no input images",
+  "image_model_version": "not exposed by tool; do not assert GPT-Image-2.5",
+  "start_image_sha256": "e89b60a4db0a7f24a6f3c13498d1c74dcd16f32ae34c36aa37bed40432d21c24",
+  "motion_plan": [
+    {
+      "start": 0,
+      "end": 0.8,
+      "action": "raise right forearm"
+    },
+    {
+      "start": 0.8,
+      "end": 3,
+      "action": "wave twice, small head tilt"
+    },
+    {
+      "start": 3,
+      "end": 4.5,
+      "action": "lower arm"
+    },
+    {
+      "start": 4.5,
+      "end": 6,
+      "action": "settle"
+    }
+  ],
+  "loop": "matching pose requested; must verify source",
+  "new_source_video_generation_authorized": true
+}

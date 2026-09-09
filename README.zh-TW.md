@@ -47,3 +47,9 @@ AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若
 ![坐姿換腿透明 GIF](examples/seated-leg-switch/final.gif)
 
 [下載 GIF](examples/seated-leg-switch/final.gif) · [參考圖](examples/seated-leg-switch/reference.png) · [提示詞](examples/seated-leg-switch/prompt.txt) · [來源影片](examples/seated-leg-switch/source.mp4) · [製作紀錄與驗證](examples/seated-leg-switch/README.zh-TW.md)
+
+**無參考圖：原創機器人揮手。** 從文字設計原創角色，再用 Grok 生成動作影片，製成 6.04 秒、145 格的透明 GIF。
+
+![無參考圖的原創機器人揮手](examples/robot-wave-no-reference/final.gif)
+
+[下載 GIF](examples/robot-wave-no-reference/final.gif) · [製作流程、提示詞與驗證](examples/robot-wave-no-reference/README.zh-TW.md)

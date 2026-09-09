@@ -47,3 +47,9 @@ See [SKILL.md](SKILL.md) for the full workflow and the [export reference](refere
 ![Transparent seated leg-switch GIF](examples/seated-leg-switch/final.gif)
 
 [Download GIF](examples/seated-leg-switch/final.gif) · [Reference image](examples/seated-leg-switch/reference.png) · [Prompt](examples/seated-leg-switch/prompt.txt) · [Source video](examples/seated-leg-switch/source.mp4) · [Production record and verification](examples/seated-leg-switch/README.md)
+
+**Without a reference image: original robot wave.** Created from text, with an original generated character and a Grok motion video. The transparent GIF is 6.04 seconds with 145 frames.
+
+![Original robot wave without a reference image](examples/robot-wave-no-reference/final.gif)
+
+[Download GIF](examples/robot-wave-no-reference/final.gif) · [Production, prompts and verification](examples/robot-wave-no-reference/README.md)

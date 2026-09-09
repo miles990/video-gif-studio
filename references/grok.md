@@ -29,4 +29,4 @@ A failed download can be resumed using the same job. Download requests never for
 
 The client implements image-to-video. Without a reference, use the available image generator to create an original start image, inspect it, then animate it. Do not claim this client supports pure text-to-video or multiple uploaded references.
 
-The founding production used the equivalent OAuth REST route; its generated source is preserved in the example. The bundled implementation is tested with mocked authentication, request, status and download responses. Routine installation/tests do not create a new paid video; live generation remains a separate authorized action.
+The founding production used the equivalent OAuth REST route; its generated source is preserved in the example. The bundled implementation is tested with mocked authentication, request, status and download responses, and was used for the real [no-reference robot example](../examples/robot-wave-no-reference/README.md). Routine installation/tests do not create a new paid video; live generation remains a separate authorized action.
