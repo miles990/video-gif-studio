@@ -97,6 +97,14 @@ Provide a theme or mood and let the skill plan the story, shots, durations, came
 
 > Use $video-gif-studio to plan a 30-second anime PV about saying goodbye and starting again. Decide the creative details; output only the script and storyboard.
 
+### Find animation cues in music
+
+Provide an audio file to estimate BPM, detect beat and onset candidates, and list timestamps with suggested uses for cuts, attacks, transitions or effect bursts. **You can request music analysis only, without generating video.** Automatic cues need listening review; sync the actual action event, not just the clip boundary.
+
+> Use $video-gif-studio to analyze this music, find suitable animation cue points, and list timestamps with suggested uses. Do not generate video yet.
+
+See [music analysis and beat alignment](references/music.md).
+
 ### Simple video editing
 
 Trim, split and reorder clips, adjust speed or duration, join segments, insert stills, repeat loops for a set time, and add music with beat-aligned editing. **These edits run locally without Grok or new video generation.** Codex operates the tools; there is no graphical editor, and music sync needs playback review.
