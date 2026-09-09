@@ -6,17 +6,11 @@
 
 ## 安裝方法
 
-將 repo 安裝到 Codex 的 skills 目錄（需具備此 repo 的存取權）：
+把下面這段交給 Codex 或其他具備本機操作能力的 AI：
 
-```sh
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-git clone git@github.com:miles990/video-gif-studio.git "${CODEX_HOME:-$HOME/.codex}/skills/video-gif-studio"
-cd "${CODEX_HOME:-$HOME/.codex}/skills/video-gif-studio"
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-```
+> 請幫我安裝 https://github.com/miles990/video-gif-studio 的 Codex skill。請先讀取 references/install.md，完成 skill 註冊、Python 依賴安裝與 doctor 驗證；保留既有安裝和資料，並分別告知本機 GIF 工具與 Grok 影片生成是否就緒。
 
-安裝後，在 Codex 開啟新對話並使用 `$video-gif-studio`。執行本機工具時使用上述 `.venv/bin/python`。
+AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若為私人狀態，安裝者需具備存取權。安裝後在 Codex 下一次對話回合使用 `$video-gif-studio`。
 
 ## 需求
 

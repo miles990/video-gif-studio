@@ -9,6 +9,8 @@ Deliver an inspectable animation, its source lineage and a reproducible export. 
 
 ## Requirements
 
+For installation requests, follow [references/install.md](references/install.md). Use this skill folder's `.venv/bin/python` (Windows: `.venv/Scripts/python.exe`) for its scripts; do not assume the current shell Python has the dependencies. `scripts/doctor.py` reports local readiness without spending generation quota.
+
 The complete AI generation workflow requires **Codex + Grok**: Codex runs this skill, directs the motion, uses available image generation when needed, and processes/verifies the output; Grok supplies generated continuous video. Grok must be authenticated and have usable video-generation entitlement/quota. This version connects through the existing MV Studio OAuth adapter described in [references/grok.md](references/grok.md). Do not imply the repository provides accounts, subscriptions or credits. Existing video/RGBA conversion can run locally without a new Grok call. Alternative providers are an explicit adaptation, not a bundled dependency.
 
 ## Select the route

@@ -10,7 +10,11 @@ from pathlib import Path
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--adapter', type=Path, required=True, help='Existing motiongen.py from MV Studio')
+    import os
+    config_path = Path(__file__).resolve().parents[1]/'local-settings.json'
+    config = json.loads(config_path.read_text()) if config_path.exists() else {}
+    configured = os.environ.get('VIDEO_GIF_GROK_ADAPTER') or config.get('grok_adapter')
+    ap.add_argument('--adapter', type=Path, default=configured, help='Existing motiongen.py; overrides local setup')
     ap.add_argument('--image', type=Path)
     ap.add_argument('--prompt', type=Path)
     ap.add_argument('--out', type=Path, required=True)
@@ -22,7 +26,7 @@ def main():
     args = ap.parse_args()
     if args.submit == args.resume:
         ap.error('Choose exactly one: --submit or --resume')
-    if not args.adapter.is_file():
+    if not args.adapter or not args.adapter.is_file():
         ap.error('Adapter missing; locate a supported provider or explain the blocker')
     sys.path.insert(0, str(args.adapter.resolve().parent))
     spec = importlib.util.spec_from_file_location('video_gif_grok_adapter', args.adapter)

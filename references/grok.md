@@ -2,7 +2,7 @@
 
 The founding production used an existing MV Studio `tools/mv-studio/motiongen.py` adapter to call Grok Imagine Video 1.5 through OAuth REST. The installed `grok` CLI acted as authentication broker, not as a video prompt agent. The actual source was one generated character still; the original photo was not uploaded. Do not describe inherited visual resemblance as actual multi-reference input.
 
-Locate the user's available adapter; do not assume a particular checkout or home directory. This skill's wrapper requires its path explicitly and checks its Python function contract. It neither bundles credentials nor reads browser cookies. If unavailable, use an available first-class provider tool or explain the dependency. Do not install plugins, switch billing routes or unofficial session bridges implicitly.
+Locate the user's available adapter; do not assume a particular checkout or home directory. This skill's wrapper accepts its path explicitly, through `VIDEO_GIF_GROK_ADAPTER`, or through the installer's local configuration and checks its Python function contract. It neither bundles credentials nor reads browser cookies. If unavailable, use an available first-class provider tool or explain the dependency. Do not install plugins, switch billing routes or unofficial session bridges implicitly.
 
 ```sh
 python3 scripts/grok_video.py --adapter /path/to/motiongen.py \
