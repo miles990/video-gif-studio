@@ -36,6 +36,8 @@ flowchart TD
     B --> C{"Generation route"}
     C -->|"Default"| D["Grok video: motion and effects"]
     C -->|"Grok unavailable or explicitly skipped"| E["Available image-generated keyframes"]
+    C -->|"Selected alternative"| K["Other generative video tool"]
+    K --> F
     D --> F["Background removal when needed and frame processing"]
     E --> F
     V["Existing video or frames"] --> F
@@ -47,7 +49,7 @@ flowchart TD
 
 Codex coordinates the workflow. Available image tools create characters or explicitly requested repairs; use GPT-Image-2.5 when exposed by the environment. **Grok is the default for new motion and unspecified effects.** Preserve source frames, plausible anatomy, weight transfer and complete effect framing.
 
-**Without Grok, GIF generation still works:** use available image-generated keyframes or existing media. Complex motion may need a video provider. See [fallback options](references/fallback.md).
+**Other generative video tools can replace Grok:** use an available tool or import its generated video into the same processing workflow. Only the Grok client is bundled; other services require their own access or integration. Image-generated keyframes and existing media are also options. See [fallback options](references/fallback.md).
 
 **Why Grok:** Grok is the default to achieve natural animation with strong motion continuity. Codex then processes the frames, checks the result and exports it. Results still need review; GIF generation also works without Grok.
 
