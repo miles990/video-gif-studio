@@ -1,0 +1,45 @@
+{
+  "beats_ms": [
+    0,
+    3500,
+    5550,
+    11730,
+    17600,
+    21270,
+    24200,
+    30000
+  ],
+  "source_excerpt_in_ms": 19960,
+  "method": "Selected measured RMS-onset peaks for editorial boundaries; final 30000ms is the requested end, not a detected beat",
+  "source_peaks_ms": [
+    19960,
+    25510,
+    31690,
+    37560,
+    44160
+  ],
+  "tempo_candidates": [
+    82,
+    164
+  ],
+  "status": "algorithmic onset selection; musical listening review not certified",
+  "visual_events": [
+    {
+      "segment": 1,
+      "source_frame": 84,
+      "source_time_ms": 3500,
+      "description": "readable bank into courtyard, selected from inspected frames",
+      "target_ms": 3500,
+      "original_music_onset_ms": 23460
+    },
+    {
+      "segment": 4,
+      "source_frame": 80,
+      "source_time_ms": 3333.333,
+      "prepared_time_ms": 3330,
+      "description": "first clearly readable spreading ripple selected from frames 72-87",
+      "target_ms": 21270,
+      "original_music_onset_ms": 41230
+    }
+  ]
+}

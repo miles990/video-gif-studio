@@ -1,0 +1,22 @@
+[
+  {
+    "join": 1,
+    "previous_tail_equals_supplied_start": true,
+    "decoded_boundary_rgb_mae": 3.7733449074074072
+  },
+  {
+    "join": 2,
+    "previous_tail_equals_supplied_start": true,
+    "decoded_boundary_rgb_mae": 3.0346180555555557
+  },
+  {
+    "join": 3,
+    "previous_tail_equals_supplied_start": true,
+    "decoded_boundary_rgb_mae": 3.207544487847222
+  },
+  {
+    "join": 4,
+    "previous_tail_equals_supplied_start": true,
+    "decoded_boundary_rgb_mae": 3.1598875144675924
+  }
+]

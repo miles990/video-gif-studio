@@ -1,0 +1,12 @@
+{
+  "title": "Neon Zen",
+  "artist_metadata": "wizardx07",
+  "user_authorized_example": true,
+  "original_file_name": "Neon Zen.mp3",
+  "original_sha256": "8cabfb68d843d2202436e651a78acde7481e0f2220c145e076d9937981f56590",
+  "excerpt_in_ms": 19960,
+  "excerpt_out_ms": 49960,
+  "excerpt_sha256": "5d3ddf387d2df81785aad6ade6c76f46331a77e9050c603883ba6b1e3949d1ba",
+  "audio_sent_to_video_provider": false,
+  "usage": "local soundtrack and timing analysis; not Grok music conditioning"
+}

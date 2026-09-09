@@ -1,0 +1,16 @@
+{
+  "status": "downloaded",
+  "model": "grok-imagine-video-1.5",
+  "duration": 6,
+  "resolution": "720p",
+  "prompt": "Create a six-second continuous cinematic shot for the music PV NEON ZEN. The FIRST image is the exact starting frame; the separate reference image is only the fixed koi identity/material/palette reference. Preserve ONE silver-white metallic koi, ONE narrow vermilion forehead patch, dark eyes, articulated scales, translucent cyan flowing fins and correct fish anatomy. Same premium cinematic 3D environment, wet indigo architecture, cyan light strips and restrained warm lanterns. No words, letters, logo, watermark, humans, extra fish, sudden palette changes or full-frame flashes. Every fin remains intact and fully in frame. Fish is magically swimming in air: traveling body wave and tail propulsion lead motion, fins and thin luminous droplets lag with inertia. Grok designs restrained elegant luminous wake and environmental effects, caused by movement; no circles glued to body, explosions or unrelated particle bursts. Keep the composition polished and readable, natural continuous motion, not slow-motion frozen tableau. Camera motion must be smooth. Start exactly on the supplied first frame, no dissolve or cut. End with a readable handoff pose and low camera acceleration. No new text.\n\n\nSHOT 4 \u2014 TOUCH THE WATER. Continue the same fish and pool exactly. Camera slowly pulls back to a wide composition so the WHOLE fish plus its trail have at least 15 percent margins on every side, while following gently to the right. The koi reduces tail-beat amplitude, gracefully banks away from the stone ledge toward the open pool, and lowers by a few centimeters. At approximately second 3 one lower translucent fin tip lightly grazes the water surface. Small concentric ripples originate only from that contact point and spread outward on the horizontal water plane, reflecting the cyan lights. A few tiny droplets detach and fall downward with gravity. No magical rings floating vertically, no explosion, no full body entering water. The fish rises slightly after the brush and hovers gently over the resulting ripples by seconds 5-6. Calm elegant recovery; no sudden cut, scene replacement, or fish transformation. Maintain one silver koi with vermilion forehead. Six seconds.",
+  "transport": "bundled-oauth-rest",
+  "input_sha256": "4c2c6e0d37ecec65e540c3c1d65f51f392137aa689fb62acd966258f4c13f5ee",
+  "client_sha256": "15a37e65aaf8a5e720ca267655d260e10035ac307a2d9c45dbbacbf0166a7d06",
+  "request_id": "097a04c8-b1d4-99f3-8642-91fe395783aa",
+  "usage": {
+    "cost_in_usd_ticks": 8600000000
+  },
+  "progress": 100,
+  "output_sha256": "3dabf6000a1826638260dee0cde886b999cd77129675506e9322a8ba7cfc2a17"
+}

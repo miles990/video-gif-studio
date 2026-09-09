@@ -1,0 +1,55 @@
+{
+  "beatmap": "beatmap.json",
+  "music": {
+    "file": "soundtrack.flac",
+    "in_ms": 0,
+    "gain_db": 0,
+    "fade_in_ms": 50,
+    "fade_out_ms": 300
+  },
+  "segments": [
+    {
+      "type": "animation",
+      "manifest": "segment-01/prepared/manifest.json",
+      "in_ms": 0,
+      "out_ms": 3500,
+      "end_beat": 1
+    },
+    {
+      "type": "animation",
+      "manifest": "segment-01/prepared/manifest.json",
+      "in_ms": 3500,
+      "out_ms": 6040,
+      "end_beat": 2
+    },
+    {
+      "type": "animation",
+      "manifest": "segment-02/prepared/manifest.json",
+      "end_beat": 3
+    },
+    {
+      "type": "animation",
+      "manifest": "segment-03/prepared/manifest.json",
+      "end_beat": 4
+    },
+    {
+      "type": "animation",
+      "manifest": "segment-04/prepared/manifest.json",
+      "in_ms": 0,
+      "out_ms": 3330,
+      "end_beat": 5
+    },
+    {
+      "type": "animation",
+      "manifest": "segment-04/prepared/manifest.json",
+      "in_ms": 3330,
+      "out_ms": 6040,
+      "end_beat": 6
+    },
+    {
+      "type": "animation",
+      "manifest": "segment-05/prepared/manifest.json",
+      "end_beat": 7
+    }
+  ]
+}

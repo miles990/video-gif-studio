@@ -1,0 +1,33 @@
+{
+  "mp4": {
+    "file": "animation.mp4",
+    "codec": "H.264",
+    "transparent": false,
+    "background": "000000",
+    "size": [
+      960,
+      540
+    ],
+    "fps": 100,
+    "source_frames": 725,
+    "encoded_frames": 3000,
+    "source_duration_ms": 30000,
+    "container_duration_ms": 30000.0,
+    "alpha_max_error_255": 0,
+    "audio": {
+      "source": "./soundtrack.flac",
+      "source_sha256": "5d3ddf387d2df81785aad6ade6c76f46331a77e9050c603883ba6b1e3949d1ba",
+      "in_ms": 0,
+      "gain_db": 0,
+      "fade_in_ms": 50,
+      "fade_out_ms": 300,
+      "codec": "aac",
+      "decoded_audio_duration_ms": 30016.0,
+      "short_source": "padded with silence",
+      "video": "stream copied; soundtrack continuous across visual cuts"
+    },
+    "loop": "single cycle; player controls repeat",
+    "timing": "Exact 10ms timeline through repeated frames; no motion interpolation",
+    "limitations": "YUV conversion may change RGB; target player/engine alpha support must be tested"
+  }
+}

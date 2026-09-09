@@ -1,0 +1,24 @@
+{
+  "checks": [
+    {
+      "event": "readable bank into courtyard, selected from inspected frames",
+      "source_frame": 84,
+      "segment": 1,
+      "target_ms": 3500,
+      "actual_timeline_ms": 3500,
+      "timing_error_ms": 0,
+      "decoded_frame_rgb_mae": 2.997336033950617
+    },
+    {
+      "event": "first clearly readable spreading ripple selected from frames 72-87",
+      "source_frame": 80,
+      "segment": 4,
+      "target_ms": 21270,
+      "actual_timeline_ms": 21270,
+      "timing_error_ms": 0,
+      "decoded_frame_rgb_mae": 2.74365033436214
+    }
+  ],
+  "listening_review": "not certified",
+  "selection": "visually selected events aligned to RMS-onset candidates"
+}

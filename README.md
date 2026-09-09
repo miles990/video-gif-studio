@@ -123,3 +123,10 @@ These are **Codex-coordinated workflow options**. The repo bundles video-to-APNG
 [Download GIF](examples/chibi-running-dash/final.gif) · [Download APNG](examples/chibi-running-dash/final.apng) · [Production, prompt and verification](examples/chibi-running-dash/README.md)
 
 [Sprite pack (PNG + sheets + JSON)](examples/chibi-running-dash/sprites.zip)
+
+
+**NEON ZEN — 30-second music PV.** Five sequential Grok clips follow an original silver koi through a neon courtyard. The original-speed soundtrack, selected onset boundaries and two inspected visual-event timings exercise the local beat editor. Full-speed musical review remains pending.
+
+![NEON ZEN silent excerpt](examples/neon-zen-pv/preview.gif)
+
+[Watch/download MP4 with music](examples/neon-zen-pv/final.mp4) · [Story, source videos, prompts and timing](examples/neon-zen-pv/README.md)

@@ -123,3 +123,10 @@ AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若
 [下載 GIF](examples/chibi-running-dash/final.gif) · [下載 APNG](examples/chibi-running-dash/final.apng) · [製作流程、題詞與驗證](examples/chibi-running-dash/README.zh-TW.md)
 
 [Sprite 素材包（PNG＋圖集＋JSON）](examples/chibi-running-dash/sprites.zip)
+
+
+**NEON ZEN — 30 秒音樂 PV。** 五次 Grok 生成串接，原創銀白錦鯉穿過霓虹水庭。使用原速配樂、選定的能量突起與兩個已檢查的動作時間，實測本機卡點剪輯；完整播放與音樂美感審閱仍待確認。
+
+![NEON ZEN 無聲片段預覽](examples/neon-zen-pv/preview.gif)
+
+[觀看／下載有聲 MP4](examples/neon-zen-pv/final.mp4) · [腳本、來源影片、題詞與時間表](examples/neon-zen-pv/README.zh-TW.md)

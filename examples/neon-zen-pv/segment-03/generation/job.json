@@ -1,0 +1,16 @@
+{
+  "status": "downloaded",
+  "model": "grok-imagine-video-1.5",
+  "duration": 6,
+  "resolution": "720p",
+  "prompt": "Create a six-second continuous cinematic shot for the music PV NEON ZEN. The FIRST image is the exact starting frame; the separate reference image is only the fixed koi identity/material/palette reference. Preserve ONE silver-white metallic koi, ONE narrow vermilion forehead patch, dark eyes, articulated scales, translucent cyan flowing fins and correct fish anatomy. Same premium cinematic 3D environment, wet indigo architecture, cyan light strips and restrained warm lanterns. No words, letters, logo, watermark, humans, extra fish, sudden palette changes or full-frame flashes. Every fin remains intact and fully in frame. Fish is magically swimming in air: traveling body wave and tail propulsion lead motion, fins and thin luminous droplets lag with inertia. Grok designs restrained elegant luminous wake and environmental effects, caused by movement; no circles glued to body, explosions or unrelated particle bursts. Keep the composition polished and readable, natural continuous motion, not slow-motion frozen tableau. Camera motion must be smooth. Start exactly on the supplied first frame, no dissolve or cut. End with a readable handoff pose and low camera acceleration. No new text.\n\n\nSHOT 3 \u2014 SKIM THE LIGHT. Exact first-frame continuation of this silver koi facing right over the courtyard pool. The camera tracks laterally right, keeping the fish at medium distance with generous tail margins. During seconds 0-2 the body compresses into stronger swimming waves and accelerates to the right. During seconds 2-4 the fish performs ONE elegant bank toward the far side of the pool, with a fine bright cyan curved wake that follows behind its tail and gradually dissolves into tiny droplets. No explosive energy beam or flashes. Around second 4 it opens its fins and decelerates above the pool; seconds 4-6 let the tail wave soften and the fish lower slightly toward water. Keep all anatomy and fins consistent; this is the dynamic crest of the PV, beautiful confident real-time movement. End in readable three-quarter side profile low above the reflecting water. Six seconds, single continuous shot.",
+  "transport": "bundled-oauth-rest",
+  "input_sha256": "73bddef676ab1383824a5dec5367a3517aabafb0ac9ff017387d83a92f0e6c19",
+  "client_sha256": "15a37e65aaf8a5e720ca267655d260e10035ac307a2d9c45dbbacbf0166a7d06",
+  "request_id": "aa7b0039-f888-973d-866e-a69022c36eb5",
+  "usage": {
+    "cost_in_usd_ticks": 8600000000
+  },
+  "progress": 100,
+  "output_sha256": "27d70adee14e73c4b09fac0b7a28f331545c4d0aa2bf55dd0c2edb0321742bb5"
+}

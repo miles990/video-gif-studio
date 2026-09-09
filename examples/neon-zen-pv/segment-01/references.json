@@ -1,0 +1,15 @@
+{
+  "mode": "last-frame plus fixed consistency reference",
+  "first_frame": {
+    "path": "start.png",
+    "sha256": "7ee541e722f8078209cb67f68fcb45610620e5a53a953470d6b2eb5f075c749b",
+    "role": "generated opening image"
+  },
+  "consistency": {
+    "path": "../identity.png",
+    "sha256": "7ee541e722f8078209cb67f68fcb45610620e5a53a953470d6b2eb5f075c749b",
+    "role": "fixed fish design and visual palette, not forced starting scene"
+  },
+  "adapter_sha256": "a1d21fd943397c6f87fc70a32383d37d038827986eea53515a5d3451b0fff57d",
+  "provider_route": "/videos/generations with image+reference_images; not video extension"
+}
