@@ -62,6 +62,26 @@ The bundled [sprite exporter](references/sprites.md) packs multi-page RGBA sheet
 
 See [SKILL.md](SKILL.md), [transparency and delivery choices](references/transparency.md), and the [export reference](references/export.md).
 
+### Reference and continuation options
+
+Use an existing video to create an APNG preview and PNG frames, then choose references for the next step:
+
+| Reference mode | Best fit |
+| --- | --- |
+| **Suitable keyframes — up to 7** | Distinct, readable action states for a new interpretation or sequence; no need to fill all seven slots. |
+| **Last frame + consistency references** | Recommended for continuation: use the endpoint as the new first frame and stable character/style images to guide consistency, when supported. |
+| **Last frame only** | Simple short continuation, with less context for identity and motion. |
+
+Select by action phase and intended edit, not fixed time intervals. Keep timestamps, frame roles and a contact sheet. APNG is the preview/master; selected references are static PNGs. Reference order does not guarantee motion order, and combined reference/pinned-frame limits must be checked for the actual model.
+
+Choose **reference pack only** or **continue generation**. Editing uses the original video through a supported edit route; generating from references and extending a video are distinct routes. A new clip from the last image is not automatically equivalent to video extension. Check pose, velocity, weight and visual consistency at each join. Repeated continuation needs a target duration, segment count or budget.
+
+> Use $video-gif-studio on this video. Prepare an APNG and choose suitable keyframes for a reference pack only; include timestamps and selection reasons.
+
+> Continue this video for one segment using its last frame plus suitable consistency references. Preserve the character and pixel style, show a recovery followed by a new attack, then export APNG and sprites. Verify the available generation route and the join.
+
+These are **Codex-coordinated workflow options**. The repo bundles video-to-APNG/PNG export and single-image-to-video generation; automatic keyframe selection, a chain runner and multi-reference/edit/extend CLI modes are not yet bundled. See [chain workflow and capability boundaries](references/chain.md).
+
 ## Examples
 
 **Seated leg switch: Grok video → transparent GIF.** This delivered 9.93-second animation preserves continuous character and chair movement. This existing example uses frames extracted directly from the Grok video; it was not redrawn frame by frame with GPT-Image-2.5.
