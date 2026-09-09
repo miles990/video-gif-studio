@@ -78,6 +78,10 @@ For a no-user-reference example, see [examples/robot-wave-no-reference/README.md
 
 For a pixel-style running attack with Grok-generated effects and identical pinned endpoints, see [examples/chibi-running-dash/README.md](examples/chibi-running-dash/README.md). It includes GIF/APNG, source, prompt, timing and verification; playback-speed seamlessness remains unverified.
 
+## Pixel-art defaults
+
+When pixel art is requested, default to pixel-native processing: work on the established logical pixel grid, preserve intentional color clusters, stepped contours and limited palette, and use integer nearest-neighbor presentation scaling. Do not blur, smooth, add antialiasing, use optical-flow inbetweens or regenerate every frame to conceal a bad key. Fractional alpha remains valid for intentionally soft or fading effects; pixel art does not imply globally binary alpha. Pixel-style AI video may lack a consistent native grid: report that limitation instead of claiming nearest-neighbor export creates hand-authored pixel art. Read [references/pixel-art.md](references/pixel-art.md) for edge repair and validation. Honor explicitly requested mixed styles or filtering.
+
 ## Optional delivery formats
 
 Users may select any combination of **GIF**, **APNG**, **RGBA PNG frames**, **Sprite Sheet**, or **complete asset pack** (frames, sheets, metadata and previews). Treat these as output choices, independent of Auto / Preserve artwork / AI repair. Honor explicit selections; do not require a format questionnaire for every task. With no selection, use GIF plus an RGBA/APNG master for sharing and PNG frames plus sheets/metadata for game use. Ask about a target engine only when an engine-specific importer/material is required; generic sprites can be prepared immediately.

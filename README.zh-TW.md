@@ -52,6 +52,8 @@ AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若
 
 柔邊、髮絲、煙霧與消散特效應保留 **RGBA PNG／APNG** 主檔。**GIF 只能全透明或全不透明**，適合作為相容預覽。像素風也可以保留半透明；硬邊輪廓與透明光效應分別處理。
 
+**未特別指定時，像素風依原生像素格處理：**保留色塊與階梯輪廓，使用整數倍最近鄰縮放，不以模糊或平滑掩蓋邊緣。特效有需要時仍保留半透明，不將所有 Alpha 二值化。詳見[像素風處理方式](references/pixel-art.md)。
+
 可任選或組合 **GIF、APNG、RGBA PNG 逐格圖、Sprite Sheet、完整素材包**。輸出選項與上方的去背模式分開選擇。未指定時，分享用途預設提供 GIF 與 RGBA／APNG 主檔；遊戲用途優先提供 PNG 畫格、圖集與資料。
 
 內建 [sprite 輸出工具](references/sprites.md)可製作多頁 RGBA 圖集，記錄格位、每格時長與固定錨點，並可設定圖集大小、間距、整數縮小倍率與錨點。引擎匯入器、遊戲事件、碰撞框與 root motion 軌跡仍需另外實作。已合成影片不保證能可靠拆出角色與特效。
@@ -74,7 +76,7 @@ AI 安裝流程見 [references/install.md](references/install.md)。此 repo 若
 
 [下載 GIF](examples/robot-wave-no-reference/final.gif) · [製作流程、提示詞與驗證](examples/robot-wave-no-reference/README.zh-TW.md)
 
-**Q 版角色小跑步前衝攻擊。** 小跑步接突刺、方向性劍光拖尾與收招回位，3.23 秒、112 格，提供 GIF 與保留半透明的 APNG。已檢查首尾畫格，正常速度下的循環目視驗收仍待完成。
+**Q 版角色小跑步前衝攻擊。** 小跑步接突刺、方向性劍光拖尾與收招回位，3.23 秒、112 格，提供 GIF 與保留半透明的 APNG。已檢查首尾畫格，正常速度下的循環目視驗收仍待完成。已依原生像素格清理紫邊，保留 Alpha。
 
 ![Q 版角色小跑步前衝攻擊](examples/chibi-running-dash/final.gif)
 

@@ -15,23 +15,25 @@
     "softness": 0.18,
     "pixel_width": 256,
     "pixel_scale": 3,
-    "edge_rgb": "Approximate magenta unmix on fractional-alpha edges only; alpha retained.",
+    "edge_rgb": "Original fractional-edge key unmix followed by native-grid one-pixel dark-magenta boundary suppression; alpha and interior unchanged; see cleanup.json",
     "timing": "timing.json",
     "palette": "Shared GIF palette; separate reserved transparency index"
   },
   "files": {
     "motion-prompt.txt": "f5850d284e8686dbb06ad221527ae790d2c2c3f6bc54b02aacb308e40054da97",
-    "final.apng": "32eb1b395da937763184cad370bb2e07069d2b38ca2523dcfb5aa1aadda82489",
+    "final.apng": "67a9ee2ab8932ec0b653f411bc84554af227672252fa227fa980a6b8724bdfff",
     "source.mp4": "2141609f0634bf7568dbd7bd53d714b4d3d3828495620082e3d2ac79b2bf4e00",
     "timing.json": "5cbba9d3bedb097d9c2abba399ee8bf1115a4d2edcf7ca811b1466365a56b99f",
-    "sprites.zip": "bb806184fda33c34aab1a4070b00131c80015d2359dc21d24dfcb9118a6ddc11",
+    "sprites.zip": "d3b4ff9a793f07e54ef0cf8cf50eb18510b20dc258cbd7d854860aa23acb4003",
     "reference.png": "d295b192fd71235ac5ebd437b151be4de83a9a2c22b840d96d6a58f6fa8934bf",
-    "contact.jpg": "494ed8e6a80723f7e00dcb90ea0fa13233923421cca0be2b44b29e4a1ede0237",
-    "README.md": "8799e24e133f094f44fc837b8cd0e7c0eec7db05038b3c73887b8797ac350a38",
-    "final.gif": "9f8c30100b1ff5346bb3b4c38f562d0323153025bfce5481346a525efa41bcfb",
-    "README.zh-TW.md": "2fde8e24946be0c6688344d0bda248b0c455c56b649c3cf3e612f88b68353e44",
-    "verification.json": "4367f9e50e13290fca010871fabeb7323e00c8d12c65bc5bb5ba965fb0f94c89",
-    "sprite-sheet.png": "00bcf20f9eb306a9fc578f4cd396baffbbd66b4d2285896a07a400c07a695f36"
+    "contact.jpg": "3b0429ef23a06aa6ab1c5ba3479be593b33730c99c2e9fce212add75ac2f4c8c",
+    "README.md": "84ad7c40cf4459528ea2479572643e5092938c041e41a44be656f321594231fd",
+    "cleanup.json": "b9fe380ff0bc279946212c410e0b363ddd500be9a5cf5ae2e3647e0c75c6a9b6",
+    "final.gif": "ef52534aa867baf2d14ff04f12eb0c9fc61dfefe8b757e2f419ebf3ca88038a0",
+    "edge-comparison.png": "dc56ec0d4856c64631f5b9395ee577c35de6d29ad8f1761801bdad56d48a3bab",
+    "README.zh-TW.md": "bcee185154175ddfb7582ea7a4360f665b33305630a241db1efca91153ff331e",
+    "verification.json": "eae9985fc7e4f25dddfe5b39f5e9a55b6569acec4651ab03740a4ad2d942a720",
+    "sprite-sheet.png": "19e3e8ffcb6c97e5463d135e667793d0778ce97975c1aa131f3dce183aadf8da"
   },
   "sprite_export": {
     "frame_size": [

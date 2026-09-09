@@ -52,6 +52,8 @@ These are workflow choices, not command-line flags. The bundled keyer handles un
 
 For soft edges, hair, smoke and fading effects, retain **RGBA PNG / APNG** masters. **GIF only supports fully transparent or fully opaque pixels** and is a compatibility preview. Pixel art can still use partial alpha; hard pixel edges and transparent glow need different treatment.
 
+**Pixel art is processed on its logical pixel grid by default:** preserve color clusters and stepped contours, use integer nearest-neighbor scaling, and avoid blur or smoothing. Keep partial alpha where effects need it; pixel art does not require binary alpha everywhere. See [pixel-art handling](references/pixel-art.md).
+
 Choose any combination of **GIF**, **APNG**, **RGBA PNG frames**, **Sprite Sheet**, or a **complete asset pack**. These output options are separate from the transparency modes above. Without a selection, sharing defaults to GIF plus an RGBA/APNG master; game use defaults to PNG frames and sheets with metadata.
 
 The bundled [sprite exporter](references/sprites.md) packs multi-page RGBA sheets with frame rectangles, durations and a fixed pivot. Page size, padding, integer scale reduction and pivot are configurable. Engine importers, gameplay events, hitboxes and root-motion tracks require separate implementation. Character/effect separation is not guaranteed from a composited video.
@@ -74,7 +76,7 @@ See [SKILL.md](SKILL.md), [transparency and delivery choices](references/transpa
 
 [Download GIF](examples/robot-wave-no-reference/final.gif) · [Production, prompts and verification](examples/robot-wave-no-reference/README.md)
 
-**Chibi running dash attack.** Small running steps, directional sword trails and recovery to guard; 3.23 seconds, 112 frames. GIF and soft-alpha APNG are included. Endpoint frames were inspected; full-speed loop review remains pending.
+**Chibi running dash attack.** Small running steps, directional sword trails and recovery to guard; 3.23 seconds, 112 frames. GIF and soft-alpha APNG are included. Endpoint frames were inspected; full-speed loop review remains pending. Native-grid edge cleanup reduces purple fringes while preserving alpha.
 
 ![Chibi running dash attack](examples/chibi-running-dash/final.gif)
 

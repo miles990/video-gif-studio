@@ -12,6 +12,9 @@ Codex directed the action using [this padded reference](reference.png) and the [
 
 The [source video](source.mp4) was keyed on magenta with tolerance 0.2 and softness 0.18, sampled onto a 256-pixel-wide raster and enlarged 3× with nearest-neighbor scaling. Fractional-alpha edge colors were approximately unmixed from magenta while preserving alpha. [Phase timing](timing.json) shortened pauses and adjusted action speed. GIF uses a global palette and reserved transparency index; [APNG](final.apng) retains fractional alpha. No local effects, pose warping, reversed playback or crossfade was added.
 
+
+The current files also include native-grid edge cleanup: dark magenta contamination was suppressed only in a one-pixel silhouette band. Alpha and interior RGB remain unchanged. Bright pink/purple source effects were preserved, not treated as removable background. [Before/after edge comparison](edge-comparison.png) (left: before; right: after) · [Cleanup parameters](cleanup.json). This reduces visible purple outlines without blur; it does not certify perfect matting.
+
 ## Verification and limits
 
 All 112 decoded GIF masks match the source threshold with **zero alpha mismatches**. APNG decoded RGBA matches the exported frames exactly and retains 357,327 fractional-alpha pixel samples across the animation. No opaque foreground pixels touch the canvas edges. These checks establish export integrity, not perfect matting or motion.

@@ -14,6 +14,8 @@ These are direction modes, not `gif_pipeline.py` switches. Existing authorizatio
 
 Do not require or claim GPT-Image-2.5 when the active tool does not expose that model. Verify the actual image model/version and whether returned pixels contain real alpha; never infer transparency from a checkerboard appearance. Preserve provenance and report an unexposed version as unknown. No model name guarantees animation consistency or correct transparency.
 
+For pixel-art requests, apply [pixel-native handling and repair](pixel-art.md) by default.
+
 ## Matte quality
 
 Prefer genuine source alpha when available. For opaque generated video, choose a constant backdrop distinguishable from both the character and the intended effects. Avoid blanket thresholds that remove matching costume or particle colors. Complex scenes need temporal segmentation/matting, not a uniform color key applied as if it were segmentation.

@@ -1,0 +1,17 @@
+# Pixel-art handling and edge repair
+
+Default to pixel-native decisions when the user requests pixel art. Establish the logical raster from source assets and known integer enlargement; do not guess a new grid for each frame. Preserve palette relationships, connected color clusters and purposeful stepped contours. Use integer nearest-neighbor enlargement. Do not apply general photographic smoothing, blur, arbitrary resizing, antialiasing, global erosion or optical-flow interpolation by default. Downsampling pixel-style video is an approximation, not proof of a genuinely consistent native pixel grid.
+
+A true pixel-art reference already on a consistent grid should not be pixelated again. For a photo, illustration or merely pixel-styled AI image, establish the requested logical resolution and pixel-art design before motion generation where possible, then check generated frames against that grid. Simple reduction/enlargement can establish a display grid but does not redesign shading, repair clusters or guarantee temporal consistency. Do not equate a pixelation filter with finished pixel art.
+
+Separate artwork style from alpha behavior. Character and weapon silhouettes should remain crisp where designed that way; smoke, luminous trails and fading particles may retain fractional alpha. Do not flatten every alpha value because the asset is pixel art. Inspect the native raster and integer-enlarged view on light, dark and target backgrounds.
+
+For contaminated edges, compare source video, RGBA master and decoded GIF at the same source time. RGB spill can already exist in the source and in opaque outline pixels; fixing only fractional-alpha pixels may miss it. A passed GIF mask check only proves encoding did not introduce extra transparent holes. It does not prove clean matting.
+
+Prefer narrow, source-specific correction before image-model redraw: identify reviewed contaminated edge pixels, preserve alpha and clean interiors, protect intended foreground colors and effects, and retain the original master. Use the same calibrated rule across frames, then inspect changing poses and effect phases for flicker or unstable outlines. Never promote one case's magenta threshold or desaturation into a universal palette operation. Bright purple effects may be intended; source/key color overlap can be ambiguous. Use masks or explicit user art direction before changing those areas. No local redesign of effects unless requested.
+
+The running-dash example uses one-native-pixel boundary RGB correction for dark magenta contamination. Its numeric thresholds are specific to that source. Alpha, frame placement and timing are unchanged. This reduces purple fringes; it does not reconstruct perfect original colors or resolve all key-colored VFX.
+
+Verify unchanged alpha, pixels outside the repair mask, frame dimensions, pivot, source order and durations; compare changed edge regions across adjacent frames. Re-export all derivatives from the repaired RGBA master, including sprite sheets and APNG. Verify decoded sheet crops and GIF masks separately. Real-time loop review and target-engine validation remain distinct acceptance steps.
+
+Use image-model repair only for explicitly selected reconstruction that existing pixels cannot support. Recheck identity, pixel clusters, anatomy and temporal continuity afterward. Do not claim automatic redraw can guarantee clean alpha or stable animation.
