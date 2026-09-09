@@ -12,7 +12,7 @@ Give this request to Codex or another AI assistant with access to your local env
 
 > Install the Codex skill from https://github.com/miles990/video-gif-studio. Read references/install.md first, register the skill, install its Python dependencies, and run the doctor check. Preserve any existing installation and data. Report local GIF tool readiness and Grok video generation readiness separately.
 
-See the [AI installation instructions](references/install.md). If the repository is private, you need access to it. After installation, use `$video-gif-studio` on your next Codex turn.
+See the [AI installation instructions](references/install.md). After installation, use `$video-gif-studio` on your next Codex turn.
 
 ## Requirements
 
