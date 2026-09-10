@@ -1,6 +1,6 @@
 # Video GIF Studio
 
-[![CI](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml) · [Releases](https://github.com/miles990/video-gif-studio/releases) — 尚未發布正式版本
+[![CI](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml) · [![Release](https://img.shields.io/github/v/release/miles990/video-gif-studio)](https://github.com/miles990/video-gif-studio/releases/latest)
 
 [English](README.md) | **繁體中文**
 
