@@ -1,5 +1,7 @@
 # Video GIF Studio
 
+[![CI](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml) · [Releases](https://github.com/miles990/video-gif-studio/releases) — 尚未發布正式版本
+
 [English](README.md) | **繁體中文**
 
 ## 範例
