@@ -69,6 +69,14 @@ Classify edges by component: smooth fabric curves, crisp rigid shoe edges, scall
 
 Record per-clip chroma, alpha/material, contour/geometry and temporal review separately. Encoding tests cannot certify these visual properties. Any unresolved structural or temporal defect keeps the clip in review, even when a single-frame repair looks clean.
 
+## Preserve plausible motion blur
+
+Fast hands, feet, cloth, props and camera movement can produce legitimate blurred contours. Infer whether blur belongs to the motion from the source sequence: direction and extent should follow the visible trajectory and speed, evolve coherently across neighboring frames, and respect occlusion and perspective. Do not demand a crisp frozen silhouette in every frame, classify all soft pixels as debris, or add blur merely to conceal a discontinuity. Honor deliberately stylized blur or sharp motion when requested.
+
+Distinguish exposure-related blur from key spill, disconnected matte fragments, compression ringing, stale-frame trails and interpolation ghosts. Compare the same time through source, RGBA and decoded output. A broad continuous finger sweep in the source that becomes scattered tips after keying needs source-guided alpha recovery, not stronger erosion or isolated-component deletion. Normal-speed playback and enlarged adjacent frames answer different questions; inspect both when available.
+
+Preserve fractional coverage through the blurred boundary and plausible foreground RGB beneath it. Remove green contamination without turning the sweep into opaque skin, erasing its outer extent, changing protected interior lighting or imposing an abrupt mask boundary. Use a region that follows the moving component; a fixed hand ROI from one frame is not a general mask. Recheck entry/exit of the repair region, overlap with clothing/face and loop/transition boundaries for new flicker. Binary GIF alpha cannot fully retain soft motion coverage: keep an RGBA master and verify the actual delivery format rather than claiming identical softness.
+
 ## Reject unintended flicker and position jumps
 
 Unless explicitly requested as a style or deliberate action, flashes, disappearing frames, abrupt position/scale jumps and crawling alpha are defects. Check inside each clip, its repeated boundary, and reachable inter-clip transitions. Endpoint overlap alone does not certify continuous velocity, support/contact or plausible motion.
