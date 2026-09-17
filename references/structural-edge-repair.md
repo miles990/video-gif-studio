@@ -68,3 +68,11 @@ Assign alpha from coverage and material, not a universal opacity threshold. Opaq
 Classify edges by component: smooth fabric curves, crisp rigid shoe edges, scalloped lace and fine hair need different contours. Clean does not mean blurred, uniformly rounded, fully opaque or binary alpha. Preserve sharp corners, intentional texture and legitimate negative spaces while removing unmotivated jaggies/debris. Check silhouettes against perspective, foreshortening, cloth attachment, limb anatomy, overlap order and contact with supporting surfaces. Compare adjacent frames: repairs must follow actual motion, not crawl, pulse in opacity, detach or change shape at occlusions. Do not reshape a subject merely to improve a numeric smoothness score.
 
 Record per-clip chroma, alpha/material, contour/geometry and temporal review separately. Encoding tests cannot certify these visual properties. Any unresolved structural or temporal defect keeps the clip in review, even when a single-frame repair looks clean.
+
+## Reject unintended flicker and position jumps
+
+Unless explicitly requested as a style or deliberate action, flashes, disappearing frames, abrupt position/scale jumps and crawling alpha are defects. Check inside each clip, its repeated boundary, and reachable inter-clip transitions. Endpoint overlap alone does not certify continuous velocity, support/contact or plausible motion.
+
+Trace source → repaired frames → layout metadata → decoded delivery → actual player. Share the same pivot, support reference, scale registration and fractional coordinates across exports and runtime; independent rounded placement can create a seam even with identical images. Correct proven reference mismatches with stable clip-level registration, never per-frame silhouette recentering or rescaling that erases intended movement. Re-export when metadata changes, and include layout dependencies in cache fingerprints.
+
+For a buffered player, retain the previous rendered image until the incoming decoder has presented a frame. Arm presentation observation before starting playback; a fulfilled play/load promise or elapsed fixed timeout is not proof of visible pixels. A timeout should preserve the prior image and report/retry the failure, not expose an empty buffer. Review target-player changes separately from source-motion repairs.
