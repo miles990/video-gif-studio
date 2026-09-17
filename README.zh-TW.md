@@ -44,7 +44,7 @@ flowchart TD
     B --> C{"生成路徑"}
     C -->|"預設"| D["Grok 影片：動作與特效"]
     C -->|"Grok 不可用或明確選擇不使用"| E["可用圖片工具生成關鍵幀"]
-    C -->|"選用其他方式"| K["其他生成式影片工具"]
+    C -->|"選用其他方式"| K["fal.ai／MiniMax H3 Max 或其他影片工具"]
     K --> F
     D --> F["視需要去背與處理畫格"]
     E --> F
@@ -57,7 +57,7 @@ flowchart TD
 
 由 Codex 協調整體流程；可用圖片工具負責建立角色或明確要求的修復，環境提供 GPT-Image-2.5 時可使用。**新動作預設使用 Grok，未指定的特效也交由 Grok 生成。** 保留來源畫格、合理人體結構與重心轉移，特效完整入鏡。
 
-**也可使用其他生成式影片工具替代 Grok：**使用可用工具生成，或匯入其產出的影片，接續相同的處理流程。Repo 僅內建 Grok 連線，其他服務需另有使用權限或整合方式；也可使用圖片關鍵幀與既有素材。詳見[替代流程](references/fallback.md)。
+**也可使用其他生成式影片工具替代 Grok：**使用可用工具生成，或匯入其產出的影片，接續相同的處理流程。**Repo 內建 Grok 與 fal.ai／MiniMax H3 Max 連線。** H3 Max 適合快速試作，支援首尾幀與多素材參考；其他服務需另有使用權限或整合方式。[fal 設定](references/fal.md)；也可使用圖片關鍵幀與既有素材。詳見[替代流程](references/fallback.md)。
 
 **為什麼使用 Grok：**預設使用 Grok，是為了得到自然、連續性好的動畫效果，再由 Codex 處理畫格、檢查與輸出。實際效果仍須驗收；沒有 Grok 也可以生成 GIF。
 
@@ -75,6 +75,7 @@ AI 會檢查並自行下載安裝缺少的 Python、必要套件、FFmpeg／ffpr
 
 - **Codex**；建立角色圖或關鍵幀時，另需可用圖片生成工具。
 - **Grok** — 預設使用，但非必要依賴。登入 [Grok Imagine 網站](https://grok.com/imagine) 即可使用網站影片生成功能，再匯入下載的影片，不必設定 API key 或 CLI；依帳號權限與額度使用。Repo 的自動連線工具則另用 CLI OAuth 或 API key 登入。[連線設定](references/grok.md)。
+- **fal.ai／MiniMax H3 Max** — 可選的內建替代來源，需設定 `FAL_KEY` 並有可用額度；不依賴 Grok 登入或其他專案。[連線與限制](references/fal.md)。
 - **Python 3.11+** — 安裝器管理 Python 套件，並在支援平台下載缺少的 FFmpeg／ffprobe。[依賴說明](references/dependencies.md)。
 
 ## 使用方法
@@ -89,6 +90,7 @@ AI 會檢查並自行下載安裝缺少的 Python、必要套件、FFmpeg／ffpr
 
 | 選項 | 可選內容 |
 | --- | --- |
+| 影片來源 | Grok（預設）、內建 fal.ai／MiniMax H3 Max，或其他可用服務 |
 | 輸入 | 參考圖、原創角色、既有影片或畫格 |
 | 背景處理 | 自動（預設）、保留原畫、明確選擇 AI 修復 |
 | 輸出 | **GIF（預設）**、APNG、PNG 畫格、Sprite Sheet、MOV、WebM、MP4 |
@@ -96,6 +98,12 @@ AI 會檢查並自行下載安裝缺少的 Python、必要套件、FFmpeg／ffpr
 | 接續 | 合適關鍵幀、尾幀＋一致性參考圖、只有尾幀；依模型支援選用 |
 
 **GIF 只能全透明或全不透明。** 柔邊與消散特效使用 RGBA PNG／APNG，或支援 Alpha 的 MOV／WebM；**MP4 不保留透明度**。遊戲素材優先使用 PNG 畫格與圖集；像素風保留原生像素格，採最近鄰縮放。
+
+### 可重用的 Agent 角色
+
+動作生成一次後，以透明 Sprite 重複使用，規劃進入、循環和退出狀態。共同姿勢、固定基準點與接縫驗收有助自然銜接；狀態機不會自動修復動作。[動作庫說明](references/animation-states.md)。
+
+> 使用 $video-gif-studio，透過 fal.ai MiniMax H3 Max 製作透明背景的全身 Agent 角色，包含可重用的待機與致意動畫。
 
 ### 腳本與分鏡規劃
 
@@ -123,7 +131,7 @@ AI 會檢查並自行下載安裝缺少的 Python、必要套件、FFmpeg／ffpr
 
 **理論上可透過反覆生成與串接，持續延長影片，沒有固定的總時長上限。** 使用尾幀與合適的一致性參考圖生成下一段，檢查接點後接上，再重複此流程；這是多次生成，不是單次請求產出無限長影片。
 
-每次任務仍須設定目標時長、段數或預算；實際受額度、成本、運算／儲存資源與累積的畫面一致性偏差限制。流程由 Codex 協調，自動 chain 執行器與多參考圖／影片編輯／延伸 CLI 模式尚未內建。詳見[接續流程](references/chain.md)。
+每次任務仍須設定目標時長、段數或預算；實際受額度、成本、運算／儲存資源與累積的畫面一致性偏差限制。流程由 Codex 協調，自動 chain 執行器與影片編輯／延伸 CLI 模式尚未內建；fal 命令已支援多素材參考生成。詳見[接續流程](references/chain.md)。
 
 詳細說明：[Skill](SKILL.md) · [透明處理](references/transparency.md) · [像素風](references/pixel-art.md) · [Sprite](references/sprites.md) · [影片輸出](references/video-export.md) · [時間軸](references/timeline.md) · [音樂](references/music.md) · [接續生成](references/chain.md)
 

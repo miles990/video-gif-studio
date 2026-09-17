@@ -17,3 +17,5 @@
 The founding defect was reproduced in a decoded local GIF, so it was not merely a chat application's dark background. The RGBA remained intact. A foreground palette with a dedicated transparent index removed all additional alpha holes across 289 frames. Do not infer that every future black mark has this cause.
 
 Denoising may destroy fingers, eyes and fabric detail. An added 1–2 pixel outline can protect an intended exterior style, but neither addresses a transparency-index collision inside a character. Isolate the stage before choosing a repair.
+
+For edge fragments that persist after generic keying or smoothing, follow [structure-aware edge repair](structural-edge-repair.md). Compare against the original component silhouette: source green shadows can survive keying and be recolored as false gray cloth during despill. Preserve lighting and legitimate trim; a clean export mask is not semantic validation.

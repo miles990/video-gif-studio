@@ -44,7 +44,7 @@ flowchart TD
     B --> C{"Generation route"}
     C -->|"Default"| D["Grok video: motion and effects"]
     C -->|"Grok unavailable or explicitly skipped"| E["Available image-generated keyframes"]
-    C -->|"Selected alternative"| K["Other generative video tool"]
+    C -->|"Selected alternative"| K["fal.ai / MiniMax H3 Max or another video tool"]
     K --> F
     D --> F["Background removal when needed and frame processing"]
     E --> F
@@ -57,7 +57,7 @@ flowchart TD
 
 Codex coordinates the workflow. Available image tools create characters or explicitly requested repairs; use GPT-Image-2.5 when exposed by the environment. **Grok is the default for new motion and unspecified effects.** Preserve source frames, plausible anatomy, weight transfer and complete effect framing.
 
-**Other generative video tools can replace Grok:** use an available tool or import its generated video into the same processing workflow. Only the Grok client is bundled; other services require their own access or integration. Image-generated keyframes and existing media are also options. See [fallback options](references/fallback.md).
+**Other generative video tools can replace Grok:** use an available tool or import its generated video into the same processing workflow. **Grok and fal.ai MiniMax H3 Max are built in.** Select H3 Max for fast iteration, first/last-frame control or multimodal references; other services require their own access or integration. [fal setup](references/fal.md). Image-generated keyframes and existing media are also options. See [fallback options](references/fallback.md).
 
 **Why Grok:** Grok is the default to achieve natural animation with strong motion continuity. Codex then processes the frames, checks the result and exports it. Results still need review; GIF generation also works without Grok.
 
@@ -75,6 +75,7 @@ See [installation instructions](references/install.md). Then invoke `$video-gif-
 
 - **Codex**, plus an available image-generation tool when creating character images or keyframes.
 - **Grok** — default but optional. Sign in to [Grok Imagine](https://grok.com/imagine) to generate video on the website, then import the downloaded video; no API key or CLI is needed for website use. Account access and limits apply. The bundled automatic client uses separate CLI OAuth or API-key authentication. [Connection setup](references/grok.md).
+- **fal.ai / MiniMax H3 Max** — optional built-in alternative; requires `FAL_KEY` and available account credit. No Grok login or external project required. [Connection and limits](references/fal.md).
 - **Python 3.11+** — the installer manages Python packages and missing FFmpeg/ffprobe on supported platforms. [Dependencies](references/dependencies.md).
 
 ## Usage
@@ -89,6 +90,7 @@ Describe what you want; let the skill choose the script, motion, duration, camer
 
 | Option | Choices |
 | --- | --- |
+| Video source | Grok (default), built-in fal.ai / MiniMax H3 Max, or another available provider |
 | Input | Reference image, original character, existing video or frames |
 | Background | Auto (default), preserve artwork, explicitly requested AI repair |
 | Output | **GIF (default)**, APNG, PNG frames, sprite sheets, MOV, WebM, MP4 |
@@ -96,6 +98,12 @@ Describe what you want; let the skill choose the script, motion, duration, camer
 | Continuation | Selected keyframes, last frame + consistency references, or last frame only; subject to provider support |
 
 **GIF has binary transparency.** Use RGBA PNG/APNG for soft edges and fading effects, or alpha-capable MOV/WebM. **MP4 is opaque.** Game assets favor PNG frames and sprite sheets; pixel art preserves its logical grid and nearest-neighbor scaling.
+
+### Reusable agent characters
+
+Generate actions once, then reuse transparent sprites through entry, loop and exit states. Shared poses, pivots and reviewed transitions help natural continuity; state machines do not automatically repair motion. [Action-library guidance](references/animation-states.md).
+
+> Use $video-gif-studio with fal.ai MiniMax H3 Max to create a transparent full-body agent character, with reusable idle and greeting animations.
 
 ### Script and storyboard planning
 
@@ -123,7 +131,7 @@ See [timeline editing](references/timeline.md) and [music and beat alignment](re
 
 **In principle, repeated generation and stitching can keep extending a video without a fixed total-duration ceiling.** Use the last frame and suitable consistency references to generate the next segment, review the join, then append and repeat. This uses multiple generation requests, not one unlimited-length request.
 
-Each task needs a target duration, segment count or budget. Actual length is constrained by quota, cost, compute/storage and accumulated continuity drift. Codex coordinates the process; automatic chain execution and multi-reference/edit/extend CLI modes are not bundled. See [continuation workflow](references/chain.md).
+Each task needs a target duration, segment count or budget. Actual length is constrained by quota, cost, compute/storage and accumulated continuity drift. Codex coordinates the process; automatic chain execution and edit/extend CLI modes are not bundled. The fal client supports multi-reference generation. See [continuation workflow](references/chain.md).
 
 Details: [Skill](SKILL.md) · [Transparency](references/transparency.md) · [Pixel art](references/pixel-art.md) · [Sprites](references/sprites.md) · [Video export](references/video-export.md) · [Timeline](references/timeline.md) · [Music](references/music.md) · [Continuation](references/chain.md)
 
