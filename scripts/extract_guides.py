@@ -113,7 +113,7 @@ def _layer(plate, masks, centers, stage, prefix, epsilon, keep_alpha=False):
 UV_SCALE, UV_OFFSET = 8, 32768  # stored texture coordinates: 1/8 px over [-4096, 4096)
 FLOW_DEADZONE = 0.5  # px; generated video jitters ~0.1-0.5 px where nothing moves, which would make still texture drift
 FLOW_SMOOTH = 4.0    # px; Gaussian over foreground flow before advection
-REANCHOR_LOW, REANCHOR_HIGH = 0.05, 0.15  # local deformation below which a reset copies the other layer
+REANCHOR_LOW, REANCHOR_HIGH = 0.015, 0.03  # a reset copies the other layer below this deformation; kept under UV_SLACK so copies settle
 UV_CLOCK = 0.9       # phase advances by (texture deformation - UV_SLACK)/UV_CLOCK per frame; 0 keeps one layer
 UV_SLACK = 0.03      # deformation treated as rigid; below it a point's layer weights never change
 
@@ -157,18 +157,26 @@ def uv_distortion(uv, region):
     return float(np.median(distortion_map(uv, region))) if region.any() else 0.0
 
 
+def _interior_field(values, fg, sigma):
+    """Carry values from the eroded interior to the whole foreground by normalized convolution.
+
+    At the silhouette, texture coordinates meet the background's fresh grid and look torn; only interior gradients
+    say anything about how the texture itself deformed.
+    """
+    interior = cv2.erode(fg.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(np.float32)
+    weight = cv2.GaussianBlur(interior, (0, 0), sigma)
+    field = cv2.GaussianBlur((values*interior).astype(np.float32), (0, 0), sigma)/np.maximum(weight, 1e-6)
+    return np.where(fg & (weight > 1e-4), field, 0), interior.any()
+
+
 def _reanchor(other, grid, fg, low=REANCHOR_LOW, high=REANCHOR_HIGH, feather=6.0):
     # Copy the other layer where it is still nearly rigid, so both layers agree there and never cross-fade;
     # fall back to fresh coordinates only where texture has actually deformed, feathered to avoid seams.
-    keep = np.clip((high - distortion_map(other))/(high - low), 0, 1).astype(np.float32)
-    # Judge deformation only from interior gradients: at the silhouette, uv meets the background's fresh grid and
-    # looks torn. Normalized convolution then carries interior values to the edge and feathers deformed regions.
-    interior = cv2.erode(fg.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(np.float32)
-    if not interior.any():
+    keep = np.clip((high - distortion_map(other))/(high - low), 0, 1)
+    keep, any_interior = _interior_field(keep, fg, feather)
+    if not any_interior:
         return grid.copy()
-    weight = cv2.GaussianBlur(interior, (0, 0), feather)
-    keep = cv2.GaussianBlur(keep*interior, (0, 0), feather)/np.maximum(weight, 1e-6)
-    keep = np.where(fg & (weight > 1e-4), np.clip(keep, 0, 1), 0)[..., None]
+    keep = np.clip(keep, 0, 1)[..., None]
     return keep*other + (1 - keep)*grid
 
 
@@ -223,8 +231,7 @@ def _flow_guides(plate, fg, stage, cycle=UV_CLOCK, smooth=FLOW_SMOOTH):
             if cycle:
                 carried = np.where(still, phase, cv2.remap(phase, ax, ay, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE))
                 weights = layer_weights(carried)
-                deformed = sum(wk*distortion_map(uv) for wk, uv in zip(weights, layers))
-                deformed = cv2.GaussianBlur(np.where(fg[i], deformed, 0).astype(np.float32), (0, 0), 2)
+                deformed, _ = _interior_field(sum(wk*distortion_map(uv) for wk, uv in zip(weights, layers)), fg[i], 2)
                 advanced = carried + np.where(fg[i], np.clip(deformed - UV_SLACK, 0, 1), 0)/cycle
                 # Re-anchor each layer only at points whose phase just wrapped, where that layer's weight is ~0.
                 for k in range(2):
