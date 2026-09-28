@@ -14,10 +14,12 @@ import tempfile
 import cv2
 import numpy as np
 from PIL import Image
+from extract_guides import load_flow
 from render_stylized import render
 
 INTENT = {'boil': False, 'silhouette_min': 0.95, 'silhouette_tolerance_px': 2, 'interior_change_max': 0.01,
-          'static_radius_px': 4, 'static_majority': 0.9, 'change_level': 4, 'offcanvas_ok': False}
+          'static_radius_px': 4, 'static_majority': 0.9, 'change_level': 4, 'offcanvas_ok': False,
+          'texture_slides': False, 'motion_change_max': 0.05, 'motion_change_level': 16, 'motion_min_px': 0.5}
 
 
 def _frames(directory):
@@ -39,6 +41,41 @@ def _agreement(drawn, target, tol):
     precision = (drawn & near_target).sum()/drawn.sum() if drawn.any() else 1.0
     recall = (target & near_drawn).sum()/target.sum() if target.any() else 1.0
     return float(min(precision, recall))
+
+
+def _motion(guides, manifest, figure, baseline, intent):
+    # Warp the previous rendered frame along measured plate motion; texture glued to the body should land in place.
+    h, w = figure[0].shape[:2]
+    gy, gx = np.mgrid[:h, :w].astype(np.float32)
+    fractions, base_fractions, moving_pixels, bad = [None], [None], [None], []
+    for i in range(1, len(figure)):
+        f = load_flow(guides, manifest, i)
+        bw = f['backward']
+        target = np.any([m > 0 for m in _guide(guides, manifest, i, 'mask')], axis=0)
+        moving = f['valid'] & target & (np.linalg.norm(bw, axis=2) >= intent['motion_min_px'])
+        moving = cv2.erode(moving.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(bool)
+
+        def error(seq):
+            warped = cv2.remap(seq[i-1], gx + bw[..., 0], gy + bw[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            # Tolerate 1 px of misregistration: sharp strokes resampled at subpixel offsets are not sliding texture.
+            k = np.ones((3, 3), np.uint8)
+            lo, hi = cv2.erode(warped, k).astype(int), cv2.dilate(warped, k).astype(int)
+            cur = seq[i].astype(int)
+            level = intent['motion_change_level']
+            diff = ((cur < lo - level) | (cur > hi + level)).any(2)
+            return float((diff & moving).sum()/moving.sum()) if moving.any() else 0.0
+
+        fraction, base = error(figure), error(baseline)
+        fractions.append(round(fraction, 5))
+        base_fractions.append(round(base, 5))
+        moving_pixels.append(int(moving.sum()))
+        if not intent['texture_slides'] and fraction - base > intent['motion_change_max']:
+            bad.append(i)
+    measured = any(moving_pixels[1:])
+    return {'pass': (not bad) if measured else None, 'flagged_frames': bad, 'warp_error_fraction': fractions,
+            'reference_warp_error_fraction': base_fractions, 'moving_pixels': moving_pixels,
+            'unmeasured_frames': [i for i, n in enumerate(moving_pixels) if n == 0],
+            'skipped': 'texture_slides declared' if intent['texture_slides'] else None}
 
 
 def qc(guides, style, render_dir, agent_notes=None, out=None):
@@ -81,6 +118,7 @@ def qc(guides, style, render_dir, agent_notes=None, out=None):
     r = intent['static_radius_px']
     fractions, base_fractions, still_pixels, bad = [None], [None], [None], []
     previous = _guide(guides, manifest, 0, 'labels')
+    flow_on = manifest.get('flow', {}).get('enabled')
 
     def changed(seq, i, still):
         diff = np.abs(seq[i].astype(int) - seq[i-1].astype(int)).max(2) > intent['change_level']
@@ -92,6 +130,9 @@ def qc(guides, style, render_dir, agent_notes=None, out=None):
         # Locally still: this label is unchanged and most labels within the radius are too; plate noise flips a few.
         near = cv2.blur(same.astype(np.float32), (2*r+1, 2*r+1)) >= intent['static_majority']
         still = same & near
+        if flow_on:
+            # A uniform region can translate with unchanged labels; with measured flow, still means not moving.
+            still &= np.linalg.norm(load_flow(guides, manifest, i)['backward'], axis=2) < manifest['flow'].get('deadzone_px', intent['motion_min_px'])
         fraction, base = changed(figure, i, still), changed(baseline, i, still)
         fractions.append(round(fraction, 5))
         base_fractions.append(round(base, 5))
@@ -106,6 +147,12 @@ def qc(guides, style, render_dir, agent_notes=None, out=None):
                                  'changed_fraction': fractions, 'reference_changed_fraction': base_fractions,
                                  'still_pixels': still_pixels, 'unmeasured_frames': unmeasured,
                                  'skipped': 'boil declared' if intent['boil'] else None}
+
+    not_run = []
+    if manifest.get('flow', {}).get('enabled'):
+        checks['motion_coherence'] = _motion(guides, manifest, figure, baseline, intent)
+    else:
+        not_run.append('motion_coherence')
 
     bad = []
     for i, f in enumerate(figure):
@@ -123,6 +170,7 @@ def qc(guides, style, render_dir, agent_notes=None, out=None):
               # None means a check could not measure anything; that is not a pass.
               'auto_checks_passed': all(c['pass'] is True for c in checks.values()),
               'inconclusive': [k for k, c in checks.items() if c['pass'] is None],
+              'not_run': not_run,
               'render_manifest_sha256': hashlib.sha256((render_dir/'manifest.json').read_bytes()).hexdigest(),
               'agent_review': {'by': 'agent', 'notes': agent_notes} if agent_notes else None,
               'review': 'automatic checks only; agent notes and human playback sign-off are separate and still required'}

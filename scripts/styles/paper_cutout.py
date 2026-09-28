@@ -1,11 +1,12 @@
 """Paper cut-out style plugin: paper grain on the reference fill plus a soft drop shadow.
 
 Params: grain (0-1, brightness modulation), grain_scale (px blur of the grain), shadow_offset [x, y],
-shadow_alpha (0-1), anchor ("canvas" or "centroid").
+shadow_alpha (0-1), anchor ("canvas", "centroid" or "uv").
 
 anchor "canvas" keeps grain fixed on the page, so still body parts never change; moving parts slide under it.
 anchor "centroid" moves grain with the figure's centroid, which makes still parts swim whenever a limb moves;
 qc_redraw.py flags that unless the style declares it as intended.
+anchor "uv" samples grain at the advected texture coordinates from extract_guides.py --flow, so it moves with each part.
 """
 import cv2
 import numpy as np
@@ -23,8 +24,10 @@ def _grain(ctx, p, h, w, pad):
 
 def render(ctx):
     p = {**DEFAULTS, **ctx['params']}
-    if p['anchor'] not in ('canvas', 'centroid'):
-        raise ValueError("paper_cutout anchor must be 'canvas' or 'centroid'")
+    if p['anchor'] not in ('canvas', 'centroid', 'uv'):
+        raise ValueError("paper_cutout anchor must be 'canvas', 'centroid' or 'uv'")
+    if p['anchor'] == 'uv' and ctx['uv'] is None:
+        raise ValueError("paper_cutout anchor 'uv' needs guides extracted with --flow")
     base = ctx['base'].astype(np.float32)
     h, w = base.shape[:2]
     pad = 64
@@ -34,7 +37,11 @@ def render(ctx):
         ys, xs = np.nonzero(base[..., 3] >= 128)
         if len(xs):
             dx, dy = int(round(xs.mean())) % pad, int(round(ys.mean())) % pad
-    grain = grain[pad - dy:pad - dy + h, pad - dx:pad - dx + w]
+    if p['anchor'] == 'uv':
+        uv = ctx['uv'].astype(np.float32) + pad
+        grain = cv2.remap(grain, uv[..., 0], uv[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+    else:
+        grain = grain[pad - dy:pad - dy + h, pad - dx:pad - dx + w]
     rgb = np.clip(base[..., :3]*(1 + p['grain']*grain[..., None]), 0, 255)
     alpha = base[..., 3:]/255
     # Drop shadow: the figure's own coverage, offset and darkened, composited beneath it.

@@ -110,8 +110,85 @@ def _layer(plate, masks, centers, stage, prefix, epsilon, keep_alpha=False):
     return records
 
 
+UV_SCALE, UV_OFFSET = 8, 32768  # stored texture coordinates: 1/8 px over [-4096, 4096)
+FLOW_DEADZONE = 0.3  # px; generated video jitters ~0.1-0.3 px where nothing moves, which would make still texture drift
+
+
+def _gray(a):
+    # Composite over mid-gray so flow sees the subject against a neutral, static backdrop.
+    alpha = a[..., 3:].astype(np.float32)/255
+    rgb = a[..., :3].astype(np.float32)*alpha + 128*(1-alpha)
+    return cv2.cvtColor(rgb.astype(np.uint8), cv2.COLOR_RGB2GRAY)
+
+
+def _nearest_extend(uv, known, region):
+    # Continue texture coordinates linearly from the nearest trusted pixel into newly revealed surface.
+    if not known.any():
+        return uv
+    _, labels = cv2.distanceTransformWithLabels((~known).astype(np.uint8), cv2.DIST_L2, 5, labelType=cv2.DIST_LABEL_PIXEL)
+    coords = np.argwhere(known)  # row-major, matching DIST_LABEL_PIXEL scan order
+    ys, xs = np.nonzero(region & ~known)
+    ny, nx = coords[labels[ys, xs] - 1].T
+    uv[ys, xs] = uv[ny, nx] + np.stack([xs - nx, ys - ny], 1)
+    return uv
+
+
+def _flow_guides(plate, fg, stage):
+    h, w = fg[0].shape
+    gy, gx = np.mgrid[:h, :w].astype(np.float32)
+    grid = np.dstack([gx, gy])
+    dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
+    gray = [_gray(a) for a in plate]
+    uv = grid.copy()
+    (stage/'flow').mkdir()
+    records, valid_fraction, stretch = [], [], []
+    for i in range(len(plate)):
+        record = {'uv': (np.clip(np.rint(uv*UV_SCALE) + UV_OFFSET, 0, 65535)).astype(np.uint16)}
+        if i:
+            bw = dis.calc(gray[i], gray[i-1], None)   # pixel x at t came from x + bw at t-1
+            fw = dis.calc(gray[i-1], gray[i], None)
+            mx, my = gx + bw[..., 0], gy + bw[..., 1]
+            back = cv2.remap(fw, mx, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            err = np.linalg.norm(bw + back, axis=2)
+            inside = (mx >= 0) & (mx <= w-1) & (my >= 0) & (my <= h-1)
+            prev_fg = cv2.remap(fg[i-1].astype(np.uint8), mx, my, cv2.INTER_NEAREST, borderValue=0).astype(bool)
+            valid = inside & prev_fg & fg[i] & (err < .5 + .05*np.linalg.norm(bw, axis=2))
+            # Still foreground keeps its coordinates even where flow is untrustworthy (flat, low-texture areas).
+            still = (np.linalg.norm(bw, axis=2) < FLOW_DEADZONE) & fg[i] & fg[i-1]
+            carried = cv2.remap(uv, mx, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            uv = np.where(still[..., None], uv, np.where(valid[..., None], carried, grid))
+            uv = _nearest_extend(uv, valid | still, fg[i])
+            record = {'uv': (np.clip(np.rint(uv*UV_SCALE) + UV_OFFSET, 0, 65535)).astype(np.uint16),
+                      'backward': bw.astype(np.float16), 'valid': np.packbits(valid)}
+            valid_fraction.append(round(float(valid.sum()/max(1, fg[i].sum())), 4))
+            # Texture stretch: how much the advected coordinates deform locally (1 = rigid).
+            du = np.linalg.norm(np.gradient(uv[..., 0]), axis=0)[fg[i]]
+            stretch.append(round(float(np.percentile(du, 95)), 3) if len(du) else None)
+        else:
+            valid_fraction.append(None)
+            stretch.append(None)
+        np.savez_compressed(stage/'flow'/f'{i:05d}.npz', **record)
+        records.append(f'flow/{i:05d}.npz')
+    return {'enabled': True, 'deadzone_px': FLOW_DEADZONE, 'method': 'OpenCV DIS (medium), backward t->t-1 with forward-backward consistency',
+            'uv': f'texture coordinates advected along valid backward flow (moves under {FLOW_DEADZONE} px are held still); '
+                  f'revealed surface extended from nearest valid pixel; '
+                  f'stored as uint16 = uv*{UV_SCALE}+{UV_OFFSET}',
+            'files': records, 'valid_fraction': valid_fraction, 'uv_stretch_p95': stretch}
+
+
+def load_flow(guides, manifest, i):
+    """Flow guides for frame i: backward flow (None on frame 0), trusted-flow mask and advected texture coordinates."""
+    data = np.load(Path(guides)/manifest['flow']['files'][i])
+    uv = (data['uv'].astype(np.float32) - UV_OFFSET)/UV_SCALE
+    h, w = uv.shape[:2]
+    if 'backward' not in data:
+        return {'backward': None, 'valid': np.zeros((h, w), bool), 'uv': uv}
+    valid = np.unpackbits(data['valid'])[:h*w].reshape(h, w).astype(bool)
+    return {'backward': data['backward'].astype(np.float32), 'valid': valid, 'uv': uv}
+
+
 def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, max_samples=200000,
-            effect_masks=None, effect_colors=3, effect_alpha='binary', effect_alpha_floor=None):
+            effect_masks=None, effect_colors=3, effect_alpha='binary', effect_alpha_floor=None, flow=False):
     frames, manifest, out = Path(frames), Path(manifest), Path(out)
     if out.exists():
         raise FileExistsError('Use a new output directory')
@@ -147,6 +224,8 @@ def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, m
     with tempfile.TemporaryDirectory(dir=out.parent) as tmp:
         stage = Path(tmp)/'guides'
         records = _layer(plate, masks, centers, stage, '', epsilon)
+        # Flow follows everything visible, character and effects alike.
+        flow_record = _flow_guides(plate, fg, stage) if flow else {'enabled': False}
         effects = None
         if fx:
             effects = {'palette': fx_centers.astype(int).tolist(),
@@ -160,7 +239,7 @@ def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, m
         h, w = plate[0].shape[:2]
         record = {'kind': 'stylized-redraw-guides', 'version': VERSION, 'canvas': [w, h],
                   'durations_ms': source['durations_ms'], 'alpha_threshold': alpha_threshold, 'epsilon': epsilon,
-                  'palette': centers.astype(int).tolist(), 'frames': records, 'effects': effects,
+                  'palette': centers.astype(int).tolist(), 'frames': records, 'effects': effects, 'flow': flow_record,
                   'source': {'manifest_sha256': hashlib.sha256(manifest.read_bytes()).hexdigest(),
                              'frame_sha256': [hashlib.sha256(f.read_bytes()).hexdigest() for f in files]},
                   'extractor': {'name': 'extract_guides.py', 'version': VERSION, 'opencv': cv2.__version__,
@@ -185,7 +264,8 @@ if __name__ == '__main__':
     parser.add_argument('--effect-alpha', choices=['binary', 'plate'], default='binary',
                         help='plate: keep measured soft alpha for the effect layer')
     parser.add_argument('--effect-alpha-floor', type=int, help='Lowest effect alpha kept (default: --alpha-threshold)')
+    parser.add_argument('--flow', action='store_true', help='Store optical flow and motion-attached texture coordinates')
     args = parser.parse_args()
     print(json.dumps(extract(args.frames, args.manifest, args.out, args.colors, args.alpha_threshold, args.epsilon,
                              effect_masks=args.effect_masks, effect_colors=args.effect_colors,
-                             effect_alpha=args.effect_alpha, effect_alpha_floor=args.effect_alpha_floor)))
+                             effect_alpha=args.effect_alpha, effect_alpha_floor=args.effect_alpha_floor, flow=args.flow)))

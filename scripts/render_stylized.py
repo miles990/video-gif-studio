@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Reference stylized-redraw renderer: flat fill plus tapered contour, with an optional effect layer, from extract_guides.py output."""
 import argparse
+import contextlib
 import hashlib
 import importlib.util
 import json
@@ -9,6 +10,7 @@ import tempfile
 import cv2
 import numpy as np
 from PIL import Image
+from extract_guides import load_flow
 
 VERSION = 1
 STYLES = Path(__file__).resolve().parent/'styles'
@@ -152,11 +154,17 @@ def _over(top, bottom, opacity=1.0):
     return np.dstack([np.floor(rgb+.5), np.floor(a*255+.5)]).astype(np.uint8)
 
 
-def load_plugin(spec):
-    # A bare name selects a bundled style in scripts/styles; otherwise a path to an authored .py file.
-    path = Path(spec) if ('/' in str(spec) or str(spec).endswith('.py')) else STYLES/f'{spec}.py'
+def load_plugin(spec, seed=0):
+    # A bare name selects a bundled style in scripts/styles (.py or .js); otherwise a path to an authored file.
+    if '/' in str(spec) or str(spec).endswith(('.py', '.js')):
+        path = Path(spec)
+    else:
+        path = next((STYLES/f'{spec}{ext}' for ext in ('.py', '.js') if (STYLES/f'{spec}{ext}').is_file()), STYLES/f'{spec}.py')
     if not path.is_file():
         raise ValueError(f'Style plugin not found: {spec}')
+    if path.suffix == '.js':
+        from js_style_host import JSStyle
+        return JSStyle(path, seed), None
     module_spec = importlib.util.spec_from_file_location(f'style_plugin_{path.stem}', path)
     module = importlib.util.module_from_spec(module_spec)
     module_spec.loader.exec_module(module)
@@ -202,7 +210,11 @@ def render_frame(i, guides, style, colors, fx, plugin=None):
         ctx = {'index': i, 'count': len(guides['frames']), 'canvas': (w, h), 'durations_ms': guides['durations_ms'],
                'base': out, 'params': style['plugin_params'], 'noise': noise_source(style['seed']),
                'character': _layer_context(guides['frames'][i], root, colors),
-               'effects': _layer_context(guides['effects']['frames'][i], root, fx[1]) if fx else None}
+               'effects': _layer_context(guides['effects']['frames'][i], root, fx[1]) if fx else None,
+               'uv': None, 'flow': None, 'flow_valid': None}
+        if guides.get('flow', {}).get('enabled'):
+            f = load_flow(root, guides, i)
+            ctx.update({'uv': f['uv'], 'flow': f['backward'], 'flow_valid': f['valid']})
         out = plugin(ctx)
         if not isinstance(out, np.ndarray) or out.shape != (h, w, 4) or out.dtype != np.uint8:
             raise ValueError(f'Style plugin must return a uint8 array of shape {(h, w, 4)}')
@@ -220,10 +232,14 @@ def render(guides, style, out):
     if manifest.get('kind') != 'stylized-redraw-guides':
         raise ValueError('Not an extract_guides.py manifest')
     style, colors, fx = _style(style, manifest)
-    plugin, plugin_record = load_plugin(style['plugin']) if style['plugin'] else (None, None)
+    plugin, plugin_record = load_plugin(style['plugin'], style['seed']) if style['plugin'] else (None, None)
     manifest['_root'] = guides
     out.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(dir=out.parent) as tmp:
+    with contextlib.ExitStack() as stack, tempfile.TemporaryDirectory(dir=out.parent) as tmp:
+        if plugin is not None and plugin_record is None:
+            # JS plugins run in one browser session for the whole render.
+            stack.enter_context(plugin)
+            plugin_record = plugin.record()
         stage = Path(tmp)/'render'
         (stage/'frames').mkdir(parents=True)
         for i in range(len(manifest['frames'])):
