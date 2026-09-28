@@ -51,6 +51,14 @@ class Layers(unittest.TestCase):
    self.assertEqual(len(load_flow(t/'g2',g2,3)['uv_layers']),2);self.assertLess(max(g2['flow']['uv_distortion']),.02)
    render(t/'g2',{},t/'r');c=qc(t/'g2',{},t/'r')['checks']['texture_distortion'];self.assertTrue(c['pass'],c)
    self.assertFalse(qc(t/'g2',{'intent':{'uv_distortion_max':-1}},t/'r')['checks']['texture_distortion']['pass'])
+ def test_rigid_motion_survives_reanchoring_so_layers_never_crossfade(self):
+  with tempfile.TemporaryDirectory() as t:
+   t=Path(t);d,m=textured_plate(t,shift=2,frames=9);extract(d,m,t/'g',colors=3,flow=True,uv_period=4)
+   g=json.loads((t/'g/manifest.json').read_text());f=load_flow(t/'g',g,8)
+   (a,_),(b,_)=f['uv_layers'];core=np.zeros(a.shape[:2],bool);core[22:42,34:52]=True
+   self.assertLess(np.abs(a[core]-b[core]).max(),.3)                     # both layers agree on the rigid block
+   uv0=load_flow(t/'g',g,0)['uv'];np.testing.assert_allclose(a[32,40],uv0[32,24],atol=1)  # still glued after 2 resets
+
 
 GRAIN='''
 import cv2

@@ -20,7 +20,7 @@ from render_stylized import render
 INTENT = {'boil': False, 'silhouette_min': 0.95, 'silhouette_tolerance_px': 2, 'interior_change_max': 0.01,
           'static_radius_px': 4, 'static_majority': 0.9, 'change_level': 4, 'offcanvas_ok': False,
           'texture_slides': False, 'motion_change_max': 0.05, 'motion_change_level': 16, 'motion_min_px': 1.5,
-          'motion_span': 4, 'motion_min_pixels': 500, 'uv_distortion_max': 0.15}
+          'motion_span': 4, 'motion_min_pixels': 500, 'uv_distortion_max': 0.5}
 
 
 def _frames(directory):

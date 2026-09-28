@@ -113,6 +113,7 @@ def _layer(plate, masks, centers, stage, prefix, epsilon, keep_alpha=False):
 UV_SCALE, UV_OFFSET = 8, 32768  # stored texture coordinates: 1/8 px over [-4096, 4096)
 FLOW_DEADZONE = 0.5  # px; generated video jitters ~0.1-0.5 px where nothing moves, which would make still texture drift
 FLOW_SMOOTH = 4.0    # px; Gaussian over foreground flow before advection
+REANCHOR_LOW, REANCHOR_HIGH = 0.05, 0.15  # local deformation below which a reset copies the other layer
 UV_PERIOD = 24       # frames between re-anchoring each of the two texture layers; 0 keeps one never-reset layer
 
 
@@ -135,15 +136,35 @@ def _nearest_extend(uv, known, region):
     return uv
 
 
-def uv_distortion(uv, region):
-    """Median local deformation of texture coordinates: sum of |log singular values| of the uv Jacobian (0 = rigid)."""
-    if not region.any():
-        return 0.0
+def distortion_map(uv, region=None):
+    """Per-pixel deformation of texture coordinates: sum of |log singular values| of the uv Jacobian (0 = rigid)."""
     ux, uy = np.gradient(uv[..., 0], axis=1), np.gradient(uv[..., 0], axis=0)
     vx, vy = np.gradient(uv[..., 1], axis=1), np.gradient(uv[..., 1], axis=0)
-    jac = np.stack([np.stack([ux, uy], -1), np.stack([vx, vy], -1)], -2)[region]
+    jac = np.stack([np.stack([ux, uy], -1), np.stack([vx, vy], -1)], -2)
+    if region is not None:
+        jac = jac[region]
     sv = np.clip(np.linalg.svd(jac, compute_uv=False), 1e-3, None)
-    return float(np.median(np.abs(np.log(sv)).sum(1)))
+    return np.abs(np.log(sv)).sum(-1)
+
+
+def uv_distortion(uv, region):
+    """Median local deformation of texture coordinates over a region (0 = rigid)."""
+    return float(np.median(distortion_map(uv, region))) if region.any() else 0.0
+
+
+def _reanchor(other, grid, fg, low=REANCHOR_LOW, high=REANCHOR_HIGH, feather=6.0):
+    # Copy the other layer where it is still nearly rigid, so both layers agree there and never cross-fade;
+    # fall back to fresh coordinates only where texture has actually deformed, feathered to avoid seams.
+    keep = np.clip((high - distortion_map(other))/(high - low), 0, 1).astype(np.float32)
+    # Judge deformation only from interior gradients: at the silhouette, uv meets the background's fresh grid and
+    # looks torn. Normalized convolution then carries interior values to the edge and feathers deformed regions.
+    interior = cv2.erode(fg.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(np.float32)
+    if not interior.any():
+        return grid.copy()
+    weight = cv2.GaussianBlur(interior, (0, 0), feather)
+    keep = cv2.GaussianBlur(keep*interior, (0, 0), feather)/np.maximum(weight, 1e-6)
+    keep = np.where(fg & (weight > 1e-4), np.clip(keep, 0, 1), 0)[..., None]
+    return keep*other + (1 - keep)*grid
 
 
 def layer_weights(i, period):
@@ -194,7 +215,7 @@ def _flow_guides(plate, fg, stage, period=UV_PERIOD, smooth=FLOW_SMOOTH):
             # Re-anchor a layer at the moment its weight reaches zero, bounding how far texture can deform.
             for k, wk in enumerate(layer_weights(i, period)):
                 if period and wk == 0:
-                    layers[k] = grid.copy()
+                    layers[k] = _reanchor(layers[1 - k], grid, fg[i])
             record.update({'backward': bw.astype(np.float16), 'valid': np.packbits(valid)})
             valid_fraction.append(round(float(valid.sum()/max(1, fg[i].sum())), 4))
             interior = cv2.erode(fg[i].astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool) & valid
@@ -213,6 +234,8 @@ def _flow_guides(plate, fg, stage, period=UV_PERIOD, smooth=FLOW_SMOOTH):
             'uv': f'texture coordinates advected along smoothed trusted flow (moves under {FLOW_DEADZONE} px held still); '
                   f'revealed surface extended from the nearest trusted pixel; '
                   + (f'two layers re-anchored every {period} frames, staggered by half a period and cross-weighted; '
+                     f'a reset copies the other layer where its local deformation is under {REANCHOR_LOW}-{REANCHOR_HIGH} '
+                     f'(feathered) and restarts only deformed texture; '
                      if period else 'one layer, never re-anchored; ')
                   + f'stored as uint16 = uv*{UV_SCALE}+{UV_OFFSET}',
             'files': records, 'uv_weights': weights, 'valid_fraction': valid_fraction, 'uv_distortion': distortion}
