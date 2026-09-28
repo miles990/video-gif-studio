@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reference stylized-redraw renderer: flat fill plus tapered contour, drawn from extract_guides.py output."""
+"""Reference stylized-redraw renderer: flat fill plus tapered contour, with an optional effect layer, from extract_guides.py output."""
 import argparse
 import hashlib
 import json
@@ -12,6 +12,9 @@ from PIL import Image
 VERSION = 1
 DEFAULT = {'fill': 'palette', 'palette': None, 'region_smooth': 1.0, 'background': None, 'supersample': 4,
            'line': {'color': '#1A1A1A', 'width': 2.0, 'taper': 0.5, 'light': [-1, -1]}}
+# Effects default to unoutlined fills over the character; glows and trails rarely read well with contours.
+EFFECT_DEFAULT = {'fill': 'palette', 'palette': None, 'region_smooth': 1.0, 'order': 'over', 'opacity': 1.0,
+                  'line': {'color': '#1A1A1A', 'width': 0.0, 'taper': 0.0, 'light': [-1, -1]}}
 
 
 def _hex(value):
@@ -21,10 +24,8 @@ def _hex(value):
     return np.array([int(value[i:i+2], 16) for i in (0, 2, 4)], np.uint8)
 
 
-def _style(style, palette):
-    s = {**DEFAULT, **style, 'line': {**DEFAULT['line'], **style.get('line', {})}}
-    if not isinstance(s['supersample'], int) or not 1 <= s['supersample'] <= 8:
-        raise ValueError('supersample must be an integer 1-8')
+def _layer_style(style, defaults, palette):
+    s = {**defaults, **style, 'line': {**defaults['line'], **style.get('line', {})}}
     if s['fill'] == 'palette':
         colors = [_hex(c) for c in s['palette']] if s['palette'] else [np.array(c, np.uint8) for c in palette]
         if len(colors) != len(palette):
@@ -38,9 +39,20 @@ def _style(style, palette):
     return s, np.array(colors, np.uint8)
 
 
-def _scaled(points, ss):
-    # Map pixel centers onto the supersampled grid.
-    return (np.asarray(points, np.int64)*ss + ss//2).astype(np.int32)
+def _style(style, guides):
+    s, colors = _layer_style({k: v for k, v in style.items() if k != 'effects'}, DEFAULT, guides['palette'])
+    if not isinstance(s['supersample'], int) or not 1 <= s['supersample'] <= 8:
+        raise ValueError('supersample must be an integer 1-8')
+    fx = None
+    if guides.get('effects'):
+        e, fx_colors = _layer_style(style.get('effects', {}), EFFECT_DEFAULT, guides['effects']['palette'])
+        if e['order'] not in ('over', 'under') or not 0 <= e['opacity'] <= 1:
+            raise ValueError("effects order must be 'over' or 'under' and opacity 0-1")
+        fx = (e, fx_colors)
+        s['effects'] = e
+    elif 'effects' in style:
+        raise ValueError('Style sets effects but the guides have no effect layer')
+    return s, colors, fx
 
 
 def _regions(labels, fill, colors, ss, smooth):
@@ -87,12 +99,15 @@ def _outline(rings, mask, ss, line):
         widths = width*(1-line['taper']*(.5+.5*(n @ light)))
         q = p*ss+ss//2
         for i in np.nonzero(keep)[0]:
-            a, b, half = q[i], q[(i+1) % len(q)], n[i]*widths[i]/2
+            # Rings run through boundary pixel centers; shift half a pixel outward onto the fill edge.
+            edge = n[i]*ss/2
+            a, b, half = q[i]+edge, q[(i+1) % len(q)]+edge, n[i]*widths[i]/2
             cv2.fillConvexPoly(out, np.rint([a+half, b+half, b-half, a-half]).astype(np.int32), 255)
         for i in range(len(q)):
             r = (widths[i]+widths[i-1])/4
             if r >= .5:
-                cv2.circle(out, tuple(np.rint(q[i]).astype(int)), int(round(r)), 255, -1)
+                edge = (n[i]+n[i-1])*ss/4
+                cv2.circle(out, tuple(np.rint(q[i]+edge).astype(int)), int(round(r)), 255, -1)
     return out
 
 
@@ -105,26 +120,46 @@ def _reduce(rgb, alpha, ss):
     return np.dstack([straight, (a*255 + ss*ss//2)//(ss*ss)]).astype(np.uint8)
 
 
-def render_frame(frame, guides, style, colors):
-    w, h = guides['canvas']
-    ss = style['supersample']
-    root = guides['_root']
+def _fill(mask, ss):
+    # Bilinear upsampling of the binary mask crosses 50% on pixel boundaries: exact area, smooth corners, thin strokes kept.
+    h, w = mask.shape
+    return cv2.resize(mask.astype(np.uint8)*255, (w*ss, h*ss), interpolation=cv2.INTER_LINEAR) >= 128
+
+
+def render_layer(frame, root, style, colors, ss):
     mask = np.array(Image.open(root/frame['mask'])) > 0
     labels = np.array(Image.open(root/frame['labels']))
-    fill = np.zeros((h*ss, w*ss), np.uint8)
-    polys = [_scaled(r['points'], ss) for r in frame['rings']]
-    if polys:
-        # Even-odd fill keeps holes from the guide contours.
-        cv2.fillPoly(fill, polys, 255)
-    rgb = _regions(labels, fill > 0, colors, ss, style['region_smooth'])
+    fill = _fill(mask, ss)
+    rgb = _regions(labels, fill, colors, ss, style['region_smooth'])
     line = _outline(frame['rings'], mask, ss, style['line']) > 0
     rgb[line] = _hex(style['line']['color'])
-    alpha = ((fill > 0) | line).astype(np.uint8)
-    out = _reduce(rgb*alpha[..., None], alpha, ss)
+    alpha = (fill | line).astype(np.uint8)
+    return _reduce(rgb*alpha[..., None], alpha, ss)
+
+
+def _over(top, bottom, opacity=1.0):
+    ta = top[..., 3:]/255*opacity
+    ba = bottom[..., 3:]/255
+    a = ta + ba*(1-ta)
+    rgb = np.where(a > 0, (top[..., :3]*ta + bottom[..., :3]*ba*(1-ta))/np.where(a > 0, a, 1), 0)
+    return np.dstack([np.floor(rgb+.5), np.floor(a*255+.5)]).astype(np.uint8)
+
+
+def render_frame(i, guides, style, colors, fx):
+    ss, root = style['supersample'], guides['_root']
+    out = render_layer(guides['frames'][i], root, style, colors, ss)
+    if fx:
+        e, fx_colors = fx
+        layer = render_layer(guides['effects']['frames'][i], root, e, fx_colors, ss)
+        if e['order'] == 'over':
+            out = _over(layer, out, e['opacity'])
+        else:
+            faded = layer.copy()
+            faded[..., 3] = np.floor(layer[..., 3]*e['opacity']+.5).astype(np.uint8)
+            out = _over(out, faded)
     if style['background']:
-        bg = _hex(style['background']).astype(np.uint32)
-        a = out[..., 3:].astype(np.uint32)
-        out = np.dstack([(out[..., :3]*a + bg*(255-a) + 127)//255, np.full((h, w), 255)]).astype(np.uint8)
+        h, w = out.shape[:2]
+        out = _over(out, np.dstack([np.broadcast_to(_hex(style['background']), (h, w, 3)), np.full((h, w), 255, np.uint8)]))
     return out
 
 
@@ -135,18 +170,19 @@ def render(guides, style, out):
     manifest = json.loads((guides/'manifest.json').read_text())
     if manifest.get('kind') != 'stylized-redraw-guides':
         raise ValueError('Not an extract_guides.py manifest')
-    style, colors = _style(style, manifest['palette'])
+    style, colors, fx = _style(style, manifest)
     manifest['_root'] = guides
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=out.parent) as tmp:
         stage = Path(tmp)/'render'
         (stage/'frames').mkdir(parents=True)
-        for i, frame in enumerate(manifest['frames']):
-            Image.fromarray(render_frame(frame, manifest, style, colors)).save(stage/'frames'/f'{i:05d}.png')
+        for i in range(len(manifest['frames'])):
+            Image.fromarray(render_frame(i, manifest, style, colors, fx)).save(stage/'frames'/f'{i:05d}.png')
         style_json = json.dumps(style, sort_keys=True)
         record = {'durations_ms': manifest['durations_ms'], 'canvas': manifest['canvas'],
                   'pixels': 'redrawn from plate guides; no plate pixels are delivered',
                   'fill_colors': 'guide palette sampled from the plate' if style['fill'] == 'palette' and not style['palette'] else 'style sheet',
+                  'effect_layer': manifest['effects'] and {'mask_review': manifest['effects']['mask_review'], 'limits': manifest['effects']['limits']},
                   'style': style, 'style_sha256': hashlib.sha256(style_json.encode()).hexdigest(),
                   'guides_manifest_sha256': hashlib.sha256((guides/'manifest.json').read_bytes()).hexdigest(),
                   'renderer': {'name': 'render_stylized.py', 'version': VERSION, 'opencv': cv2.__version__,

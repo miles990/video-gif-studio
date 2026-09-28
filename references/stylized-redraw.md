@@ -39,6 +39,16 @@ Do not use it:
 
 Requested effects from the generator become guides like the body: their paths, timing and dissipation extents are measured from the plate and redrawn in the style sheet's effect language. Keep full effect extents on canvas. Do not invent unrequested effects because the renderer makes them cheap. Record that effect shapes are redrawn and which plate provider designed their motion.
 
+### Effect layer by reviewed mask, not separation
+
+An opaque composite does not determine separate character and effect layers ([matte quality](transparency.md#matte-quality)). This route therefore never claims to separate them. It **assigns** each plate pixel to one layer using a reviewed per-frame effect mask:
+
+- Mixed pixels (glow over skin, trails through the body) are not unmixed; the mask gives them to one layer.
+- Character regions hidden under effects are not recovered; the character layer has a gap there.
+- The redraw needs only shapes and a palette per layer, so it does not require recovered effect RGB or alpha.
+
+`propose_effect_masks.py` produces **candidate** masks for that review: foreground colors not within a per-channel tolerance of any color seen in effect-free reference frames. Reference frames therefore propose nothing by construction. Candidates are `review: pending`; effects that share character colors are missed and unseen character details are included. Edit the masks, then pass them to `extract_guides.py --effect-masks`. The extractor records mask hashes and `mask_review: supplied by caller; not verified`, and never upgrades a proposal to reviewed.
+
 ## Provenance
 
 Record: plate source and generation record; guide extractors and versions; style sheet; renderer source hash, runtime and seeds; any plate-color sampling. The deliverable must state that its pixels are redrawn from a plate, not generator output.
@@ -61,26 +71,32 @@ A stylized redraw is finished only when (a) the plate passed motion review, (b) 
 Decision: the reference renderer is Python on the existing Pillow/NumPy/OpenCV stack; no new dependency. A headless-browser renderer remains possible later for richer motion-graphics authoring.
 
 ```bash
-.venv/bin/python scripts/extract_guides.py run/plate --manifest run/plate.json --out run/guides --colors 4
+# optional: candidate effect masks from effect-free reference frames, then review/edit them
+.venv/bin/python scripts/propose_effect_masks.py run/plate --manifest run/plate.json --out run/fx-proposal --reference-frames 0
+.venv/bin/python scripts/extract_guides.py run/plate --manifest run/plate.json --out run/guides --colors 4 \
+  --effect-masks run/fx-reviewed --effect-colors 3
 .venv/bin/python scripts/render_stylized.py run/guides --style style.json --out run/render
 ```
 
 - **Input:** numbered RGBA PNG plate frames with real alpha plus a `durations_ms` timing manifest (for example `background_remove.py` output). A plate without alpha is refused.
 - **`extract_guides.py`:** thresholded masks, simplified contour rings with holes, and per-frame label maps against **one deterministic palette shared by the whole plate**, so region colors cannot flicker between frames. The manifest records `iou_prev` per frame and the result lists frames below 0.8.
-- **`render_stylized.py`:** flat fill (plate palette, palette override or one solid color) plus a tapered contour. Taper depends on each segment's outward normal against a light direction, never on arc length, so it does not crawl when contour start points change. Rendering is supersampled and deterministic; output is `frames/` plus a manifest with `durations_ms`, style hash, guide hash and renderer hash, ready for the existing export tools.
-- **Style keys:** `fill` (`palette` or `#RRGGBB`), `palette` (hex list matching the guide palette), `region_smooth`, `background`, `supersample` (1-8), `line.color`, `line.width`, `line.taper` (0-1), `line.light`.
-- **Tests** cover timing/canvas preservation, holes, shared-palette determinism, byte-identical re-renders and integer-translation coherence.
+- **Effect layer:** with `--effect-masks`, masked pixels leave the character layer and get their own masks, rings, labels and shared palette under `effects` in the manifest. Without it, `effects` is `null`.
+- **`render_stylized.py`:** flat fill (plate palette, palette override or one solid color) plus a tapered contour. Fills come from bilinear-upsampled masks, so area is exact and 1-2 px strokes survive; contours sit on the fill edge. Taper depends on each segment's outward normal against a light direction, never on arc length, so it does not crawl when contour start points change. Rendering is supersampled and deterministic; output is `frames/` plus a manifest with `durations_ms`, style hash, guide hash and renderer hash, ready for the existing export tools.
+- **Style keys:** `fill` (`palette` or `#RRGGBB`), `palette` (hex list matching the guide palette), `region_smooth`, `background`, `supersample` (1-8), `line.color`, `line.width`, `line.taper` (0-1), `line.light`. `effects` takes `fill`, `palette`, `region_smooth`, `line` (default no outline), `order` (`over`/`under`) and `opacity` (0-1); it is refused when the guides have no effect layer.
+- **Tests** cover timing/canvas preservation, holes, shared-palette determinism, byte-identical re-renders, integer-translation coherence, effect-layer palettes and compositing, and proposal behavior.
 
 ### Findings from a local trial (chibi-running-dash APNG, 112 frames at 768x768)
 
 - Contours, holes and motion followed the plate; re-renders were identical. About 0.4 s per frame at supersample 4.
-- **Effects lose their color identity.** A single shared palette remapped pink dust and magenta speed trails into character colors. Effects need their own palette or a separate guide layer before this route can honor requested effects.
+- **Effects lose their color identity in a single layer.** One shared palette remapped pink dust and magenta speed trails into character colors. With an effect layer, both kept their own colors.
+- **Proposal tolerance.** A palette-distance heuristic flagged every frame, including the reference, because rare chroma-spill fringe colors were averaged out of the palette. Comparing against every reference color fixed that. Sweeping per-channel tolerance on this plate: 12 and 20 still flagged idle frames; 44 lost most of the dust; 32 (the default) left idle frames empty while catching the dust and the magenta/violet trail portions. White and green trail portions matching the sword and gem were missed, as expected, and need manual mask edits. The trial render used unedited proposals and is not an accepted result.
 - **`iou_prev` also flags genuine fast travel.** The dash frames were listed as low IoU because the body moves, not because masks flickered. Treat the list as a review queue, not a defect verdict.
 - The trial source is pixel art, which this route does not target by default; it was used only as an available RGBA plate.
 
 ## Remaining open questions
 
-1. **Effect layer.** Separate effect guides and palette (by user-reviewed mask or color/alpha heuristics) before claiming effect support.
-2. **Pose extraction.** Whether to add an optional keypoint extractor, or keep masks and contours only.
-3. **Paper/texture treatment.** A temporally coherent texture option (fixed or motion-attached, never re-seeded per frame).
-4. **Routing.** Add the mode row to [transparency.md](transparency.md) and a short entry in `SKILL.md` only after a worked example passes acceptance.
+1. **Mask review tooling.** A way to inspect and edit proposed effect masks over playback (overlay export or a small review page); proposals are unusable without it at scale.
+2. **Soft effect alpha.** Effect layers are thresholded; glows and fading trails may need their plate alpha carried into the redraw.
+3. **Pose extraction.** Whether to add an optional keypoint extractor, or keep masks and contours only.
+4. **Paper/texture treatment.** A temporally coherent texture option (fixed or motion-attached, never re-seeded per frame).
+5. **Routing.** Add the mode row to [transparency.md](transparency.md) and a short entry in `SKILL.md` only after a worked example passes acceptance.
