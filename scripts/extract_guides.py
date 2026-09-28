@@ -72,6 +72,18 @@ def _effect_masks(directory, count, shape, fg):
     return masks
 
 
+def _mask_manifest(directory):
+    # Carry the proposal/edit record beside the masks, if any; the extractor does not upgrade its review status.
+    path = directory.parent/'manifest.json'
+    if not path.exists():
+        return None
+    record = json.loads(path.read_text())
+    if record.get('kind') not in ('effect-mask-proposal', 'effect-mask-edit'):
+        return None
+    return {'kind': record['kind'], 'review': record.get('review'), 'reviewed_by': record.get('reviewed_by'),
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
 def _layer(plate, masks, centers, stage, prefix, epsilon):
     (stage/prefix/'masks').mkdir(parents=True)
     (stage/prefix/'labels').mkdir()
@@ -125,6 +137,7 @@ def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, m
             effects = {'palette': fx_centers.astype(int).tolist(), 'frames': _layer(plate, fx, fx_centers, stage, 'effects/', epsilon),
                        'mask_sha256': [hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(Path(effect_masks).glob('*.png'), key=natural)],
                        'mask_review': 'supplied by caller; not verified by the extractor',
+                       'mask_manifest': _mask_manifest(Path(effect_masks)),
                        'limits': 'each pixel is assigned to one layer by the mask; mixed character/effect pixels are not unmixed '
                                  'and character regions hidden under effects are not recovered'}
         h, w = plate[0].shape[:2]
