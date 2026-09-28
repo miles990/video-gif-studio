@@ -38,7 +38,7 @@ def render(ctx):
         if len(xs):
             dx, dy = int(round(xs.mean())) % pad, int(round(ys.mean())) % pad
     if p['anchor'] == 'uv':
-        # Blend re-anchored texture layers by weight so no layer is seen at the moment it resets.
+        # Blend re-anchored texture layers by their per-pixel weights so no layer is seen where it resets.
         layers = ctx.get('uv_layers') or [(ctx['uv'], 1.0)]
         grain = sum(wk*cv2.remap(grain, uv[..., 0].astype(np.float32) + pad, uv[..., 1].astype(np.float32) + pad,
                                  cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP) for uv, wk in layers)

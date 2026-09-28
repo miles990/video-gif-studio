@@ -14,7 +14,7 @@ import tempfile
 import cv2
 import numpy as np
 from PIL import Image
-from extract_guides import load_flow, uv_distortion
+from extract_guides import distortion_map, load_flow
 from render_stylized import render
 
 INTENT = {'boil': False, 'silhouette_min': 0.95, 'silhouette_tolerance_px': 2, 'interior_change_max': 0.01,
@@ -96,7 +96,8 @@ def _distortion(guides, manifest, count, intent):
         interior = cv2.erode(target.astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool)
         if i:
             interior &= f['valid']
-        values.append(round(sum(wk*uv_distortion(uv, interior) for uv, wk in f['uv_layers']), 4))
+        deformation = sum(wk*distortion_map(uv) for uv, wk in f['uv_layers'])
+        values.append(round(float(np.median(deformation[interior])), 4) if interior.any() else 0.0)
         if values[-1] > intent['uv_distortion_max']:
             bad.append(i)
     return {'pass': not bad, 'flagged_frames': bad, 'weighted_median_distortion': values, 'max': intent['uv_distortion_max']}

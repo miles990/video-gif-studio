@@ -46,7 +46,8 @@ function render(ctx, api) {
     const x0 = Math.floor(sx), y0 = Math.floor(sy), ax = sx - x0, ay = sy - y0, at = (xx, yy) => field[2 * (yy * hw + xx) + k];
     return 2 * ((at(x0, y0) * (1 - ax) + at(x0 + 1, y0) * ax) * (1 - ay) + (at(x0, y0 + 1) * (1 - ax) + at(x0 + 1, y0 + 1) * ax) * ay);
   };
-  const layers = ctx.uvLayers.length ? ctx.uvLayers : (ctx.uv ? [{uv: ctx.uv, weight: 1}] : []);
+  const ones = new Float32Array(hw * hh).fill(1);
+  const layers = ctx.uvLayers.length ? ctx.uvLayers : (ctx.uv ? [{uv: ctx.uv, weight: ones}] : []);
   if (layers.length) for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const p = 4 * (y * W + x);
     if (d[p + 3] === 0) continue;
@@ -60,7 +61,8 @@ function render(ctx, api) {
       const a = (u + v) * root2 / pitch, b = (u - v) * root2 / pitch;
       const da = a - Math.round(a), db = b - Math.round(b);
       const dist = Math.hypot(da, db) * pitch, radius = pitch * 0.5 * Math.sqrt(t) * 1.05;
-      ink += layer.weight * Math.min(1, Math.max(0, radius - dist + 0.5));
+      const wk = layer.weight[Math.min(hh - 1, y >> 1) * hw + Math.min(hw - 1, x >> 1)];
+      ink += wk * Math.min(1, Math.max(0, radius - dist + 0.5));
     }
     d[p] += (tr - d[p]) * ink; d[p + 1] += (tg - d[p + 1]) * ink; d[p + 2] += (tb - d[p + 2]) * ink;
   }

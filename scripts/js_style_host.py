@@ -4,7 +4,7 @@
 A JS plugin defines `async function render(ctx, api)` and returns ImageData or an (Offscreen)Canvas of the frame
 size. ctx: index, count, width, height, params, base (ImageData of the reference render), mask (Uint8Array, subject
 coverage), and when flow guides exist uv/flow (Float32Array, interleaved x,y at uvWidth x uvHeight = half size, in
-half-resolution pixel units), uvLayers ([{uv, weight}], re-anchored texture layers to blend by weight) and flowValid
+half-resolution pixel units), uvLayers ([{uv, weight}], re-anchored texture layers with per-pixel weight maps on the same grid) and flowValid
 (Uint8Array, same grid). api.noise(key) returns a seeded PRNG; Math.random is disabled so renders stay
 reproducible. Browser: $VGS_CHROME, else Playwright's cached headless shell or Chromium, else chromium/chrome on PATH.
 """
@@ -40,7 +40,7 @@ BOOT = r"""
     const ctx = {index: p.index, count: p.count, width: p.width, height: p.height, params: p.params,
                  base: await image(p.base), mask: (await image(p.mask)).data.filter((_, i) => i % 4 === 0),
                  uv: p.uv ? f32(p.uv) : null, flow: p.flow ? f32(p.flow) : null,
-                 uvLayers: (p.uvLayers || []).map(l => ({uv: f32(l.uv), weight: l.weight})),
+                 uvLayers: (p.uvLayers || []).map(l => ({uv: f32(l.uv), weight: f32(l.weight)})),
                  flowValid: p.flowValid ? b64(p.flowValid) : null, uvWidth: p.uvWidth, uvHeight: p.uvHeight};
     const api = {noise: key => mulberry(fnv(p.seed + ':' + JSON.stringify(key)))};
     let out = await window.__render(ctx, api);
@@ -178,7 +178,8 @@ class JSStyle:
                 cv2_resize(ctx['uv'], half)/2, np.float32).tobytes()).decode()
             payload['uvWidth'], payload['uvHeight'] = half
             payload['uvLayers'] = [{'uv': base64.b64encode(np.ascontiguousarray(cv2_resize(uv, half)/2, np.float32).tobytes()).decode(),
-                                    'weight': wk} for uv, wk in (ctx.get('uv_layers') or []) if wk > 0]
+                                    'weight': base64.b64encode(np.ascontiguousarray(cv2_resize(wk.astype(np.float32), half), np.float32).tobytes()).decode()}
+                                   for uv, wk in (ctx.get('uv_layers') or [])]
             if ctx['flow'] is not None:
                 payload['flow'] = base64.b64encode(np.ascontiguousarray(cv2_resize(ctx['flow'], half)/2, np.float32).tobytes()).decode()
                 payload['flowValid'] = base64.b64encode(cv2_resize(ctx['flow_valid'].astype(np.uint8), half, nearest=True).tobytes()).decode()

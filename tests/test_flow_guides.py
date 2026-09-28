@@ -37,15 +37,12 @@ class FlowGuides(unittest.TestCase):
    self.assertFalse(json.loads((t/'g/manifest.json').read_text())['flow']['enabled'])
 
 class Layers(unittest.TestCase):
- def test_weights_sum_to_one_and_vanish_at_reanchor(self):
-  for i in range(60):
-   w=layer_weights(i,24);self.assertAlmostEqual(sum(w),1.0)
-   if i%24==0:self.assertEqual(w[0],0)
-   if i%24==12:self.assertEqual(w[1],0)
-  self.assertEqual(layer_weights(7,0),[1.0])
- def test_period_zero_keeps_one_layer_and_rigid_motion_has_no_distortion(self):
+ def test_weights_sum_to_one_and_vanish_at_wrap(self):
+  ph=np.linspace(0,3,301).astype(np.float32);w0,w1=layer_weights(ph)
+  np.testing.assert_allclose(w0+w1,1,atol=1e-6);self.assertEqual(w0[0],0);self.assertEqual(w1[50],0)
+ def test_zero_travel_keeps_one_layer_and_rigid_motion_has_no_distortion(self):
   with tempfile.TemporaryDirectory() as t:
-   t=Path(t);d,m=textured_plate(t,frames=4);extract(d,m,t/'g',colors=3,flow=True,uv_period=0)
+   t=Path(t);d,m=textured_plate(t,frames=4);extract(d,m,t/'g',colors=3,flow=True,uv_travel=0)
    g=json.loads((t/'g/manifest.json').read_text());self.assertEqual(len(load_flow(t/'g',g,3)['uv_layers']),1)
    extract(d,m,t/'g2',colors=3,flow=True);g2=json.loads((t/'g2/manifest.json').read_text())
    self.assertEqual(len(load_flow(t/'g2',g2,3)['uv_layers']),2);self.assertLess(max(g2['flow']['uv_distortion']),.02)
@@ -53,12 +50,24 @@ class Layers(unittest.TestCase):
    self.assertFalse(qc(t/'g2',{'intent':{'uv_distortion_max':-1}},t/'r')['checks']['texture_distortion']['pass'])
  def test_rigid_motion_survives_reanchoring_so_layers_never_crossfade(self):
   with tempfile.TemporaryDirectory() as t:
-   t=Path(t);d,m=textured_plate(t,shift=2,frames=9);extract(d,m,t/'g',colors=3,flow=True,uv_period=4)
+   t=Path(t);d,m=textured_plate(t,shift=2,frames=9);extract(d,m,t/'g',colors=3,flow=True,uv_travel=4)
    g=json.loads((t/'g/manifest.json').read_text());f=load_flow(t/'g',g,8)
    (a,_),(b,_)=f['uv_layers'];core=np.zeros(a.shape[:2],bool);core[22:42,34:52]=True
    self.assertLess(np.abs(a[core]-b[core]).max(),.3)                     # both layers agree on the rigid block
-   uv0=load_flow(t/'g',g,0)['uv'];np.testing.assert_allclose(a[32,40],uv0[32,24],atol=1)  # still glued after 2 resets
-
+   uv0=load_flow(t/'g',g,0)['uv'];np.testing.assert_allclose(a[32,40],uv0[32,24],atol=1)  # still glued after resets
+ def test_still_points_never_change_weight_while_moving_points_cycle(self):
+  with tempfile.TemporaryDirectory() as t:
+   t=Path(t);dd=t/'plate';dd.mkdir();rng=np.random.default_rng(3)
+   tex=(rng.random((30,30,3))*180+40).astype(np.uint8)
+   for i in range(8):
+    a=np.zeros((64,128,4),np.uint8);a[4:34,4:34,:3]=tex;a[4:34,4:34,3]=255     # still block
+    x=50+3*i;a[30:60,x:x+30,:3]=tex;a[30:60,x:x+30,3]=255                       # moving block
+    Image.fromarray(a).save(dd/f'{i:05d}.png')
+   (t/'p.json').write_text(json.dumps({'durations_ms':[40]*8}));extract(dd,t/'p.json',t/'g',colors=3,flow=True,uv_travel=12)
+   g=json.loads((t/'g/manifest.json').read_text());ws=[load_flow(t/'g',g,i)['uv_layers'][0][1] for i in range(8)]
+   still=np.zeros((64,128),bool);still[10:28,10:28]=True
+   for w in ws[1:]:np.testing.assert_allclose(w[still],ws[0][still],atol=1e-3)
+   self.assertGreater(float(np.abs(ws[7][40:50,80:90]-ws[0][40:50,80:90]).max()),.2)
 
 GRAIN='''
 import cv2

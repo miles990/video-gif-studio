@@ -2,7 +2,7 @@
 
 Hatch lines live in the advected texture coordinates from `extract_guides.py --flow`, so strokes travel with the
 limbs instead of sliding across them. With re-anchored texture layers, each layer's strokes are drawn and blended by
-the layer weights, so no layer is seen at the moment it is re-anchored. Without flow guides the pattern falls back to canvas space (it will slide;
+its per-pixel weight map, so no layer is seen where it re-anchors. Without flow guides the pattern falls back to canvas space (it will slide;
 declare intent.texture_slides or extract with --flow). Effects keep their own color with a soft glow, unhatched.
 
 Params: paper, ink (#RRGGBB), spacing (px), line_width (px), angle (radians), thresholds (luminance per hatch layer),
@@ -30,7 +30,7 @@ def render(ctx):
     base = ctx['base'].astype(np.float32)
     h, w = base.shape[:2]
     if ctx.get('uv_layers'):
-        layers = [(uv[..., 0].astype(np.float32), uv[..., 1].astype(np.float32), wk) for uv, wk in ctx['uv_layers'] if wk > 0]
+        layers = [(uv[..., 0].astype(np.float32), uv[..., 1].astype(np.float32), wk) for uv, wk in ctx['uv_layers']]
     else:
         v, u = np.mgrid[:h, :w].astype(np.float32)
         layers = [(u, v, 1.0)]
