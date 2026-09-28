@@ -86,6 +86,10 @@ Keep a shared canvas. Only stabilize measured unwanted camera drift; never recen
 
 Read the loop and causal-review guidance in [references/motion.md](references/motion.md) before accepting articulated actions, effects or a requested seamless loop. Review actual weapon paths separately from effect trails. If a bounded corrective retry still fails, retain the unfinished status and explain the specific remaining defect rather than relabeling a preview as complete.
 
+## Stylized redraw
+
+When the user asks for a drawn or graphic look a video generator cannot hold (ink, paper cut-out, manga, flat vector), or when accepted motion needs a finish its matte cannot reach, read [stylized redraw](references/stylized-redraw.md). The generated or supplied video becomes a motion plate: every delivered pixel is rendered from guides measured on it, and no plate pixel is delivered. Accept the plate for motion first; redrawing keeps bad joint paths. Extract guides with `scripts/extract_guides.py` (`--flow` for texture that rides on moving parts), assign effects to their own layer only through reviewed masks (`propose_effect_masks.py`, `review_masks.py`, `apply_mask_edits.py`), render with `scripts/render_stylized.py` and a bundled or authored Python or JS style plugin, and run `scripts/qc_redraw.py`. Automatic checks, agent visual notes and human playback review are separate records. A render that fails a check, or shows texture sliding, marbling or shimmer when inspected, is a preview. Do not use this route unrequested or to hide a defective source.
+
 ## Final quality gate
 
 A requested finished deliverable includes inspection and repair, not just encoding. Perform necessary local cleanup within that request instead of asking separately whether the user wants defects repaired. Inspect source, repaired masters and decoded output for visible contamination, unreasonable contours, lost material/lighting detail, flicker, clipping and broken motion/loop/transition boundaries. Use [structure-aware edge repair](references/structural-edge-repair.md) for local masks and `scripts/repair_edges.py` for reviewed RGBA sequence repairs. Repeat the relevant inspection after each repair and validate the actual target format/player when available. Do not claim automatic semantic understanding from numeric tests, or that all defects are absent because encoding passed. If a visible defect remains unresolved, continue within the authorized repair scope; when a genuine limitation prevents completion, identify it and label the output a preview, never a repaired final. A whole-library task needs per-clip results, including exceptions.
@@ -109,6 +113,8 @@ When an actual reference-to-video-to-GIF case or transparency regression example
 For a no-user-reference example, see [examples/robot-wave-no-reference/README.md](examples/robot-wave-no-reference/README.md): an original start image, a real generation through the bundled Grok client, and a verified transparent GIF. Distinguish zero user references from the generated image used as the video's starting frame.
 
 For a pixel-style running attack with Grok-generated effects and identical pinned endpoints, see [examples/chibi-running-dash/README.md](examples/chibi-running-dash/README.md). It includes GIF/APNG, source, prompt, timing and verification; playback-speed seamlessness remains unverified.
+
+For a stylized redraw with motion-attached screentone, flow-driven speed lines, a JS style and recorded acceptance, see [examples/stylized-redraw-seated/README.md](examples/stylized-redraw-seated/README.md). It also records a preview render that failed a check and why.
 
 ## Pixel-art defaults
 

@@ -1,0 +1,16 @@
+{
+  "plugin": "ink_hatching with texture coordinates withheld (comparison wrapper, not bundled)",
+  "plugin_params": {
+    "spacing": 5.5,
+    "thresholds": [
+      0.8,
+      0.55,
+      0.35
+    ],
+    "wash": 0.62,
+    "line_width": 0.9
+  },
+  "line": {
+    "width": 1.6
+  }
+}

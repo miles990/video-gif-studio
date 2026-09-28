@@ -1,0 +1,47 @@
+{
+  "plate": {
+    "source": "examples/seated-leg-switch/final.gif",
+    "sha256": "ad60a4a17dea967cac52780631046888872a8a5c08f9b399a251116ee23c110b",
+    "frames": 289,
+    "duration_ms": 9930
+  },
+  "guides": {
+    "colors": 8,
+    "flow": {
+      "method": "OpenCV DIS (medium), backward t->t-1 with forward-backward consistency",
+      "uv": "texture coordinates advected along smoothed trusted flow (moves under 0.5 px held still); revealed surface extended from the nearest trusted pixel; two layers cross-weighted by a per-point phase that advances by (deformation - 0.03)/0.25 per frame while a point moves (held, rigid and undeformed points never change weight); a layer re-anchors only where its phase wraps, copying the other layer where its interior deformation is under 0.015-0.03 (feathered) and restarting only deformed texture; stored as uint16 = uv*8+32768",
+      "deadzone_px": 0.5,
+      "smooth_px": 4.0,
+      "uv_clock": 0.25,
+      "uv_slack": 0.03
+    },
+    "flow_valid_fraction_mean": 0.9584,
+    "uv_distortion_max": 0.2159
+  },
+  "renders": {
+    "manga_action": {
+      "status": "accepted",
+      "plugin_sha256": "820758b762ec5b242c99d7e28bd9c29debcec7180c7c446edcfd0ab017874ca1",
+      "browser": "HeadlessChrome/153.0.8010.12",
+      "style_sha256": "dc860039c465a4c1c64d43ddcd01d2f1e4062a057901ecc558d1a109bba9e165"
+    },
+    "ink_hatching_uv": {
+      "status": "preview: motion_coherence flagged on 2 of 11 measurable transitions",
+      "plugin_sha256": "5f6bb8d7ddd78066bbdbd71ace8c93ed492e0451063672f47e772afcce9ca2b2",
+      "style_sha256": "cc625d209477e058f0d38e56616ecbff22551bc1a3594d02fd8a40a1a6d41071"
+    }
+  },
+  "review": {
+    "automatic": "qc-manga.json: all seven checks pass",
+    "by": "Claude (agent, delegated by user)",
+    "method": "frame inspection of contact strips and consecutive frames through the leg switch; no real-time playback",
+    "decision": "accept manga_action render",
+    "notes": "screentone stays on chair, dress and cape without marbling or shimmer; speed lines appear only while the right leg uncrosses (about frames 20-32) and trail behind the foot; outline and motion follow the plate"
+  },
+  "files": {
+    "comparison.mp4": "ee60cace1238bb5e17d11a70648a42852bfbc7a4149b7b59a22d61844958674a",
+    "contact.jpg": "993da6fbd65299fc7a89ac55fa36a6dd01ba3a81fe7c8877a3381dbd0fa23124",
+    "evidence.png": "f61cab6b9c77e63bee1332f8d7ddd2f58202915e6b93acd9818f21df743dcc30",
+    "final.mp4": "eec4b454bdf7bfbe26a7262895cdfa140ce70c6e31176ff286ac5d9907092b41"
+  }
+}

@@ -1,6 +1,6 @@
-# Stylized redraw over generated motion (design draft)
+# Stylized redraw over generated motion
 
-**Status: design draft with a first local slice.** `scripts/extract_guides.py` and the reference renderer `scripts/render_stylized.py` are bundled and tested, but the route is not yet routed from `SKILL.md`, not listed in the transparency mode table, and has no accepted worked example. Do not present it as a verified production route until those exist.
+**Status: routed from `SKILL.md` and the [transparency mode table](transparency.md).** Tools, bundled styles and checks are described below; [examples/stylized-redraw-seated](../examples/stylized-redraw-seated/README.md) is the accepted worked example (one plate, agent review under user delegation, frame inspection only).
 
 ## Intent
 

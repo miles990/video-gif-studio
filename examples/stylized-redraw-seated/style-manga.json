@@ -1,0 +1,14 @@
+{
+  "plugin": "manga_action",
+  "plugin_params": {
+    "speed": 2.5,
+    "length": 3,
+    "cell": 16
+  },
+  "line": {
+    "width": 1.6
+  },
+  "intent": {
+    "silhouette_min": 0.8
+  }
+}
