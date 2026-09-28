@@ -2,6 +2,7 @@
 """Reference stylized-redraw renderer: flat fill plus tapered contour, with an optional effect layer, from extract_guides.py output."""
 import argparse
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import tempfile
@@ -10,7 +11,9 @@ import numpy as np
 from PIL import Image
 
 VERSION = 1
+STYLES = Path(__file__).resolve().parent/'styles'
 DEFAULT = {'fill': 'palette', 'palette': None, 'region_smooth': 1.0, 'background': None, 'supersample': 4,
+           'plugin': None, 'plugin_params': {}, 'seed': 0, 'intent': {},
            'line': {'color': '#1A1A1A', 'width': 2.0, 'taper': 0.5, 'light': [-1, -1]}}
 # Effects default to unoutlined fills over the character; glows and trails rarely read well with contours.
 EFFECT_DEFAULT = {'fill': 'palette', 'palette': None, 'region_smooth': 1.0, 'order': 'over', 'opacity': 1.0, 'alpha': None,
@@ -149,7 +152,36 @@ def _over(top, bottom, opacity=1.0):
     return np.dstack([np.floor(rgb+.5), np.floor(a*255+.5)]).astype(np.uint8)
 
 
-def render_frame(i, guides, style, colors, fx):
+def load_plugin(spec):
+    # A bare name selects a bundled style in scripts/styles; otherwise a path to an authored .py file.
+    path = Path(spec) if ('/' in str(spec) or str(spec).endswith('.py')) else STYLES/f'{spec}.py'
+    if not path.is_file():
+        raise ValueError(f'Style plugin not found: {spec}')
+    module_spec = importlib.util.spec_from_file_location(f'style_plugin_{path.stem}', path)
+    module = importlib.util.module_from_spec(module_spec)
+    module_spec.loader.exec_module(module)
+    if not callable(getattr(module, 'render', None)):
+        raise ValueError(f'Style plugin {path} must define render(ctx)')
+    return module, {'path': str(path.resolve()), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def noise_source(seed):
+    # Same key, same field on every frame: stable textures by default; put the frame index in the key to boil on purpose.
+    def noise(key, shape):
+        digest = hashlib.sha256(f'{seed}:{key!r}'.encode()).digest()
+        return np.random.default_rng(int.from_bytes(digest[:8], 'little')).random(shape)
+    return noise
+
+
+def _layer_context(frame, root, palette):
+    if frame is None:
+        return None
+    return {'mask': np.array(Image.open(root/frame['mask'])) > 0, 'labels': np.array(Image.open(root/frame['labels'])),
+            'rings': frame['rings'], 'palette': palette,
+            'alpha': np.array(Image.open(root/frame['alpha'])) if frame.get('alpha') else None}
+
+
+def render_frame(i, guides, style, colors, fx, plugin=None):
     ss, root = style['supersample'], guides['_root']
     out = render_layer(guides['frames'][i], root, style, colors, ss)
     if fx:
@@ -165,6 +197,15 @@ def render_frame(i, guides, style, colors, fx):
             faded = layer.copy()
             faded[..., 3] = np.floor(layer[..., 3]*e['opacity']+.5).astype(np.uint8)
             out = _over(out, faded)
+    if plugin:
+        w, h = guides['canvas']
+        ctx = {'index': i, 'count': len(guides['frames']), 'canvas': (w, h), 'durations_ms': guides['durations_ms'],
+               'base': out, 'params': style['plugin_params'], 'noise': noise_source(style['seed']),
+               'character': _layer_context(guides['frames'][i], root, colors),
+               'effects': _layer_context(guides['effects']['frames'][i], root, fx[1]) if fx else None}
+        out = plugin(ctx)
+        if not isinstance(out, np.ndarray) or out.shape != (h, w, 4) or out.dtype != np.uint8:
+            raise ValueError(f'Style plugin must return a uint8 array of shape {(h, w, 4)}')
     if style['background']:
         h, w = out.shape[:2]
         out = _over(out, np.dstack([np.broadcast_to(_hex(style['background']), (h, w, 3)), np.full((h, w), 255, np.uint8)]))
@@ -179,20 +220,21 @@ def render(guides, style, out):
     if manifest.get('kind') != 'stylized-redraw-guides':
         raise ValueError('Not an extract_guides.py manifest')
     style, colors, fx = _style(style, manifest)
+    plugin, plugin_record = load_plugin(style['plugin']) if style['plugin'] else (None, None)
     manifest['_root'] = guides
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=out.parent) as tmp:
         stage = Path(tmp)/'render'
         (stage/'frames').mkdir(parents=True)
         for i in range(len(manifest['frames'])):
-            Image.fromarray(render_frame(i, manifest, style, colors, fx)).save(stage/'frames'/f'{i:05d}.png')
+            Image.fromarray(render_frame(i, manifest, style, colors, fx, plugin and plugin.render)).save(stage/'frames'/f'{i:05d}.png')
         style_json = json.dumps(style, sort_keys=True)
         record = {'durations_ms': manifest['durations_ms'], 'canvas': manifest['canvas'],
                   'pixels': 'redrawn from plate guides; no plate pixels are delivered',
                   'fill_colors': 'guide palette sampled from the plate' if style['fill'] == 'palette' and not style['palette'] else 'style sheet',
                   'effect_layer': manifest['effects'] and {'mask_review': manifest['effects']['mask_review'], 'limits': manifest['effects']['limits'],
                                                            'alpha': 'measured plate alpha, not unmixed' if style['effects']['alpha'] == 'plate' else 'solid coverage'},
-                  'style': style, 'style_sha256': hashlib.sha256(style_json.encode()).hexdigest(),
+                  'style': style, 'style_sha256': hashlib.sha256(style_json.encode()).hexdigest(), 'plugin': plugin_record,
                   'guides_manifest_sha256': hashlib.sha256((guides/'manifest.json').read_bytes()).hexdigest(),
                   'renderer': {'name': 'render_stylized.py', 'version': VERSION, 'opencv': cv2.__version__,
                                'renderer_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()},
