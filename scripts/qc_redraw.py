@@ -14,12 +14,13 @@ import tempfile
 import cv2
 import numpy as np
 from PIL import Image
-from extract_guides import load_flow
+from extract_guides import load_flow, uv_distortion
 from render_stylized import render
 
 INTENT = {'boil': False, 'silhouette_min': 0.95, 'silhouette_tolerance_px': 2, 'interior_change_max': 0.01,
           'static_radius_px': 4, 'static_majority': 0.9, 'change_level': 4, 'offcanvas_ok': False,
-          'texture_slides': False, 'motion_change_max': 0.05, 'motion_change_level': 16, 'motion_min_px': 0.5}
+          'texture_slides': False, 'motion_change_max': 0.05, 'motion_change_level': 16, 'motion_min_px': 1.5,
+          'motion_span': 4, 'motion_min_pixels': 500, 'uv_distortion_max': 0.15}
 
 
 def _frames(directory):
@@ -44,24 +45,32 @@ def _agreement(drawn, target, tol):
 
 
 def _motion(guides, manifest, figure, baseline, intent):
-    # Warp the previous rendered frame along measured plate motion; texture glued to the body should land in place.
+    # Warp the frame `span` steps back along chained measured motion; texture glued to the body should land in place.
+    # Chaining matters: slow sliding under 1 px per frame hides inside the tolerance but accumulates over a few frames.
     h, w = figure[0].shape[:2]
     gy, gx = np.mgrid[:h, :w].astype(np.float32)
+    flows = [load_flow(guides, manifest, i) for i in range(len(figure))]
     fractions, base_fractions, moving_pixels, bad = [None], [None], [None], []
+    k3 = np.ones((3, 3), np.uint8)
     for i in range(1, len(figure)):
-        f = load_flow(guides, manifest, i)
-        bw = f['backward']
+        span = min(intent['motion_span'], i)
+        mx, my, valid = gx.copy(), gy.copy(), np.ones((h, w), bool)
+        for j in range(i, i - span, -1):
+            bw, ok = flows[j]['backward'], flows[j]['valid']
+            valid &= cv2.remap(ok.astype(np.uint8), mx, my, cv2.INTER_NEAREST, borderValue=0).astype(bool)
+            step = cv2.remap(bw, mx, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            mx, my = mx + step[..., 0], my + step[..., 1]
         target = np.any([m > 0 for m in _guide(guides, manifest, i, 'mask')], axis=0)
-        moving = f['valid'] & target & (np.linalg.norm(bw, axis=2) >= intent['motion_min_px'])
+        moving = valid & target & (np.hypot(mx - gx, my - gy) >= intent['motion_min_px'])
         moving = cv2.erode(moving.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(bool)
+        if moving.sum() < intent['motion_min_pixels']:
+            moving[:] = False
 
         def error(seq):
-            warped = cv2.remap(seq[i-1], gx + bw[..., 0], gy + bw[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            warped = cv2.remap(seq[i - span], mx, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
             # Tolerate 1 px of misregistration: sharp strokes resampled at subpixel offsets are not sliding texture.
-            k = np.ones((3, 3), np.uint8)
-            lo, hi = cv2.erode(warped, k).astype(int), cv2.dilate(warped, k).astype(int)
-            cur = seq[i].astype(int)
-            level = intent['motion_change_level']
+            lo, hi = cv2.erode(warped, k3).astype(int), cv2.dilate(warped, k3).astype(int)
+            cur, level = seq[i].astype(int), intent['motion_change_level']
             diff = ((cur < lo - level) | (cur > hi + level)).any(2)
             return float((diff & moving).sum()/moving.sum()) if moving.any() else 0.0
 
@@ -69,13 +78,28 @@ def _motion(guides, manifest, figure, baseline, intent):
         fractions.append(round(fraction, 5))
         base_fractions.append(round(base, 5))
         moving_pixels.append(int(moving.sum()))
-        if not intent['texture_slides'] and fraction - base > intent['motion_change_max']:
+        if moving.any() and not intent['texture_slides'] and fraction - base > intent['motion_change_max']:
             bad.append(i)
     measured = any(moving_pixels[1:])
     return {'pass': (not bad) if measured else None, 'flagged_frames': bad, 'warp_error_fraction': fractions,
             'reference_warp_error_fraction': base_fractions, 'moving_pixels': moving_pixels,
             'unmeasured_frames': [i for i, n in enumerate(moving_pixels) if n == 0],
             'skipped': 'texture_slides declared' if intent['texture_slides'] else None}
+
+
+def _distortion(guides, manifest, count, intent):
+    # Texture glued to noisy motion can stay attached yet deform into waves; bound the deformation itself.
+    values, bad = [], []
+    for i in range(count):
+        f = load_flow(guides, manifest, i)
+        target = np.any([m > 0 for m in _guide(guides, manifest, i, 'mask')], axis=0)
+        interior = cv2.erode(target.astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool)
+        if i:
+            interior &= f['valid']
+        values.append(round(sum(wk*uv_distortion(uv, interior) for uv, wk in f['uv_layers']), 4))
+        if values[-1] > intent['uv_distortion_max']:
+            bad.append(i)
+    return {'pass': not bad, 'flagged_frames': bad, 'weighted_median_distortion': values, 'max': intent['uv_distortion_max']}
 
 
 def qc(guides, style, render_dir, agent_notes=None, out=None):
@@ -151,6 +175,7 @@ def qc(guides, style, render_dir, agent_notes=None, out=None):
     not_run = []
     if manifest.get('flow', {}).get('enabled'):
         checks['motion_coherence'] = _motion(guides, manifest, figure, baseline, intent)
+        checks['texture_distortion'] = _distortion(guides, manifest, len(frames), intent)
     else:
         not_run.append('motion_coherence')
 

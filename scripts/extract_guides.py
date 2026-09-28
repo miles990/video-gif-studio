@@ -111,7 +111,9 @@ def _layer(plate, masks, centers, stage, prefix, epsilon, keep_alpha=False):
 
 
 UV_SCALE, UV_OFFSET = 8, 32768  # stored texture coordinates: 1/8 px over [-4096, 4096)
-FLOW_DEADZONE = 0.3  # px; generated video jitters ~0.1-0.3 px where nothing moves, which would make still texture drift
+FLOW_DEADZONE = 0.5  # px; generated video jitters ~0.1-0.5 px where nothing moves, which would make still texture drift
+FLOW_SMOOTH = 4.0    # px; Gaussian over foreground flow before advection
+UV_PERIOD = 24       # frames between re-anchoring each of the two texture layers; 0 keeps one never-reset layer
 
 
 def _gray(a):
@@ -133,17 +135,40 @@ def _nearest_extend(uv, known, region):
     return uv
 
 
-def _flow_guides(plate, fg, stage):
+def uv_distortion(uv, region):
+    """Median local deformation of texture coordinates: sum of |log singular values| of the uv Jacobian (0 = rigid)."""
+    if not region.any():
+        return 0.0
+    ux, uy = np.gradient(uv[..., 0], axis=1), np.gradient(uv[..., 0], axis=0)
+    vx, vy = np.gradient(uv[..., 1], axis=1), np.gradient(uv[..., 1], axis=0)
+    jac = np.stack([np.stack([ux, uy], -1), np.stack([vx, vy], -1)], -2)[region]
+    sv = np.clip(np.linalg.svd(jac, compute_uv=False), 1e-3, None)
+    return float(np.median(np.abs(np.log(sv)).sum(1)))
+
+
+def layer_weights(i, period):
+    # Two staggered layers; each fades to zero exactly when it is re-anchored, and the weights always sum to 1.
+    if not period:
+        return [1.0]
+    phases = [((i + k*period/2) % period)/period for k in range(2)]
+    return [1 - abs(2*p - 1) for p in phases]
+
+
+def _pack(uv):
+    return np.clip(np.rint(uv*UV_SCALE) + UV_OFFSET, 0, 65535).astype(np.uint16)
+
+
+def _flow_guides(plate, fg, stage, period=UV_PERIOD, smooth=FLOW_SMOOTH):
     h, w = fg[0].shape
     gy, gx = np.mgrid[:h, :w].astype(np.float32)
     grid = np.dstack([gx, gy])
     dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
     gray = [_gray(a) for a in plate]
-    uv = grid.copy()
+    layers = [grid.copy() for _ in layer_weights(0, period)]
     (stage/'flow').mkdir()
-    records, valid_fraction, stretch = [], [], []
+    records, weights, valid_fraction, distortion = [], [], [], []
     for i in range(len(plate)):
-        record = {'uv': (np.clip(np.rint(uv*UV_SCALE) + UV_OFFSET, 0, 65535)).astype(np.uint16)}
+        record = {}
         if i:
             bw = dis.calc(gray[i], gray[i-1], None)   # pixel x at t came from x + bw at t-1
             fw = dis.calc(gray[i-1], gray[i], None)
@@ -153,42 +178,66 @@ def _flow_guides(plate, fg, stage):
             inside = (mx >= 0) & (mx <= w-1) & (my >= 0) & (my <= h-1)
             prev_fg = cv2.remap(fg[i-1].astype(np.uint8), mx, my, cv2.INTER_NEAREST, borderValue=0).astype(bool)
             valid = inside & prev_fg & fg[i] & (err < .5 + .05*np.linalg.norm(bw, axis=2))
+            # Advect with spatially smoothed flow: generated video adds per-pixel flow noise that would marble the texture.
+            move = bw
+            if smooth:
+                weight = cv2.GaussianBlur(fg[i].astype(np.float32), (0, 0), smooth)
+                move = np.dstack([cv2.GaussianBlur(bw[..., k]*fg[i], (0, 0), smooth)/np.maximum(weight, 1e-3) for k in range(2)])
+                move = np.where(fg[i][..., None], move, bw)
             # Still foreground keeps its coordinates even where flow is untrustworthy (flat, low-texture areas).
-            still = (np.linalg.norm(bw, axis=2) < FLOW_DEADZONE) & fg[i] & fg[i-1]
-            carried = cv2.remap(uv, mx, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
-            uv = np.where(still[..., None], uv, np.where(valid[..., None], carried, grid))
-            uv = _nearest_extend(uv, valid | still, fg[i])
-            record = {'uv': (np.clip(np.rint(uv*UV_SCALE) + UV_OFFSET, 0, 65535)).astype(np.uint16),
-                      'backward': bw.astype(np.float16), 'valid': np.packbits(valid)}
+            still = (np.linalg.norm(move, axis=2) < FLOW_DEADZONE) & fg[i] & fg[i-1]
+            ax, ay = gx + move[..., 0], gy + move[..., 1]
+            for k, uv in enumerate(layers):
+                carried = cv2.remap(uv, ax, ay, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+                uv = np.where(still[..., None], uv, np.where(valid[..., None], carried, grid))
+                layers[k] = _nearest_extend(uv, valid | still, fg[i])
+            # Re-anchor a layer at the moment its weight reaches zero, bounding how far texture can deform.
+            for k, wk in enumerate(layer_weights(i, period)):
+                if period and wk == 0:
+                    layers[k] = grid.copy()
+            record.update({'backward': bw.astype(np.float16), 'valid': np.packbits(valid)})
             valid_fraction.append(round(float(valid.sum()/max(1, fg[i].sum())), 4))
-            # Texture stretch: how much the advected coordinates deform locally (1 = rigid).
-            du = np.linalg.norm(np.gradient(uv[..., 0]), axis=0)[fg[i]]
-            stretch.append(round(float(np.percentile(du, 95)), 3) if len(du) else None)
+            interior = cv2.erode(fg[i].astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool) & valid
+            wts = layer_weights(i, period)
+            distortion.append(round(sum(wk*uv_distortion(uv, interior) for wk, uv in zip(wts, layers)), 4))
         else:
             valid_fraction.append(None)
-            stretch.append(None)
+            distortion.append(0.0)
+        for k, uv in enumerate(layers):
+            record[f'uv{k}'] = _pack(uv)
+        weights.append([round(x, 5) for x in layer_weights(i, period)])
         np.savez_compressed(stage/'flow'/f'{i:05d}.npz', **record)
         records.append(f'flow/{i:05d}.npz')
-    return {'enabled': True, 'deadzone_px': FLOW_DEADZONE, 'method': 'OpenCV DIS (medium), backward t->t-1 with forward-backward consistency',
-            'uv': f'texture coordinates advected along valid backward flow (moves under {FLOW_DEADZONE} px are held still); '
-                  f'revealed surface extended from nearest valid pixel; '
-                  f'stored as uint16 = uv*{UV_SCALE}+{UV_OFFSET}',
-            'files': records, 'valid_fraction': valid_fraction, 'uv_stretch_p95': stretch}
+    return {'enabled': True, 'deadzone_px': FLOW_DEADZONE, 'smooth_px': smooth, 'uv_period': period,
+            'method': 'OpenCV DIS (medium), backward t->t-1 with forward-backward consistency',
+            'uv': f'texture coordinates advected along smoothed trusted flow (moves under {FLOW_DEADZONE} px held still); '
+                  f'revealed surface extended from the nearest trusted pixel; '
+                  + (f'two layers re-anchored every {period} frames, staggered by half a period and cross-weighted; '
+                     if period else 'one layer, never re-anchored; ')
+                  + f'stored as uint16 = uv*{UV_SCALE}+{UV_OFFSET}',
+            'files': records, 'uv_weights': weights, 'valid_fraction': valid_fraction, 'uv_distortion': distortion}
 
 
 def load_flow(guides, manifest, i):
-    """Flow guides for frame i: backward flow (None on frame 0), trusted-flow mask and advected texture coordinates."""
+    """Flow guides for frame i: backward flow (None on frame 0), trusted-flow mask and advected texture coordinates.
+
+    uv_layers pairs each texture-coordinate layer with its blend weight (weights sum to 1); uv is the heaviest layer,
+    for plugins that sample one field and accept a pop when layers hand over.
+    """
     data = np.load(Path(guides)/manifest['flow']['files'][i])
-    uv = (data['uv'].astype(np.float32) - UV_OFFSET)/UV_SCALE
+    weights = manifest['flow'].get('uv_weights', [[1.0]]*len(manifest['flow']['files']))[i]
+    keys = [f'uv{k}' for k in range(len(weights))] if 'uv0' in data else ['uv']
+    layers = [((data[key].astype(np.float32) - UV_OFFSET)/UV_SCALE, wk) for key, wk in zip(keys, weights)]
+    uv = max(layers, key=lambda layer: layer[1])[0]
     h, w = uv.shape[:2]
     if 'backward' not in data:
-        return {'backward': None, 'valid': np.zeros((h, w), bool), 'uv': uv}
+        return {'backward': None, 'valid': np.zeros((h, w), bool), 'uv': uv, 'uv_layers': layers}
     valid = np.unpackbits(data['valid'])[:h*w].reshape(h, w).astype(bool)
-    return {'backward': data['backward'].astype(np.float32), 'valid': valid, 'uv': uv}
+    return {'backward': data['backward'].astype(np.float32), 'valid': valid, 'uv': uv, 'uv_layers': layers}
 
 
 def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, max_samples=200000,
-            effect_masks=None, effect_colors=3, effect_alpha='binary', effect_alpha_floor=None, flow=False):
+            effect_masks=None, effect_colors=3, effect_alpha='binary', effect_alpha_floor=None, flow=False, uv_period=UV_PERIOD):
     frames, manifest, out = Path(frames), Path(manifest), Path(out)
     if out.exists():
         raise FileExistsError('Use a new output directory')
@@ -225,7 +274,7 @@ def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, m
         stage = Path(tmp)/'guides'
         records = _layer(plate, masks, centers, stage, '', epsilon)
         # Flow follows everything visible, character and effects alike.
-        flow_record = _flow_guides(plate, fg, stage) if flow else {'enabled': False}
+        flow_record = _flow_guides(plate, fg, stage, uv_period) if flow else {'enabled': False}
         effects = None
         if fx:
             effects = {'palette': fx_centers.astype(int).tolist(),
@@ -265,7 +314,9 @@ if __name__ == '__main__':
                         help='plate: keep measured soft alpha for the effect layer')
     parser.add_argument('--effect-alpha-floor', type=int, help='Lowest effect alpha kept (default: --alpha-threshold)')
     parser.add_argument('--flow', action='store_true', help='Store optical flow and motion-attached texture coordinates')
+    parser.add_argument('--uv-period', type=int, default=UV_PERIOD, help='Frames between texture-layer re-anchors; 0 never re-anchors')
     args = parser.parse_args()
     print(json.dumps(extract(args.frames, args.manifest, args.out, args.colors, args.alpha_threshold, args.epsilon,
                              effect_masks=args.effect_masks, effect_colors=args.effect_colors,
-                             effect_alpha=args.effect_alpha, effect_alpha_floor=args.effect_alpha_floor, flow=args.flow)))
+                             effect_alpha=args.effect_alpha, effect_alpha_floor=args.effect_alpha_floor, flow=args.flow,
+                             uv_period=args.uv_period)))

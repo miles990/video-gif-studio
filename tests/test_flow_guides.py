@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from extract_guides import extract,load_flow
+from extract_guides import extract,load_flow,layer_weights
 from render_stylized import render
 from qc_redraw import qc
 
@@ -35,6 +35,22 @@ class FlowGuides(unittest.TestCase):
   with tempfile.TemporaryDirectory() as t:
    t=Path(t);d,m=textured_plate(t,frames=2);extract(d,m,t/'g',colors=2)
    self.assertFalse(json.loads((t/'g/manifest.json').read_text())['flow']['enabled'])
+
+class Layers(unittest.TestCase):
+ def test_weights_sum_to_one_and_vanish_at_reanchor(self):
+  for i in range(60):
+   w=layer_weights(i,24);self.assertAlmostEqual(sum(w),1.0)
+   if i%24==0:self.assertEqual(w[0],0)
+   if i%24==12:self.assertEqual(w[1],0)
+  self.assertEqual(layer_weights(7,0),[1.0])
+ def test_period_zero_keeps_one_layer_and_rigid_motion_has_no_distortion(self):
+  with tempfile.TemporaryDirectory() as t:
+   t=Path(t);d,m=textured_plate(t,frames=4);extract(d,m,t/'g',colors=3,flow=True,uv_period=0)
+   g=json.loads((t/'g/manifest.json').read_text());self.assertEqual(len(load_flow(t/'g',g,3)['uv_layers']),1)
+   extract(d,m,t/'g2',colors=3,flow=True);g2=json.loads((t/'g2/manifest.json').read_text())
+   self.assertEqual(len(load_flow(t/'g2',g2,3)['uv_layers']),2);self.assertLess(max(g2['flow']['uv_distortion']),.02)
+   render(t/'g2',{},t/'r');c=qc(t/'g2',{},t/'r')['checks']['texture_distortion'];self.assertTrue(c['pass'],c)
+   self.assertFalse(qc(t/'g2',{'intent':{'uv_distortion_max':-1}},t/'r')['checks']['texture_distortion']['pass'])
 
 GRAIN='''
 import cv2

@@ -41,22 +41,27 @@ function render(ctx, api) {
   // 2. The figure with screentone in texture space (bilinear half-resolution UV, doubled to full pixels).
   const img = new ImageData(new Uint8ClampedArray(ctx.base.data), W, H), d = img.data;
   const [tr, tg, tb] = hex(P.tone), [light, dark] = P.halftone, pitch = P.dot, root2 = Math.SQRT1_2;
-  const uvAt = (x, y, k) => {
+  const uvAt = (field, x, y, k) => {
     const sx = Math.min(hw - 1.001, Math.max(0, x / 2 - 0.25)), sy = Math.min(hh - 1.001, Math.max(0, y / 2 - 0.25));
-    const x0 = Math.floor(sx), y0 = Math.floor(sy), ax = sx - x0, ay = sy - y0, at = (xx, yy) => ctx.uv[2 * (yy * hw + xx) + k];
+    const x0 = Math.floor(sx), y0 = Math.floor(sy), ax = sx - x0, ay = sy - y0, at = (xx, yy) => field[2 * (yy * hw + xx) + k];
     return 2 * ((at(x0, y0) * (1 - ax) + at(x0 + 1, y0) * ax) * (1 - ay) + (at(x0, y0 + 1) * (1 - ax) + at(x0 + 1, y0 + 1) * ax) * ay);
   };
-  if (ctx.uv) for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+  const layers = ctx.uvLayers.length ? ctx.uvLayers : (ctx.uv ? [{uv: ctx.uv, weight: 1}] : []);
+  if (layers.length) for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const p = 4 * (y * W + x);
     if (d[p + 3] === 0) continue;
     const lum = (0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2]) / 255;
     const t = Math.min(1, Math.max(0, (dark - lum) / (dark - light)));
     if (t <= 0) continue;
-    const u = uvAt(x, y, 0), v = uvAt(x, y, 1);
-    const a = (u + v) * root2 / pitch, b = (u - v) * root2 / pitch;
-    const da = a - Math.round(a), db = b - Math.round(b);
-    const dist = Math.hypot(da, db) * pitch, radius = pitch * 0.5 * Math.sqrt(t) * 1.05;
-    const ink = Math.min(1, Math.max(0, radius - dist + 0.5));
+    // Blend the dot coverage of each re-anchored texture layer by its weight.
+    let ink = 0;
+    for (const layer of layers) {
+      const u = uvAt(layer.uv, x, y, 0), v = uvAt(layer.uv, x, y, 1);
+      const a = (u + v) * root2 / pitch, b = (u - v) * root2 / pitch;
+      const da = a - Math.round(a), db = b - Math.round(b);
+      const dist = Math.hypot(da, db) * pitch, radius = pitch * 0.5 * Math.sqrt(t) * 1.05;
+      ink += layer.weight * Math.min(1, Math.max(0, radius - dist + 0.5));
+    }
     d[p] += (tr - d[p]) * ink; d[p + 1] += (tg - d[p + 1]) * ink; d[p + 2] += (tb - d[p + 2]) * ink;
   }
   const figure = new OffscreenCanvas(W, H);

@@ -1,7 +1,8 @@
 """Ink hatching style plugin: pen hatching on a tinted paper wash, glued to the moving surface.
 
 Hatch lines live in the advected texture coordinates from `extract_guides.py --flow`, so strokes travel with the
-limbs instead of sliding across them. Without flow guides the pattern falls back to canvas space (it will slide;
+limbs instead of sliding across them. With re-anchored texture layers, each layer's strokes are drawn and blended by
+the layer weights, so no layer is seen at the moment it is re-anchored. Without flow guides the pattern falls back to canvas space (it will slide;
 declare intent.texture_slides or extract with --flow). Effects keep their own color with a soft glow, unhatched.
 
 Params: paper, ink (#RRGGBB), spacing (px), line_width (px), angle (radians), thresholds (luminance per hatch layer),
@@ -28,25 +29,29 @@ def render(ctx):
     p = {**DEFAULTS, **ctx['params']}
     base = ctx['base'].astype(np.float32)
     h, w = base.shape[:2]
-    if ctx['uv'] is not None:
-        u, v = ctx['uv'][..., 0].astype(np.float32), ctx['uv'][..., 1].astype(np.float32)
+    if ctx.get('uv_layers'):
+        layers = [(uv[..., 0].astype(np.float32), uv[..., 1].astype(np.float32), wk) for uv, wk in ctx['uv_layers'] if wk > 0]
     else:
         v, u = np.mgrid[:h, :w].astype(np.float32)
+        layers = [(u, v, 1.0)]
     lum = (base[..., :3] @ np.float32([.299, .587, .114]))/255
 
     # Hand wobble sampled in texture space: it moves with the surface and never re-rolls per frame.
     wob = cv2.GaussianBlur(ctx['noise']('ink-wobble', (512, 512)).astype(np.float32), (0, 0), 7)
     wob = (wob - wob.mean())/max(float(wob.std()), 1e-6)*p['wobble']
-    wobble = _sample(wob, u, v)
 
     ink = np.zeros((h, w), np.float32)
-    for k, threshold in enumerate(p['thresholds']):
-        a = p['angle'] + k*np.pi/2.6
-        d = (u*np.cos(a) + v*np.sin(a) + wobble*(1 + .4*k))/p['spacing']
-        dist = np.abs(d - np.round(d))*p['spacing']
-        stroke = np.clip(p['line_width']/2 + .5 - dist, 0, 1)
-        weight = np.clip((threshold - lum)/.08, 0, 1)
-        ink = np.maximum(ink, stroke*weight)
+    for u, v, wk in layers:
+        wobble = _sample(wob, u, v)
+        layer = np.zeros((h, w), np.float32)
+        for k, threshold in enumerate(p['thresholds']):
+            a = p['angle'] + k*np.pi/2.6
+            d = (u*np.cos(a) + v*np.sin(a) + wobble*(1 + .4*k))/p['spacing']
+            dist = np.abs(d - np.round(d))*p['spacing']
+            stroke = np.clip(p['line_width']/2 + .5 - dist, 0, 1)
+            weight = np.clip((threshold - lum)/.08, 0, 1)
+            layer = np.maximum(layer, stroke*weight)
+        ink += wk*layer
     ink = np.maximum(ink, np.clip((p['solid'] - lum)/.04, 0, 1))
 
     paper = _hex(p['paper'])

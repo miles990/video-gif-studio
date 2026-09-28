@@ -211,10 +211,10 @@ def render_frame(i, guides, style, colors, fx, plugin=None):
                'base': out, 'params': style['plugin_params'], 'noise': noise_source(style['seed']),
                'character': _layer_context(guides['frames'][i], root, colors),
                'effects': _layer_context(guides['effects']['frames'][i], root, fx[1]) if fx else None,
-               'uv': None, 'flow': None, 'flow_valid': None}
+               'uv': None, 'uv_layers': None, 'flow': None, 'flow_valid': None}
         if guides.get('flow', {}).get('enabled'):
             f = load_flow(root, guides, i)
-            ctx.update({'uv': f['uv'], 'flow': f['backward'], 'flow_valid': f['valid']})
+            ctx.update({'uv': f['uv'], 'uv_layers': f['uv_layers'], 'flow': f['backward'], 'flow_valid': f['valid']})
         out = plugin(ctx)
         if not isinstance(out, np.ndarray) or out.shape != (h, w, 4) or out.dtype != np.uint8:
             raise ValueError(f'Style plugin must return a uint8 array of shape {(h, w, 4)}')

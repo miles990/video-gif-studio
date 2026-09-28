@@ -38,8 +38,10 @@ def render(ctx):
         if len(xs):
             dx, dy = int(round(xs.mean())) % pad, int(round(ys.mean())) % pad
     if p['anchor'] == 'uv':
-        uv = ctx['uv'].astype(np.float32) + pad
-        grain = cv2.remap(grain, uv[..., 0], uv[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+        # Blend re-anchored texture layers by weight so no layer is seen at the moment it resets.
+        layers = ctx.get('uv_layers') or [(ctx['uv'], 1.0)]
+        grain = sum(wk*cv2.remap(grain, uv[..., 0].astype(np.float32) + pad, uv[..., 1].astype(np.float32) + pad,
+                                 cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP) for uv, wk in layers)
     else:
         grain = grain[pad - dy:pad - dy + h, pad - dx:pad - dx + w]
     rgb = np.clip(base[..., :3]*(1 + p['grain']*grain[..., None]), 0, 255)
