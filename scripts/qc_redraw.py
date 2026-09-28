@@ -20,7 +20,8 @@ from render_stylized import render
 INTENT = {'boil': False, 'silhouette_min': 0.95, 'silhouette_tolerance_px': 2, 'interior_change_max': 0.01,
           'static_radius_px': 4, 'static_majority': 0.9, 'change_level': 4, 'offcanvas_ok': False,
           'texture_slides': False, 'motion_change_max': 0.05, 'motion_change_level': 16, 'motion_min_px': 1.5,
-          'motion_span': 4, 'motion_min_pixels': 500, 'uv_distortion_max': 0.5}
+          'motion_span': 4, 'motion_min_pixels': 500, 'uv_distortion_max': 0.5,
+          'blend_change_max': 0.1}
 
 
 def _frames(directory):
@@ -50,7 +51,7 @@ def _motion(guides, manifest, figure, baseline, intent):
     h, w = figure[0].shape[:2]
     gy, gx = np.mgrid[:h, :w].astype(np.float32)
     flows = [load_flow(guides, manifest, i) for i in range(len(figure))]
-    fractions, base_fractions, moving_pixels, bad = [None], [None], [None], []
+    fractions, base_fractions, moving_pixels, crossfading, bad = [None], [None], [None], [None], []
     k3 = np.ones((3, 3), np.uint8)
     for i in range(1, len(figure)):
         span = min(intent['motion_span'], i)
@@ -62,6 +63,13 @@ def _motion(guides, manifest, figure, baseline, intent):
             mx, my = mx + step[..., 0], my + step[..., 1]
         target = np.any([m > 0 for m in _guide(guides, manifest, i, 'mask')], axis=0)
         moving = valid & target & (np.hypot(mx - gx, my - gy) >= intent['motion_min_px'])
+        # Where the guides themselves cross-fade texture layers over this span, appearance changes by design;
+        # judge attachment only where the blend held steady, so a sliding texture still has nowhere to hide.
+        fading = np.zeros_like(moving)
+        if len(flows[i]['uv_layers']) > 1:
+            then = cv2.remap(flows[i - span]['uv_layers'][0][1], mx, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            fading = moving & (np.abs(flows[i]['uv_layers'][0][1] - then) > intent['blend_change_max'])
+            moving &= ~fading
         moving = cv2.erode(moving.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(bool)
         if moving.sum() < intent['motion_min_pixels']:
             moving[:] = False
@@ -78,11 +86,13 @@ def _motion(guides, manifest, figure, baseline, intent):
         fractions.append(round(fraction, 5))
         base_fractions.append(round(base, 5))
         moving_pixels.append(int(moving.sum()))
+        crossfading.append(int(fading.sum()))
         if moving.any() and not intent['texture_slides'] and fraction - base > intent['motion_change_max']:
             bad.append(i)
     measured = any(moving_pixels[1:])
     return {'pass': (not bad) if measured else None, 'flagged_frames': bad, 'warp_error_fraction': fractions,
             'reference_warp_error_fraction': base_fractions, 'moving_pixels': moving_pixels,
+            'crossfading_pixels_excluded': crossfading,
             'unmeasured_frames': [i for i, n in enumerate(moving_pixels) if n == 0],
             'skipped': 'texture_slides declared' if intent['texture_slides'] else None}
 
