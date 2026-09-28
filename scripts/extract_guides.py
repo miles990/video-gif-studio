@@ -114,7 +114,8 @@ UV_SCALE, UV_OFFSET = 8, 32768  # stored texture coordinates: 1/8 px over [-4096
 FLOW_DEADZONE = 0.5  # px; generated video jitters ~0.1-0.5 px where nothing moves, which would make still texture drift
 FLOW_SMOOTH = 4.0    # px; Gaussian over foreground flow before advection
 REANCHOR_LOW, REANCHOR_HIGH = 0.05, 0.15  # local deformation below which a reset copies the other layer
-UV_TRAVEL = 48.0     # px of a surface point's own travel per re-anchoring cycle; 0 keeps one never-reset layer
+UV_CLOCK = 0.9       # phase advances by (texture deformation - UV_SLACK)/UV_CLOCK per frame; 0 keeps one layer
+UV_SLACK = 0.03      # deformation treated as rigid; below it a point's layer weights never change
 
 
 def _gray(a):
@@ -140,11 +141,15 @@ def distortion_map(uv, region=None):
     """Per-pixel deformation of texture coordinates: sum of |log singular values| of the uv Jacobian (0 = rigid)."""
     ux, uy = np.gradient(uv[..., 0], axis=1), np.gradient(uv[..., 0], axis=0)
     vx, vy = np.gradient(uv[..., 1], axis=1), np.gradient(uv[..., 1], axis=0)
-    jac = np.stack([np.stack([ux, uy], -1), np.stack([vx, vy], -1)], -2)
     if region is not None:
-        jac = jac[region]
-    sv = np.clip(np.linalg.svd(jac, compute_uv=False), 1e-3, None)
-    return np.abs(np.log(sv)).sum(-1)
+        ux, uy, vx, vy = ux[region], uy[region], vx[region], vy[region]
+    # Closed-form singular values of [[ux, uy], [vx, vy]]: s1^2 + s2^2 = |J|_F^2 and s1*s2 = |det J|.
+    frob = ux*ux + uy*uy + vx*vx + vy*vy
+    det = np.abs(ux*vy - uy*vx)
+    root = np.sqrt(np.maximum(frob*frob - 4*det*det, 0))
+    s1 = np.sqrt(np.maximum((frob + root)/2, 1e-6))
+    s2 = np.clip(det/np.maximum(s1, 1e-3), 1e-3, None)
+    return np.abs(np.log(s1)) + np.abs(np.log(s2))
 
 
 def uv_distortion(uv, region):
@@ -177,15 +182,16 @@ def _pack(uv):
     return np.clip(np.rint(uv*UV_SCALE) + UV_OFFSET, 0, 65535).astype(np.uint16)
 
 
-def _flow_guides(plate, fg, stage, travel=UV_TRAVEL, smooth=FLOW_SMOOTH):
+def _flow_guides(plate, fg, stage, cycle=UV_CLOCK, smooth=FLOW_SMOOTH):
     h, w = fg[0].shape
     gy, gx = np.mgrid[:h, :w].astype(np.float32)
     grid = np.dstack([gx, gy])
     dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
     gray = [_gray(a) for a in plate]
-    layers = [grid.copy() for _ in range(2 if travel else 1)]
-    # Surface phase: a clock carried by each surface point that advances with how far that point moved, not with
-    # time. Still points never advance, so their layer weights never change and they cannot shimmer.
+    layers = [grid.copy() for _ in range(2 if cycle else 1)]
+    # Surface phase: a clock carried by each surface point that advances with how deformed its texture currently is,
+    # not with time or distance. Rigid and undeformed points never advance, so they never cross-fade; deformed
+    # texture (real strain, flow noise, revealed-surface seams) cycles until both layers are clean again, then stops.
     phase = np.full((h, w), .25, np.float32)
     (stage/'flow').mkdir()
     records, valid_fraction, distortion = [], [], []
@@ -214,9 +220,12 @@ def _flow_guides(plate, fg, stage, travel=UV_TRAVEL, smooth=FLOW_SMOOTH):
                 carried = cv2.remap(uv, ax, ay, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
                 uv = np.where(still[..., None], uv, np.where(valid[..., None], carried, grid))
                 layers[k] = _nearest_extend(uv, valid | still, fg[i])
-            if travel:
+            if cycle:
                 carried = np.where(still, phase, cv2.remap(phase, ax, ay, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE))
-                advanced = carried + np.where(fg[i] & ~still, speed, 0)/travel
+                weights = layer_weights(carried)
+                deformed = sum(wk*distortion_map(uv) for wk, uv in zip(weights, layers))
+                deformed = cv2.GaussianBlur(np.where(fg[i], deformed, 0).astype(np.float32), (0, 0), 2)
+                advanced = carried + np.where(fg[i], np.clip(deformed - UV_SLACK, 0, 1), 0)/cycle
                 # Re-anchor each layer only at points whose phase just wrapped, where that layer's weight is ~0.
                 for k in range(2):
                     wrapped = fg[i] & (np.floor(advanced + k/2) > np.floor(carried + k/2))
@@ -226,7 +235,7 @@ def _flow_guides(plate, fg, stage, travel=UV_TRAVEL, smooth=FLOW_SMOOTH):
             record.update({'backward': bw.astype(np.float16), 'valid': np.packbits(valid)})
             valid_fraction.append(round(float(valid.sum()/max(1, fg[i].sum())), 4))
             interior = cv2.erode(fg[i].astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool) & valid
-            weights = layer_weights(phase) if travel else [np.ones((h, w), np.float32)]
+            weights = layer_weights(phase) if cycle else [np.ones((h, w), np.float32)]
             deformation = sum(wk*distortion_map(uv) for wk, uv in zip(weights, layers))
             distortion.append(round(float(np.median(deformation[interior])), 4) if interior.any() else 0.0)
         else:
@@ -234,19 +243,19 @@ def _flow_guides(plate, fg, stage, travel=UV_TRAVEL, smooth=FLOW_SMOOTH):
             distortion.append(0.0)
         for k, uv in enumerate(layers):
             record[f'uv{k}'] = _pack(uv)
-        if travel:
+        if cycle:
             record['phase'] = np.mod(phase, 1).astype(np.float16)  # weights need only the fractional phase
         np.savez_compressed(stage/'flow'/f'{i:05d}.npz', **record)
         records.append(f'flow/{i:05d}.npz')
-    return {'enabled': True, 'deadzone_px': FLOW_DEADZONE, 'smooth_px': smooth, 'uv_travel_px': travel,
+    return {'enabled': True, 'deadzone_px': FLOW_DEADZONE, 'smooth_px': smooth, 'uv_clock': cycle, 'uv_slack': UV_SLACK,
             'method': 'OpenCV DIS (medium), backward t->t-1 with forward-backward consistency',
             'uv': f'texture coordinates advected along smoothed trusted flow (moves under {FLOW_DEADZONE} px held still); '
                   f'revealed surface extended from the nearest trusted pixel; '
-                  + (f'two layers cross-weighted by a per-point phase that advances one cycle per {travel} px of that '
-                     f'point\'s own travel (still points never change weight); a layer re-anchors only where its phase '
+                  + (f'two layers cross-weighted by a per-point phase that advances by (deformation - {UV_SLACK})/{cycle} '
+                     f'per frame (rigid and undeformed points never change weight); a layer re-anchors only where its phase '
                      f'wraps, copying the other layer where its interior deformation is under {REANCHOR_LOW}-{REANCHOR_HIGH} '
                      f'(feathered) and restarting only deformed texture; '
-                     if travel else 'one layer, never re-anchored; ')
+                     if cycle else 'one layer, never re-anchored; ')
                   + f'stored as uint16 = uv*{UV_SCALE}+{UV_OFFSET}',
             'files': records, 'valid_fraction': valid_fraction, 'uv_distortion': distortion}
 
@@ -270,7 +279,7 @@ def load_flow(guides, manifest, i):
 
 
 def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, max_samples=200000,
-            effect_masks=None, effect_colors=3, effect_alpha='binary', effect_alpha_floor=None, flow=False, uv_travel=UV_TRAVEL):
+            effect_masks=None, effect_colors=3, effect_alpha='binary', effect_alpha_floor=None, flow=False, uv_clock=UV_CLOCK):
     frames, manifest, out = Path(frames), Path(manifest), Path(out)
     if out.exists():
         raise FileExistsError('Use a new output directory')
@@ -307,7 +316,7 @@ def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, m
         stage = Path(tmp)/'guides'
         records = _layer(plate, masks, centers, stage, '', epsilon)
         # Flow follows everything visible, character and effects alike.
-        flow_record = _flow_guides(plate, fg, stage, uv_travel) if flow else {'enabled': False}
+        flow_record = _flow_guides(plate, fg, stage, uv_clock) if flow else {'enabled': False}
         effects = None
         if fx:
             effects = {'palette': fx_centers.astype(int).tolist(),
@@ -347,9 +356,9 @@ if __name__ == '__main__':
                         help='plate: keep measured soft alpha for the effect layer')
     parser.add_argument('--effect-alpha-floor', type=int, help='Lowest effect alpha kept (default: --alpha-threshold)')
     parser.add_argument('--flow', action='store_true', help='Store optical flow and motion-attached texture coordinates')
-    parser.add_argument('--uv-travel', type=float, default=UV_TRAVEL, help='Surface travel (px) per texture re-anchoring cycle; 0 never re-anchors')
+    parser.add_argument('--uv-clock', type=float, default=UV_CLOCK, help='Deformation-to-phase rate divisor; smaller re-anchors sooner; 0 never re-anchors')
     args = parser.parse_args()
     print(json.dumps(extract(args.frames, args.manifest, args.out, args.colors, args.alpha_threshold, args.epsilon,
                              effect_masks=args.effect_masks, effect_colors=args.effect_colors,
                              effect_alpha=args.effect_alpha, effect_alpha_floor=args.effect_alpha_floor, flow=args.flow,
-                             uv_travel=args.uv_travel)))
+                             uv_clock=args.uv_clock)))
