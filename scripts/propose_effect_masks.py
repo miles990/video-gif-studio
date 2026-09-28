@@ -86,5 +86,6 @@ if __name__ == '__main__':
     parser.add_argument('--reference-frames', type=int, nargs='+', required=True, help='Effect-free frame indices')
     parser.add_argument('--threshold', type=float, default=32.0, help='Per-channel distance from any reference color')
     parser.add_argument('--min-area', type=int, default=16)
+    parser.add_argument('--alpha-threshold', type=int, default=128, help='Lower it to propose faint glow/trail pixels')
     args = parser.parse_args()
-    print(json.dumps(propose(args.frames, args.manifest, args.out, args.reference_frames, args.threshold, args.min_area)))
+    print(json.dumps(propose(args.frames, args.manifest, args.out, args.reference_frames, args.threshold, args.min_area, args.alpha_threshold)))

@@ -55,6 +55,8 @@ Review loop:
 2. `apply_mask_edits.py` applies an ordered JSON op list (`add`/`remove` by `rect` or `polygon`, optionally restricted to a `color` and `tolerance`; `clear`), over `"all"` or `[start, end]` frames. `add` never leaves plate foreground. Color-restricted `add` inside a rect recovers effect parts that share character colors without taking the character.
 3. Re-run the review on the edited masks. Only a person who watched the result passes `--reviewed-by NAME`; the tool records that sign-off and otherwise leaves `review: pending`.
 
+**Soft effect alpha.** Glows and fading trails often sit below the character's alpha threshold. `--effect-alpha plate --effect-alpha-floor 8` keeps masked pixels down to that floor and stores their measured plate alpha; the renderer then multiplies its fill coverage by it (`effects.alpha`, default `plate` when available, or `solid`). This is measured alpha from the plate's own matte, not unmixed foreground alpha. Lower `--alpha-threshold` on `propose_effect_masks.py` and `apply_mask_edits.py` so masks can reach those pixels. Do not combine a low floor with `binary`: faint pixels would render as solid blocks.
+
 `extract_guides.py --effect-masks` records mask hashes, `mask_review: supplied by caller; not verified`, and the proposal/edit manifest beside the masks (`mask_manifest` with its `review` and `reviewed_by`). It never upgrades a review status.
 
 ## Provenance
@@ -85,7 +87,7 @@ Decision: the reference renderer is Python on the existing Pillow/NumPy/OpenCV s
 .venv/bin/python scripts/apply_mask_edits.py run/plate --manifest run/plate.json --masks run/fx-proposal/masks \
   --ops ops.json --out run/fx-edit [--reviewed-by NAME]
 .venv/bin/python scripts/extract_guides.py run/plate --manifest run/plate.json --out run/guides --colors 4 \
-  --effect-masks run/fx-edit/masks --effect-colors 3
+  --effect-masks run/fx-edit/masks --effect-colors 3 [--effect-alpha plate --effect-alpha-floor 8]
 .venv/bin/python scripts/render_stylized.py run/guides --style style.json --out run/render
 ```
 
@@ -93,8 +95,8 @@ Decision: the reference renderer is Python on the existing Pillow/NumPy/OpenCV s
 - **`extract_guides.py`:** thresholded masks, simplified contour rings with holes, and per-frame label maps against **one deterministic palette shared by the whole plate**, so region colors cannot flicker between frames. The manifest records `iou_prev` per frame and the result lists frames below 0.8.
 - **Effect layer:** with `--effect-masks`, masked pixels leave the character layer and get their own masks, rings, labels and shared palette under `effects` in the manifest. Without it, `effects` is `null`.
 - **`render_stylized.py`:** flat fill (plate palette, palette override or one solid color) plus a tapered contour. Fills come from bilinear-upsampled masks, so area is exact and 1-2 px strokes survive; contours sit on the fill edge. Taper depends on each segment's outward normal against a light direction, never on arc length, so it does not crawl when contour start points change. Rendering is supersampled and deterministic; output is `frames/` plus a manifest with `durations_ms`, style hash, guide hash and renderer hash, ready for the existing export tools.
-- **Style keys:** `fill` (`palette` or `#RRGGBB`), `palette` (hex list matching the guide palette), `region_smooth`, `background`, `supersample` (1-8), `line.color`, `line.width`, `line.taper` (0-1), `line.light`. `effects` takes `fill`, `palette`, `region_smooth`, `line` (default no outline), `order` (`over`/`under`) and `opacity` (0-1); it is refused when the guides have no effect layer.
-- **Tests** cover timing/canvas preservation, holes, shared-palette determinism, byte-identical re-renders, integer-translation coherence, effect-layer palettes and compositing, proposal behavior, review flags, ordered mask edits and review-status provenance.
+- **Style keys:** `fill` (`palette` or `#RRGGBB`), `palette` (hex list matching the guide palette), `region_smooth`, `background`, `supersample` (1-8), `line.color`, `line.width`, `line.taper` (0-1), `line.light`. `effects` takes `fill`, `palette`, `region_smooth`, `line` (default no outline), `order` (`over`/`under`), `opacity` (0-1) and `alpha` (`plate`/`solid`); it is refused when the guides have no effect layer.
+- **Tests** cover timing/canvas preservation, holes, shared-palette determinism, byte-identical re-renders, integer-translation coherence, effect-layer palettes and compositing, proposal behavior, review flags, ordered mask edits, review-status provenance and soft effect alpha.
 
 ### Findings from a local trial (chibi-running-dash APNG, 112 frames at 768x768)
 
@@ -102,13 +104,14 @@ Decision: the reference renderer is Python on the existing Pillow/NumPy/OpenCV s
 - **Effects lose their color identity in a single layer.** One shared palette remapped pink dust and magenta speed trails into character colors. With an effect layer, both kept their own colors.
 - **Proposal tolerance.** A palette-distance heuristic flagged every frame, including the reference, because rare chroma-spill fringe colors were averaged out of the palette. Comparing against every reference color fixed that. Sweeping per-channel tolerance on this plate: 12 and 20 still flagged idle frames; 44 lost most of the dust; 32 (the default) left idle frames empty while catching the dust and the magenta/violet trail portions. White and green trail portions matching the sword and gem were missed, as expected, and need manual mask edits. The trial render used unedited proposals and is not an accepted result.
 - **Review loop.** `review_masks.py` on the tolerance-32 proposal (4 s for 112 frames) flagged two isolated frames. Zoomed inspection showed both were false positives on the character: violet shoulder fringe plus a hilt highlight (frame 67) and a speck on a boot that the plate itself had tinted magenta (frame 25). Two `clear` ops removed them and the re-review had no isolated frames. The masks remain `pending`: missing white/green trail parts were not added and nobody signed off.
+- **Soft effect alpha.** Slash frame 53 had 5,247 plate pixels below alpha 128. On frames 50-56 with alpha-8 proposals, `plate` mode faded trail tails and faint specks like the plate, while `binary` with the same low floor drew those specks as solid blocks. The white trail body stayed in the character layer because the proposal cannot see it; that is a mask gap, not an alpha issue.
 - **`iou_prev` also flags genuine fast travel.** The dash frames were listed as low IoU because the body moves, not because masks flickered. Treat the list as a review queue, not a defect verdict.
 - The trial source is pixel art, which this route does not target by default; it was used only as an available RGBA plate.
 
 ## Remaining open questions
 
 1. **Interactive mask painting.** JSON ops cover clears, rects, polygons and color-restricted adds; freehand painting over playback would need a small review page.
-2. **Soft effect alpha.** Effect layers are thresholded; glows and fading trails may need their plate alpha carried into the redraw.
+2. **Soft character edges.** Character layers remain thresholded; motion-blurred limbs may also want measured alpha, which needs care not to reintroduce plate matte noise.
 3. **Pose extraction.** Whether to add an optional keypoint extractor, or keep masks and contours only.
 4. **Paper/texture treatment.** A temporally coherent texture option (fixed or motion-attached, never re-seeded per frame).
 5. **Routing.** Add the mode row to [transparency.md](transparency.md) and a short entry in `SKILL.md` only after a worked example passes acceptance.

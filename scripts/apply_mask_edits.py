@@ -94,6 +94,7 @@ if __name__ == '__main__':
     parser.add_argument('--masks', type=Path, required=True)
     parser.add_argument('--ops', type=Path, required=True, help='JSON list of edit ops')
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--alpha-threshold', type=int, default=128, help='Lowest plate alpha an add op may take')
     parser.add_argument('--reviewed-by', help='Name of the person who reviewed the resulting masks over playback')
     args = parser.parse_args()
-    print(json.dumps(apply_edits(args.frames, args.manifest, args.masks, json.loads(args.ops.read_text()), args.out, args.reviewed_by)))
+    print(json.dumps(apply_edits(args.frames, args.manifest, args.masks, json.loads(args.ops.read_text()), args.out, args.reviewed_by, args.alpha_threshold)))

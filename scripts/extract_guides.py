@@ -84,9 +84,11 @@ def _mask_manifest(directory):
             'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
-def _layer(plate, masks, centers, stage, prefix, epsilon):
+def _layer(plate, masks, centers, stage, prefix, epsilon, keep_alpha=False):
     (stage/prefix/'masks').mkdir(parents=True)
     (stage/prefix/'labels').mkdir()
+    if keep_alpha:
+        (stage/prefix/'alpha').mkdir()
     records, previous = [], None
     for i, (a, mask) in enumerate(zip(plate, masks)):
         name = f'{i:05d}.png'
@@ -100,17 +102,24 @@ def _layer(plate, masks, centers, stage, prefix, epsilon):
         records.append({'mask': f'{prefix}masks/{name}', 'labels': f'{prefix}labels/{name}', 'area': int(mask.sum()),
                         'bbox': [int(xs.min()), int(ys.min()), int(xs.max()-xs.min()+1), int(ys.max()-ys.min()+1)] if len(xs) else None,
                         'iou_prev': iou, 'rings': _rings(mask, epsilon)})
+        if keep_alpha:
+            # Measured plate alpha inside the layer; not unmixed from anything beneath it.
+            Image.fromarray(np.where(mask, a[..., 3], 0).astype(np.uint8)).save(stage/prefix/'alpha'/name)
+            records[-1]['alpha'] = f'{prefix}alpha/{name}'
         previous = mask
     return records
 
 
 def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, max_samples=200000,
-            effect_masks=None, effect_colors=3):
+            effect_masks=None, effect_colors=3, effect_alpha='binary', effect_alpha_floor=None):
     frames, manifest, out = Path(frames), Path(manifest), Path(out)
     if out.exists():
         raise FileExistsError('Use a new output directory')
     if not (1 <= colors <= 254 and 1 <= effect_colors <= 254):
         raise ValueError('colors must be 1-254')
+    if effect_alpha not in ('binary', 'plate'):
+        raise ValueError("effect_alpha must be 'binary' or 'plate'")
+    floor = alpha_threshold if effect_alpha_floor is None else effect_alpha_floor
     files = sorted(frames.glob('*.png'), key=natural)
     source = json.loads(manifest.read_text())
     if not files or len(files) != len(source['durations_ms']):
@@ -124,17 +133,25 @@ def extract(frames, manifest, out, colors=4, alpha_threshold=128, epsilon=1.0, m
     if all((a[..., 3] == 255).all() for a in plate):
         raise ValueError('Plate has no alpha; key it or run background_remove.py first')
     fg = [a[..., 3] >= alpha_threshold for a in plate]
-    fx = _effect_masks(effect_masks, len(files), plate[0].shape[:2], fg)
+    # Soft mode lets reviewed effect masks keep low-alpha glow and trail pixels the character threshold would drop.
+    fx = _effect_masks(effect_masks, len(files), plate[0].shape[:2], [a[..., 3] >= max(1, floor) for a in plate])
     masks = [f & ~e for f, e in zip(fg, fx)] if fx else fg
     centers = _shared_palette(plate, masks, colors, max_samples, 'Plate has no foreground above alpha threshold')
-    fx_centers = _shared_palette(plate, fx, effect_colors, max_samples, 'Effect masks select no foreground pixels') if fx else None
+    fx_centers = None
+    if fx:
+        # Palette from confident effect pixels when any exist; faint pixels have unreliable straight RGB.
+        solid = [m & f for m, f in zip(fx, fg)]
+        fx_centers = _shared_palette(plate, solid if any(m.any() for m in solid) else fx, effect_colors, max_samples,
+                                     'Effect masks select no foreground pixels')
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=out.parent) as tmp:
         stage = Path(tmp)/'guides'
         records = _layer(plate, masks, centers, stage, '', epsilon)
         effects = None
         if fx:
-            effects = {'palette': fx_centers.astype(int).tolist(), 'frames': _layer(plate, fx, fx_centers, stage, 'effects/', epsilon),
+            effects = {'palette': fx_centers.astype(int).tolist(),
+                       'frames': _layer(plate, fx, fx_centers, stage, 'effects/', epsilon, keep_alpha=effect_alpha == 'plate'),
+                       'alpha': effect_alpha, 'alpha_floor': floor,
                        'mask_sha256': [hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(Path(effect_masks).glob('*.png'), key=natural)],
                        'mask_review': 'supplied by caller; not verified by the extractor',
                        'mask_manifest': _mask_manifest(Path(effect_masks)),
@@ -165,6 +182,10 @@ if __name__ == '__main__':
     parser.add_argument('--epsilon', type=float, default=1.0, help='Contour simplification in pixels; 0 keeps every boundary pixel')
     parser.add_argument('--effect-masks', type=Path, help='Reviewed numbered effect masks (nonzero = effect layer), one per plate frame')
     parser.add_argument('--effect-colors', type=int, default=3)
+    parser.add_argument('--effect-alpha', choices=['binary', 'plate'], default='binary',
+                        help='plate: keep measured soft alpha for the effect layer')
+    parser.add_argument('--effect-alpha-floor', type=int, help='Lowest effect alpha kept (default: --alpha-threshold)')
     args = parser.parse_args()
     print(json.dumps(extract(args.frames, args.manifest, args.out, args.colors, args.alpha_threshold, args.epsilon,
-                             effect_masks=args.effect_masks, effect_colors=args.effect_colors)))
+                             effect_masks=args.effect_masks, effect_colors=args.effect_colors,
+                             effect_alpha=args.effect_alpha, effect_alpha_floor=args.effect_alpha_floor)))

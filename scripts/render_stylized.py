@@ -13,7 +13,7 @@ VERSION = 1
 DEFAULT = {'fill': 'palette', 'palette': None, 'region_smooth': 1.0, 'background': None, 'supersample': 4,
            'line': {'color': '#1A1A1A', 'width': 2.0, 'taper': 0.5, 'light': [-1, -1]}}
 # Effects default to unoutlined fills over the character; glows and trails rarely read well with contours.
-EFFECT_DEFAULT = {'fill': 'palette', 'palette': None, 'region_smooth': 1.0, 'order': 'over', 'opacity': 1.0,
+EFFECT_DEFAULT = {'fill': 'palette', 'palette': None, 'region_smooth': 1.0, 'order': 'over', 'opacity': 1.0, 'alpha': None,
                   'line': {'color': '#1A1A1A', 'width': 0.0, 'taper': 0.0, 'light': [-1, -1]}}
 
 
@@ -48,6 +48,10 @@ def _style(style, guides):
         e, fx_colors = _layer_style(style.get('effects', {}), EFFECT_DEFAULT, guides['effects']['palette'])
         if e['order'] not in ('over', 'under') or not 0 <= e['opacity'] <= 1:
             raise ValueError("effects order must be 'over' or 'under' and opacity 0-1")
+        soft = guides['effects'].get('alpha') == 'plate'
+        e['alpha'] = e['alpha'] or ('plate' if soft else 'solid')
+        if e['alpha'] not in ('plate', 'solid') or (e['alpha'] == 'plate' and not soft):
+            raise ValueError("effects alpha 'plate' needs guides extracted with effect_alpha='plate'; otherwise use 'solid'")
         fx = (e, fx_colors)
         s['effects'] = e
     elif 'effects' in style:
@@ -150,7 +154,11 @@ def render_frame(i, guides, style, colors, fx):
     out = render_layer(guides['frames'][i], root, style, colors, ss)
     if fx:
         e, fx_colors = fx
-        layer = render_layer(guides['effects']['frames'][i], root, e, fx_colors, ss)
+        frame = guides['effects']['frames'][i]
+        layer = render_layer(frame, root, e, fx_colors, ss)
+        if e['alpha'] == 'plate':
+            measured = np.array(Image.open(root/frame['alpha'])).astype(np.uint32)
+            layer[..., 3] = ((layer[..., 3]*measured + 127)//255).astype(np.uint8)
         if e['order'] == 'over':
             out = _over(layer, out, e['opacity'])
         else:
@@ -182,7 +190,8 @@ def render(guides, style, out):
         record = {'durations_ms': manifest['durations_ms'], 'canvas': manifest['canvas'],
                   'pixels': 'redrawn from plate guides; no plate pixels are delivered',
                   'fill_colors': 'guide palette sampled from the plate' if style['fill'] == 'palette' and not style['palette'] else 'style sheet',
-                  'effect_layer': manifest['effects'] and {'mask_review': manifest['effects']['mask_review'], 'limits': manifest['effects']['limits']},
+                  'effect_layer': manifest['effects'] and {'mask_review': manifest['effects']['mask_review'], 'limits': manifest['effects']['limits'],
+                                                           'alpha': 'measured plate alpha, not unmixed' if style['effects']['alpha'] == 'plate' else 'solid coverage'},
                   'style': style, 'style_sha256': hashlib.sha256(style_json.encode()).hexdigest(),
                   'guides_manifest_sha256': hashlib.sha256((guides/'manifest.json').read_bytes()).hexdigest(),
                   'renderer': {'name': 'render_stylized.py', 'version': VERSION, 'opencv': cv2.__version__,
