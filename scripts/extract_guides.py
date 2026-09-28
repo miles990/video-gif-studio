@@ -114,8 +114,8 @@ UV_SCALE, UV_OFFSET = 8, 32768  # stored texture coordinates: 1/8 px over [-4096
 FLOW_DEADZONE = 0.5  # px; generated video jitters ~0.1-0.5 px where nothing moves, which would make still texture drift
 FLOW_SMOOTH = 4.0    # px; Gaussian over foreground flow before advection
 REANCHOR_LOW, REANCHOR_HIGH = 0.015, 0.03  # a reset copies the other layer below this deformation; kept under UV_SLACK so copies settle
-UV_CLOCK = 1.8       # phase advances by (texture deformation - UV_SLACK)/UV_CLOCK per frame; 0 keeps one layer
-UV_SLACK = 0.03      # deformation treated as rigid; below it a point's layer weights never change
+UV_CLOCK = 0.25      # phase advances by (texture deformation - UV_SLACK)/UV_CLOCK per frame; 0 keeps one layer
+UV_SLACK = 0.03      # deformation treated as rigid; below it a moving point's layer weights never change
 
 
 def _gray(a):
@@ -222,7 +222,9 @@ def _flow_guides(plate, fg, stage, cycle=UV_CLOCK, smooth=FLOW_SMOOTH):
                 move = np.where(fg[i][..., None], move, bw)
             speed = np.linalg.norm(move, axis=2)
             # Still foreground keeps its coordinates even where flow is untrustworthy (flat, low-texture areas).
-            still = (speed < FLOW_DEADZONE) & fg[i] & fg[i-1]
+            # Either signal can declare stillness: smoothing bleeds a moving limb's flow into the still pixels beside
+            # it, and raw flow jitters where smoothing shows nothing moved.
+            still = (np.minimum(speed, np.linalg.norm(bw, axis=2)) < FLOW_DEADZONE) & fg[i] & fg[i-1]
             ax, ay = gx + move[..., 0], gy + move[..., 1]
             for k, uv in enumerate(layers):
                 carried = cv2.remap(uv, ax, ay, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
@@ -232,8 +234,8 @@ def _flow_guides(plate, fg, stage, cycle=UV_CLOCK, smooth=FLOW_SMOOTH):
                 carried = np.where(still, phase, cv2.remap(phase, ax, ay, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE))
                 weights = layer_weights(carried)
                 deformed, _ = _interior_field(sum(wk*distortion_map(uv) for wk, uv in zip(weights, layers)), fg[i], 2)
-                # Only moving points run their clock: a held point's texture cannot deform further, so it keeps its
-                # current blend instead of cross-fading in place.
+                # Only moving points run their clock: a held point cannot deform further, so it keeps its blend
+                # instead of cross-fading in place. A fast clock clears deformation while the texture still moves.
                 advanced = carried + np.where(fg[i] & ~still, np.clip(deformed - UV_SLACK, 0, 1), 0)/cycle
                 # Re-anchor each layer only at points whose phase just wrapped, where that layer's weight is ~0.
                 for k in range(2):
