@@ -114,7 +114,7 @@ UV_SCALE, UV_OFFSET = 8, 32768  # stored texture coordinates: 1/8 px over [-4096
 FLOW_DEADZONE = 0.5  # px; generated video jitters ~0.1-0.5 px where nothing moves, which would make still texture drift
 FLOW_SMOOTH = 4.0    # px; Gaussian over foreground flow before advection
 REANCHOR_LOW, REANCHOR_HIGH = 0.015, 0.03  # a reset copies the other layer below this deformation; kept under UV_SLACK so copies settle
-UV_CLOCK = 0.9       # phase advances by (texture deformation - UV_SLACK)/UV_CLOCK per frame; 0 keeps one layer
+UV_CLOCK = 1.8       # phase advances by (texture deformation - UV_SLACK)/UV_CLOCK per frame; 0 keeps one layer
 UV_SLACK = 0.03      # deformation treated as rigid; below it a point's layer weights never change
 
 
@@ -197,9 +197,9 @@ def _flow_guides(plate, fg, stage, cycle=UV_CLOCK, smooth=FLOW_SMOOTH):
     dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
     gray = [_gray(a) for a in plate]
     layers = [grid.copy() for _ in range(2 if cycle else 1)]
-    # Surface phase: a clock carried by each surface point that advances with how deformed its texture currently is,
-    # not with time or distance. Rigid and undeformed points never advance, so they never cross-fade; deformed
-    # texture (real strain, flow noise, revealed-surface seams) cycles until both layers are clean again, then stops.
+    # Surface phase: a clock carried by each moving surface point that advances with how deformed its texture
+    # currently is, not with time or distance. Held, rigid and undeformed points never advance, so they never
+    # cross-fade; deformed moving texture (real strain, flow noise, revealed-surface seams) cycles until clean.
     phase = np.full((h, w), .25, np.float32)
     (stage/'flow').mkdir()
     records, valid_fraction, distortion = [], [], []
@@ -232,7 +232,9 @@ def _flow_guides(plate, fg, stage, cycle=UV_CLOCK, smooth=FLOW_SMOOTH):
                 carried = np.where(still, phase, cv2.remap(phase, ax, ay, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE))
                 weights = layer_weights(carried)
                 deformed, _ = _interior_field(sum(wk*distortion_map(uv) for wk, uv in zip(weights, layers)), fg[i], 2)
-                advanced = carried + np.where(fg[i], np.clip(deformed - UV_SLACK, 0, 1), 0)/cycle
+                # Only moving points run their clock: a held point's texture cannot deform further, so it keeps its
+                # current blend instead of cross-fading in place.
+                advanced = carried + np.where(fg[i] & ~still, np.clip(deformed - UV_SLACK, 0, 1), 0)/cycle
                 # Re-anchor each layer only at points whose phase just wrapped, where that layer's weight is ~0.
                 for k in range(2):
                     wrapped = fg[i] & (np.floor(advanced + k/2) > np.floor(carried + k/2))
@@ -259,7 +261,7 @@ def _flow_guides(plate, fg, stage, cycle=UV_CLOCK, smooth=FLOW_SMOOTH):
             'uv': f'texture coordinates advected along smoothed trusted flow (moves under {FLOW_DEADZONE} px held still); '
                   f'revealed surface extended from the nearest trusted pixel; '
                   + (f'two layers cross-weighted by a per-point phase that advances by (deformation - {UV_SLACK})/{cycle} '
-                     f'per frame (rigid and undeformed points never change weight); a layer re-anchors only where its phase '
+                     f'per frame while a point moves (held, rigid and undeformed points never change weight); a layer re-anchors only where its phase '
                      f'wraps, copying the other layer where its interior deformation is under {REANCHOR_LOW}-{REANCHOR_HIGH} '
                      f'(feathered) and restarting only deformed texture; '
                      if cycle else 'one layer, never re-anchored; ')
