@@ -1,6 +1,6 @@
 # Stylized redraw over generated motion (design draft)
 
-**Status: design draft.** Not yet routed from `SKILL.md`, not listed in the transparency mode table, and no renderer is bundled. Do not present this route as implemented or verified until those steps and an accepted worked example exist.
+**Status: design draft with a first local slice.** `scripts/extract_guides.py` and the reference renderer `scripts/render_stylized.py` are bundled and tested, but the route is not yet routed from `SKILL.md`, not listed in the transparency mode table, and has no accepted worked example. Do not present it as a verified production route until those exist.
 
 ## Intent
 
@@ -56,9 +56,31 @@ A stylized redraw is finished only when (a) the plate passed motion review, (b) 
 - Lyric/typography layers and composition space for on-screen text (separate draft).
 - Audio-referenced generation for lip-sync or beat-locked motion (depends on provider support; see [music](music.md)).
 
-## Open questions before implementation
+## First slice (bundled)
 
-1. **Renderer runtime.** Python (Pillow/skia-python, no new heavy dependency) versus a headless-browser canvas renderer (needs a managed Chromium; see [dependencies](dependencies.md)). A Python reference renderer is lighter to bundle; a browser renderer supports richer motion-graphics authoring.
-2. **Pose extraction.** Whether to add an optional keypoint extractor, or rely on masks and contours only for the first version.
-3. **Bundled scope.** Minimal first slice: `extract_guides.py` (masks, contours, per-frame bounding data into a manifest) plus one reference style (flat fill with tapered contour) and tests for determinism and canvas/timing preservation.
+Decision: the reference renderer is Python on the existing Pillow/NumPy/OpenCV stack; no new dependency. A headless-browser renderer remains possible later for richer motion-graphics authoring.
+
+```bash
+.venv/bin/python scripts/extract_guides.py run/plate --manifest run/plate.json --out run/guides --colors 4
+.venv/bin/python scripts/render_stylized.py run/guides --style style.json --out run/render
+```
+
+- **Input:** numbered RGBA PNG plate frames with real alpha plus a `durations_ms` timing manifest (for example `background_remove.py` output). A plate without alpha is refused.
+- **`extract_guides.py`:** thresholded masks, simplified contour rings with holes, and per-frame label maps against **one deterministic palette shared by the whole plate**, so region colors cannot flicker between frames. The manifest records `iou_prev` per frame and the result lists frames below 0.8.
+- **`render_stylized.py`:** flat fill (plate palette, palette override or one solid color) plus a tapered contour. Taper depends on each segment's outward normal against a light direction, never on arc length, so it does not crawl when contour start points change. Rendering is supersampled and deterministic; output is `frames/` plus a manifest with `durations_ms`, style hash, guide hash and renderer hash, ready for the existing export tools.
+- **Style keys:** `fill` (`palette` or `#RRGGBB`), `palette` (hex list matching the guide palette), `region_smooth`, `background`, `supersample` (1-8), `line.color`, `line.width`, `line.taper` (0-1), `line.light`.
+- **Tests** cover timing/canvas preservation, holes, shared-palette determinism, byte-identical re-renders and integer-translation coherence.
+
+### Findings from a local trial (chibi-running-dash APNG, 112 frames at 768x768)
+
+- Contours, holes and motion followed the plate; re-renders were identical. About 0.4 s per frame at supersample 4.
+- **Effects lose their color identity.** A single shared palette remapped pink dust and magenta speed trails into character colors. Effects need their own palette or a separate guide layer before this route can honor requested effects.
+- **`iou_prev` also flags genuine fast travel.** The dash frames were listed as low IoU because the body moves, not because masks flickered. Treat the list as a review queue, not a defect verdict.
+- The trial source is pixel art, which this route does not target by default; it was used only as an available RGBA plate.
+
+## Remaining open questions
+
+1. **Effect layer.** Separate effect guides and palette (by user-reviewed mask or color/alpha heuristics) before claiming effect support.
+2. **Pose extraction.** Whether to add an optional keypoint extractor, or keep masks and contours only.
+3. **Paper/texture treatment.** A temporally coherent texture option (fixed or motion-attached, never re-seeded per frame).
 4. **Routing.** Add the mode row to [transparency.md](transparency.md) and a short entry in `SKILL.md` only after a worked example passes acceptance.
