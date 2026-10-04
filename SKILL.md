@@ -153,3 +153,7 @@ For controllable characters or reusable action libraries, read [animation states
 ## Character replacement with original motion/audio
 
 For “same video/music, change only the character,” read [character-video-edit](references/character-video-edit.md). Use `scripts/assemble_edit.py` for reviewed frame selections and time-bounded inset restoration. Reject missing frames, explicitly opt into FPS conform, and stream-copy complete original audio in a separate mux. Check tiny/occluded actors and effect silhouettes as well as faces; technical success leaves semantic and human review pending.
+
+## Spatial previs and paired review
+
+For interactive camera blocking, verified control ZIP to MP4, and timestamp-aligned A/B review boards, read [spatial-previs-workflow.md](references/spatial-previs-workflow.md).
