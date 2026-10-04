@@ -35,4 +35,11 @@ python3 scripts/motion_pack.py white-model-clay.zip
 python3 scripts/motion_pack.py white-model-clay.zip --output new-control-preview.mp4
 ```
 
-The report preserves source schema and clay/depth pass. The MP4 is a **lossy preview**, including when the input is depth: retain original depth PNGs for quantitative depth use. For lossless FFV1 use the companion project's `web/scripts/encode-white-model-pack.py --lossless` workflow. Neither encoding nor a valid checksum approves motion/identity fidelity. The current generic rig supports FK, procedural walk/punch/wave, fingers and basic expressions; IK, contact/grasp and collision solving are not present yet.
+The report preserves source schema and clay/depth pass. The MP4 is a **lossy preview**, including when the input is depth: retain original depth PNGs for quantitative depth use. For lossless FFV1 use the companion project's `web/scripts/encode-white-model-pack.py --lossless` workflow. Neither encoding nor a valid checksum approves motion/identity fidelity. The generic rig now supports FK, procedural walk/punch/wave, fingers, basic expressions, hand/foot IK and independent body/hand/face performance clips. Contact/grasp, collision solving and professional motion acceptance remain incomplete.
+
+
+## Verified multi-shot performance handoff (2026-10-04)
+
+A real browser-exported Clay pack from the companion `output/white-model-performance-qa/project-v2.json` passed this repository's verifier and encoder: 144 frames, 24 fps, 640×360, six seconds, three shots and seven performance clips. Source pack SHA-256: `c4025482eedfcc8b881ee8b43290ca509c0f16d6822cf9d11e07611bfd9db109`. Independent ffprobe decoding agreed. No paid generation was used.
+
+The companion `docs/white-model-performance-case.md` records ten-frame visual inspection and a corrective framing revision. This is a bounded cross-tool interchange result, not full-speed human approval or a guarantee of natural choreography. Keep the silent guide separate from final soundtrack assembly.
