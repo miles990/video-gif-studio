@@ -136,3 +136,7 @@ AI 會檢查並自行下載安裝缺少的 Python、必要套件、FFmpeg／ffpr
 詳細說明：[Skill](SKILL.md) · [透明處理](references/transparency.md) · [像素風](references/pixel-art.md) · [Sprite](references/sprites.md) · [影片輸出](references/video-export.md) · [時間軸](references/timeline.md) · [音樂](references/music.md) · [接續生成](references/chain.md)
 
 授權：[MIT](LICENSE)
+
+## 換角影片與原聲交付
+
+參閱[換角製作與驗收](references/character-video-edit.md)。`scripts/assemble_edit.py` 提供按幀組裝、缺幀拒絕、限定時間的原片區域還原，以及分離混流後的完整原聲雜湊驗證；生成的人物、動作與運鏡仍須人工逐段驗收。

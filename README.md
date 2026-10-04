@@ -136,3 +136,7 @@ Each task needs a target duration, segment count or budget. Actual length is con
 Details: [Skill](SKILL.md) · [Transparency](references/transparency.md) · [Pixel art](references/pixel-art.md) · [Sprites](references/sprites.md) · [Video export](references/video-export.md) · [Timeline](references/timeline.md) · [Music](references/music.md) · [Continuation](references/chain.md)
 
 License: [MIT](LICENSE)
+
+## Character video editing and original-audio delivery
+
+Use the [character replacement workflow](references/character-video-edit.md) and `scripts/assemble_edit.py` for frame-based assembly, explicit FPS conform, time-bounded source-region restoration, and complete original-audio stream verification. This local tool does not guarantee generated identity or choreography; its report keeps visual review pending.

@@ -149,3 +149,7 @@ Choose salient musical accents and actual visual events, not every beat mechanic
 ## Reusable agent and RTS animation libraries
 
 For controllable characters or reusable action libraries, read [animation states](references/animation-states.md). Generate and cache reviewed entry, loop and exit clips, using consistent character/camera/pivot contracts. Drive playback from real agent events; a state machine alone does not make unrelated clips seamless. Transparent PNG frames/sheets are the runtime assets; GIF is a preview.
+
+## Character replacement with original motion/audio
+
+For “same video/music, change only the character,” read [character-video-edit](references/character-video-edit.md). Use `scripts/assemble_edit.py` for reviewed frame selections and time-bounded inset restoration. Reject missing frames, explicitly opt into FPS conform, and stream-copy complete original audio in a separate mux. Check tiny/occluded actors and effect silhouettes as well as faces; technical success leaves semantic and human review pending.
