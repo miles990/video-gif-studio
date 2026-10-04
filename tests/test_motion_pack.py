@@ -30,3 +30,44 @@ class MotionPackTests(unittest.TestCase):
             for kwargs in ({'corrupt':True},{'unsafe':True}):
                 self.pack(p,**kwargs)
                 with self.assertRaises(ValueError):verify(p)
+
+class WhiteModelPackTests(unittest.TestCase):
+    def pack(self, path, mutate=lambda m: None):
+        image = io.BytesIO()
+        Image.new('RGB', (32, 32), 'gray').save(image, format='PNG')
+        data = image.getvalue()
+        scene = b'{"schema":"laceframe.white-model.v1"}'
+        records = [{'index': i, 'file': f'frames/frame-{i:04d}.png', 'timeSec': i/12,
+                    'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()} for i in range(12)]
+        m = {'schema': 'laceframe.white-model.frame-pack.v1', 'pass': 'depth',
+             'fps': 12, 'frameCount': 12, 'durationSec': 1, 'width': 32, 'height': 32,
+             'scene': {'file': 'scene.json', 'sha256': hashlib.sha256(scene).hexdigest()}, 'frames': records}
+        mutate(m)
+        with zipfile.ZipFile(path, 'w') as z:
+            z.writestr('manifest.json', json.dumps(m))
+            z.writestr('scene.json', scene)
+            for i in range(12): z.writestr(f'frames/frame-{i:04d}.png', data)
+
+    def test_white_model_encode_preserves_provenance(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d)/'white.zip'
+            self.pack(p)
+            report = encode(p, Path(d)/'depth-preview.mp4')
+            self.assertEqual(report['frames'], 12)
+            self.assertEqual(report['pass'], 'depth')
+            self.assertEqual(report['sourceSchema'], 'laceframe.white-model.frame-pack.v1')
+            self.assertIn('not for quantitative depth', report['encoding'])
+            self.assertEqual(report['creativeApproval'], 'pending')
+
+    def test_rejects_corrupt_white_model_contract(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d)/'white.zip'
+            for mutate in [lambda m: m['scene'].update(sha256='bad'),
+                           lambda m: m.update(durationSec=1.01),
+                           lambda m: m.update(width=34),
+                           lambda m: m['frames'][0].update(timeSec=float('nan')),
+                           lambda m: m['frames'][0].update(index=True),
+                           lambda m: m['frames'][0].update(bytes=1),
+                           lambda m: m['frames'][0].update(file='../outside.png')]:
+                self.pack(p, mutate)
+                with self.assertRaises(ValueError): verify(p)

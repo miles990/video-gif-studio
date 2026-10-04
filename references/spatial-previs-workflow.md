@@ -25,3 +25,14 @@ Choose camera-only guide ownership when the white model is a blocking sketch: fr
 - [Agent-assisted trailer report](https://x.com/Magncsans/status/2104750005097779692): a motivation for local manifests, not proof our tools autonomously edit trailers.
 
 Local production lessons: character edits can change action; effects may retain old-person silhouettes; insets may appear too early; expression prompts can still over-smile. Keep original and candidate media, job provenance, exact replacement ranges and independent audio verification. A technically valid file remains a creative candidate until reviewed.
+
+## Generic white-model studio interchange
+
+The companion `/white-model` page exports `laceframe.white-model.frame-pack.v1` ZIPs. The same `motion_pack.py` command now verifies and encodes them directly, without manual extraction. Verification checks scene SHA-256, each frame's SHA-256 and byte count, zero-based order, finite timestamps, declared dimensions and exact frame-count duration. Packs containing both manifest formats are rejected rather than guessed.
+
+```sh
+python3 scripts/motion_pack.py white-model-clay.zip
+python3 scripts/motion_pack.py white-model-clay.zip --output new-control-preview.mp4
+```
+
+The report preserves source schema and clay/depth pass. The MP4 is a **lossy preview**, including when the input is depth: retain original depth PNGs for quantitative depth use. For lossless FFV1 use the companion project's `web/scripts/encode-white-model-pack.py --lossless` workflow. Neither encoding nor a valid checksum approves motion/identity fidelity. The current generic rig supports FK, procedural walk/punch/wave, fingers and basic expressions; IK, contact/grasp and collision solving are not present yet.
