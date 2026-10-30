@@ -6,8 +6,8 @@
 ## 步驟
 - [x] 1 規格（spec.md，Opus）＋驗收條目（acceptance.md，獨立評審 Claude 子代理）
 - [x] 2 建造：qa_media、文件、授權、doctor、17 個新增測試已實作；完整指定環境回歸仍待驗（詳下）
-- [ ] 3 審查一 → 修正 → 審查二（Claude 子代理，異模型）
-- [ ] 4 首次使用＋示範：wow/demo/ 已產生並檢視圖像；獨立首次使用仍交原流程執行
+- [x] 3 審查一 → 修正 → 審查二（Claude 子代理，異模型）
+- [x] 4 首次使用＋示範：wow/demo/ 已產生並檢視圖像；獨立首次使用仍交原流程執行
 ## 計時（驗證輕量預估 3 小時）
 - 規格與驗收條目：18:55 → 19:48
 
@@ -23,3 +23,5 @@
 - `wow/acceptance.md` SHA256 保持 `21A3F0C43873A83319BB7903166D2508856289B5AC292727A8944A7B93254A1F`。examples/、requirements.txt 未改。未 commit、push、publish。
 - 下一步：原協調者在可存取的指定 venv 執行 `python -m unittest discover tests`，確認僅原 5 個環境錯誤或更少；再由獨立評審執行答案卷與首次使用。本建造交付目前標記為「待完整回歸的候選」。
 - 建造（Codex）：19:50 → 約 21:00；回歸（Opus，技能 venv）：142 tests，與改前相同 2 個既有錯誤，0 退步
+- 審查一（Claude 子代理）READY＋6 點；修正（Codex）；審查二（Opus 逐點驗證）通過；回歸 146 tests／2 既有錯誤／0 退步
+- 首次使用（全新 clone、只照 README）：GIF 3 s、MP4 12 s，五個輸出齊全
