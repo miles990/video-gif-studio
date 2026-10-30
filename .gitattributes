@@ -1,0 +1,9 @@
+# Same line endings on every platform.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.gif binary
+*.apng binary
+*.mp4 binary
+*.webm binary
+*.zip binary

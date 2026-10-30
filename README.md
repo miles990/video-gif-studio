@@ -6,6 +6,19 @@
 
 ## Examples
 
+### Measured delivery QA
+
+```sh
+python scripts/qa_media.py examples/chibi-running-dash/final.gif --out qa/chibi
+python scripts/qa_media.py examples/neon-zen-pv/final.mp4 --out qa/neon --timeline examples/neon-zen-pv/timeline.json
+```
+
+One command writes `report.md`, `report.json`, `contact_sheet.jpg`, a 360 px wide `phone_sheet.jpg`, and `hook_sheet.jpg` for the first three seconds. Use a new output directory. GIF/APNG/numbered RGBA PNG folders need NumPy and Pillow; MP4/audio use the existing FFmpeg/ffprobe runtime (`VIDEO_GIF_FFMPEG`, `VIDEO_GIF_FFPROBE`, or `python scripts/media_runtime.py --install`). QA never downloads dependencies.
+
+PASS confirms measured thresholds; WARN needs inspection at the listed frame/second; FAIL blocks delivery (exit 1; input/runtime errors exit 2). Reports cannot certify natural motion or meaning. Use `--fps 25` for PNG frames, `--loop` for loops (automatic for infinite-loop GIF/APNG), `--holds 1.0-3.0` for designed pauses, and `--expect-cuts 2.0,4.0` for hard cuts. Ordinary timeline joins are not required hard cuts. Silent assets report audio N/A. See [quality review](references/quality-review.md) for limits and independent review.
+
+Adapted from [win4r/video-director](https://github.com/win4r/video-director), MIT, © 2026 win4r. [THIRD_PARTY.md](THIRD_PARTY.md) includes the full MIT license.
+
 **Seated leg switch** — Reference image → Grok video → transparent GIF.
 
 ![Seated leg switch](examples/seated-leg-switch/final.gif)

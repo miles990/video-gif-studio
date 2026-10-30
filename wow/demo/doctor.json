@@ -1,0 +1,41 @@
+{
+  "skill_entry_exists": true,
+  "python": "C:\\Users\\User\\miniforge3\\python.exe",
+  "python_version_supported": true,
+  "packages": {
+    "PIL": true,
+    "numpy": true,
+    "cv2": false
+  },
+  "ffmpeg": "C:\\Users\\User\\miniforge3\\Lib\\site-packages\\imageio_ffmpeg\\binaries\\ffmpeg-win-x86_64-v7.1.exe",
+  "ffprobe": null,
+  "grok_cli": "C:\\Users\\User\\.grok\\bin\\grok.EXE",
+  "grok_support": "bundled",
+  "grok_oauth": {
+    "oauth_session_present": false,
+    "expired": true,
+    "expiry_known": false,
+    "refresh_available": false,
+    "generation_entitlement": "not checked"
+  },
+  "grok_auth_and_generation_quota": "not checked; no external requests made",
+  "local_gif_runtime_ready": false,
+  "media_runtime_ready": false,
+  "qa_media": {
+    "numpy": true,
+    "PIL": true,
+    "ffmpeg": "C:\\Users\\User\\miniforge3\\Lib\\site-packages\\imageio_ffmpeg\\binaries\\ffmpeg-win-x86_64-v7.1.exe",
+    "ffprobe": null,
+    "picture_ready": true,
+    "video_audio_ready": false,
+    "ffmpeg_only_fallback_available": true,
+    "note": "GIF/APNG/PNG need numpy and Pillow. Video/audio use ffmpeg/ffprobe; recent ffmpeg also offers a showinfo timing fallback, verified when QA runs."
+  },
+  "api_key_available": false,
+  "fal": {
+    "support": "bundled MiniMax H3 Max",
+    "key_present": false,
+    "auth_and_quota": "not checked; no external requests made"
+  },
+  "optional_matting_installed": false
+}

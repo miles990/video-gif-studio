@@ -6,6 +6,19 @@
 
 ## 範例
 
+### 交付品質量測
+
+```sh
+python scripts/qa_media.py examples/chibi-running-dash/final.gif --out qa/chibi
+python scripts/qa_media.py examples/neon-zen-pv/final.mp4 --out qa/neon --timeline examples/neon-zen-pv/timeline.json
+```
+
+單一指令產生 `report.md`、`report.json`、`contact_sheet.jpg`、寬度 360 px 的 `phone_sheet.jpg`，以及前三秒的 `hook_sheet.jpg`。每次使用新輸出目錄。GIF/APNG／數字命名 RGBA PNG 資料夾只需 NumPy、Pillow；MP4／音訊使用既有 FFmpeg/ffprobe runtime（`VIDEO_GIF_FFMPEG`、`VIDEO_GIF_FFPROBE` 或 `python scripts/media_runtime.py --install`）。QA 不會自動下載依賴。
+
+PASS 表示量測門檻通過；WARN 要依格號／秒數檢視；FAIL 阻擋交付（結束碼 1；輸入／環境錯誤為 2）。數字不能證明動作自然或語意正確。PNG 用 `--fps 25`，循環用 `--loop`（無限循環 GIF/APNG 自動檢查），設計停格用 `--holds 1.0-3.0`，硬切用 `--expect-cuts 2.0,4.0`。一般時間軸接續點不強制要求硬切；無音軌標示 N/A。詳見[品質審查](references/quality-review.md)的量測限制與獨立評審流程。
+
+改寫自 [win4r/video-director](https://github.com/win4r/video-director)，MIT，© 2026 win4r。[THIRD_PARTY.md](THIRD_PARTY.md) 保留完整 MIT 授權。
+
 **坐姿換腿** — 參考圖 → Grok 影片 → 透明 GIF。
 
 ![坐姿換腿](examples/seated-leg-switch/final.gif)
