@@ -13,6 +13,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 import qa_media as qa
+import media_runtime
 
 
 def base(count=100, angles=None):
@@ -167,6 +168,49 @@ class MediaQATests(unittest.TestCase):
         self.assertEqual(c['flashes']['events'],[]);self.assertEqual(c['pops']['events'],[])
         self.assertEqual(c['freeze']['events'],[])
 
+    def test_merged_gif_cut_one_second_late_fails(self):
+        images=base(25)
+        images.extend([images[-1].copy() for _ in range(50)])
+        images.extend([Image.new('RGB',(160,120),'blue') for _ in range(25)])
+        c=self.check(images,expected=[2])['cuts']
+        self.assertEqual(c['level'],'FAIL')
+        self.assertTrue(any(e['seconds']==2 and e['kind']=='missing planned cut' for e in c['events']))
+        self.assertTrue(any(abs(e['seconds']-3)<1e-6 and e['kind']=='unplanned cut' for e in c['events']))
+        self.assertEqual(self.check(images,expected=[3])['cuts']['level'],'PASS')
+
+    def test_cut_tolerance_caps_long_median_frames(self):
+        edges=np.array([0.,2.,4.,6.])
+        st=dict(d=np.array([0.,100.,0.]),skip=np.array([0.,100.,0.]),
+                patch=np.zeros(3),mean=[100]*3,contrast=[20]*3)
+        for expected,level in ((1.,'FAIL'),(1.9,'PASS'),(1.89,'FAIL')):
+            checks=qa.analyse_picture(st,edges,expected=[expected])
+            self.assertEqual(next(c for c in checks if c['name']=='cuts')['level'],level)
+
+    def test_no_audio_reports_not_applicable(self):
+        self.check(base(4))
+        out=self.root/'out1'
+        report=json.loads((out/'report.json').read_text(encoding='utf-8'))
+        markdown=(out/'report.md').read_text(encoding='utf-8')
+        for c in report['checks']:
+            if c['name'] in ('loudness','true_peak','loudest_100ms','silence'):
+                self.assertIs(c['applicable'],False)
+                self.assertEqual(c['events'],[])
+                self.assertIn('## N/A — '+c['name'],markdown)
+                self.assertNotIn('## PASS — '+c['name'],markdown)
+
+    def test_runtime_errors_include_recovery_command(self):
+        fix='run: python scripts/media_runtime.py --install'
+        with patch.object(media_runtime,'locate',return_value=None):
+            with self.assertRaisesRegex(RuntimeError,fix):
+                media_runtime.executable('ffmpeg')
+        with patch.dict(os.environ,{'VIDEO_GIF_FFMPEG':str(self.root/'missing.exe')}):
+            with self.assertRaisesRegex(RuntimeError,fix):
+                media_runtime.locate('ffmpeg')
+        from unittest.mock import Mock
+        with patch.object(qa,'executable',return_value='ffmpeg'), patch.object(qa.subprocess,'run',return_value=Mock(returncode=0,stderr=b'')):
+            with self.assertRaisesRegex(RuntimeError,fix):
+                qa.ffmpeg_info(self.root/'video.mp4')
+
     def test_timeline_joins_and_still(self):
         plan=self.root/'timeline.json'
         plan.write_text(json.dumps({'segments':[{'type':'animation','duration_ms':1000},{'type':'still','duration_ms':2000},{'type':'animation','duration_ms':1000}]}))
@@ -184,9 +228,9 @@ class MediaQATests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(qa.main([str(path),'--out',str(self.root/'cli')]),1)
         (self.root/'video.mp4').write_bytes(b'')
-        with patch.object(qa,'locate',return_value=None), patch.object(qa,'executable',side_effect=RuntimeError('Media runtime missing; run scripts/media_runtime.py --install')), contextlib.redirect_stderr(io.StringIO()) as errors:
+        with patch.object(qa,'locate',return_value=None), patch.object(qa,'executable',media_runtime.executable), patch.object(media_runtime,'locate',return_value=None), contextlib.redirect_stderr(io.StringIO()) as errors:
             self.assertEqual(qa.main([str(self.root/'video.mp4'),'--out',str(self.root/'missing')]),2)
-        self.assertIn('scripts/media_runtime.py --install',errors.getvalue())
+        self.assertIn('run: python scripts/media_runtime.py --install',errors.getvalue())
         self.assertNotIn('Traceback',errors.getvalue())
 
 
@@ -244,8 +288,9 @@ class AudioQATests(unittest.TestCase):
         path=self.make_video('silent')
         report=qa.qa(path,self.root/'qa')
         for c in report['checks']:
-            if c['name'] in ('loudness','true_peak','silence'):
+            if c['name'] in ('loudness','true_peak','loudest_100ms','silence'):
                 self.assertEqual(c['level'],'PASS');self.assertIn('N/A',c['message'])
+                self.assertIs(c['applicable'],False)
                 self.assertEqual(c['events'],[])
 
 

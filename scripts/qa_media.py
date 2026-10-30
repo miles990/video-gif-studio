@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 import time
 
 import numpy as np
@@ -89,7 +90,7 @@ def ffmpeg_info(path):
             stamps.append(float(stamp[1]));durations.append(float(duration[1]))
             size = tuple(map(int,dimensions.groups()))
     if not stamps or durations[-1]<=0:
-        raise RuntimeError('Frame timing unavailable; run scripts/media_runtime.py --install for ffprobe')
+        raise RuntimeError('Frame timing unavailable; for ffprobe run: python scripts/media_runtime.py --install')
     return dict(kind='video',size=size,durations=list(np.diff(stamps))+[durations[-1]],
                 audio=bool(re.search(r'Stream #.*Audio:',log)),loop=False)
 
@@ -108,7 +109,6 @@ def frames(path, info):
         w = 360
         h = max(2, round(w*info['size'][1]/info['size'][0]/2)*2)
         # Drain stderr to a file so a decoder error cannot block a full pipe.
-        import tempfile
         with tempfile.TemporaryFile() as errors:
             with subprocess.Popen([executable('ffmpeg'), '-v', 'error', '-i', str(path), '-map', '0:v:0',
                 '-vf', f'scale={w}:{h}:flags=area', '-vsync', '0', '-pix_fmt', 'rgb24', '-f', 'rawvideo', '-'],
@@ -293,15 +293,16 @@ def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=()):
     cut_events = []
     if expected:
         matched = set()
+        tolerance = min(float(np.median(np.diff(edges))), 0.1)
         for t in expected:
             index = sample_indices(edges,[t])[0]
-            candidates = [i for i in cuts if abs(float(edges[i])-t)<=max(edges[index+1]-edges[index],edges[i+1]-edges[i])+1e-6]
+            candidates = [i for i in cuts if abs(float(edges[i])-t)<=tolerance+1e-6]
             if candidates:
                 matched.add(min(candidates,key=lambda i:abs(edges[i]-t)))
             else:
                 cut_events.append(event(edges,index,seconds=float(t),kind='missing planned cut'))
         cut_events += [event(edges,i,kind='unplanned cut') for i in cuts if i not in matched]
-    add('cuts','FAIL' if cut_events else 'PASS','Hard cuts compared within one frame' if expected else 'Detected cut candidates (no hard cuts required)',
+    add('cuts','FAIL' if cut_events else 'PASS','Hard cuts compared within one median frame (at most 0.1 s)' if expected else 'Detected cut candidates (no hard cuts required)',
         cut_events, detected=[event(edges,i) for i in cuts], expected_seconds=list(expected))
     add('timeline_joins','PASS','Continuation/edit boundaries are not required hard cuts; review continuity',
         [event(edges,sample_indices(edges,[t])[0],seconds=float(t)) for t in joins])
@@ -326,7 +327,7 @@ def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=()):
 
 def analyse_audio(path, info, edges):
     if not info['audio']:
-        return [dict(name=name,level='PASS',message='N/A: no audio track',events=[]) for name in ('loudness','true_peak','loudest_100ms','silence')]
+        return [dict(name=name,level='PASS',applicable=False,message='N/A: no audio track',events=[]) for name in ('loudness','true_peak','loudest_100ms','silence')]
     ffmpeg = executable('ffmpeg')
     result = subprocess.run([ffmpeg,'-nostats','-i',str(path),'-map','0:a:0','-af','ebur128=peak=true','-f','null','-'],capture_output=True)
     if result.returncode:
@@ -406,10 +407,11 @@ def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
                   limitations='Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.',
                   elapsed_seconds=time.perf_counter()-started)
     report['level'] = 'FAIL' if any(c['level']=='FAIL' for c in checks) else ('WARN' if any(c['level']=='WARN' for c in checks) else 'PASS')
-    (out/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8')
+    (out/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8',newline='\n')
     lines = [f'# Media QA: {report["level"]}', '', f'{path.name} | {len(durations)} frames | {edges[-1]:.3f} s', '', report['limitations'], '']
     for c in checks:
-        lines += [f'## {c["level"]} — {c["name"]}', '', c['message']]
+        label = c['level'] if c.get('applicable', True) else 'N/A'
+        lines += [f'## {label} — {c["name"]}', '', c['message']]
         for e in c['events']:
             label = f'f{e["frame"]} / {e["seconds"]:.3f} s'
             if 'end_seconds' in e:
@@ -423,7 +425,7 @@ def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
         lines += ['']
     lines += [f'![{name}]({name}.jpg)' for name in sheets]
     lines += ['',f'Analysis and sheets: {report["elapsed_seconds"]:.3f} s.']
-    (out/'report.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+    (out/'report.md').write_text('\n'.join(lines)+'\n',encoding='utf-8',newline='\n')
     return report
 
 

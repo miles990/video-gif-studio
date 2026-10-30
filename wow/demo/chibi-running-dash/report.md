@@ -69,24 +69,48 @@ Loop position and speed
 }
 ```
 
-## PASS — loudness
+## N/A — loudness
 
 N/A: no audio track
 
-## PASS — true_peak
+```json
+{
+  "applicable": false
+}
+```
+
+## N/A — true_peak
 
 N/A: no audio track
 
-## PASS — loudest_100ms
+```json
+{
+  "applicable": false
+}
+```
+
+## N/A — loudest_100ms
 
 N/A: no audio track
 
-## PASS — silence
+```json
+{
+  "applicable": false
+}
+```
+
+## N/A — silence
 
 N/A: no audio track
+
+```json
+{
+  "applicable": false
+}
+```
 
 ![contact_sheet](contact_sheet.jpg)
 ![phone_sheet](phone_sheet.jpg)
 ![hook_sheet](hook_sheet.jpg)
 
-Analysis and sheets: 1.968 s.
+Analysis and sheets: 1.958 s.

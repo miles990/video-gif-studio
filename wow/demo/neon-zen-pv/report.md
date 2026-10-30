@@ -62,7 +62,7 @@ N/A: no loop requested
 ## PASS — loudness
 
 Integrated loudness: target -14 LUFS +/-1
-- f0 / 0.000 s to f2999 / 30.000 s (end exclusive)
+- f0 / 0.000 s to f2999 / 30.000 s (time end exclusive)
 
 ```json
 {
@@ -73,7 +73,7 @@ Integrated loudness: target -14 LUFS +/-1
 ## PASS — true_peak
 
 True peak ceiling -1 dBTP
-- f0 / 0.000 s to f2999 / 30.000 s (end exclusive)
+- f0 / 0.000 s to f2999 / 30.000 s (time end exclusive)
 
 ```json
 {
@@ -84,7 +84,7 @@ True peak ceiling -1 dBTP
 ## PASS — loudest_100ms
 
 Loudest 100 ms RMS window (50 ms hop)
-- f240 / 2.400 s to f250 / 2.500 s (end exclusive)
+- f240 / 2.400 s to f250 / 2.500 s (time end exclusive)
 
 ```json
 {
@@ -106,4 +106,4 @@ Silence >=0.4 s; inspect whether intended
 ![phone_sheet](phone_sheet.jpg)
 ![hook_sheet](hook_sheet.jpg)
 
-Analysis and sheets: 9.938 s.
+Analysis and sheets: 10.095 s.

@@ -14,7 +14,7 @@ def locate(name):
     if override:
         path = Path(override).expanduser()
         if not path.is_file() or not os.access(path, os.X_OK):
-            raise RuntimeError('Invalid VIDEO_GIF_' + name.upper() + ' executable')
+            raise RuntimeError('Invalid VIDEO_GIF_' + name.upper() + ' executable; correct or unset the override, then run: python scripts/media_runtime.py --install')
         return str(path.resolve())
     system = shutil.which(name)
     if system:
@@ -32,7 +32,7 @@ def locate(name):
 def executable(name):
     path = locate(name)
     if not path:
-        raise RuntimeError('Media runtime missing; run scripts/media_runtime.py --install')
+        raise RuntimeError('Media runtime missing; run: python scripts/media_runtime.py --install')
     return path
 
 

@@ -198,24 +198,28 @@
     {
       "name": "loudness",
       "level": "PASS",
+      "applicable": false,
       "message": "N/A: no audio track",
       "events": []
     },
     {
       "name": "true_peak",
       "level": "PASS",
+      "applicable": false,
       "message": "N/A: no audio track",
       "events": []
     },
     {
       "name": "loudest_100ms",
       "level": "PASS",
+      "applicable": false,
       "message": "N/A: no audio track",
       "events": []
     },
     {
       "name": "silence",
       "level": "PASS",
+      "applicable": false,
       "message": "N/A: no audio track",
       "events": []
     }
@@ -317,6 +321,6 @@
     ]
   },
   "limitations": "Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.",
-  "elapsed_seconds": 2.049783100010245,
+  "elapsed_seconds": 2.1203820000082487,
   "level": "WARN"
 }

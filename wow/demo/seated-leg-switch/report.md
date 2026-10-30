@@ -27,7 +27,7 @@ Small transient pop scan; inspect in context
 ## WARN — freeze
 
 Frozen stretches; mark intended pauses with --holds START-END or timeline still segments
-- f140 / 4.820 s to f171 / 6.110 s (end exclusive)
+- f140 / 4.820 s to f171 / 6.110 s (time end exclusive)
 
 ```json
 {
@@ -67,24 +67,48 @@ Loop position and speed: speed mismatch
 }
 ```
 
-## PASS — loudness
+## N/A — loudness
 
 N/A: no audio track
 
-## PASS — true_peak
+```json
+{
+  "applicable": false
+}
+```
+
+## N/A — true_peak
 
 N/A: no audio track
 
-## PASS — loudest_100ms
+```json
+{
+  "applicable": false
+}
+```
+
+## N/A — loudest_100ms
 
 N/A: no audio track
 
-## PASS — silence
+```json
+{
+  "applicable": false
+}
+```
+
+## N/A — silence
 
 N/A: no audio track
+
+```json
+{
+  "applicable": false
+}
+```
 
 ![contact_sheet](contact_sheet.jpg)
 ![phone_sheet](phone_sheet.jpg)
 ![hook_sheet](hook_sheet.jpg)
 
-Analysis and sheets: 4.793 s.
+Analysis and sheets: 4.519 s.
