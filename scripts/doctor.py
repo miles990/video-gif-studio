@@ -19,6 +19,12 @@ report={'skill_entry_exists':(root/'SKILL.md').is_file(),'python':sys.executable
         'grok_auth_and_generation_quota':'not checked; no external requests made'}
 report['local_gif_runtime_ready']=report['python_version_supported'] and all(packages.values())
 report['media_runtime_ready']=bool(report['ffmpeg'] and report['ffprobe'])
+report['qa_media']={'numpy':packages['numpy'], 'PIL':packages['PIL'],
+                    'ffmpeg':report['ffmpeg'], 'ffprobe':report['ffprobe'],
+                    'picture_ready':packages['numpy'] and packages['PIL'],
+                    'video_audio_ready':packages['numpy'] and packages['PIL'] and report['media_runtime_ready'],
+                    'ffmpeg_only_fallback_available':bool(packages['numpy'] and packages['PIL'] and report['ffmpeg']),
+                    'note':'GIF/APNG/PNG need numpy and Pillow. Video/audio use ffmpeg/ffprobe; recent ffmpeg also offers a showinfo timing fallback, verified when QA runs.'}
 report['api_key_available']=bool(os.environ.get('XAI_API_KEY','').strip())
 report['fal']={'support':'bundled MiniMax H3 Max', 'key_present':key_present(), 'auth_and_quota':'not checked; no external requests made'}
 report['optional_matting_installed']=importlib.util.find_spec('rembg') is not None

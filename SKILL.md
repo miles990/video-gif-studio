@@ -92,11 +92,15 @@ When the user asks for a drawn or graphic look a video generator cannot hold (in
 
 ## Final quality gate
 
+After export or a timing/visual repair, run `python scripts/qa_media.py <delivery> --out <new-qa-dir>` on the decoded GIF/APNG/MP4 or PNG sequence (`--fps` for PNG). Read PASS/WARN/FAIL and each flagged frame/time: FAIL blocks delivery, WARN needs inspection, and PASS only confirms measured thresholds. Numbers cannot prove natural motion, semantic correctness, good matting or music sync. Follow the independent review and completion checklist in [quality review](references/quality-review.md); annotate intended holds with `--holds` or a timeline and use `--loop` when appropriate.
+
 A requested finished deliverable includes inspection and repair, not just encoding. Perform necessary local cleanup within that request instead of asking separately whether the user wants defects repaired. Inspect source, repaired masters and decoded output for visible contamination, unreasonable contours, lost material/lighting detail, flicker, clipping and broken motion/loop/transition boundaries. Use [structure-aware edge repair](references/structural-edge-repair.md) for local masks and `scripts/repair_edges.py` for reviewed RGBA sequence repairs. Repeat the relevant inspection after each repair and validate the actual target format/player when available. Do not claim automatic semantic understanding from numeric tests, or that all defects are absent because encoding passed. If a visible defect remains unresolved, continue within the authorized repair scope; when a genuine limitation prevents completion, identify it and label the output a preview, never a repaired final. A whole-library task needs per-clip results, including exceptions.
 
 For library-wide repairs, follow the [library acceptance and delivery gate](references/structural-edge-repair.md#library-acceptance-and-delivery-gate): verify stable placement, plausible motion and actual playback within clips, at loop boundaries and across reachable transitions. Unrequested flicker or position/scale jumps fail acceptance. If the user conditions commit/push on completion, finish that gate before submitting the requested changes; do not substitute a tooling-only commit for finished assets.
 
 ## Export and verify
+
+After encoding the delivery, run `python scripts/qa_media.py <delivery> --out <new-qa-dir>`. Review each PASS/WARN/FAIL and its frame/time: FAIL blocks delivery, WARN needs inspection, and numeric PASS cannot establish natural motion, semantic correctness or music sync. Retain the three sheets and reports, then follow [quality review](references/quality-review.md) for independent visual review. Use `--holds` for designed pauses and `--loop` for loop checks; silent assets skip audio checks.
 
 Run `scripts/gif_pipeline.py` from this skill folder. Dependencies: Python 3, Pillow, NumPy, OpenCV; FFmpeg/ffprobe for VFR video conforming and optional delivery formats. Export into a new run directory, never the skill directory. The helper accepts a CFR video or a numerically named RGBA PNG directory.
 

@@ -1,0 +1,43 @@
+[
+  {
+    "name": "tests-qa",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_qa_media.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 15.993857900000876
+  },
+  {
+    "name": "tests-full-miniforge",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "-m",
+      "unittest",
+      "discover",
+      "tests"
+    ],
+    "exit_code": 1,
+    "wall_seconds": 17.53584620000038
+  },
+  {
+    "name": "doctor",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "scripts/doctor.py"
+    ],
+    "exit_code": 1,
+    "wall_seconds": 0.1804658000037307
+  },
+  {
+    "name": "required-python",
+    "error": "[WinError 5] \u5b58\u53d6\u88ab\u62d2\u3002"
+  }
+]

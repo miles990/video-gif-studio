@@ -1,0 +1,284 @@
+E.........E......usage: python.exe -m unittest [-h] [--image IMAGE] [--prompt PROMPT] --out OUT
+                              [--model MODEL] [--duration DURATION]
+                              [--resolution {480p,720p,1080p}]
+                              [--auth {oauth,api-key}] (--submit | --resume)
+python.exe -m unittest: error: Job ledger exists: resume it; use a new attempt only after resolving this job
+..usage: python.exe -m unittest [-h] [--image IMAGE] [--prompt PROMPT] --out OUT
+                              [--model MODEL] [--duration DURATION]
+                              [--resolution {480p,720p,1080p}]
+                              [--auth {oauth,api-key}] (--submit | --resume)
+python.exe -m unittest: error: Job ledger exists: resume it; use a new attempt only after resolving this job
+...EEEE..EEE........................EE............EE..EEEs
+======================================================================
+ERROR: test_complete_audio_bounded_restore_and_underflow (test_assemble_edit.AssemblyTest.test_complete_audio_bounded_restore_and_underflow)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\video-gif-studio\tests\test_assemble_edit.py", line 22, in test_complete_audio_bounded_restore_and_underflow
+    output = root / 'result.mp4'; report = assemble(manifest, output)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\src\video-gif-studio\scripts\assemble_edit.py", line 54, in assemble
+    source_meta = probe(source)
+                  ^^^^^^^^^^^^^
+  File "C:\Users\User\src\video-gif-studio\scripts\assemble_edit.py", line 19, in probe
+    data = json.loads(run('ffprobe', ['-v', 'error', '-count_frames', '-show_streams',
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\src\video-gif-studio\scripts\assemble_edit.py", line 14, in run
+    return subprocess.run([executable(tool), *map(str, args)], check=True,
+                           ^^^^^^^^^^^^^^^^
+  File "C:\Users\User\src\video-gif-studio\scripts\media_runtime.py", line 35, in executable
+    raise RuntimeError('Media runtime missing; run: python scripts/media_runtime.py --install')
+RuntimeError: Media runtime missing; run: python scripts/media_runtime.py --install
+
+======================================================================
+ERROR: test_flow_guides (unittest.loader._FailedTest.test_flow_guides)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_flow_guides
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_flow_guides.py", line 6, in <module>
+    from extract_guides import extract,load_flow,layer_weights
+  File "C:\Users\User\src\video-gif-studio\scripts\extract_guides.py", line 11, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_same_source_symlink_is_preserved (test_install.InstallTests.test_same_source_symlink_is_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\video-gif-studio\tests\test_install.py", line 40, in test_same_source_symlink_is_preserved
+    p=Path(d);source=self.source(p/'source');skills=p/'skills';skills.mkdir();target=skills/'video-gif-studio';target.symlink_to(source,target_is_directory=True)
+                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\pathlib.py", line 1386, in symlink_to
+    os.symlink(target, self, target_is_directory)
+OSError: [WinError 1314] 用戶端沒有這項特殊權限。: 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpcazz9w03\\source' -> 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpcazz9w03\\skills\\video-gif-studio'
+
+======================================================================
+ERROR: test_js_styles (unittest.loader._FailedTest.test_js_styles)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_js_styles
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_js_styles.py", line 7, in <module>
+    from extract_guides import extract
+  File "C:\Users\User\src\video-gif-studio\scripts\extract_guides.py", line 11, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_mask_review (unittest.loader._FailedTest.test_mask_review)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_mask_review
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_mask_review.py", line 6, in <module>
+    from apply_mask_edits import apply_edits
+  File "C:\Users\User\src\video-gif-studio\scripts\apply_mask_edits.py", line 13, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_roundtrip_and_no_overwrite (test_motion_pack.MotionPackTests.test_roundtrip_and_no_overwrite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\video-gif-studio\tests\test_motion_pack.py", line 25, in test_roundtrip_and_no_overwrite
+    out=Path(d)/'control.mp4';self.assertEqual(encode(p,out)['frames'],2)
+                                               ^^^^^^^^^^^^^
+  File "C:\Users\User\src\video-gif-studio\scripts\motion_pack.py", line 96, in encode
+    probe = json.loads(subprocess.check_output([executable('ffprobe'), '-v', 'error', '-count_frames', '-show_streams', '-of', 'json', str(candidate)]))
+                                                ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\src\video-gif-studio\scripts\media_runtime.py", line 35, in executable
+    raise RuntimeError('Media runtime missing; run: python scripts/media_runtime.py --install')
+RuntimeError: Media runtime missing; run: python scripts/media_runtime.py --install
+
+======================================================================
+ERROR: test_white_model_encode_preserves_provenance (test_motion_pack.WhiteModelPackTests.test_white_model_encode_preserves_provenance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\video-gif-studio\tests\test_motion_pack.py", line 55, in test_white_model_encode_preserves_provenance
+    report = encode(p, Path(d)/'depth-preview.mp4')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\src\video-gif-studio\scripts\motion_pack.py", line 96, in encode
+    probe = json.loads(subprocess.check_output([executable('ffprobe'), '-v', 'error', '-count_frames', '-show_streams', '-of', 'json', str(candidate)]))
+                                                ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\src\video-gif-studio\scripts\media_runtime.py", line 35, in executable
+    raise RuntimeError('Media runtime missing; run: python scripts/media_runtime.py --install')
+RuntimeError: Media runtime missing; run: python scripts/media_runtime.py --install
+
+======================================================================
+ERROR: test_music (unittest.loader._FailedTest.test_music)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_music
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_music.py", line 13, in <module>
+    from compose_timeline import compose
+  File "C:\Users\User\src\video-gif-studio\scripts\compose_timeline.py", line 9, in <module>
+    from gif_pipeline import encode, verify, natural, sha
+  File "C:\Users\User\src\video-gif-studio\scripts\gif_pipeline.py", line 9, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_pipeline (unittest.loader._FailedTest.test_pipeline)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_pipeline
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_pipeline.py", line 15, in <module>
+    spec.loader.exec_module(pipeline)
+  File "C:\Users\User\src\video-gif-studio\scripts\gif_pipeline.py", line 9, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_redraw_plugins (unittest.loader._FailedTest.test_redraw_plugins)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_redraw_plugins
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_redraw_plugins.py", line 6, in <module>
+    from extract_guides import extract
+  File "C:\Users\User\src\video-gif-studio\scripts\extract_guides.py", line 11, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_repair_edges (unittest.loader._FailedTest.test_repair_edges)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_repair_edges
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_repair_edges.py", line 5, in <module>
+    from repair_edges import repair
+  File "C:\Users\User\src\video-gif-studio\scripts\repair_edges.py", line 6, in <module>
+    import cv2,numpy as np
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_runtime (unittest.loader._FailedTest.test_runtime)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_runtime
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_runtime.py", line 13, in <module>
+    from background_remove import separate
+  File "C:\Users\User\src\video-gif-studio\scripts\background_remove.py", line 11, in <module>
+    from gif_pipeline import natural
+  File "C:\Users\User\src\video-gif-studio\scripts\gif_pipeline.py", line 9, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_soft_effect_alpha (unittest.loader._FailedTest.test_soft_effect_alpha)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_soft_effect_alpha
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_soft_effect_alpha.py", line 6, in <module>
+    from apply_mask_edits import apply_edits
+  File "C:\Users\User\src\video-gif-studio\scripts\apply_mask_edits.py", line 13, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_stylized_effects (unittest.loader._FailedTest.test_stylized_effects)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_stylized_effects
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_stylized_effects.py", line 6, in <module>
+    from extract_guides import extract
+  File "C:\Users\User\src\video-gif-studio\scripts\extract_guides.py", line 11, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_stylized_redraw (unittest.loader._FailedTest.test_stylized_redraw)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_stylized_redraw
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_stylized_redraw.py", line 6, in <module>
+    from extract_guides import extract
+  File "C:\Users\User\src\video-gif-studio\scripts\extract_guides.py", line 11, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+======================================================================
+ERROR: test_timeline (unittest.loader._FailedTest.test_timeline)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_timeline
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\User\src\video-gif-studio\tests\test_timeline.py", line 8, in <module>
+    from compose_timeline import compose
+  File "C:\Users\User\src\video-gif-studio\scripts\compose_timeline.py", line 9, in <module>
+    from gif_pipeline import encode, verify, natural, sha
+  File "C:\Users\User\src\video-gif-studio\scripts\gif_pipeline.py", line 9, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+
+
+----------------------------------------------------------------------
+Ran 77 tests in 17.438s
+
+FAILED (errors=16, skipped=1)

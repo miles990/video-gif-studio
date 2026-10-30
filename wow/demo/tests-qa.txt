@@ -1,0 +1,22 @@
+test_full_scale_square_peak_fails (test_qa_media.AudioQATests.test_full_scale_square_peak_fails) ... ok
+test_loudness_peak_silence_and_loudest_window (test_qa_media.AudioQATests.test_loudness_peak_silence_and_loudest_window) ... ok
+test_no_audio_is_not_silence (test_qa_media.AudioQATests.test_no_audio_is_not_silence) ... ok
+test_black_and_flat_first_frame (test_qa_media.MediaQATests.test_black_and_flat_first_frame) ... ok
+test_cli_codes_and_missing_runtime (test_qa_media.MediaQATests.test_cli_codes_and_missing_runtime) ... ok
+test_flash_frame_and_time (test_qa_media.MediaQATests.test_flash_frame_and_time) ... ok
+test_freeze_hold_and_partial_hold (test_qa_media.MediaQATests.test_freeze_hold_and_partial_hold) ... ok
+test_hard_cuts (test_qa_media.MediaQATests.test_hard_cuts) ... ok
+test_hidden_rgb_and_visible_exposure (test_qa_media.MediaQATests.test_hidden_rgb_and_visible_exposure) ... ok
+test_normal_loop (test_qa_media.MediaQATests.test_normal_loop) ... ok
+test_position_seam (test_qa_media.MediaQATests.test_position_seam) ... ok
+test_repeated_encoder_frames_are_not_pops (test_qa_media.MediaQATests.test_repeated_encoder_frames_are_not_pops) ... ok
+test_short_hook (test_qa_media.MediaQATests.test_short_hook) ... ok
+test_small_patch_pop (test_qa_media.MediaQATests.test_small_patch_pop) ... ok
+test_speed_seam (test_qa_media.MediaQATests.test_speed_seam) ... ok
+test_timeline_joins_and_still (test_qa_media.MediaQATests.test_timeline_joins_and_still) ... ok
+test_varying_delays_and_apng_poster (test_qa_media.MediaQATests.test_varying_delays_and_apng_poster) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 15.601s
+
+OK

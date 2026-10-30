@@ -1,0 +1,226 @@
+{
+  "input": "C:\\Users\\User\\AppData\\Local\\Temp\\tmpsvsjzfqu\\T",
+  "frames": 50,
+  "duration_seconds": 2.000000000000001,
+  "frame_times_seconds": [
+    0.0,
+    0.04,
+    0.08,
+    0.12,
+    0.16,
+    0.2,
+    0.24000000000000002,
+    0.28,
+    0.32,
+    0.36,
+    0.39999999999999997,
+    0.43999999999999995,
+    0.4799999999999999,
+    0.5199999999999999,
+    0.5599999999999999,
+    0.6,
+    0.64,
+    0.68,
+    0.7200000000000001,
+    0.7600000000000001,
+    0.8000000000000002,
+    0.8400000000000002,
+    0.8800000000000002,
+    0.9200000000000003,
+    0.9600000000000003,
+    1.0000000000000002,
+    1.0400000000000003,
+    1.0800000000000003,
+    1.1200000000000003,
+    1.1600000000000004,
+    1.2000000000000004,
+    1.2400000000000004,
+    1.2800000000000005,
+    1.3200000000000005,
+    1.3600000000000005,
+    1.4000000000000006,
+    1.4400000000000006,
+    1.4800000000000006,
+    1.5200000000000007,
+    1.5600000000000007,
+    1.6000000000000008,
+    1.6400000000000008,
+    1.6800000000000008,
+    1.7200000000000009,
+    1.760000000000001,
+    1.800000000000001,
+    1.840000000000001,
+    1.880000000000001,
+    1.920000000000001,
+    1.960000000000001
+  ],
+  "checks": [
+    {
+      "name": "frame0",
+      "level": "PASS",
+      "message": "Visible composition has exposure and contrast",
+      "events": [
+        {
+          "frame": 0,
+          "seconds": 0.0
+        }
+      ],
+      "mean": 100.17500305175781,
+      "contrast": 34.625
+    },
+    {
+      "name": "flashes",
+      "level": "PASS",
+      "message": "Single-frame flash scan",
+      "events": []
+    },
+    {
+      "name": "pops",
+      "level": "PASS",
+      "message": "Small transient pop scan; inspect in context",
+      "events": []
+    },
+    {
+      "name": "freeze",
+      "level": "PASS",
+      "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+      "events": [],
+      "designed_holds": []
+    },
+    {
+      "name": "cuts",
+      "level": "PASS",
+      "message": "Detected cut candidates (no hard cuts required)",
+      "events": [],
+      "detected": [],
+      "expected_seconds": []
+    },
+    {
+      "name": "timeline_joins",
+      "level": "PASS",
+      "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+      "events": []
+    },
+    {
+      "name": "loop",
+      "level": "PASS",
+      "message": "N/A: no loop requested",
+      "events": []
+    },
+    {
+      "name": "loudness",
+      "level": "PASS",
+      "message": "N/A: no audio track",
+      "events": []
+    },
+    {
+      "name": "true_peak",
+      "level": "PASS",
+      "message": "N/A: no audio track",
+      "events": []
+    },
+    {
+      "name": "loudest_100ms",
+      "level": "PASS",
+      "message": "N/A: no audio track",
+      "events": []
+    },
+    {
+      "name": "silence",
+      "level": "PASS",
+      "message": "N/A: no audio track",
+      "events": []
+    }
+  ],
+  "sheets": {
+    "contact_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 4,
+        "seconds": 0.16
+      },
+      {
+        "frame": 9,
+        "seconds": 0.36
+      },
+      {
+        "frame": 13,
+        "seconds": 0.52
+      },
+      {
+        "frame": 18,
+        "seconds": 0.72
+      },
+      {
+        "frame": 22,
+        "seconds": 0.88
+      },
+      {
+        "frame": 27,
+        "seconds": 1.08
+      },
+      {
+        "frame": 31,
+        "seconds": 1.24
+      },
+      {
+        "frame": 36,
+        "seconds": 1.44
+      },
+      {
+        "frame": 40,
+        "seconds": 1.6
+      },
+      {
+        "frame": 45,
+        "seconds": 1.8
+      },
+      {
+        "frame": 49,
+        "seconds": 1.96
+      }
+    ],
+    "phone_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 24,
+        "seconds": 0.96
+      },
+      {
+        "frame": 49,
+        "seconds": 1.96
+      }
+    ],
+    "hook_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 12,
+        "seconds": 0.48
+      },
+      {
+        "frame": 24,
+        "seconds": 0.96
+      },
+      {
+        "frame": 37,
+        "seconds": 1.48
+      },
+      {
+        "frame": 49,
+        "seconds": 1.96
+      }
+    ]
+  },
+  "limitations": "Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.",
+  "elapsed_seconds": 0.35948630000348203,
+  "level": "PASS"
+}

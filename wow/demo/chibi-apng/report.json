@@ -1,0 +1,326 @@
+{
+  "input": "examples\\chibi-running-dash\\final.apng",
+  "frames": 112,
+  "duration_seconds": 3.2299999999999964,
+  "frame_times_seconds": [
+    0.0,
+    0.03,
+    0.06,
+    0.09,
+    0.11,
+    0.14,
+    0.17,
+    0.2,
+    0.22,
+    0.25,
+    0.28,
+    0.31000000000000005,
+    0.3400000000000001,
+    0.38000000000000006,
+    0.41000000000000003,
+    0.45,
+    0.48,
+    0.52,
+    0.55,
+    0.5800000000000001,
+    0.6200000000000001,
+    0.6500000000000001,
+    0.6900000000000002,
+    0.7200000000000002,
+    0.7600000000000002,
+    0.7900000000000003,
+    0.8300000000000003,
+    0.8600000000000003,
+    0.9000000000000004,
+    0.9300000000000004,
+    0.9700000000000004,
+    1.0000000000000004,
+    1.0400000000000005,
+    1.0700000000000005,
+    1.1100000000000005,
+    1.1400000000000006,
+    1.1800000000000006,
+    1.2100000000000006,
+    1.2400000000000007,
+    1.2700000000000007,
+    1.3000000000000007,
+    1.3200000000000007,
+    1.3500000000000008,
+    1.3800000000000008,
+    1.4100000000000008,
+    1.4300000000000008,
+    1.4600000000000009,
+    1.4900000000000009,
+    1.520000000000001,
+    1.550000000000001,
+    1.570000000000001,
+    1.600000000000001,
+    1.630000000000001,
+    1.660000000000001,
+    1.680000000000001,
+    1.710000000000001,
+    1.740000000000001,
+    1.7700000000000011,
+    1.8000000000000012,
+    1.8200000000000012,
+    1.8500000000000012,
+    1.8800000000000012,
+    1.9100000000000013,
+    1.9300000000000013,
+    1.9600000000000013,
+    2.0000000000000013,
+    2.030000000000001,
+    2.060000000000001,
+    2.080000000000001,
+    2.1100000000000008,
+    2.130000000000001,
+    2.1600000000000006,
+    2.1900000000000004,
+    2.2100000000000004,
+    2.24,
+    2.2600000000000002,
+    2.29,
+    2.32,
+    2.34,
+    2.3699999999999997,
+    2.3899999999999997,
+    2.4199999999999995,
+    2.4499999999999993,
+    2.4699999999999993,
+    2.499999999999999,
+    2.519999999999999,
+    2.549999999999999,
+    2.5799999999999987,
+    2.5999999999999988,
+    2.6299999999999986,
+    2.6499999999999986,
+    2.6799999999999984,
+    2.709999999999998,
+    2.729999999999998,
+    2.759999999999998,
+    2.779999999999998,
+    2.819999999999998,
+    2.849999999999998,
+    2.869999999999998,
+    2.8999999999999977,
+    2.9199999999999977,
+    2.9499999999999975,
+    2.9699999999999975,
+    2.9999999999999973,
+    3.0199999999999974,
+    3.049999999999997,
+    3.069999999999997,
+    3.099999999999997,
+    3.119999999999997,
+    3.149999999999997,
+    3.169999999999997,
+    3.1999999999999966
+  ],
+  "checks": [
+    {
+      "name": "frame0",
+      "level": "PASS",
+      "message": "Visible composition has exposure and contrast",
+      "events": [
+        {
+          "frame": 0,
+          "seconds": 0.0
+        }
+      ],
+      "mean": 105.94625854492188,
+      "contrast": 58.84313201904297
+    },
+    {
+      "name": "flashes",
+      "level": "PASS",
+      "message": "Single-frame flash scan",
+      "events": []
+    },
+    {
+      "name": "pops",
+      "level": "WARN",
+      "message": "Small transient pop scan; inspect in context",
+      "events": [
+        {
+          "frame": 38,
+          "seconds": 1.24
+        },
+        {
+          "frame": 53,
+          "seconds": 1.66
+        },
+        {
+          "frame": 54,
+          "seconds": 1.68
+        }
+      ]
+    },
+    {
+      "name": "freeze",
+      "level": "PASS",
+      "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+      "events": [],
+      "designed_holds": []
+    },
+    {
+      "name": "cuts",
+      "level": "PASS",
+      "message": "Detected cut candidates (no hard cuts required)",
+      "events": [],
+      "detected": [],
+      "expected_seconds": []
+    },
+    {
+      "name": "timeline_joins",
+      "level": "PASS",
+      "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+      "events": []
+    },
+    {
+      "name": "loop",
+      "level": "PASS",
+      "message": "Loop position and speed",
+      "events": [
+        {
+          "frame": 111,
+          "seconds": 3.2299999999999964,
+          "to_frame": 0
+        }
+      ],
+      "seam": 0.2926793396472931,
+      "median_step": 0.9927388429641724,
+      "seam_ratio": 0.2948200745055926,
+      "speed_ratio": 0.48923815499333906,
+      "position_pass": true,
+      "speed_pass": true,
+      "speed_applicable": false
+    },
+    {
+      "name": "loudness",
+      "level": "PASS",
+      "applicable": false,
+      "message": "N/A: no audio track",
+      "events": []
+    },
+    {
+      "name": "true_peak",
+      "level": "PASS",
+      "applicable": false,
+      "message": "N/A: no audio track",
+      "events": []
+    },
+    {
+      "name": "loudest_100ms",
+      "level": "PASS",
+      "applicable": false,
+      "message": "N/A: no audio track",
+      "events": []
+    },
+    {
+      "name": "silence",
+      "level": "PASS",
+      "applicable": false,
+      "message": "N/A: no audio track",
+      "events": []
+    }
+  ],
+  "sheets": {
+    "contact_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 10,
+        "seconds": 0.28
+      },
+      {
+        "frame": 19,
+        "seconds": 0.58
+      },
+      {
+        "frame": 27,
+        "seconds": 0.86
+      },
+      {
+        "frame": 35,
+        "seconds": 1.14
+      },
+      {
+        "frame": 46,
+        "seconds": 1.46
+      },
+      {
+        "frame": 56,
+        "seconds": 1.74
+      },
+      {
+        "frame": 66,
+        "seconds": 2.03
+      },
+      {
+        "frame": 78,
+        "seconds": 2.34
+      },
+      {
+        "frame": 89,
+        "seconds": 2.63
+      },
+      {
+        "frame": 100,
+        "seconds": 2.92
+      },
+      {
+        "frame": 111,
+        "seconds": 3.2
+      }
+    ],
+    "phone_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 30,
+        "seconds": 0.97
+      },
+      {
+        "frame": 64,
+        "seconds": 1.96
+      },
+      {
+        "frame": 103,
+        "seconds": 3.0
+      }
+    ],
+    "hook_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 16,
+        "seconds": 0.48
+      },
+      {
+        "frame": 30,
+        "seconds": 0.97
+      },
+      {
+        "frame": 47,
+        "seconds": 1.49
+      },
+      {
+        "frame": 64,
+        "seconds": 1.96
+      },
+      {
+        "frame": 84,
+        "seconds": 2.5
+      }
+    ]
+  },
+  "limitations": "Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.",
+  "elapsed_seconds": 2.1203820000082487,
+  "level": "WARN"
+}

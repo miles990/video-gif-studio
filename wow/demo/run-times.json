@@ -1,0 +1,100 @@
+[
+  {
+    "case": "chibi-running-dash",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "scripts/qa_media.py",
+      "examples/chibi-running-dash/final.gif",
+      "--out",
+      "C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-crgo7pjb\\chibi-running-dash"
+    ],
+    "wall_seconds": 2.252385100000538,
+    "exit_code": 0,
+    "stdout": "WARN: C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-crgo7pjb\\chibi-running-dash\\report.md (1.958 s)\n",
+    "stderr": "",
+    "artifact_directory": "C:\\Users\\User\\src\\video-gif-studio\\wow\\demo\\chibi-running-dash",
+    "environment": "Miniforge fallback; requested skill venv inaccessible"
+  },
+  {
+    "case": "chibi-apng",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "scripts/qa_media.py",
+      "examples/chibi-running-dash/final.apng",
+      "--out",
+      "C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-dp8pjfu3\\chibi-apng"
+    ],
+    "wall_seconds": 2.4023981999926036,
+    "exit_code": 0,
+    "stdout": "WARN: C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-dp8pjfu3\\chibi-apng\\report.md (2.120 s)\n",
+    "stderr": "",
+    "artifact_directory": "C:\\Users\\User\\src\\video-gif-studio\\wow\\demo\\chibi-apng",
+    "environment": "Miniforge fallback; requested skill venv inaccessible"
+  },
+  {
+    "case": "neon-zen-pv",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "scripts/qa_media.py",
+      "examples/neon-zen-pv/final.mp4",
+      "--out",
+      "C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-fso1upnp\\neon-zen-pv",
+      "--timeline",
+      "examples/neon-zen-pv/timeline.json"
+    ],
+    "wall_seconds": 10.396612500000629,
+    "exit_code": 0,
+    "stdout": "PASS: C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-fso1upnp\\neon-zen-pv\\report.md (10.095 s)\n",
+    "stderr": "",
+    "artifact_directory": "C:\\Users\\User\\src\\video-gif-studio\\wow\\demo\\neon-zen-pv",
+    "environment": "Miniforge fallback; requested skill venv inaccessible"
+  },
+  {
+    "case": "neon-no-timeline",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "scripts/qa_media.py",
+      "examples/neon-zen-pv/final.mp4",
+      "--out",
+      "C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-uwxd7bc9\\neon-no-timeline"
+    ],
+    "wall_seconds": 10.561222600008477,
+    "exit_code": 0,
+    "stdout": "PASS: C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-uwxd7bc9\\neon-no-timeline\\report.md (10.266 s)\n",
+    "stderr": "",
+    "artifact_directory": "C:\\Users\\User\\src\\video-gif-studio\\wow\\demo\\neon-no-timeline",
+    "environment": "Miniforge fallback; requested skill venv inaccessible"
+  },
+  {
+    "case": "robot-wave",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "scripts/qa_media.py",
+      "examples/robot-wave-no-reference/final.gif",
+      "--out",
+      "C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-e4uwo1sj\\robot-wave"
+    ],
+    "wall_seconds": 2.178645100007998,
+    "exit_code": 1,
+    "stdout": "FAIL: C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-e4uwo1sj\\robot-wave\\report.md (1.907 s)\n",
+    "stderr": "",
+    "artifact_directory": "C:\\Users\\User\\src\\video-gif-studio\\wow\\demo\\robot-wave",
+    "environment": "Miniforge fallback; requested skill venv inaccessible"
+  },
+  {
+    "case": "seated-leg-switch",
+    "command": [
+      "C:\\Users\\User\\miniforge3\\python.exe",
+      "scripts/qa_media.py",
+      "examples/seated-leg-switch/final.gif",
+      "--out",
+      "C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-tiw65nmz\\seated-leg-switch"
+    ],
+    "wall_seconds": 4.799100299991551,
+    "exit_code": 1,
+    "stdout": "FAIL: C:\\Users\\User\\AppData\\Local\\Temp\\qa-review1-tiw65nmz\\seated-leg-switch\\report.md (4.519 s)\n",
+    "stderr": "",
+    "artifact_directory": "C:\\Users\\User\\src\\video-gif-studio\\wow\\demo\\seated-leg-switch",
+    "environment": "Miniforge fallback; requested skill venv inaccessible"
+  }
+]

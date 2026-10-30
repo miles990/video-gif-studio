@@ -1,0 +1,22 @@
+[
+  {
+    "case": "A",
+    "wall_seconds": 0.3919090999988839,
+    "level": "PASS"
+  },
+  {
+    "case": "B",
+    "wall_seconds": 0.3612321999971755,
+    "level": "FAIL"
+  },
+  {
+    "case": "D",
+    "wall_seconds": 0.3715376999898581,
+    "level": "FAIL"
+  },
+  {
+    "case": "T",
+    "wall_seconds": 0.3615882000012789,
+    "level": "PASS"
+  }
+]

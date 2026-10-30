@@ -1,0 +1,24 @@
+{
+  "tests": 56,
+  "failures": [],
+  "errors": [
+    "test_assemble_edit.AssemblyTest.test_complete_audio_bounded_restore_and_underflow",
+    "unittest.loader._FailedTest.test_flow_guides",
+    "test_install.InstallTests.test_same_source_symlink_is_preserved",
+    "unittest.loader._FailedTest.test_js_styles",
+    "unittest.loader._FailedTest.test_mask_review",
+    "test_motion_pack.MotionPackTests.test_roundtrip_and_no_overwrite",
+    "test_motion_pack.WhiteModelPackTests.test_white_model_encode_preserves_provenance",
+    "unittest.loader._FailedTest.test_music",
+    "unittest.loader._FailedTest.test_pipeline",
+    "unittest.loader._FailedTest.test_redraw_plugins",
+    "unittest.loader._FailedTest.test_repair_edges",
+    "unittest.loader._FailedTest.test_runtime",
+    "unittest.loader._FailedTest.test_soft_effect_alpha",
+    "unittest.loader._FailedTest.test_stylized_effects",
+    "unittest.loader._FailedTest.test_stylized_redraw",
+    "unittest.loader._FailedTest.test_timeline"
+  ],
+  "skipped": 1,
+  "wall_seconds": 1.6204846000036923
+}
