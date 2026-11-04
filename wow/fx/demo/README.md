@@ -90,3 +90,22 @@ One CPU session processes A and B sequentially. This run: 41.48 s and 58.25 s in
 excluding shared model initialization. The coordinator's separate load-inclusive
 comparison was u2netp 10.6 s versus BiRefNet 61.6 s (`../live/matte-compare.jpg`).
 Keep at most one matting/render/test process active on this shared 16 GB machine.
+
+Round 2 correction: literal qa_media --expect-cuts counts planned flashes and transitions as image discontinuities (cuts). It is not an editorial-boundary oracle. Use --timeline with the emitted manifest to check declared holds and joins, and decoded luminance/difference measurements for accent timing. The round-1 measurements above describe the earlier render; see build-results.json and verification.json for the rebuilt measurements.
+
+
+## Rebuilt round 2 freeze correction
+
+The retained matte now stays at its original canvas position and size. The background
+is inpainted under a 19px dilated matte before sigma-12 blur, so no second fish is visible.
+The border is 6px. Ordinary accents move upward 12px with -1 degree rotation and unit
+scale; freeze beats 4/8 use 19px, +1.6 degrees and 1.015 scale. The opening has a 1.14
+zoom hook. Halation is .65 at sigma 6 / threshold .55; grade sat=1.12, temp=.025,
+gain=1.06. These replace the older framing/settings described above.
+
+The rebuilt 9.160s films passed timeline QA for both materials. Initial rebuilt export
+wall times were A 61.57s / B 57.70s, GIF sizes 2,924,196 / 2,882,392 bytes. Later
+build-results.json supersedes these times if rebuilt with the optimized renderer.
+Inspection-a/b-3.jpg shows original-scale float-up and clean background plates; all
+inspection sheets were regenerated. Reverse zoom candidates now appear as review:true.
+No playback/listening judgment is claimed.

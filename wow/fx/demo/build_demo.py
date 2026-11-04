@@ -13,6 +13,7 @@ import subprocess
 import sys
 import time
 import numpy as np
+import cv2
 from PIL import Image, ImageSequence
 
 ROOT=Path(__file__).resolve().parent
@@ -48,12 +49,11 @@ def prepare(work, rematte=False):
                 print(f'Matted {tag}: {time.perf_counter()-started:.2f}s',flush=True)
         # Fixed framing of this single freeze, with real source RGB and soft model alpha.
         with Image.open(ROOT/f'assets/matte-{tag}.png') as im:
-            subject=im.convert('RGBA');box=subject.getbbox();subject=subject.crop(box)
-            factor=180/subject.height
-            subject=subject.resize((round(subject.width*factor),180),Image.Resampling.LANCZOS)
-            canvas=Image.new('RGBA',(640,360));canvas.alpha_composite(subject,((640-subject.width)//2,90))
-            canvas.save(work/f'card-{tag}.png')
-        shutil.copy2(ROOT/f'assets/freeze-{tag}.png',work/f'plate-{tag}.png')
+            subject=im.convert('RGBA');subject.save(work/f'card-{tag}.png')
+            mask=cv2.dilate((np.array(subject)[...,3]>4).astype('uint8'),np.ones((19,19),np.uint8))
+        with Image.open(ROOT/f'assets/freeze-{tag}.png') as im:
+            filled=cv2.inpaint(np.array(im.convert('RGB')),mask,7,cv2.INPAINT_TELEA)
+            Image.fromarray(filled).save(work/f'plate-{tag}.png')
 
 
 def plan(tag,work):
@@ -66,10 +66,12 @@ def plan(tag,work):
             {'type':'animation','manifest':f'{relative}/closing-{tag}/manifest.json','in_ms':0,'out_ms':1460,'end_beat':20,'transition':{'name':'whip_pan','duration_ms':320}},
             {'type':'animation','manifest':f'{relative}/opening-{tag}/manifest.json','in_ms':3200,'out_ms':5020,'end_beat':25,'transition':{'name':'hex_shutter','duration_ms':320}}],
         'effects':[
-            {'name':'beat_bounce','stage':'source','start_beat':8,'end_beat':16,'amount':{'on':'beats','indices':list(range(8,16)),'decay_ms':240,'curve':'ease_out'},'translate_px':20,'rotation_deg':-3,'scale':1.06},
-            {'name':'cutout_card','stage':'source','start_beat':8,'end_beat':16,'border_px':3,'shadow_px':8,'shadow_blur':5,'background':f'{relative}/plate-{tag}.png','darken':.55,'blur':12},
-            {'name':'halation','amount':.16,'radius':3},
-            {'name':'grade','sat':1.06,'temp':.01,'gain':1.03},
+            {'name':'zoom_punch','start_beat':0,'end_beat':1,'scale':1.14,'amount':{'on':'beats','indices':[0],'decay_ms':280}},
+            {'name':'beat_bounce','stage':'source','start_beat':8,'end_beat':16,'amount':{'on':'beats','indices':[8,9,10,12,13,14],'decay_ms':240,'curve':'ease_out'},'translate_px':12,'rotation_deg':-1,'scale':1.0},
+            {'name':'beat_bounce','stage':'source','start_beat':8,'end_beat':16,'amount':{'on':'beats','indices':[11,15],'decay_ms':310,'curve':'ease_out'},'translate_px':19,'rotation_deg':1.6,'scale':1.015},
+            {'name':'cutout_card','stage':'source','start_beat':8,'end_beat':16,'border_px':6,'shadow_px':8,'shadow_blur':5,'background':f'{relative}/plate-{tag}.png','darken':.66,'blur':12},
+            {'name':'halation','amount':.65,'radius':6,'threshold':.55},
+            {'name':'grade','sat':1.12,'temp':.025,'gain':1.06},
             {'name':'flash_white','start_beat':1,'end_beat':8,'amount':{'on':'beats','indices':[2,6],'decay_ms':130,'curve':'ease_out','max':.65}},
             {'name':'zoom_punch','start_beat':16,'end_beat':20,'scale':1.07,'amount':{'on':'beats','indices':[17,18,19],'decay_ms':200}},
             {'name':'zoom_punch','start_beat':20,'end_beat':25,'scale':1.09,'amount':{'on':'beats','indices':[21,22,23,24],'decay_ms':260}}]}
@@ -83,17 +85,17 @@ def write_plan(data,target):
     target.write_text('\n'.join(lines+['  ]','}'])+'\n')
 
 
-def export_preview(out, gif):
+def export_preview(out, gif, exposure=80, widths=(360,320,288,256,240,216,192,160)):
     """Retain 12.5fps cadence; choose the largest preview under the byte budget."""
     m=json.loads((out/'manifest.json').read_text())
-    for width in (360,320,288,256,240):
+    for width in widths:
         frames=[];times=[];pending=0
         for i,duration in enumerate(m['durations_ms']):
             if pending==0:
                 with Image.open(out/'frames'/f'{i:05d}.png') as im:
                     frame=im.convert('RGBA').resize((width,round(width*9/16)),Image.Resampling.LANCZOS)
             pending+=duration
-            if pending>=80 or i==len(m['durations_ms'])-1:
+            if pending>=exposure or i==len(m['durations_ms'])-1:
                 frames.append(frame);times.append(pending);pending=0
         encode(frames,times,gif)
         if gif.stat().st_size<=3_000_000:

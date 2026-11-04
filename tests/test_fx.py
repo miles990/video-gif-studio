@@ -45,6 +45,9 @@ def synthetic(root):
 
 class FxCoreTests(unittest.TestCase):
     def setUp(self):
+        self.depth_tmp=tempfile.TemporaryDirectory();self.addCleanup(self.depth_tmp.cleanup)
+        self.depth_file=str(Path(self.depth_tmp.name)/'depth.png')
+        Image.fromarray(np.tile(np.arange(320,dtype=np.uint8),(180,1))).save(self.depth_file)
         self.ctx=Context(320,180,25,list(range(0,6001,500)))
         self.a=np.full((180,320,4),[220,40,40,255],np.uint8);self.a[:,20:36,:3]=255
         self.b=np.full_like(self.a,[40,60,220,255])
@@ -58,7 +61,8 @@ class FxCoreTests(unittest.TestCase):
                 for name,spec in reg.items():
                     with self.subTest(name=name,dtype=dtype):
                         args=(a,1100,self.ctx) if reg is EFFECTS else (a,b,.5,self.ctx)
-                        x=spec['function'](*args);y=spec['function'](*args)
+                        kwargs={'depth':self.depth_file} if name=='parallax' else {}
+                        x=spec['function'](*args,**kwargs);y=spec['function'](*args,**kwargs)
                         self.assertEqual(x.dtype,dtype);self.assertEqual(x.shape,a.shape)
                         self.assertTrue(np.isfinite(x).all());self.assertTrue(np.array_equal(x,y));self.assertTrue(np.array_equal(a,original))
                         self.assertGreaterEqual(x.min(),0);self.assertLessEqual(x.max(),255 if dtype==np.uint8 else 1)
@@ -136,7 +140,7 @@ class FxCoreTests(unittest.TestCase):
         self.assertFalse(np.array_equal(a,self.ctx.rng.random(100)))
 
     def test_cross_process_hash_seed(self):
-        code="import sys,hashlib,numpy as np;sys.path.insert(0,'scripts');from fx import *;a=np.full((20,30,4),128,np.uint8);c=Context(30,20,seed=9);h=hashlib.sha256();[h.update(s['function'](a,0,c).tobytes()) for s in EFFECTS.values()];[h.update(s['function'](a,a,.25,c).tobytes()) for s in TRANSITIONS.values()];print(h.hexdigest())"
+        code="import sys,hashlib,numpy as np;sys.path.insert(0,'scripts');from fx import *;a=np.full((20,30,4),128,np.uint8);c=Context(30,20,seed=9);h=hashlib.sha256();[h.update(s['function'](a,0,c,**({'depth':"+repr(self.depth_file)+"} if n=='parallax' else {})).tobytes()) for n,s in EFFECTS.items()];[h.update(s['function'](a,a,.25,c).tobytes()) for s in TRANSITIONS.values()];print(h.hexdigest())"
         outputs=[subprocess.check_output([sys.executable,'-c',code],env=dict(os.environ,PYTHONHASHSEED=str(seed))) for seed in (1,2)]
         self.assertEqual(outputs[0],outputs[1])
 

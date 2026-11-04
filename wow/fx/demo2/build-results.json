@@ -1,0 +1,15 @@
+{
+  "gif_bytes": 2583957,
+  "gif_width": 192,
+  "gif": {
+    "decoded_frames": 129,
+    "source_output_frames": 129,
+    "duration_ms": 20540,
+    "alpha_mismatch_pixels": 0,
+    "mean_visible_rgb_error": 3.904943804431046,
+    "technical_pass": true,
+    "visual_motion_approval": "not assessed by script"
+  },
+  "wall_seconds": 45.95926500001224,
+  "master": "work\\master-1793805408645469900"
+}

@@ -9,3 +9,4 @@ demo/master-*/
 demo/*.gif
 !demo/demo.gif
 !demo/demo-b.gif
+demo2/work/

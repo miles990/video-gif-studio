@@ -931,8 +931,8 @@
           "seconds": 0.0
         }
       ],
-      "mean": 71.75270080566406,
-      "contrast": 57.5635871887207
+      "mean": 82.3680648803711,
+      "contrast": 65.99679565429688
     },
     {
       "name": "flashes",
@@ -974,6 +974,10 @@
         {
           "frame": 296,
           "seconds": 2.96
+        },
+        {
+          "frame": 440,
+          "seconds": 4.4
         }
       ],
       "expected_seconds": []
@@ -1174,6 +1178,6 @@
     ]
   },
   "limitations": "Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.",
-  "elapsed_seconds": 4.065017600019928,
+  "elapsed_seconds": 3.5791534000309184,
   "level": "PASS"
 }

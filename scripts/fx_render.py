@@ -9,14 +9,15 @@ import os
 from pathlib import Path
 import sys
 import time
+from collections import deque
 import numpy as np
 from PIL import Image, ImageDraw
 from compose_timeline import compose, resolve_plan, export_timeline, FORMATS
 from fx import Context, EFFECTS, TRANSITIONS, evaluate
 from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers, audio_peaks
 
-TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review'}
-SEGMENT = {'type','manifest','image','previous','frame','duration_ms','in_ms','out_ms','speed','ending','end_beat','end_downbeat','transition','review'}
+TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model'}
+SEGMENT = {'type','manifest','image','previous','frame','duration_ms','in_ms','out_ms','speed','ramp','ending','end_beat','end_downbeat','transition','review'}
 META = {'name','start_ms','end_ms','start_beat','end_beat','review','stage'}
 
 def keys(value, allowed, where):
@@ -48,18 +49,35 @@ def validate_entry(entry, registry, ctx, where, metadata):
         elif expected=='str' and not isinstance(v,str): raise ValueError(f'{where}.{k}: expected str, got {v!r}')
         elif expected=='bool' and type(v) is not bool: raise ValueError(f'{where}.{k}: expected bool, got {v!r}')
         if k=='sampling' and v not in ('linear','nearest'): raise ValueError(f'{where}.{k}: valid options linear, nearest')
-        if k=='direction' and v not in ('left','right'): raise ValueError(f'{where}.{k}: valid options left, right')
+        if k=='direction' and expected=='str' and v not in ('left','right','up','down','horizontal','vertical'): raise ValueError(f'{where}.{k}: valid options left, right, up, down, horizontal, vertical')
         if k in ('bg','color') and v and (len(v.lstrip('#'))!=6 or any(c not in '0123456789abcdefABCDEF' for c in v.lstrip('#'))):
             raise ValueError(f'{where}.{k}: expected 6-digit RGB hex')
     source = Path(spec['source'])
+    if name=='shape_wipe' and params['shape'] not in ('circle','diamond','star','heart'):raise ValueError(where+'.shape: circle, diamond, star, heart')
+    if name=='text' and params['entrance'] not in ('pop','scale'):raise ValueError(where+'.entrance: pop or scale')
+    if name=='text':
+        from fx.effects.typography import resolve_font
+        params['font']=resolve_font(params['font'])
+    if name=='parallax':
+        from fx.depth import check_model
+        check_model(params['model'])
+        if not params['depth']:
+            from fx.timewarp import session
+            try:session(params['model'])
+            except ValueError as exc:raise ValueError(f'{where}: {exc}; .runtime/models/depth-anything-v2-small.onnx; use beat_bounce/zoom_punch instead') from None
     return {'name':name,'params':params,'source':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest()}
 
 def validate_plan(plan_path, formats=('png',)):
     path = Path(plan_path).resolve()
     plan = json.loads(path.read_text(encoding='utf-8-sig'))
+    if os.environ.get('VIDEO_GIF_INTERPOLATE'):plan['interpolate']=os.environ['VIDEO_GIF_INTERPOLATE']
     keys(plan,TOP,'plan')
     if not isinstance(plan.get('segments'),list) or not plan['segments']: raise ValueError('segments: expected nonempty list')
     fps = number(plan.get('fps',25),'fps',1,50)
+    if plan.get('interpolate','flow') not in ('none','blend','flow','rife'): raise ValueError('interpolate: choose none, blend, flow, rife')
+    if plan.get('interpolate')=='rife':
+        from fx.timewarp import session
+        session(plan.get('rife_model',os.environ.get('VIDEO_GIF_RIFE_MODEL','.runtime/models/rife_v4.25_lite.onnx')))
     if plan.get('sampling','linear') not in ('linear','nearest'): raise ValueError('sampling: valid options linear, nearest')
     if type(plan.get('seed',0)) is not int: raise ValueError('seed: expected integer')
     music = plan.get('music',{})
@@ -79,10 +97,23 @@ def validate_plan(plan_path, formats=('png',)):
             raise ValueError(f'beatmap.downbeats_ms: {t} is not in beats_ms (1ms rounding tolerance)')
     ctx = Context(0,0,fps,[v-offset for v in beats.get('beats_ms',[])],seed=plan.get('seed',0),downbeats_ms=[v-offset for v in beats.get('downbeats_ms',[])],sampling=plan.get('sampling','linear'))
     prepared = dict(plan); prepared['segments'] = []
-    cursor = 0
+    cursor = 0;extra_source_files=[]
     for i, original in enumerate(plan['segments']):
         where = f'segments[{i}]'; keys(original,SEGMENT,where)
         segment = dict(original)
+        if 'speed' in segment:
+            speed=segment.pop('speed')
+            if isinstance(speed,dict):
+                validate_envelope(speed,ctx,where+'.speed')
+                values=[v for _,v in speed['keyframes']] if 'keyframes' in speed else [speed.get('min',0),speed.get('max',1)]
+                for value in values: number(value,where+'.speed',.001,100)
+            else:number(speed,where+'.speed',.001,100)
+        if 'ramp' in segment:
+            ramp=segment.pop('ramp');keys(ramp,{'into_beat','slow','hit_ms'},where+'.ramp')
+            beat_index(ramp.get('into_beat'),ctx.beats_ms,where+'.ramp.into_beat')
+            number(ramp.get('slow',.3),where+'.ramp.slow',.001,.999)
+            number(ramp.get('hit_ms',200),where+'.ramp.hit_ms',10)
+            if 'speed' in original:raise ValueError(where+': choose speed or ramp')
         if 'duration_ms' in segment:
             duration = number(segment['duration_ms'],where+'.duration_ms',10)
             if duration%10: raise ValueError(f'{where}.duration_ms: must be a multiple of 10')
@@ -92,13 +123,37 @@ def validate_plan(plan_path, formats=('png',)):
             segment['duration_ms'] = round(beat_index(segment.pop('end_downbeat'),ctx.downbeats_ms,where+'.end_downbeat')/10)*10-cursor
         if 'end_beat' in segment: beat_index(segment['end_beat'],ctx.beats_ms,where+'.end_beat')
         segment.pop('transition',None)
+        # An implicit source out-point follows the output cut at unity speed.
+        # Explicit in/out duration-fitting remains the legacy editorial operation.
+        if original.get('type')=='animation' and 'out_ms' not in original and 'ramp' not in original and original.get('speed',1)==1:
+            data=json.loads((path.parent/original['manifest']).read_text());available=sum(data['durations_ms'])
+            target=round(ctx.beats_ms[segment['end_beat']]/10)*10-cursor if 'end_beat' in segment else segment.get('duration_ms',available)
+            end=original.get('in_ms',0)+target
+            if end<available:segment['out_ms']=end;ctx.source_trimmed=True
+        if original.get('type')=='animation' and ('ramp' in original or original.get('speed',1)!=1):
+            manifest=path.parent/original['manifest'];data=json.loads(manifest.read_text())
+            files=sorted((manifest.parent/'frames').glob('*.png'));available=sum(data['durations_ms'])
+            extra_source_files.extend(files)
+            if not files or len(files)!=len(data['durations_ms']):raise ValueError(where+': source frames/timing mismatch')
+            begin=number(original.get('in_ms',0),where+'.in_ms',0,available)
+            finish=number(original.get('out_ms',available),where+'.out_ms',begin+1,available)
+            duration=segment.get('duration_ms',finish-begin)
+            segment={k:v for k,v in segment.items() if k in ('end_beat','duration_ms','review')}
+            segment.update(type='still',image=str(files[0]))
+            if 'end_beat' not in segment:segment['duration_ms']=duration
         prepared['segments'].append(segment)
         # Resolve incrementally for exact loop/trim/still semantics and useful location errors.
         try: items, segments = resolve_plan(prepared,path,formats)
         except (ValueError,KeyError,TypeError,OSError) as exc: raise ValueError(f'{where}: {exc}') from None
         cursor = sum(t for _,t in items)
+    for i,s in enumerate(segments):
+        s['edit']=plan['segments'][i];s['type']=plan['segments'][i]['type']
+        if 'ramp' in s['edit']:
+            hit=ctx.beats_ms[s['edit']['ramp']['into_beat']]
+            if not s['start_ms']<hit<=s['start_ms']+s['duration_ms']:
+                raise ValueError(f'segments[{i}].ramp.into_beat: beat must be inside or at segment end')
     size = None
-    for file in dict.fromkeys(f for f,_ in items):
+    for file in dict.fromkeys([f for f,_ in items]+extra_source_files):
         with Image.open(file) as im:
             if size is not None and im.size!=size: raise ValueError(f'segments: {file}: all images must share one canvas {size}')
             size = im.size
@@ -121,6 +176,10 @@ def validate_plan(plan_path, formats=('png',)):
         if effect['params'].get('background'):
             effect['params']['background'] = str((path.parent/effect['params']['background']).resolve())
             if not Path(effect['params']['background']).is_file(): raise ValueError(f'{where}.background: expected existing image')
+        for key in ('depth',):
+            if effect['params'].get(key):
+                effect['params'][key]=str((path.parent/effect['params'][key]).resolve())
+                if not Path(effect['params'][key]).is_file():raise ValueError(where+'.'+key+': expected existing image')
         effect['trigger_times_ms'] = sorted(set(t for v in effect['params'].values() if isinstance(v,dict) and v.get('on') in ('beats','downbeats') for t in triggers(v,ctx) if effect['start_ms']<=t<effect['end_ms']))
         effects.append(effect)
     for i, segment in enumerate(plan['segments']):
@@ -129,10 +188,16 @@ def validate_plan(plan_path, formats=('png',)):
         if i==0: raise ValueError(f'{where}: requires a previous segment; valid index 1..{len(segments)-1}')
         entry = segment['transition']
         tr = validate_entry(entry,TRANSITIONS,ctx,where,{'name','duration_ms','review'})
+        if tr['name']=='luma_wipe' and tr['params']['mask'] not in ('linear','radial','cloud'):
+            tr['params']['mask']=str((path.parent/tr['params']['mask']).resolve())
+            if not Path(tr['params']['mask']).is_file():raise ValueError(where+'.mask: expected grayscale image or linear/radial/cloud')
         limit = min(segments[i-1]['duration_ms'],segments[i]['duration_ms'])
         length = number(entry.get('duration_ms',400),where+'.duration_ms',1000/fps,limit)
-        if ctx.sampling=='nearest' and tr['name'] in ('crossfade','whip_pan','flash_cut'):
-            print(f'Warning: {where} {tr["name"]} blends colours in nearest/pixel mode',file=sys.stderr)
+        if length%10: raise ValueError(f'{where}.duration_ms: must be a multiple of 10')
+        if ctx.sampling=='nearest' and (tr['name'] in ('crossfade','whip_pan','flash_cut','glitch') or tr['params'].get('softness',0)):
+            warning = f'{where} {tr["name"]} blends colours in nearest/pixel mode'
+            tr['warning'] = warning
+            print('Warning: '+warning,file=sys.stderr)
         cut = segments[i]['start_ms']
         tr.update(start_ms=cut-length/2,end_ms=cut+length/2,cut_ms=cut,segment_index=i)
         transitions.append(tr)
@@ -154,8 +219,25 @@ def render(plan_path, out, formats=('gif',), background='000000'):
     if out.exists(): raise ValueError('Use a new output directory')
     if not formats or not set(formats)<=FORMATS: raise ValueError(f'formats: valid options {sorted(FORMATS)}')
     plan,items,segments,ctx,effects,transitions = validate_plan(path,formats)
-    if not effects and not transitions and not any('end_downbeat' in s for s in plan['segments']):
-        return compose(path,out,formats,background)
+    origins={}
+    for s in plan['segments']:
+        if s.get('type') in ('animation','loop') and s.get('manifest'):
+            manifest=path.parent/s['manifest'];data=json.loads(manifest.read_text());clock=0
+            for file,duration in zip(sorted((manifest.parent/'frames').glob('*.png')),data['durations_ms']):
+                origins[str(file.resolve())]=clock;clock+=duration
+    if not effects and not transitions and not any('end_downbeat' in s or 'ramp' in s or s.get('speed',1)!=1 for s in plan['segments']):
+        if ctx.source_trimmed or any('speed' in s for s in plan['segments']):
+            # Explicit unity shares the exact legacy frame/exposure path.
+            images=[]
+            for file,_ in items:
+                with Image.open(file) as im:images.append(im.convert('RGBA'))
+            result=export_timeline(path,out,formats,background,plan,items,segments,images,[t for _,t in items])
+        else:result=compose(path,out,formats,background)
+        manifest_path=out/'manifest.json';record=json.loads(manifest_path.read_text());clock=0;record['source_samples']=[]
+        for file,duration in items:
+            index=max(0,bisect.bisect_right([s['start_ms'] for s in segments],clock)-1)
+            record['source_samples'].append({'output_ms':clock,'segment_index':index,'source_ms':origins.get(str(file.resolve()),0),'interpolation':'none','extended_last_frame':False});clock+=duration
+        manifest_path.write_text(json.dumps(record,indent=2));return result
     started = time.perf_counter()
     edges = np.cumsum([0]+[t for _,t in items]).tolist(); total = edges[-1]
     # 10ms exposures retain existing exporters, with the mean requested rate.
@@ -168,6 +250,20 @@ def render(plan_path, out, formats=('gif',), background='000000'):
     sample_edges = sorted(set([round(k*1000/ctx.fps/10)*10 for k in range(math.ceil(total*ctx.fps/1000))]+[t for t in events if 0<=t<=total]+[total]))
     if len(sample_edges)>2 and sample_edges[-1]-sample_edges[-2]<20: sample_edges.pop(-2)
     cache = {}
+    remaps={}; source_records=[]; flow_cache={}
+    from fx.timewarp import source_clock, interpolate, flow_pair
+    from fx.core import floating
+    from fx.core import restore
+    for i,original in enumerate(plan['segments']):
+        if original.get('type')=='animation' and ('ramp' in original or original.get('speed',1)!=1):
+            manifest=path.parent/original['manifest']; data=json.loads(manifest.read_text())
+            files=sorted((manifest.parent/'frames').glob('*.png'))
+            remaps[i]=(files,np.cumsum([0]+data['durations_ms']),original)
+    def read(file):
+        if file not in cache:
+            if len(cache)>=12:cache.pop(next(iter(cache)))
+            with Image.open(file) as im:cache[file]=np.array(im.convert('RGBA'))
+        return cache[file]
     def parameters(effect,t,end=None):
         result = {}
         for key,value in effect['params'].items():
@@ -187,33 +283,65 @@ def render(plan_path, out, formats=('gif',), background='000000'):
         j = max(0,min(len(items)-1,bisect.bisect_right(edges,t)-1))
         if index is not None: j = max(segments[index]['start_frame'],min(segments[index]['end_frame_exclusive']-1,j))
         file = items[j][0]
-        if file not in cache:
-            with Image.open(file) as im: cache[file] = np.array(im.convert('RGBA'))
-        frame = cache[file]
+        frame = read(file)
         previous_segment = ctx.segment
         ctx.segment = dict(segments[index],index=index,end_ms=segments[index]['start_ms']+segments[index]['duration_ms'])
         active_t = max(segments[index]['start_ms'],min(t,segments[index]['start_ms']+segments[index]['duration_ms']-1e-6))
+        source_ms=origins.get(str(file.resolve()),0);method='none';extended=False
+        if index in remaps:
+            files,source_edges,original=remaps[index]
+            local=active_t-segments[index]['start_ms'];begin=original.get('in_ms',0)
+            requested=begin+source_clock(original,local,ctx)
+            limit=original.get('out_ms',int(source_edges[-1]))
+            extended=requested>=limit;source_ms=min(requested,limit-1e-5)
+            k=max(0,min(len(files)-1,bisect.bisect_right(source_edges,source_ms)-1))
+            file=files[k];frame=read(file)
+            speed=(source_clock(original,local+1,ctx)-source_clock(original,local,ctx))
+            phase=(source_ms-source_edges[k])/(source_edges[k+1]-source_edges[k])
+            if speed<1-1e-6 and phase>1e-6 and k+1<len(files) and source_edges[k+1]<limit:
+                method=plan.get('interpolate','flow');other=read(files[k+1]);flows=None
+                if method=='flow':
+                    key=(str(file),str(files[k+1]))
+                    if key not in flow_cache:
+                        flow_cache.clear();flow_cache[key]=flow_pair(floating(frame),floating(other))
+                    flows=flow_cache[key]
+                frame=interpolate(frame,other,phase,method,model=plan.get('rife_model',''),flows=flows)
+        if t==ctx.t_ms and index==ctx.segment['index']:
+            current_source.update(source_ms=round(float(source_ms),3),interpolation=method,extended_last_frame=extended)
+        frame=floating(frame)
         for effect in effects:
             if effect['stage']=='source' and effect['start_ms']<=active_t<effect['end_ms']:
-                frame = EFFECTS[effect['name']]['function'](frame,t,ctx,**parameters(effect,t,end))
+                ctx.effect_start_ms=effect['start_ms']
+                frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
         ctx.segment = previous_segment
         return frame,file
     images, output_items = [], []
+    history_size=max([EFFECTS[e['name']].get('history',0) for e in effects]+[0])
+    history=deque(maxlen=history_size);history_times=deque(maxlen=history_size);previous_index=None
     for t,end in zip(sample_edges,sample_edges[1:]):
         index = max(0,bisect.bisect_right([s['start_ms'] for s in segments],t)-1)
         ctx.t_ms = t; ctx.segment = dict(segments[index],index=index,end_ms=segments[index]['start_ms']+segments[index]['duration_ms'])
+        if index!=previous_index:history.clear();history_times.clear()
+        previous_index=index;ctx.history=tuple(reversed(history));ctx.history_times_ms=tuple(reversed(history_times))
+        current_source={'output_ms':t,'segment_index':index}
         frame,file = source(t)
+        source_records.append(current_source.copy())
         for tr in transitions:
             if tr['start_ms']<=t<tr['end_ms']:
                 j = tr['segment_index']; a,_ = source(t,j-1); b,_ = source(t,j)
                 p = (t-tr['start_ms'])/(tr['end_ms']-tr['start_ms'])
-                frame = TRANSITIONS[tr['name']]['function'](a,b,p,ctx,**parameters(tr,t,end))
+                frame = TRANSITIONS[tr['name']]['owned'](a,b,p,ctx,**parameters(tr,t,end))
+        before_effects=frame.copy() if history_size else None
         for effect in effects:
             if effect['stage']=='post' and effect['start_ms']<=t<effect['end_ms']:
-                frame = EFFECTS[effect['name']]['function'](frame,t,ctx,**parameters(effect,t,end))
-        images.append(Image.fromarray(frame)); output_items.append((file,end-t))
+                ctx.effect_start_ms=effect['start_ms']
+                frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
+        images.append(Image.fromarray(restore(frame,np.uint8))); output_items.append((file,end-t))
+        if history_size:history.append(floating(before_effects));history_times.append(t)
     elapsed = time.perf_counter()-started
     extra = {'effects':effects,'transitions':transitions,'fx_overrides':list(OVERRIDES),'render':{'seconds':elapsed,'fps':len(images)/elapsed,'requested_fps':ctx.fps},'semantics':'Centered transitions; source endpoints extended; effect intervals end-exclusive; no motion synthesized.'}
+    extra['warnings'] = [tr['warning'] for tr in transitions if 'warning' in tr]
+    extra['source_samples']=source_records
     for segment in segments:
         segment['start_frame'] = bisect.bisect_left(sample_edges,segment['start_ms'])
         segment['end_frame_exclusive'] = bisect.bisect_left(sample_edges,segment['start_ms']+segment['duration_ms'])
@@ -228,13 +356,20 @@ def preview(out, image_path=None):
         frame[55:125,110:210,:3] = [245,195,100]
     ctx = Context(320,180); other = frame[:,::-1].copy(); other[:,:,:3] = other[:,:,:3][:,:,::-1]
     settings = {'grade':{'sat':.5,'temp':.08,'gain':1.15},'zoom_punch':{'scale':1.18},
-                'beat_bounce':{'translate_px':20,'rotation_deg':-5,'scale':1.06},'halation':{'amount':2,'radius':12,'threshold':.35}}
+                'beat_bounce':{'translate_px':20,'rotation_deg':-5,'scale':1.06},'halation':{'amount':2,'radius':12,'threshold':.35},
+                'shake':{'distance':20},'rgb_split':{'distance':14},'radial_blur':{'distance':.5},
+                'split_screen':{'panels':4},'film_grain':{'amount':.07},'dust_scratches':{'amount':1,'density':.04},'echo':{'amount':1,'decay':.8},
+                'text':{'size':40},'light_leak':{'amount':.6}}
+    ctx.history=(np.roll(frame.astype(np.float32)/255,40,axis=1),np.roll(frame.astype(np.float32)/255,80,axis=1))
     tiles = [('original',frame)]
     for name,spec in EFFECTS.items():
         source = frame.copy()
-        if name=='cutout_card':
+        if name in ('cutout_card','multi_cutout'):
             source[:,:,3]=0; source[35:150,80:240,3]=255
-        tiles.append((name,spec['function'](source,0,ctx,**settings.get(name,{}))))
+        try:tiles.append((name,spec['function'](source,240,ctx,**settings.get(name,{}))))
+        except (ValueError,OSError) as exc:
+            unavailable=Image.new('RGBA',(320,180),(28,30,40,255));d=ImageDraw.Draw(unavailable)
+            d.text((8,65),'unavailable: '+str(exc)[:38],fill='white');tiles.append((name,np.array(unavailable)))
     tiles += [(f'{name}  p={p}',spec['function'](frame,other,p,ctx)) for name,spec in TRANSITIONS.items() for p in (.25,.5,.75)]
     sheet = Image.new('RGB',(320*3,212*math.ceil(len(tiles)/3)),(18,22,30)); draw = ImageDraw.Draw(sheet)
     for i,(label,arr) in enumerate(tiles):
@@ -250,6 +385,7 @@ def main(argv=None):
     ap.add_argument('--background',default='000000'); ap.add_argument('--fx-dir',action='append',default=[])
     ap.add_argument('--no-user-fx',action='store_true'); ap.add_argument('--list',action='store_true'); ap.add_argument('--json',action='store_true')
     ap.add_argument('--preview',type=Path); ap.add_argument('--image',type=Path); ap.add_argument('--validate',action='store_true')
+    ap.add_argument('--interpolate',choices=['none','blend','flow','rife'])
     a = ap.parse_args(argv)
     try:
         if not a.no_user_fx: load_directory(os.environ.get('VIDEO_GIF_FX_HOME',str(Path.home()/'.video-gif-studio/fx')))
@@ -268,6 +404,9 @@ def main(argv=None):
         if not a.plan: raise ValueError('plan required, or use --list / --preview FILE.png')
         if a.validate: validate_plan(a.plan,a.formats); print('Plan valid'); return 0
         if not a.out: raise ValueError('--out required')
+        if a.interpolate:
+            # Override remains in memory; never rewrite the user's plan.
+            os.environ['VIDEO_GIF_INTERPOLATE']=a.interpolate
         print(json.dumps(render(a.plan,a.out,a.formats,a.background))); return 0
     except (OSError,ValueError,KeyError,TypeError,IndexError,RuntimeError) as exc:
         print(f'fx_render: {exc}',file=sys.stderr); return 2

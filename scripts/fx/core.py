@@ -24,6 +24,10 @@ class Context:
     downbeats_ms: list = field(default_factory=list)
     audio: dict = field(default_factory=dict)
     sampling: str = 'linear'
+    history: tuple = ()
+    history_times_ms: tuple = ()
+    effect_start_ms: float = 0
+    source_trimmed: bool = False
 
     @property
     def since_previous_beat(self):
@@ -43,23 +47,27 @@ def floating(a):
     return result
 
 def restore(a, dtype):
-    a = np.clip(a, 0, 1)
-    return np.rint(a*255).astype(np.uint8) if dtype == np.uint8 else a.astype(np.float32)
+    a = np.clip(a, 0, 1, out=a)
+    return cv2.convertScaleAbs(a,alpha=255) if dtype == np.uint8 else a.astype(np.float32,copy=False)
 
 def premultiply(a):
-    a = a.copy(); a[..., :3] *= a[..., 3:4]
-    return a
+    channels=cv2.split(a)
+    return cv2.merge([cv2.multiply(c,channels[3]) for c in channels[:3]]+[channels[3]])
 
 def straight(a):
-    a = a.copy()
-    a[..., :3] = np.divide(a[..., :3], a[..., 3:4], out=np.zeros_like(a[..., :3]), where=a[..., 3:4]>1e-8)
-    return a
+    channels=cv2.split(a); alpha=channels[3]
+    divisor=cv2.max(alpha,1e-8)
+    return cv2.merge([cv2.divide(c,divisor) for c in channels[:3]]+[alpha])
 
 def over(a, b):
     return straight(premultiply(a)+premultiply(b)*(1-a[..., 3:4]))
 
 def warp(a, matrix, ctx, sampling=None):
     mode = cv2.INTER_NEAREST if (sampling or ctx.sampling)=='nearest' else cv2.INTER_LINEAR
+    if np.min(a[...,3])>=1:
+        # Opaque camera moves extend the edge, avoiding transparent wedges and
+        # unnecessary premultiply/divide passes. Transparent assets keep coverage.
+        return cv2.warpAffine(a,matrix,(ctx.width,ctx.height),flags=mode,borderMode=cv2.BORDER_REFLECT_101)
     return straight(cv2.warpAffine(premultiply(a), matrix, (ctx.width, ctx.height), flags=mode, borderMode=cv2.BORDER_CONSTANT))
 
 def register(registry, name=None, **docs):
@@ -80,7 +88,10 @@ def register(registry, name=None, **docs):
         if key in registry:
             event = {'name':key,'previous':registry[key]['source'],'source':source}
             OVERRIDES.append(event); print('FX override: '+str(event), file=sys.stderr)
-        registry[key] = {'function':wrapped,'params':params,'doc':inspect.getdoc(fn) or key,'source':source}
+        def owned(*args,**kwargs):
+            result=fn(*args,**kwargs)
+            return np.clip(result,0,1,out=result)
+        registry[key] = {'function':wrapped,'owned':owned,'params':params,'doc':inspect.getdoc(fn) or key,'source':source,'history':int(docs.get('history',0))}
         return wrapped
     return decorate
 
@@ -164,4 +175,4 @@ def load_directory(directory):
             print(f'Warning: skipped FX library {file}:{getattr(exc,"lineno", "?")}: {exc}',file=sys.stderr)
 
 def catalog():
-    return {kind:{name:{k:v for k,v in item.items() if k!='function'} for name,item in reg.items()} for kind,reg in [('effects',EFFECTS),('transitions',TRANSITIONS)]}
+    return {kind:{name:{k:v for k,v in item.items() if k not in ('function','owned')} for name,item in reg.items()} for kind,reg in [('effects',EFFECTS),('transitions',TRANSITIONS)]}

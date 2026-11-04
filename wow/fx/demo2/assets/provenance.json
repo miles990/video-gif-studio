@@ -1,0 +1,16 @@
+{
+  "depth_seconds": 1.248321200022474,
+  "source": "../demo/assets/freeze-b.png",
+  "source_sha256": "a924a55d7cbb4efdafc3a06efc535b545e66a225e1a6205f9966df50d6781c2b",
+  "depth_model": "onnx-community/Depth-Anything-V2-Small, Apache-2.0",
+  "rife_model": "latentdivergence/fixflix-rife-lite, MIT",
+  "depth_resolution": [
+    480,
+    270
+  ],
+  "rife_seconds": 0.6652553000021726,
+  "weight_sha256": {
+    "depth-anything-v2-small.onnx": "afb6a5c28f3b6bf1618c6e43f02073ef9dfdc70e937502d51603e57b0a1df10c",
+    "rife_v4.25_lite.onnx": "610b5de57cdcfbcce9914c23e60a1cd357779a6f9582a1bcfcb035f8eb38509b"
+  }
+}

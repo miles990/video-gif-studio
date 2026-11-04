@@ -1,0 +1,126 @@
+{
+  "seconds": 0.7792377999867313,
+  "effects": {
+    "flash_white": {
+      "MAD_255": 155.539,
+      "fraction_delta_ge_16": 0.9962,
+      "pass": true
+    },
+    "grade": {
+      "MAD_255": 22.813,
+      "fraction_delta_ge_16": 0.9958,
+      "pass": true
+    },
+    "halation": {
+      "MAD_255": 40.985,
+      "fraction_delta_ge_16": 0.8812,
+      "pass": true
+    },
+    "beat_bounce": {
+      "MAD_255": 52.702,
+      "fraction_delta_ge_16": 0.8126,
+      "pass": true
+    },
+    "zoom_punch": {
+      "MAD_255": 48.164,
+      "fraction_delta_ge_16": 0.8151,
+      "pass": true
+    },
+    "cutout_card": {
+      "MAD_255": 40.47,
+      "fraction_delta_ge_16": 0.6458,
+      "pass": true
+    },
+    "shake": {
+      "MAD_255": 55.438,
+      "fraction_delta_ge_16": 0.8417,
+      "pass": true
+    },
+    "rgb_split": {
+      "MAD_255": 32.399,
+      "fraction_delta_ge_16": 0.8539,
+      "pass": true
+    },
+    "radial_blur": {
+      "MAD_255": 32.032,
+      "fraction_delta_ge_16": 0.78,
+      "pass": true
+    },
+    "echo": {
+      "MAD_255": 40.169,
+      "fraction_delta_ge_16": 0.5897,
+      "pass": true
+    },
+    "film_grain": {
+      "MAD_255": 13.894,
+      "fraction_delta_ge_16": 0.3798,
+      "pass": true
+    },
+    "vignette": {
+      "MAD_255": 14.839,
+      "fraction_delta_ge_16": 0.4423,
+      "pass": true
+    },
+    "light_leak": {
+      "MAD_255": 17.972,
+      "fraction_delta_ge_16": 0.4717,
+      "pass": true
+    },
+    "dust_scratches": {
+      "MAD_255": 6.795,
+      "fraction_delta_ge_16": 0.0444,
+      "pass": true
+    },
+    "invert_flash": {
+      "MAD_255": 117.984,
+      "fraction_delta_ge_16": 0.9989,
+      "pass": true
+    },
+    "black_flash": {
+      "MAD_255": 99.461,
+      "fraction_delta_ge_16": 0.9934,
+      "pass": true
+    },
+    "split_screen": {
+      "MAD_255": 62.947,
+      "fraction_delta_ge_16": 0.9034,
+      "pass": true
+    },
+    "mirror": {
+      "MAD_255": 34.299,
+      "fraction_delta_ge_16": 0.4585,
+      "pass": true
+    },
+    "kaleidoscope": {
+      "MAD_255": 57.402,
+      "fraction_delta_ge_16": 0.8153,
+      "pass": true
+    },
+    "posterize": {
+      "MAD_255": 22.727,
+      "fraction_delta_ge_16": 0.9635,
+      "pass": true
+    },
+    "halftone": {
+      "MAD_255": 93.877,
+      "fraction_delta_ge_16": 0.9898,
+      "pass": true
+    },
+    "multi_cutout": {
+      "MAD_255": 50.382,
+      "fraction_delta_ge_16": 0.6475,
+      "pass": true
+    },
+    "text": {
+      "MAD_255": 14.943,
+      "fraction_delta_ge_16": 0.1503,
+      "pass": true
+    },
+    "parallax": {
+      "MAD_255": 68.909,
+      "fraction_delta_ge_16": 0.8797,
+      "pass": true,
+      "note": "Explicit unavailable tile: optional model is not loaded by preview"
+    }
+  }
+}

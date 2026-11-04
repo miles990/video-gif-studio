@@ -118,25 +118,38 @@ def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
                 motions.append({'time_ms':float(times[center]),'direction':'horizontal','confidence':.6,'review':True})
         cuts.append({'time_ms':float(times[center]),'type':kind,'confidence':confidence,'duration_ms':max(80,float(times[b]-times[a]+step*2)) if kind!='cut' else 0,'review':confidence<.8})
     cuts.sort(key=lambda c:c['time_ms'])
-    # Runs of identical visible pixels, including their initial exposure.
+    # Compare to the first exposure, not only adjacent frames: codec keyframes can
+    # make a persistent small quality step. One isolated outlier is tolerated;
+    # cumulative drift in genuinely moving footage still ends the hold.
     freezes = []
-    for g in groups(np.flatnonzero(diff[1:]<.3)+1):
-        a,b=g[0]-1,g[-1]+1
+    a=0
+    while a<n-1:
+        b=a+1
+        while b<n:
+            distance=float(np.abs(rgb[b]-rgb[a]).mean())
+            if distance>1.6:
+                if b+1<n and np.abs(rgb[b+1]-rgb[a]).mean()<=1.6: b+=1
+                else: break
+            b+=1
         end=float(times[b]) if b<n else duration_ms
         if end-times[a]>=700:
             nearby = [c['time_ms'] for c in cuts if 0<=c['time_ms']-end<=300 and c['type']!='cut']
             if nearby: end=min(nearby)
             freezes.append({'start_ms':float(times[a]),'end_ms':end,'confidence':.9})
+        a=max(a+1,b)
     # A freeze with a beat-animated cutout retains its plate and repeatedly returns
     # to the same foreground pose. Label this weaker inference for human review.
     border=np.ones((90,160),bool);border[15:75,30:130]=False
     plate_diff=np.r_[0,np.abs(np.diff(rgb,axis=0))[:,border].mean(axis=(1,2))]
-    for g in groups(np.flatnonzero(plate_diff[1:]<.3)+1,max(1,round(80/step))):
+    # A full-size subject may touch the border. A majority stationary plate is
+    # sufficient, provided distant foreground poses actually recur below.
+    stable_fraction=np.r_[1,(np.abs(np.diff(rgb,axis=0)).mean(axis=3)<1.6).mean(axis=(1,2))]
+    for g in groups(np.flatnonzero((plate_diff[1:]<.3)|(stable_fraction[1:]>.5))+1,max(1,round(80/step))):
         a,b=g[0]-1,g[-1]+1
         if (b-a)*step<1000 or np.percentile(diff[a:b],90)<3:continue
         repeat=[]
         for i in range(a+round(800/step),b):
-            repeat.append(min(np.abs(rgb[i]-rgb[j]).mean() for j in range(i-round(800/step),i-max(1,round(200/step))))<.6)
+            repeat.append(min(np.abs(rgb[i]-rgb[j]).mean() for j in range(i-round(800/step),i-max(1,round(200/step))))<1.6)
         if not repeat or np.mean(repeat)<.3:continue
         start=float(times[a]);end=float(times[b]) if b<n else duration_ms
         before=[c['time_ms'] for c in cuts if 0<=start-c['time_ms']<=400]
@@ -158,18 +171,22 @@ def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
             if valid.sum()>=4:
                 matrix,_=cv2.estimateAffinePartial2D(points[valid],moved[valid])
                 if matrix is not None: scale=float(np.hypot(matrix[0,0],matrix[0,1]))
-        else:
+        if scale<1.1:
             # Stripe-like graphics have no corners; compare bright feature widths.
             widths=[]
             for image in (prev,cur):
                 profile=image.mean(axis=0); widths.append(np.count_nonzero(profile>profile.min()+.75*(profile.max()-profile.min())))
-            if widths[0]>2 and widths[1]>2: scale=widths[1]/widths[0]
+            if widths[0]>2 and widths[1]>2: scale=max(scale,widths[1]/widths[0])
         if 1.1<=scale<2 and (not zooms or times[i]-zooms[-1]['time_ms']>250):
             zooms.append({'time_ms':float(times[i]),'scale':scale,'confidence':.5,'review':True})
     aligned=sum(bool(beats_ms) and min(abs(c['time_ms']-t) for t in beats_ms)<=step+1e-6 for c in cuts)
+    for events in (cuts,flashes,motions,zooms,freezes):
+        for event in events:
+            for key in list(event):
+                if key.endswith('_ms'): event[key]=int(round(event[key]))
     return {'cuts':cuts,'flashes':flashes,'directional_motion':motions,'zoom_punches':zooms,'freezes':freezes,
             'beat_alignment':{'numerator':aligned,'denominator':len(cuts),'ratio':aligned/len(cuts) if cuts else None,'tolerance_ms':step},
-            'duration_ms':duration_ms,'analysis_frame_ms':step,'limitations':'Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous.'}
+            'duration_ms':int(round(duration_ms)),'analysis_frame_ms':int(round(step)),'limitations':'Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous.'}
 
 
 def reverse(source, out, beats=None, fps=25):
@@ -208,7 +225,7 @@ def reverse(source, out, beats=None, fps=25):
     excluded=[]
     for c in report['cuts']:
         if c['type']!='cut':
-            length=240 if c['type']=='whip_pan' else c['duration_ms']
+            length=c['duration_ms']
             excluded.append((c['time_ms']-length/2,c['time_ms']+length/2))
     excluded += [(e['time_ms']-40,e['time_ms']+240) for e in report['flashes']]
     excluded += [(e['time_ms']-40,e['time_ms']+400) for e in report['zoom_punches']]
@@ -231,14 +248,30 @@ def reverse(source, out, beats=None, fps=25):
         if a in cut_times:
             event=cut_times[a]
             if event['type']!='cut':
-                length=240 if event['type']=='whip_pan' else event['duration_ms']
-                length=min(length,b-a,a-bounds[shot-1])
+                length=int(min(event['duration_ms'],b-a,a-bounds[shot-1])//10*10)
+                event['duration_ms']=length
                 if length>=1000/fps:
                     segment['transition']={'name':event['type'],'duration_ms':length,'review':True}
         draft['segments'].append(segment)
     draft['effects']=[{'name':'flash_white','start_ms':e['time_ms'],'end_ms':min(edges[-1],e['time_ms']+160),'amount':{'keyframes':[[e['time_ms'],1],[e['time_ms']+120,0]]},'review':True} for e in report['flashes']
                       if not any(c['type']=='flash_cut' and abs(c['time_ms']-e['time_ms'])<200 for c in report['cuts'])]
     draft['effects'] += [{'name':'zoom_punch','start_ms':e['time_ms'],'end_ms':min(edges[-1],e['time_ms']+320),'scale':e['scale'],'amount':{'keyframes':[[e['time_ms'],1],[e['time_ms']+320,0]]},'review':True} for e in report['zoom_punches']]
+    for freeze in report['freezes']:
+        if freeze.get('kind')=='animated_cutout_on_held_plate':
+            draft['effects'].append({'name':'beat_bounce','start_ms':freeze['start_ms'],'end_ms':freeze['end_ms'],'amount':.5,'review':True})
+            draft['effects'].append({'name':'cutout_card','start_ms':freeze['start_ms'],'end_ms':freeze['end_ms'],'border_px':6,'review':True})
+    for e in draft['effects']:
+        indices=[k for k,t in enumerate(beatdata['beats_ms']) if e['start_ms']-1000/fps<=t<e['end_ms']]
+        if indices and e['name']!='cutout_card':
+            e['amount']={'on':'beats','indices':indices,'decay_ms':200,'curve':'ease_out'}
+        if e['name']=='cutout_card' and beatdata['beats_ms']:
+            for edge in ('start','end'):
+                key=edge+'_ms';nearest=min(range(len(beatdata['beats_ms'])),key=lambda k:abs(beatdata['beats_ms'][k]-e[key]))
+                if abs(beatdata['beats_ms'][nearest]-e[key])<=1000/fps:
+                    e[edge+'_beat']=nearest;e.pop(key)
+    if not beats:
+        report['limitations']+=' The on-beat ratio depends on estimated beats; supply --beats with reviewed timestamps.'
+        report['beat_alignment']['beat_source']='estimated'
     (out/'draft-plan.json').write_text(json.dumps(draft,indent=2))
     report['draft_notes']='Draft uses reviewed reconstruction candidates with clean-sample holds where effects were baked. Replace each shots/* manifest with licensed source footage; inferred effects, scale and transition lengths require review. source/ retains the decoded original.'
     report['suggested_effects']=[{'name':'flash_white','start_ms':e['time_ms'],'end_ms':min(cursor,e['time_ms']+160),'amount':{'keyframes':[[e['time_ms'],1],[e['time_ms']+120,0]]},'review':True} for e in report['flashes']]

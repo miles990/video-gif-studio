@@ -1,4 +1,58 @@
-# Fix round 1 — resumed from fabaf61 (2026-11-04)
+# Round 2 builder handoff — 2026-11-04
+
+This section supersedes the historical round-1 notes below. All source changes and
+deliveries are in `C:/Users/User/src/vgs-fx`, branch fx-framework. No commit/push,
+examples changes, installed-skill changes, spec/acceptance edits, new required
+dependencies, model-weight distribution or font distribution. Optional models ran
+serially in fx-optdeps; tests and renders never ran concurrently with inference.
+The final films are candidates for independent visual/playback review, not a claim
+that the builder can certify the independent answer key.
+
+## Part A
+
+| Item | Status | Evidence / numbers |
+|---|---|---|
+| A1 | Done, tested | Cumulative comparison against freeze's first frame; isolated spike tolerance. H.264 fixture with g=120 keyframe inside hold: one 4000–5520ms freeze, within one 40ms frame of 4000–5500. Separate persistent +1 quality step and isolated +6 spike test. |
+| A2 | Done, tested | Affine feature estimate plus stripe-width fallback; original offline round-trip asserts zoom at 3000 ±80ms and scale >=1.1. Both rebuilt demo reports contain zoom_punches with review:true; estimates remain heuristic and can include natural scale changes. |
+| A3 | Done, tested | transition duration_ms=401 rejects before rendering; integer 10ms multiples required, same as segments. |
+| A4 | Done, tested | Nearest/pixel blending warning retained in manifest.warnings and stderr; synthetic exported manifest assertion. |
+| A5 | Done, tested | Removed gif_pipeline's eager cv2 import from background_remove. cv2/rembg imports guarded together; missing dependency rc=2, one line, requirements-matting.txt, no traceback. Optional requirements now includes opencv-python-headless. |
+| A6 | Done, tested/reviewable | Draft emits flash, zoom, and held-plate bounce/card effects, beat indices where available, review:true for ambiguity. Estimated-beat caveat explicitly suggests --beats. Event times integer ms; transition lengths share the report's quantized/clipped value. Full-size border-touching subjects now retain freeze inference. Demo freezes: A 2920–5860, B 2920–5870ms (10ms boundary uncertainty). |
+| A7 | Done, rebuilt and inspected | Original matte position/scale, inpainted subject-free background, 6px border. Freeze beats 4/8 use 19px/+1.6deg vs 12px/-1deg; opening zoom 1.14, visible halation/grade. Both 9.160s films QA PASS. Flash errors 0/0ms in both; reverse edit errors A 0/0/0, B 0/10/0ms. Actual ordinary upward centroid movement 13.19/12.48px. Latest export 43.93/44.41s; pixel render 14.81/13.90fps; GIF 2,925,981/2,882,034 bytes. |
+| A8 | Done | README explains literal --expect-cuts detects planned flashes/transition discontinuities and why timeline QA plus decoded accent measurements is appropriate. No claim of passing an incompatible hard-cut count. |
+
+## Part B
+
+| Item | Status | Evidence / numbers |
+|---|---|---|
+| S-15 | Done, tested | Constant/keyframe/beat speed integration; ramp slow=.3 then 2x for hit_ms. Keyframe integral at 1000ms =625ms; .5x source clock asserted; output cuts unchanged. Explicit/implicit unity hashes identical, including a 6s source trimmed at a 2s beat cut. Source samples record requested clock, actual method and final-frame extension. |
+| S-16 | Done, tested + live sample | none/blend/flow/rife; only slow fractional phases. DIS midpoint bar is one 16px band centered 135.5px (expected 136 ±2), deterministic, clean alpha. Fake RIFE verifies [1,7,192,320] and t=.5; missing onnxruntime errors before output. Live 480x270 RIFE 665ms incl. session. Same real midpoint comparison retained: none .031ms, blend 7.295ms, flow 42.316ms, RIFE 665.255ms. |
+| S-17 | Done, tested | @effect(history=N), newest-first pre-post-effect output frames, timestamps strictly earlier; reset per segment. Bounded history plus 12 source frames/one flow pair. Peek plugin verifies prior input exactly, echo reset tested. Peak-RSS bonus not measured. |
+| S-18 | Done, tested | shake, rgb_split, radial_blur, echo, text. Beat-stable shake direction fixes secondary off-beat impact. CJK 永/水/private-use glyph distinction and missing-font error tested; system font path recorded. Generic purity/dtype/determinism tests include new effects. |
+| S-19 | Done, tested | shape_wipe circle/diamond/star/heart, luma linear/radial/cloud/custom PNG, push/slide four directions, spin, zoom_through, glitch. Shape area progression assertions, exact endpoints, nearest palette checks. Shared polygon-mask utility with hex shutter; sample luma masks saved. |
+| S-20 | Done, tested | 12 styles: grain, vignette, leak, dust, invert, black, split, mirror, kaleidoscope, posterize, halftone, multi_cutout. Color alpha, deterministic output, zero-strength identity and nearest geometry checked. Multi-cutout explicitly uses overlapping cards. |
+| S-21 | Done, fake + live | Small-only adapter; rejects base/large/vitb/vitl before load. Fake tensor dimensions multiples of 14, source/model keyed cache, opaque/no-black-hole output tested. Actual Small inference 1.248s at 480x270. Retained depth PNG 133,143 bytes; RIFE midpoint 261,665 bytes, source/weight SHA256 provenance. Two-layer depth is deliberately approximate; thin occlusions need review. |
+| S-22 | Done for implemented checks | Final suite 198 tests / 0 failures / 2 existing Windows environment errors / 8 skips, 47.673s. Earlier no-FFmpeg run 197 / 0 failures / same 2 errors / 9 skips, 43.892s. New model tests use fake engines, no model downloads. Preview 0.779s; all available effect tiles pass MAD>=4/255 and >=2% pixels with delta>=16/255. Optional parallax explicitly unavailable in model-free preview. |
+| S-23 | Done, target measured | cProfile baseline 26.918s / 3.343fps → 8.894s / 10.119fps for 90 720p frames, 3 effects + 500ms transition (no codec I/O). Every effect/transition median of 10 float32 720p calls is in fx.md and effect-timings.json. Slowest three new operations: radial 787.113→110.709ms, multi 558.225→406.852ms, parallax 181.474→70.721ms. MAD 1.78e-8 / 0 / 7e-10; no resolution/sample reduction. The all-effects <=50ms bonus is NOT met. |
+| S-24 | Done | Time-remap/interpolation/history/new operation defaults, cache and font docs; RIFE MIT copyright/full text and source links; Small Apache-2.0 link and prohibited Base/Large note; system fonts not distributed. requirements.txt unchanged. |
+| S-展示2 | Built, QA and still review done; independent playback pending | 20.540s 480x270 music MP4; 192px GIF 2,583,957 bytes, 129 frames. Flow ramp, downbeat shake/RGB, CJK, circle/luma wipes, split, actual Small-derived parallax, grain/leak ending. Four decoded heavy-beat errors 0/0/0/0ms; QA PASS (-14.3 LUFS, -2.3dBTP), no WARN/FAIL. 101 event samples extracted/viewed. Export 45.96s. Fresh-clone build uses retained small caches; no model required, no silent parallax replacement. |
+
+Final evidence: `test-full-round2.log`, `test-full-round2-offline.log`,
+`benchmark-before.json`, `benchmark-latest.json`, both cProfile files,
+`effect-timings-before.json`, `effect-timings.json`, `optimization-difference.json`,
+`preview-measurements.json`, `demo/verification.json`, and `demo2/verification.json`.
+The two existing errors are test_install's WinError 1314 symlink privilege and
+test_mask_review's WinError 32 open overlay.png cleanup. They were not changed.
+
+Remaining/unverified: independent original-speed viewing/listening and aesthetic
+acceptance; peak-RSS history bonus; exhaustive independent per-pixel answer-key
+measurements beyond the tests above. The renderer/exporter still retains short output
+films in memory. Several expensive effects exceed 50ms. Reverse detection is heuristic,
+and its review flags must not be mistaken for recovered source layers or ground truth.
+
+---
+
+# Historical fix round 1 — resumed from fabaf61 (2026-11-04)
 
 This section supersedes the original handoff below. Work stayed in
 `C:/Users/User/src/vgs-fx`; no commit/push, installed-skill edits, examples/ edits,

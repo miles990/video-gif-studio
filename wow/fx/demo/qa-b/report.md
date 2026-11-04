@@ -11,8 +11,8 @@ Visible composition has exposure and contrast
 
 ```json
 {
-  "mean": 71.75270080566406,
-  "contrast": 57.5635871887207
+  "mean": 82.3680648803711,
+  "contrast": 65.99679565429688
 }
 ```
 
@@ -56,6 +56,10 @@ Detected cut candidates (no hard cuts required)
     {
       "frame": 296,
       "seconds": 2.96
+    },
+    {
+      "frame": 440,
+      "seconds": 4.4
     }
   ],
   "expected_seconds": []
@@ -120,4 +124,4 @@ Silence >=0.4 s; inspect whether intended
 ![phone_sheet](phone_sheet.jpg)
 ![hook_sheet](hook_sheet.jpg)
 
-Analysis and sheets: 4.065 s.
+Analysis and sheets: 3.579 s.

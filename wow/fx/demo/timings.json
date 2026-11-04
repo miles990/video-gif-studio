@@ -3,41 +3,39 @@
     "duration_ms": 9160.0,
     "gif_duration_ms": 9160,
     "gif_min_delay_ms": 40,
-    "gif_bytes": 2928071,
+    "gif_bytes": 2925981,
     "flash_peaks": [
       {
         "trigger_ms": 740,
         "peak_ms": 740.0,
         "error_ms": 0.0,
-        "rise_luma": 128.30390548706055
+        "rise_luma": 125.35158157348633
       },
       {
         "trigger_ms": 2200,
         "peak_ms": 2200.0,
         "error_ms": 0.0,
-        "rise_luma": 123.66496276855469
+        "rise_luma": 120.13619995117188
       }
     ],
     "freeze_beats_ms": [
       2920,
       3280,
       3660,
-      4020,
       4400,
       4760,
-      5120,
-      5480
+      5120
     ],
     "card_rest": {
-      "centroid_y": 184.46582009038562,
-      "height_px": 176
+      "centroid_y": 142.35193808355663,
+      "height_px": 207
     },
     "card_peak": {
-      "centroid_y": 165.31993151228792,
-      "height_px": 195
+      "centroid_y": 129.16370224011868,
+      "height_px": 209
     },
-    "bounce_displacement_px": 19.145888578097697,
-    "freeze_luma_mean": 51.356704666137695,
+    "bounce_displacement_px": 13.188235843437951,
+    "freeze_luma_mean": 68.57361267089844,
     "transitions": [
       {
         "name": "flash_cut",
@@ -57,8 +55,8 @@
     ],
     "last_accent_ms": 8800,
     "render": {
-      "seconds": 29.69346909999149,
-      "fps": 8.082585405962849,
+      "seconds": 16.20905559998937,
+      "fps": 14.806538142799473,
       "requested_fps": 25
     }
   },
@@ -66,41 +64,39 @@
     "duration_ms": 9160.0,
     "gif_duration_ms": 9160,
     "gif_min_delay_ms": 40,
-    "gif_bytes": 2839422,
+    "gif_bytes": 2882034,
     "flash_peaks": [
       {
         "trigger_ms": 740,
         "peak_ms": 740.0,
         "error_ms": 0.0,
-        "rise_luma": 118.55044555664062
+        "rise_luma": 114.2249984741211
       },
       {
         "trigger_ms": 2200,
         "peak_ms": 2200.0,
         "error_ms": 0.0,
-        "rise_luma": 102.50042724609375
+        "rise_luma": 96.1783676147461
       }
     ],
     "freeze_beats_ms": [
       2920,
       3280,
       3660,
-      4020,
       4400,
       4760,
-      5120,
-      5480
+      5120
     ],
     "card_rest": {
-      "centroid_y": 182.76712009187187,
-      "height_px": 178
+      "centroid_y": 179.16334086069878,
+      "height_px": 281
     },
     "card_peak": {
-      "centroid_y": 163.46256776723322,
-      "height_px": 191
+      "centroid_y": 166.6784725496024,
+      "height_px": 283
     },
-    "bounce_displacement_px": 19.30455232463865,
-    "freeze_luma_mean": 65.59281686401367,
+    "bounce_displacement_px": 12.484868311096392,
+    "freeze_luma_mean": 99.34320156860352,
     "transitions": [
       {
         "name": "flash_cut",
@@ -120,8 +116,8 @@
     ],
     "last_accent_ms": 8800,
     "render": {
-      "seconds": 28.63031239999691,
-      "fps": 8.382723759592155,
+      "seconds": 17.26726900000358,
+      "fps": 13.899129040032344,
       "requested_fps": 25
     }
   }

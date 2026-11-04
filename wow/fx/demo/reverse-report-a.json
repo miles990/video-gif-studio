@@ -1,7 +1,7 @@
 {
   "cuts": [
     {
-      "time_ms": 2920.0000000000173,
+      "time_ms": 2920,
       "type": "flash_cut",
       "confidence": 0.75,
       "duration_ms": 160,
@@ -15,7 +15,7 @@
       "review": true
     },
     {
-      "time_ms": 7320.000000000113,
+      "time_ms": 7320,
       "type": "hex_shutter",
       "confidence": 0.75,
       "duration_ms": 400,
@@ -24,7 +24,7 @@
   ],
   "flashes": [
     {
-      "time_ms": 2920.0000000000173,
+      "time_ms": 2920,
       "confidence": 0.9
     }
   ],
@@ -36,10 +36,41 @@
       "review": true
     }
   ],
-  "zoom_punches": [],
+  "zoom_punches": [
+    {
+      "time_ms": 6240,
+      "scale": 1.125,
+      "confidence": 0.5,
+      "review": true
+    },
+    {
+      "time_ms": 6600,
+      "scale": 1.1363636363636365,
+      "confidence": 0.5,
+      "review": true
+    },
+    {
+      "time_ms": 8160,
+      "scale": 1.3333333333333333,
+      "confidence": 0.5,
+      "review": true
+    },
+    {
+      "time_ms": 8560,
+      "scale": 1.8333333333333333,
+      "confidence": 0.5,
+      "review": true
+    },
+    {
+      "time_ms": 8880,
+      "scale": 1.8,
+      "confidence": 0.5,
+      "review": true
+    }
+  ],
   "freezes": [
     {
-      "start_ms": 2920.0000000000173,
+      "start_ms": 2920,
       "end_ms": 5860,
       "confidence": 0.65,
       "kind": "animated_cutout_on_held_plate",
@@ -52,23 +83,23 @@
     "ratio": 1.0,
     "tolerance_ms": 40.00000000000091
   },
-  "duration_ms": 9160.000000000153,
-  "analysis_frame_ms": 40.00000000000091,
+  "duration_ms": 9160,
+  "analysis_frame_ms": 40,
   "limitations": "Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous.",
   "draft_notes": "Draft uses reviewed reconstruction candidates with clean-sample holds where effects were baked. Replace each shots/* manifest with licensed source footage; inferred effects, scale and transition lengths require review. source/ retains the decoded original.",
   "suggested_effects": [
     {
       "name": "flash_white",
-      "start_ms": 2920.0000000000173,
-      "end_ms": 3080.0000000000173,
+      "start_ms": 2920,
+      "end_ms": 3080,
       "amount": {
         "keyframes": [
           [
-            2920.0000000000173,
+            2920,
             1
           ],
           [
-            3040.0000000000173,
+            3040,
             0
           ]
         ]
@@ -79,7 +110,7 @@
   "suggested_transitions": [
     {
       "name": "flash_cut",
-      "cut_ms": 2920.0000000000173,
+      "cut_ms": 2920,
       "duration_ms": 160,
       "review": true
     },
@@ -91,7 +122,7 @@
     },
     {
       "name": "hex_shutter",
-      "cut_ms": 7320.000000000113,
+      "cut_ms": 7320,
       "duration_ms": 400,
       "review": true
     }

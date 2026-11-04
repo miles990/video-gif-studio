@@ -1,9 +1,9 @@
 {
   "a": {
     "cut_errors_ms": [
-      1.7280399333685637e-11,
       0,
-      1.127773430198431e-10
+      0,
+      0
     ],
     "cut_types": [
       "flash_cut",
@@ -13,7 +13,7 @@
     "freeze_segments": [
       {
         "type": "still",
-        "manifest": "work/verification-1793801966338814400/reverse-a/shots/001/manifest.json",
+        "manifest": "work/verification-1793806198762943200/reverse-a/shots/001/manifest.json",
         "review": true,
         "frame": "first",
         "end_beat": 16,
@@ -138,9 +138,9 @@
   },
   "b": {
     "cut_errors_ms": [
-      1.7280399333685637e-11,
       0,
-      1.127773430198431e-10
+      10,
+      0
     ],
     "cut_types": [
       "flash_cut",
@@ -150,10 +150,10 @@
     "freeze_segments": [
       {
         "type": "still",
-        "manifest": "work/verification-1793801966338814400/reverse-b/shots/001/manifest.json",
+        "manifest": "work/verification-1793806198762943200/reverse-b/shots/001/manifest.json",
+        "duration_ms": 2950,
         "review": true,
         "frame": "first",
-        "end_beat": 16,
         "transition": {
           "name": "flash_cut",
           "duration_ms": 160,

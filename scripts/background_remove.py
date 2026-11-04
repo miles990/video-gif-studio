@@ -9,7 +9,10 @@ import tempfile
 import sys
 import numpy as np
 from PIL import Image
-from gif_pipeline import natural
+import re
+
+def natural(path):
+    return [int(s) if s.isdigit() else s.lower() for s in re.split(r'(\d+)',str(path))]
 
 
 def separate(frames, manifest, out, model='u2netp', masker=None):
@@ -23,6 +26,7 @@ def separate(frames, manifest, out, model='u2netp', masker=None):
     if masker is None:
         os.environ.setdefault('U2NET_HOME', str(Path(__file__).resolve().parents[1]/'.runtime/models'))
         try:
+            import cv2
             from rembg import new_session, remove
         except ImportError:
             raise RuntimeError('Install optional backend: pip install -r requirements-matting.txt (or scripts/install.py --with-matting)') from None

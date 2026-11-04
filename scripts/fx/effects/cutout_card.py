@@ -1,6 +1,15 @@
 import cv2
 import numpy as np
+from functools import lru_cache
 from ..core import effect, over, warp
+
+
+@lru_cache(maxsize=4)
+def background_plate(path,width,height,blur,darken):
+    from PIL import Image
+    with Image.open(path) as im:base=np.asarray(im.convert('RGBA').resize((width,height)),dtype=np.float32)/255
+    base=cv2.GaussianBlur(base,(0,0),max(.1,blur));base[...,:3]*=darken
+    return base
 
 @effect(bg='Empty preserves transparency; otherwise RGB hex', background='Optional image path behind subject', darken='Background brightness multiplier', blur='Background blur sigma', border_px='White border radius', shadow_px='Shadow offset down and right', amount='Card opacity')
 def cutout_card(frame, t_ms, ctx, border_px=6.0, shadow_px=7.0, shadow_blur=4.0, bg='', background='', darken=0.4, blur=8.0, amount=1.0):
@@ -14,9 +23,7 @@ def cutout_card(frame, t_ms, ctx, border_px=6.0, shadow_px=7.0, shadow_blur=4.0,
     card = over(over(frame,white),shadow); card[...,3] *= amount
     base = np.zeros_like(frame)
     if background:
-        from PIL import Image
-        with Image.open(background) as im: base = np.asarray(im.convert('RGBA').resize((ctx.width,ctx.height)),dtype=np.float32)/255
-        base = cv2.GaussianBlur(base,(0,0),max(.1,blur)); base[...,:3] *= darken
+        base = background_plate(background,ctx.width,ctx.height,blur,darken)
     elif bg:
         base[...,:3] = np.array([int(bg.lstrip('#')[i:i+2],16)/255 for i in (0,2,4)]); base[...,3] = 1
     return over(card,base)
