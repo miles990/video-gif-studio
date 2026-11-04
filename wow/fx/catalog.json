@@ -1,0 +1,209 @@
+{
+  "effects": {
+    "flash_white": {
+      "params": {
+        "amount": {
+          "default": 1.0,
+          "type": "number",
+          "doc": "White mix, 0 identity, 1 white; alpha unchanged"
+        }
+      },
+      "doc": "Beat accent with preserved coverage.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\flash_white.py"
+    },
+    "grade": {
+      "params": {
+        "lift": {
+          "default": 0.0,
+          "type": "number",
+          "doc": "lift"
+        },
+        "gamma": {
+          "default": 1.0,
+          "type": "number",
+          "doc": "gamma"
+        },
+        "gain": {
+          "default": 1.0,
+          "type": "number",
+          "doc": "gain"
+        },
+        "sat": {
+          "default": 1.0,
+          "type": "number",
+          "doc": "Saturation multiplier"
+        },
+        "temp": {
+          "default": 0.0,
+          "type": "number",
+          "doc": "Warmth: red +temp, blue -temp"
+        }
+      },
+      "doc": "Lift/gamma/gain, luminance saturation and restrained warmth.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\grade.py"
+    },
+    "halation": {
+      "params": {
+        "amount": {
+          "default": 0.8,
+          "type": "number",
+          "doc": "Spill gain"
+        },
+        "radius": {
+          "default": 6.0,
+          "type": "number",
+          "doc": "Gaussian sigma in pixels"
+        },
+        "warm": {
+          "default": true,
+          "type": "bool",
+          "doc": "Warm highlight spill"
+        },
+        "threshold": {
+          "default": 0.65,
+          "type": "number",
+          "doc": "threshold"
+        }
+      },
+      "doc": "Local highlight bloom; alpha never expands.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\halation.py"
+    },
+    "beat_bounce": {
+      "params": {
+        "amount": {
+          "default": 1.0,
+          "type": "number",
+          "doc": "Envelope strength"
+        },
+        "translate_px": {
+          "default": 8.0,
+          "type": "number",
+          "doc": "Upward displacement at peak"
+        },
+        "rotation_deg": {
+          "default": 2.0,
+          "type": "number",
+          "doc": "Peak rotation"
+        },
+        "scale": {
+          "default": 1.01,
+          "type": "number",
+          "doc": "Peak scale multiplier"
+        },
+        "sampling": {
+          "default": "linear",
+          "type": "str",
+          "doc": "linear or nearest"
+        }
+      },
+      "doc": "A card accent, never a substitute for character movement.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\beat_bounce.py"
+    },
+    "zoom_punch": {
+      "params": {
+        "amount": {
+          "default": 1.0,
+          "type": "number",
+          "doc": "Envelope strength"
+        },
+        "scale": {
+          "default": 1.07,
+          "type": "number",
+          "doc": "Peak zoom"
+        },
+        "sampling": {
+          "default": "linear",
+          "type": "str",
+          "doc": "linear or nearest"
+        }
+      },
+      "doc": "Centered camera punch; use scale=1.2 for a strong opaque shot.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\zoom_punch.py"
+    },
+    "cutout_card": {
+      "params": {
+        "border_px": {
+          "default": 6.0,
+          "type": "number",
+          "doc": "White border radius"
+        },
+        "shadow_px": {
+          "default": 7.0,
+          "type": "number",
+          "doc": "Shadow offset down and right"
+        },
+        "shadow_blur": {
+          "default": 4.0,
+          "type": "number",
+          "doc": "shadow blur"
+        },
+        "bg": {
+          "default": "",
+          "type": "str",
+          "doc": "Empty preserves transparency; otherwise RGB hex"
+        },
+        "background": {
+          "default": "",
+          "type": "str",
+          "doc": "Optional image path behind subject"
+        },
+        "darken": {
+          "default": 0.4,
+          "type": "number",
+          "doc": "Background brightness multiplier"
+        },
+        "blur": {
+          "default": 8.0,
+          "type": "number",
+          "doc": "Background blur sigma"
+        },
+        "amount": {
+          "default": 1.0,
+          "type": "number",
+          "doc": "Card opacity"
+        }
+      },
+      "doc": "Alpha silhouette, solid white border, soft shadow down/right; clean straight RGB.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\cutout_card.py"
+    }
+  },
+  "transitions": {
+    "crossfade": {
+      "params": {},
+      "doc": "Coverage-correct premultiplied dissolve.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\crossfade.py"
+    },
+    "whip_pan": {
+      "params": {
+        "blur_px": {
+          "default": 49.0,
+          "type": "number",
+          "doc": "Peak horizontal blur width"
+        },
+        "direction": {
+          "default": "left",
+          "type": "str",
+          "doc": "left or right"
+        }
+      },
+      "doc": "Horizontal camera sweep, with directional motion blur.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\whip_pan.py"
+    },
+    "hex_shutter": {
+      "params": {
+        "color": {
+          "default": "121522",
+          "type": "str",
+          "doc": "Shutter RGB hex"
+        }
+      },
+      "doc": "Six-sided aperture closes at the cut and opens onto the next shot.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\hex_shutter.py"
+    },
+    "flash_cut": {
+      "params": {},
+      "doc": "White peak at the cut, with original endpoints and source coverage.",
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\flash_cut.py"
+    }
+  }
+}

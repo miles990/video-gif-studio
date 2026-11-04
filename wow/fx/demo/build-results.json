@@ -1,0 +1,42 @@
+{
+  "a": {
+    "wall_seconds": 43.93387469998561,
+    "master": "work\\round1\\master-a-1793805581609684200",
+    "gif_bytes": 2925981,
+    "gif_width": 240,
+    "gif": {
+      "decoded_frames": 111,
+      "source_output_frames": 115,
+      "duration_ms": 9160,
+      "alpha_mismatch_pixels": 0,
+      "mean_visible_rgb_error": 3.5896885847199855,
+      "technical_pass": true,
+      "visual_motion_approval": "not assessed by script"
+    },
+    "render": {
+      "seconds": 16.20905559998937,
+      "fps": 14.806538142799473,
+      "requested_fps": 25
+    }
+  },
+  "b": {
+    "wall_seconds": 44.41078799997922,
+    "master": "work\\round1\\master-b-1793805625549052500",
+    "gif_bytes": 2882034,
+    "gif_width": 240,
+    "gif": {
+      "decoded_frames": 111,
+      "source_output_frames": 115,
+      "duration_ms": 9160,
+      "alpha_mismatch_pixels": 0,
+      "mean_visible_rgb_error": 3.9807267847557704,
+      "technical_pass": true,
+      "visual_motion_approval": "not assessed by script"
+    },
+    "render": {
+      "seconds": 17.26726900000358,
+      "fps": 13.899129040032344,
+      "requested_fps": 25
+    }
+  }
+}

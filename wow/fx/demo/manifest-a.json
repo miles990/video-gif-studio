@@ -1,0 +1,3472 @@
+{
+  "durations_ms": [
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    10,
+    10,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    10,
+    30,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    10,
+    30,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40
+  ],
+  "source_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157,
+    158,
+    159,
+    160,
+    161,
+    162,
+    163,
+    164,
+    165,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    172,
+    173,
+    174,
+    175,
+    176,
+    177,
+    178,
+    179,
+    180,
+    181,
+    182,
+    183,
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191,
+    192,
+    193,
+    194,
+    195,
+    196,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    222,
+    223,
+    224,
+    225,
+    226,
+    227,
+    228,
+    229,
+    230,
+    231,
+    232,
+    233,
+    234,
+    235,
+    236,
+    237,
+    238,
+    239
+  ],
+  "size": [
+    640,
+    360
+  ],
+  "segments": [
+    {
+      "edit": {
+        "type": "animation",
+        "manifest": "work/round1/opening-a/manifest.json",
+        "in_ms": 0,
+        "out_ms": 2920,
+        "end_beat": 8
+      },
+      "start_ms": 0,
+      "requested_duration_ms": 2920,
+      "ending": null,
+      "type": "animation",
+      "start_frame": 0,
+      "end_frame_exclusive": 76,
+      "duration_ms": 2920
+    },
+    {
+      "edit": {
+        "type": "still",
+        "image": "work/round1/card-a.png",
+        "end_beat": 16,
+        "transition": {
+          "name": "flash_cut",
+          "duration_ms": 120
+        }
+      },
+      "start_ms": 2920,
+      "requested_duration_ms": 2940,
+      "ending": null,
+      "type": "still",
+      "start_frame": 76,
+      "end_frame_exclusive": 153,
+      "duration_ms": 2940
+    },
+    {
+      "edit": {
+        "type": "animation",
+        "manifest": "work/round1/closing-a/manifest.json",
+        "in_ms": 0,
+        "out_ms": 1460,
+        "end_beat": 20,
+        "transition": {
+          "name": "whip_pan",
+          "duration_ms": 320
+        }
+      },
+      "start_ms": 5860,
+      "requested_duration_ms": 1460,
+      "ending": null,
+      "type": "animation",
+      "start_frame": 153,
+      "end_frame_exclusive": 191,
+      "duration_ms": 1460
+    },
+    {
+      "edit": {
+        "type": "animation",
+        "manifest": "work/round1/opening-a/manifest.json",
+        "in_ms": 3200,
+        "out_ms": 5020,
+        "end_beat": 25,
+        "transition": {
+          "name": "hex_shutter",
+          "duration_ms": 320
+        }
+      },
+      "start_ms": 7320,
+      "requested_duration_ms": 1840,
+      "ending": null,
+      "type": "animation",
+      "start_frame": 191,
+      "end_frame_exclusive": 240,
+      "duration_ms": 1840
+    }
+  ],
+  "source_frames": [
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00000.png",
+      "sha256": "655bb1bab9ee254a5e0cc81b2533925eb978a882b03c3de1955a0ca41a5ef103"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00001.png",
+      "sha256": "7d65321f5bb066f1572bb02608cdd781a157feaf50eda6534f405a016c27ac93"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00002.png",
+      "sha256": "04831d7ae854f94d098c90d080544af59deaaade7d614b7e3c040d07164a1d29"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00003.png",
+      "sha256": "fae516ebc2f5040c8330b1fb6721e855b8b9805b347132220e2209e2571af22c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00004.png",
+      "sha256": "b10b32928bf3e8686a0063cd42d83e279dd0f7f64b9783d719b46a964f3816ed"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00005.png",
+      "sha256": "eb4b6971a2619901b0711cb88b20fea9a44c32c139d4522874d4374c0053fbba"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00006.png",
+      "sha256": "1da8fc3ee221b4a3dd2fb58d0554f0657687d0ef3b066e9eb04c6cebb13a1a21"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00007.png",
+      "sha256": "fc7ad37c36fde68c8023ad9e85da7ee7027da61df41732195cba90b8f00b77cc"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00008.png",
+      "sha256": "f324dba4e4905ac72940b7af00f726362c6cdfc944aca647ef7f4249163b6011"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00009.png",
+      "sha256": "b51cb4d3475a29be6cbe9e398f06c6c35dbe6aba3784ec52c9b517373aa29ccd"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00010.png",
+      "sha256": "38342361987b32d6afe81fd40b02f0e07ed995a72ffd451c2811654f5fc9cad2"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00011.png",
+      "sha256": "63ac3187ea996e4a7e666f8c2ca68b11abfece29fa7404cf98c930e471f866bb"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00012.png",
+      "sha256": "63ac3187ea996e4a7e666f8c2ca68b11abfece29fa7404cf98c930e471f866bb"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00013.png",
+      "sha256": "c54aad2c143836bfd62332633a6d091b473a3bce0e41ceac876de1f455b12dca"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00014.png",
+      "sha256": "adefe2b8037eb0d476ce2754c1d0c852b67185b3905d7b50efbcb9b8c69a6f13"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00015.png",
+      "sha256": "f273424ab224b8c8644eefe89319e699c8d4531c3b92279559eaf74e7a9432ec"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00016.png",
+      "sha256": "e22efb36ff43cee8431a95e8e43a1ef0a1a585427b017139501af93d63d20a84"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00017.png",
+      "sha256": "6de831d539fc577d745ecf093612e78b054dd196488283993ab3856bf49ddfd9"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00018.png",
+      "sha256": "d2e64a7552b914a773636a6c9da1f1358f3cb05ce529907feb382090262b5f08"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00018.png",
+      "sha256": "d2e64a7552b914a773636a6c9da1f1358f3cb05ce529907feb382090262b5f08"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00018.png",
+      "sha256": "d2e64a7552b914a773636a6c9da1f1358f3cb05ce529907feb382090262b5f08"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00019.png",
+      "sha256": "1a995c85bf75c570a47df086f96aaa4206e1298a8b014f64dd6d2d0e49440eea"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00020.png",
+      "sha256": "061c481d040689fb15e7668fee177a80f843caa7dc0185ec241d3a6b135a8927"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00021.png",
+      "sha256": "19f6ee30825570fda044ebe10ddbf97fe43eeec1a8ef5b7afe49eb50f84ffad2"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00022.png",
+      "sha256": "8e3e2ea644b2a75d2289ced92c851b2c10b959ad38482c1ec874a9791dda1119"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00023.png",
+      "sha256": "2f335e8bdd949c2e5328719e59f264249e601e0a6f624b51ec52f7eabfc58340"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00024.png",
+      "sha256": "9a2beb571c62d128703186342e1832dc6cd90ef2f85c63b7b6a23d096de13b1c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00025.png",
+      "sha256": "7e709ed949cd9ca9fa0af5e79c3980e2b1b60a61b9ed63895edbeb9697a50551"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00026.png",
+      "sha256": "290f7cdbac128082cd2bda9649e59bc226b5b1c80edef5ca63d1c575e0caf6b0"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00027.png",
+      "sha256": "554c8e25997a1fa6cdab004344acc4dab76494f6a7e130bec7ecb38f0b02ccc7"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00028.png",
+      "sha256": "bc9f277f79fdc15b034b2a6d3dc69609220b7a65f5e888795dbb3a9c8b7cc1ec"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00029.png",
+      "sha256": "2e0238b361258d2668df6c81c7c2a185d8aee7faa96c114341965a4990b4d073"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00030.png",
+      "sha256": "ec7863b20e0c427a2e78a091ef3000bb2810a8583577ecab2f92e4ff022765bf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00031.png",
+      "sha256": "c754c63475098002d3daf5af67abf3f4a5fb63dfe1321841f78744e7937740dd"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00032.png",
+      "sha256": "60e51960696be214d5973a6da1ac1fd2d2eccec38c56b9e853e59be414832eb1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00033.png",
+      "sha256": "6fee9244eefe44df269ae1a53f36870bdc13fbdc07ed144dd2c7600afebf23e1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00034.png",
+      "sha256": "7f8c5c31a93bc161b75e77aa8d865a5b16db367181c40743e0919b8bcc3b2e46"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00035.png",
+      "sha256": "bdb342fa17827d00c41557467cece01c1b113f28d010cb10fb10280c0c45519e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00036.png",
+      "sha256": "b44d7f867d610c9b064965b3d7b077bed40da3b7a46f1bfa0a0bd6de0d780b20"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00037.png",
+      "sha256": "b44d7f867d610c9b064965b3d7b077bed40da3b7a46f1bfa0a0bd6de0d780b20"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00038.png",
+      "sha256": "22924786631d23b9063230ad217f8cd4868377cd325fb46b08902a03aff46b6d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00039.png",
+      "sha256": "b05d23b679056765cddd1d6532776f6eb6a431bb68aa0c4a0862342f2e2a59e8"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00040.png",
+      "sha256": "854eed5408b0e99bb20757449f98dfe3eeb4f36c37a98ce188b19703fe7f48c5"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00041.png",
+      "sha256": "3e96d0c16613d25475ad1b77af4512d2f664869a19134b7ae81d3b8ac8b4433f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00042.png",
+      "sha256": "2d93c16241a5caed45c77014a8dd120865a6598774a63a84bb97187d9ca77b38"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00043.png",
+      "sha256": "fec29c0ab2215e09211696c72738d3645df88e5fb25b47cf7e1db586ab0d3841"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00044.png",
+      "sha256": "b17bcc357ee11d34bac0602d04aa8d01b69201c63d958b5e607c9cf9a65d8562"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00045.png",
+      "sha256": "0e9c00c1e3d8c6320125bcff206c75eaca8f9af450d56552611197df13353859"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00046.png",
+      "sha256": "1c3554a511c8f92b8d7c142a703a097644eafa014b267c7f937d8a6926b86288"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00047.png",
+      "sha256": "ac71dde6cbdaccbe132407641378afd67662ef1822ac13c18bf4dfec749609f5"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00048.png",
+      "sha256": "6dc0334d61a3deda222ba140e39b189529e1718427dce354e613e5dc922bb268"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00049.png",
+      "sha256": "8f11804e59f4e401f9731ca23ea9904d1aabd4f9afa25538be62c048f80ea5c8"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00050.png",
+      "sha256": "3d6701cfcce749531e1f5e49ec4a5cdb3cb1618cda5e0a7a24fffe5355b113a9"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00051.png",
+      "sha256": "d7ad0c8209e7b667a3d19a28e2f8370e113fd1ed5cb93d19f6be24a0bf34b757"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00052.png",
+      "sha256": "dcabe18db1beea501be2cad067c0f9876ac0208133f0f2ccb9b0ba73ceaa288d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00053.png",
+      "sha256": "58c5b113eb712a226065736c0e829b09dc37522bdf661548d6beb2a6ca37f381"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00054.png",
+      "sha256": "f06c31c9cab5604969a36d2c4c31883c55db372496fe79425335fc9b1d17542e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00055.png",
+      "sha256": "4fea6238108689e11095c46703ac5abdccab28aa33697ad01c4bef9fa4d62a9f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00055.png",
+      "sha256": "4fea6238108689e11095c46703ac5abdccab28aa33697ad01c4bef9fa4d62a9f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00056.png",
+      "sha256": "67f9c488be04b1f4a408f034d0a4fd1f24250ff8638395a793e7c45867a4faa4"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00057.png",
+      "sha256": "41dd01cc9108409e67bc0a0ea082debcaa7290b867fde311f0608a30827b2bd8"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00058.png",
+      "sha256": "103c5ebd8c870ccaca09134e92228af3fd0defaa5dcf2bd943cbd402eadf64f3"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00059.png",
+      "sha256": "61529736426e109fd8d2bf89dc7728a707750c386642bb3ccfff833414bd13e5"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00060.png",
+      "sha256": "3f206bbe1a33f46c37450a354aaec9610bdee3cf91515af1400df5ae8f894c2b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00061.png",
+      "sha256": "88da9d68f2a550d7b6b32166d7294011802f2d4cf894e2df0c6e8e76ba806115"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00062.png",
+      "sha256": "88da9d68f2a550d7b6b32166d7294011802f2d4cf894e2df0c6e8e76ba806115"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00063.png",
+      "sha256": "3ff60b7f8d4a86f6365a2603d681fc19e29f47637489944f19d9d4e726ea0ce0"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00064.png",
+      "sha256": "e87001e2c43d5e89484e7a5a0a31336c840aea21f514b59c62daa1fd28b7114c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00065.png",
+      "sha256": "0dd3db2c0208811703f1ddee477f63ee62bbc88e344650904c84642290c97ab1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00066.png",
+      "sha256": "b333ed81b41666130b4378ec0c8c2276a13384470b53e108313908b09ea89dd7"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00067.png",
+      "sha256": "8f63746b1a55088fea9b85fbebefb6cad0e14f7824e2b33baaa942c53f162e66"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00068.png",
+      "sha256": "b0fce305caaa71f9cbc4aaddd6b94f44c674b9927160900cfbaa910bede0510b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00069.png",
+      "sha256": "86272d214e14e1899ac03a47929a82bcfca15408c4d0174570746040f1bab36f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00070.png",
+      "sha256": "2f0451894be8bace142f29812c6d83cbe077a4dca5e847f5d337923cbc4fbea4"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00071.png",
+      "sha256": "12715140f56970efae3ed41acb677a87945965d4a18c50e20a01c21d5b9c4912"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00072.png",
+      "sha256": "3bf96a659bea99cc68e074f6f8f528a1b86b0df34704ff814133d49b186ce876"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-a.png",
+      "sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00000.png",
+      "sha256": "8f3e3e0504bea8fba9069ff095fd9562aff33c1205faa71b95d1d17d3e41f762"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00000.png",
+      "sha256": "8f3e3e0504bea8fba9069ff095fd9562aff33c1205faa71b95d1d17d3e41f762"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00001.png",
+      "sha256": "3aedbae3512c5bc18b64a017b13b73179da9cb44a99659712d066811ee96effc"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00002.png",
+      "sha256": "187c651083aa847720cd627188afdf3320c6bd809e0bd99f04dd6f1049418f2d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00003.png",
+      "sha256": "d92ef0c581f2376f018b87bbe9697266eb3cad096a56fdddee041ebe70609d53"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00004.png",
+      "sha256": "00c63bc27b8acfbd73f252b66ebbb2db5e8f5d11f8434e40b0453d0fda7617f0"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00005.png",
+      "sha256": "fd73a4ffc6ce2ac9c78ed0886a7ac6f8aa2ba1a7e61d830135c9491857ff1703"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00006.png",
+      "sha256": "a3e2c5264f04297129c279b41a26719e68a37c87cfddb20d0eecf239f4652886"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00007.png",
+      "sha256": "5d19c1ab3b97716b8be505acaa7052fcf52177925dd00663a353a07f0467b90e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00008.png",
+      "sha256": "9b43f44973f8150f6a72f499bea37167aa06ab782cb89a577b33470e8efc0903"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00009.png",
+      "sha256": "755a869898c36e868d31c56a4f9494ad76df02b62572e188fd5ae5728edf5b2a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00009.png",
+      "sha256": "755a869898c36e868d31c56a4f9494ad76df02b62572e188fd5ae5728edf5b2a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00010.png",
+      "sha256": "79d8e1b466c6ccba928c8d45a67dfb4313f53a471b6355e464e698e800d030f1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00011.png",
+      "sha256": "509294e3ba07e9cca19595ba5a5c7fbcac5e35ea41ece086d69224c8871229cf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00012.png",
+      "sha256": "509294e3ba07e9cca19595ba5a5c7fbcac5e35ea41ece086d69224c8871229cf"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00013.png",
+      "sha256": "67d96d7233241edce99a861e51935651e00d28f4ed41264b26a855fbdae0155f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00014.png",
+      "sha256": "5952670ae00b8573ab209f5481dfb28bb754a30950634bdaf79ce23ed1d020c7"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00015.png",
+      "sha256": "4327c26ed5cdfdc94e004ca35b03aebef2f03e2336019e5cac5e48264626ae29"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00016.png",
+      "sha256": "80ce9fc31ad6df9807d603345ec1ced975d592b4bc7a3061b8305c2cbafb267d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00017.png",
+      "sha256": "e30a2c0af747d7fd52ae250c96bd72922e8969dbc32aa1a47c33a5f398389d26"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00018.png",
+      "sha256": "57b3536955023d7c0f3ade13ce615c1d2c725e975992fce5b6c62647a4e0d3b1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00019.png",
+      "sha256": "9d85b0ec4349af84c7b408d71acc22d15be8e123a7894f662e5405613d1edbe9"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00020.png",
+      "sha256": "3b2f4048ca83bb50f315485fe21e2901a924794d8c133eaf19835a2847ae2f3a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00021.png",
+      "sha256": "4965ea0a359ca3ac5e9444511df696031bb516b80e06680d7ad46a3efef5e585"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00022.png",
+      "sha256": "6a43f4d953c86b929a43e55b4ad2c6d1d11b06aa780a874828a47a20c5e3b994"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00023.png",
+      "sha256": "4d098f833cbf2910322e36cb8280e094e2e31e55f8bc1d5652beb709ca3f0923"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00024.png",
+      "sha256": "d3ac86ae1d5d1216ec5019bf6c2aea259eaef96f33d2d85d8acf5ec948561a44"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00025.png",
+      "sha256": "b4d0703b70c05c43bf8ab29450773ed1459808b3d94fc146848d5391a9d54ad7"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00026.png",
+      "sha256": "f1218a649b844884c7c62b16264b65a5b7005de541d54218c1a7908bf19a4aae"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00027.png",
+      "sha256": "df47b20dea5e8935069bc87adae8f67e1a03616e0741e8ba431421c47bd958fa"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00028.png",
+      "sha256": "2dc272ea299cc2dc836faee0a17cab9818993698f2da81335b95fa7527a58bf7"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00029.png",
+      "sha256": "85e14bb7753af77206f41cf0f300f31d5574764b0cdeeaae930c21cf003aa02d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00030.png",
+      "sha256": "9946c5e6fb1aefe98f21c2667f375a30df2b885360d7b4a53466270022735700"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00031.png",
+      "sha256": "941efdb94c446af5b187dcdbf0d1c5231de38db84156e8c2f899e12af1e94637"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00032.png",
+      "sha256": "5b0e8bd1c17f2c12acf9f1d40f8c2b8e783140d18343a936969a2a9c3f539deb"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00033.png",
+      "sha256": "15a2f162ba1fe3513a55e13fe7ea5e163fd727d0ffcf4ccde082e199fb014b41"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00034.png",
+      "sha256": "22e098452d6336e983f0b567fcad7ce66c84203379b6345703210ce3e310ca80"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-a\\frames\\00035.png",
+      "sha256": "0bef48ed9c335b3d80cc9e85d0309e1f8ef5c3e92723cfc814d3caa7584f6f47"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00080.png",
+      "sha256": "4eb12125e0fd5946de3bc3e1210e238057f5fa0825916a057f8ad147a60540dc"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00081.png",
+      "sha256": "ef84f25ffcbb089bbf17d9eb2bc65b73030ae36da30f92e360d799de668f132e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00082.png",
+      "sha256": "556a5245f8ad94f5fbf0133c6331d478c46f226577513cb5ef2caee23d692d17"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00083.png",
+      "sha256": "d8b9a2b7b3614a66d067ac3332375d8cd6f0dfdf200a95c4d684f9df6dd27449"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00084.png",
+      "sha256": "dbbbf10af6cc4437767a03e327f014d7432eca57a3ddca5a3e8819565370c156"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00085.png",
+      "sha256": "de637f34ec034ca7f2182c994a18d0b8aea33c78dcf03cea688d5de407faa999"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00086.png",
+      "sha256": "1ca73d0eeac9305378513ec1311d658f50a362e4ba1b90b2a58a10a78f928c7b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00087.png",
+      "sha256": "1ca73d0eeac9305378513ec1311d658f50a362e4ba1b90b2a58a10a78f928c7b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00088.png",
+      "sha256": "9a850602595ae2e74c7c02ce9f85a63b8d83836d4089e3ca01e5e12452fb4139"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00089.png",
+      "sha256": "7c8fbd5ebcaeafbdcef20c6c78c712090215017fec1feabc9bdbb7a290b314ae"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00089.png",
+      "sha256": "7c8fbd5ebcaeafbdcef20c6c78c712090215017fec1feabc9bdbb7a290b314ae"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00090.png",
+      "sha256": "7d59c24a7864ea7d388eb0646e426ca7c691fa32fabaf1bfec6adf8f64095e2e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00091.png",
+      "sha256": "c9e0227a28cda9dbacc9a38afc8c788182fa75dcb4c2d1ad4dca231d32ee085a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00091.png",
+      "sha256": "c9e0227a28cda9dbacc9a38afc8c788182fa75dcb4c2d1ad4dca231d32ee085a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00092.png",
+      "sha256": "985770dfc500eb4aafdfe0263eee9ad16abd2d8632d08ded8c708eb9b2929a18"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00093.png",
+      "sha256": "790e6328fa9b6763261704c38827f79d82c788a794f3a61482a5caf704745199"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00094.png",
+      "sha256": "20884c0cbb8dcad80ca1c97774e8f59cc287ee7267aa8527713b6a780ac16776"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00095.png",
+      "sha256": "f7070b23c11b7289a7a2db4c09da06b3719d6344e8ba944bdb514a899f2cd07f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00096.png",
+      "sha256": "352d79cec30e1e81dd892dc0bb2c6f74f81ecd4df381f7a24a36b6e170f423af"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00097.png",
+      "sha256": "ac8fe2a2cc6ea8551bbe0596731ce4baffb2e713215733f5fd32bb1fb553274e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00098.png",
+      "sha256": "94755f265f9212bbabcb65754a79a721ceec1688cd08f8eade9505a6419b8b92"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00098.png",
+      "sha256": "94755f265f9212bbabcb65754a79a721ceec1688cd08f8eade9505a6419b8b92"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00099.png",
+      "sha256": "f30b3c51e7bac0d80b076c97d4b379aa4821997f647fab6a95dcf34171d00bb6"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00100.png",
+      "sha256": "fc9345fc9a9f683c1fd0dc25e55c951582c1bc7e431bc2dfe1f3cb2255df4b10"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00101.png",
+      "sha256": "c5fa1ba7520d37785c4afe72a30767600ea10cfc9265a94274c24ea6a8df2b22"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00102.png",
+      "sha256": "e4c8eb1f24af59bd78d8efcdd36b8b0eceb326cd300e483b599f64a8e57b6289"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00103.png",
+      "sha256": "30b915800256f58218f71295356220df7c39ab7a1a85167568ba8e9498959b50"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00104.png",
+      "sha256": "9cf5e29445f89605299d44f954935c16bd4fed69b2df852cf07ab099bb100a61"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00105.png",
+      "sha256": "1ffcf46502e37734843252a9e6eda3e29de49883e07d0b71210fc9d81ca9839d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00106.png",
+      "sha256": "e2f9115d8909b31a0db12d32cf3e16d32504406ab8976c39ac27cecf0dd05f59"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00107.png",
+      "sha256": "66dc442ec854ecf5db22ff5ac8bc036c6efe4f7e9c3aa64d8320e56ba545a824"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00107.png",
+      "sha256": "66dc442ec854ecf5db22ff5ac8bc036c6efe4f7e9c3aa64d8320e56ba545a824"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00108.png",
+      "sha256": "81ca1fc4ad330339e466c20a907ce1f41ac313abfcc72ce69b87e22e94c4847f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00109.png",
+      "sha256": "e6d036c06a643c2c497f2336f74dfc18ffb21e5fc4cd4f07205f93fab9c3c10b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00110.png",
+      "sha256": "9f4e518334d1cd9a71e8eae96fc0c1d1cdb6f6ddbcee5d34d2195c9f00b9eb6c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00111.png",
+      "sha256": "4bfd8b59ddf30ca51125772c716b17c660c4a3ed4a9db16101f1535994a53e38"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00112.png",
+      "sha256": "4bfd8b59ddf30ca51125772c716b17c660c4a3ed4a9db16101f1535994a53e38"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00113.png",
+      "sha256": "433e09785714926194b43a7904994b690de196b655e6cad89968d44efa4435ff"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00114.png",
+      "sha256": "2277a4a82ac1910648078a53e188c3ddb047330d4f507cb24e409374d48bac76"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00115.png",
+      "sha256": "7a0a4e5c75bdbbf4127b8ca9bc6cb5ba43997d5aa24654a340d3a54504ccf903"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00116.png",
+      "sha256": "97f14c2f90e8d3737e2d8960cc9e10417839e0b82881404368fecc5b669a5548"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00117.png",
+      "sha256": "ee8d38ce8892c9ada9f52d2650b85d46332616611e6a5c7f2880adf503cecc8b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00118.png",
+      "sha256": "f6435b82ba4e8775ad0e8e5e2a49152f9f9d4faa21c6c30b59d7723d78601f2e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00119.png",
+      "sha256": "634d3974686bb7311c0b4f41dda3295e1bac2ea8d8a07d012d56ebce7d0396e3"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00120.png",
+      "sha256": "d2bdd718beb81c2ff183d791bcf5d4fa2ffceed2ab49a53948c121a23980d73f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00121.png",
+      "sha256": "ab248139f6a9f59cb47e8b4b0ca743311a086d599e981a6907ece3b7178e45dd"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00122.png",
+      "sha256": "f267bdf01802b7ce6b409c426dd934f86920d63466a09031651d7759cc054ffe"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00123.png",
+      "sha256": "4f008de11ef5a02663863d3848eae8f27b7e0e76bec0d5655ef9d3b497bbbb16"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-a\\frames\\00124.png",
+      "sha256": "0474e915438698d7dce0a96f2d5c918e65a32f92477d22e5e2f09e99734d17c8"
+    }
+  ],
+  "timeline_sha256": "bc152e6c67f5d874a6b845ed4ad9fb2f901ae989adc2a072fb767516cd066c55",
+  "duration_ms": 9160,
+  "semantics": "Centered transitions; source endpoints extended; effect intervals end-exclusive; no motion synthesized.",
+  "visual_join_review": "not assessed by script",
+  "effects": [
+    {
+      "name": "zoom_punch",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            0
+          ],
+          "decay_ms": 280
+        },
+        "scale": 1.14,
+        "sampling": "linear"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\zoom_punch.py",
+      "sha256": "4b76e34f14d999acfc69e274c717418c18efbea270cf92ecd0054cbf197825a8",
+      "stage": "post",
+      "start_ms": 0,
+      "end_ms": 360,
+      "trigger_times_ms": [
+        0
+      ]
+    },
+    {
+      "name": "beat_bounce",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            8,
+            9,
+            10,
+            12,
+            13,
+            14
+          ],
+          "decay_ms": 240,
+          "curve": "ease_out"
+        },
+        "translate_px": 12,
+        "rotation_deg": -1,
+        "scale": 1.0,
+        "sampling": "linear"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\beat_bounce.py",
+      "sha256": "9cba55eddb9da993a97eec03a7af0ba88aaba56b0392c28833566812c58c3678",
+      "stage": "source",
+      "start_ms": 2920,
+      "end_ms": 5860,
+      "trigger_times_ms": [
+        2920,
+        3280,
+        3660,
+        4400,
+        4760,
+        5120
+      ]
+    },
+    {
+      "name": "beat_bounce",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            11,
+            15
+          ],
+          "decay_ms": 310,
+          "curve": "ease_out"
+        },
+        "translate_px": 19,
+        "rotation_deg": 1.6,
+        "scale": 1.015,
+        "sampling": "linear"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\beat_bounce.py",
+      "sha256": "9cba55eddb9da993a97eec03a7af0ba88aaba56b0392c28833566812c58c3678",
+      "stage": "source",
+      "start_ms": 2920,
+      "end_ms": 5860,
+      "trigger_times_ms": [
+        4020,
+        5480
+      ]
+    },
+    {
+      "name": "cutout_card",
+      "params": {
+        "border_px": 6,
+        "shadow_px": 8,
+        "shadow_blur": 5,
+        "bg": "",
+        "background": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\plate-a.png",
+        "darken": 0.66,
+        "blur": 12,
+        "amount": 1.0
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\cutout_card.py",
+      "sha256": "b0ca566abd1d8257621eb7af48c6a6fc96bbf5d8151dff4cab95f2c881c6aacd",
+      "stage": "source",
+      "start_ms": 2920,
+      "end_ms": 5860,
+      "trigger_times_ms": []
+    },
+    {
+      "name": "halation",
+      "params": {
+        "amount": 0.65,
+        "radius": 6,
+        "warm": true,
+        "threshold": 0.55
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\halation.py",
+      "sha256": "a9d44b982932308930d7970cc92287447a29a220f10447c9938ac461b2b78c50",
+      "stage": "post",
+      "start_ms": 0,
+      "end_ms": 9160,
+      "trigger_times_ms": []
+    },
+    {
+      "name": "grade",
+      "params": {
+        "lift": 0.0,
+        "gamma": 1.0,
+        "gain": 1.06,
+        "sat": 1.12,
+        "temp": 0.025
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\grade.py",
+      "sha256": "de70bc3be36e52fafeca06573625516ef5ec79eeb0f726997b06ffca32e33623",
+      "stage": "post",
+      "start_ms": 0,
+      "end_ms": 9160,
+      "trigger_times_ms": []
+    },
+    {
+      "name": "flash_white",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            2,
+            6
+          ],
+          "decay_ms": 130,
+          "curve": "ease_out",
+          "max": 0.65
+        }
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\flash_white.py",
+      "sha256": "886066b687c108037c2f91999ce23ebbeb1ba6a1bfe9be128635f319d1e6e841",
+      "stage": "post",
+      "start_ms": 360,
+      "end_ms": 2920,
+      "trigger_times_ms": [
+        740,
+        2200
+      ]
+    },
+    {
+      "name": "zoom_punch",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            17,
+            18,
+            19
+          ],
+          "decay_ms": 200
+        },
+        "scale": 1.07,
+        "sampling": "linear"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\zoom_punch.py",
+      "sha256": "4b76e34f14d999acfc69e274c717418c18efbea270cf92ecd0054cbf197825a8",
+      "stage": "post",
+      "start_ms": 5860,
+      "end_ms": 7320,
+      "trigger_times_ms": [
+        6220,
+        6600,
+        6960
+      ]
+    },
+    {
+      "name": "zoom_punch",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            21,
+            22,
+            23,
+            24
+          ],
+          "decay_ms": 260
+        },
+        "scale": 1.09,
+        "sampling": "linear"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\zoom_punch.py",
+      "sha256": "4b76e34f14d999acfc69e274c717418c18efbea270cf92ecd0054cbf197825a8",
+      "stage": "post",
+      "start_ms": 7320,
+      "end_ms": 9160,
+      "trigger_times_ms": [
+        7700,
+        8060,
+        8420,
+        8800
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "name": "flash_cut",
+      "params": {},
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\flash_cut.py",
+      "sha256": "5291446050d6cfbb8a593e9a42b0f85d87969bbd7473e3d180da57656fbeef41",
+      "start_ms": 2860.0,
+      "end_ms": 2980.0,
+      "cut_ms": 2920,
+      "segment_index": 1
+    },
+    {
+      "name": "whip_pan",
+      "params": {
+        "blur_px": 49.0,
+        "direction": "left"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\whip_pan.py",
+      "sha256": "7a64cae8c30b21de4e70d348f18bee52d3ec8e8d881e7103178b613ae74cc43d",
+      "start_ms": 5700.0,
+      "end_ms": 6020.0,
+      "cut_ms": 5860,
+      "segment_index": 2
+    },
+    {
+      "name": "hex_shutter",
+      "params": {
+        "color": "121522"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\hex_shutter.py",
+      "sha256": "9c740487eeb9de132d2e4abe23bbc1dc1d7a7abf1049bea50359f7807907a11a",
+      "start_ms": 7160.0,
+      "end_ms": 7480.0,
+      "cut_ms": 7320,
+      "segment_index": 3
+    }
+  ],
+  "fx_overrides": [],
+  "render": {
+    "seconds": 16.20905559998937,
+    "fps": 14.806538142799473,
+    "requested_fps": 25
+  },
+  "warnings": [],
+  "source_samples": [
+    {
+      "output_ms": 0,
+      "segment_index": 0,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 40,
+      "segment_index": 0,
+      "source_ms": 40.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 80,
+      "segment_index": 0,
+      "source_ms": 80.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 120,
+      "segment_index": 0,
+      "source_ms": 120.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 160,
+      "segment_index": 0,
+      "source_ms": 160.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 200,
+      "segment_index": 0,
+      "source_ms": 200.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 240,
+      "segment_index": 0,
+      "source_ms": 240.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 280,
+      "segment_index": 0,
+      "source_ms": 280.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 320,
+      "segment_index": 0,
+      "source_ms": 320.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 360,
+      "segment_index": 0,
+      "source_ms": 360.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 400,
+      "segment_index": 0,
+      "source_ms": 400.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 440,
+      "segment_index": 0,
+      "source_ms": 440.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 480,
+      "segment_index": 0,
+      "source_ms": 480.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 520,
+      "segment_index": 0,
+      "source_ms": 520.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 560,
+      "segment_index": 0,
+      "source_ms": 560.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 600,
+      "segment_index": 0,
+      "source_ms": 600.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 640,
+      "segment_index": 0,
+      "source_ms": 640.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 680,
+      "segment_index": 0,
+      "source_ms": 680.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 720,
+      "segment_index": 0,
+      "source_ms": 720.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 740,
+      "segment_index": 0,
+      "source_ms": 720.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 750,
+      "segment_index": 0,
+      "source_ms": 720.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 760,
+      "segment_index": 0,
+      "source_ms": 760.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 800,
+      "segment_index": 0,
+      "source_ms": 800.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 840,
+      "segment_index": 0,
+      "source_ms": 840.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 880,
+      "segment_index": 0,
+      "source_ms": 880.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 920,
+      "segment_index": 0,
+      "source_ms": 920.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 960,
+      "segment_index": 0,
+      "source_ms": 960.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1000,
+      "segment_index": 0,
+      "source_ms": 1000.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1040,
+      "segment_index": 0,
+      "source_ms": 1040.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1080,
+      "segment_index": 0,
+      "source_ms": 1080.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1120,
+      "segment_index": 0,
+      "source_ms": 1120.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1160,
+      "segment_index": 0,
+      "source_ms": 1160.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1200,
+      "segment_index": 0,
+      "source_ms": 1200.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1240,
+      "segment_index": 0,
+      "source_ms": 1240.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1280,
+      "segment_index": 0,
+      "source_ms": 1280.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1320,
+      "segment_index": 0,
+      "source_ms": 1320.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1360,
+      "segment_index": 0,
+      "source_ms": 1360.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1400,
+      "segment_index": 0,
+      "source_ms": 1400.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1440,
+      "segment_index": 0,
+      "source_ms": 1440.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1480,
+      "segment_index": 0,
+      "source_ms": 1480.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1520,
+      "segment_index": 0,
+      "source_ms": 1520.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1560,
+      "segment_index": 0,
+      "source_ms": 1560.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1600,
+      "segment_index": 0,
+      "source_ms": 1600.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1640,
+      "segment_index": 0,
+      "source_ms": 1640.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1680,
+      "segment_index": 0,
+      "source_ms": 1680.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1720,
+      "segment_index": 0,
+      "source_ms": 1720.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1760,
+      "segment_index": 0,
+      "source_ms": 1760.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1800,
+      "segment_index": 0,
+      "source_ms": 1800.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1840,
+      "segment_index": 0,
+      "source_ms": 1840.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1880,
+      "segment_index": 0,
+      "source_ms": 1880.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1920,
+      "segment_index": 0,
+      "source_ms": 1920.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 1960,
+      "segment_index": 0,
+      "source_ms": 1960.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2000,
+      "segment_index": 0,
+      "source_ms": 2000.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2040,
+      "segment_index": 0,
+      "source_ms": 2040.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2080,
+      "segment_index": 0,
+      "source_ms": 2080.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2120,
+      "segment_index": 0,
+      "source_ms": 2120.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2160,
+      "segment_index": 0,
+      "source_ms": 2160.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2200,
+      "segment_index": 0,
+      "source_ms": 2200.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2210,
+      "segment_index": 0,
+      "source_ms": 2200.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2240,
+      "segment_index": 0,
+      "source_ms": 2240.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2280,
+      "segment_index": 0,
+      "source_ms": 2280.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2320,
+      "segment_index": 0,
+      "source_ms": 2320.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2360,
+      "segment_index": 0,
+      "source_ms": 2360.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2400,
+      "segment_index": 0,
+      "source_ms": 2400.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2440,
+      "segment_index": 0,
+      "source_ms": 2440.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2480,
+      "segment_index": 0,
+      "source_ms": 2480.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2520,
+      "segment_index": 0,
+      "source_ms": 2520.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2560,
+      "segment_index": 0,
+      "source_ms": 2560.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2600,
+      "segment_index": 0,
+      "source_ms": 2600.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2640,
+      "segment_index": 0,
+      "source_ms": 2640.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2680,
+      "segment_index": 0,
+      "source_ms": 2680.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2720,
+      "segment_index": 0,
+      "source_ms": 2720.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2760,
+      "segment_index": 0,
+      "source_ms": 2760.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2800,
+      "segment_index": 0,
+      "source_ms": 2800.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2840,
+      "segment_index": 0,
+      "source_ms": 2840.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2880,
+      "segment_index": 0,
+      "source_ms": 2880.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2920,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2930,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 2960,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3000,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3040,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3080,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3120,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3160,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3200,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3240,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3280,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3320,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3360,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3400,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3440,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3480,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3520,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3560,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3600,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3640,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3660,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3680,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3720,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3760,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3800,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3840,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3880,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3920,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 3960,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4000,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4020,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4040,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4080,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4120,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4160,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4200,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4240,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4280,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4320,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4360,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4400,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4440,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4480,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4520,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4560,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4600,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4640,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4680,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4720,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4760,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4800,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4840,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4880,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4920,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 4960,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5000,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5040,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5080,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5120,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5160,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5200,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5240,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5280,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5320,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5360,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5400,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5440,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5480,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5520,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5560,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5600,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5640,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5680,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5720,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5760,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5800,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5840,
+      "segment_index": 1,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5860,
+      "segment_index": 2,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5880,
+      "segment_index": 2,
+      "source_ms": 0.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5920,
+      "segment_index": 2,
+      "source_ms": 40.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 5960,
+      "segment_index": 2,
+      "source_ms": 80.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6000,
+      "segment_index": 2,
+      "source_ms": 120.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6040,
+      "segment_index": 2,
+      "source_ms": 160.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6080,
+      "segment_index": 2,
+      "source_ms": 200.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6120,
+      "segment_index": 2,
+      "source_ms": 240.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6160,
+      "segment_index": 2,
+      "source_ms": 280.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6200,
+      "segment_index": 2,
+      "source_ms": 320.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6220,
+      "segment_index": 2,
+      "source_ms": 360.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6240,
+      "segment_index": 2,
+      "source_ms": 360.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6280,
+      "segment_index": 2,
+      "source_ms": 400.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6320,
+      "segment_index": 2,
+      "source_ms": 440.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6360,
+      "segment_index": 2,
+      "source_ms": 480.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6400,
+      "segment_index": 2,
+      "source_ms": 520.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6440,
+      "segment_index": 2,
+      "source_ms": 560.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6480,
+      "segment_index": 2,
+      "source_ms": 600.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6520,
+      "segment_index": 2,
+      "source_ms": 640.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6560,
+      "segment_index": 2,
+      "source_ms": 680.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6600,
+      "segment_index": 2,
+      "source_ms": 720.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6640,
+      "segment_index": 2,
+      "source_ms": 760.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6680,
+      "segment_index": 2,
+      "source_ms": 800.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6720,
+      "segment_index": 2,
+      "source_ms": 840.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6760,
+      "segment_index": 2,
+      "source_ms": 880.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6800,
+      "segment_index": 2,
+      "source_ms": 920.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6840,
+      "segment_index": 2,
+      "source_ms": 960.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6880,
+      "segment_index": 2,
+      "source_ms": 1000.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6920,
+      "segment_index": 2,
+      "source_ms": 1040.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 6960,
+      "segment_index": 2,
+      "source_ms": 1080.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7000,
+      "segment_index": 2,
+      "source_ms": 1120.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7040,
+      "segment_index": 2,
+      "source_ms": 1160.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7080,
+      "segment_index": 2,
+      "source_ms": 1200.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7120,
+      "segment_index": 2,
+      "source_ms": 1240.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7160,
+      "segment_index": 2,
+      "source_ms": 1280.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7200,
+      "segment_index": 2,
+      "source_ms": 1320.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7240,
+      "segment_index": 2,
+      "source_ms": 1360.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7280,
+      "segment_index": 2,
+      "source_ms": 1400.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7320,
+      "segment_index": 3,
+      "source_ms": 3200.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7360,
+      "segment_index": 3,
+      "source_ms": 3240.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7400,
+      "segment_index": 3,
+      "source_ms": 3280.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7440,
+      "segment_index": 3,
+      "source_ms": 3320.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7480,
+      "segment_index": 3,
+      "source_ms": 3360.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7520,
+      "segment_index": 3,
+      "source_ms": 3400.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7560,
+      "segment_index": 3,
+      "source_ms": 3440.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7600,
+      "segment_index": 3,
+      "source_ms": 3480.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7640,
+      "segment_index": 3,
+      "source_ms": 3520.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7680,
+      "segment_index": 3,
+      "source_ms": 3560.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7700,
+      "segment_index": 3,
+      "source_ms": 3560.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7720,
+      "segment_index": 3,
+      "source_ms": 3600.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7760,
+      "segment_index": 3,
+      "source_ms": 3640.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7800,
+      "segment_index": 3,
+      "source_ms": 3640.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7840,
+      "segment_index": 3,
+      "source_ms": 3680.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7880,
+      "segment_index": 3,
+      "source_ms": 3720.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7920,
+      "segment_index": 3,
+      "source_ms": 3760.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 7960,
+      "segment_index": 3,
+      "source_ms": 3800.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8000,
+      "segment_index": 3,
+      "source_ms": 3840.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8040,
+      "segment_index": 3,
+      "source_ms": 3880.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8060,
+      "segment_index": 3,
+      "source_ms": 3920.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8080,
+      "segment_index": 3,
+      "source_ms": 3920.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8120,
+      "segment_index": 3,
+      "source_ms": 3960.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8160,
+      "segment_index": 3,
+      "source_ms": 4000.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8200,
+      "segment_index": 3,
+      "source_ms": 4040.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8240,
+      "segment_index": 3,
+      "source_ms": 4080.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8280,
+      "segment_index": 3,
+      "source_ms": 4120.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8320,
+      "segment_index": 3,
+      "source_ms": 4160.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8360,
+      "segment_index": 3,
+      "source_ms": 4200.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8400,
+      "segment_index": 3,
+      "source_ms": 4240.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8420,
+      "segment_index": 3,
+      "source_ms": 4280.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8440,
+      "segment_index": 3,
+      "source_ms": 4280.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8480,
+      "segment_index": 3,
+      "source_ms": 4320.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8520,
+      "segment_index": 3,
+      "source_ms": 4360.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8560,
+      "segment_index": 3,
+      "source_ms": 4400.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8600,
+      "segment_index": 3,
+      "source_ms": 4440.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8640,
+      "segment_index": 3,
+      "source_ms": 4480.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8680,
+      "segment_index": 3,
+      "source_ms": 4520.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8720,
+      "segment_index": 3,
+      "source_ms": 4560.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8760,
+      "segment_index": 3,
+      "source_ms": 4600.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8800,
+      "segment_index": 3,
+      "source_ms": 4640.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8840,
+      "segment_index": 3,
+      "source_ms": 4680.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8880,
+      "segment_index": 3,
+      "source_ms": 4720.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8920,
+      "segment_index": 3,
+      "source_ms": 4760.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 8960,
+      "segment_index": 3,
+      "source_ms": 4800.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 9000,
+      "segment_index": 3,
+      "source_ms": 4840.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 9040,
+      "segment_index": 3,
+      "source_ms": 4880.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 9080,
+      "segment_index": 3,
+      "source_ms": 4920.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    },
+    {
+      "output_ms": 9120,
+      "segment_index": 3,
+      "source_ms": 4960.0,
+      "interpolation": "none",
+      "extended_last_frame": false
+    }
+  ]
+}

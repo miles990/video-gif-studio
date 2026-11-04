@@ -15,7 +15,7 @@ Users may describe only an intended result. Infer a suitable script, motion, tim
 
 - **Script/storyboard only:** read [planning](references/planning.md), deliver the written plan and stop without image or video generation.
 - **Music analysis only:** read [music](references/music.md), analyze the supplied audio and return candidate cue timestamps with suggested uses and review status. Do not generate or edit footage unless requested.
-- **Simple local editing:** read [timeline](references/timeline.md) and [music](references/music.md) when relevant. Prepare source frames before composing trims, reordered segments, retiming, holds, loops and an optional soundtrack. Source clip audio is not automatically retained; clarify an audio-preservation request before using this visual-frame route.
+- **Simple local editing:** read [timeline](references/timeline.md) and [music](references/music.md) when relevant. Prepare source frames before composing trims, reordered segments, retiming, holds, loops and an optional soundtrack. Source clip audio is not automatically retained; clarify an audio-preservation request before using this visual-frame route. For explicitly requested post-production effects, use `scripts/fx_render.py` and [fx](references/fx.md); never invent effects for character actions, substitute effects for physical motion, or conceal bad joins.
 - **Generate animation/assets:** continue below; use the requested format, GIF by default, video for long/music deliverables and PNG/sheets for game use.
 - **Pixel sprites:** use an available sprite skill for intentionally discrete pose-sheet creation, then follow this skill's pixel-native processing and export guidance. Do not require continuous video for every pixel-art request.
 

@@ -1,0 +1,22 @@
+{
+  "dissolve_1200ms": [
+    {
+      "time_ms": 1600.0,
+      "type": "crossfade",
+      "confidence": 0.7,
+      "duration_ms": 1200.0,
+      "review": true
+    }
+  ],
+  "catalog_counts": {
+    "effects": 6,
+    "transitions": 4
+  },
+  "rembg_present_in_test_environment": false,
+  "missing_rembg": {
+    "exit_code": 2,
+    "stderr": "background_remove: Install optional backend: pip install -r requirements-matting.txt (or scripts/install.py --with-matting)"
+  },
+  "preview_seconds": 0.29509089997736737,
+  "preview_tiles": 19
+}

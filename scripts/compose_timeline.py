@@ -25,6 +25,18 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
     if out.exists(): raise FileExistsError('Use a new output directory')
     if not formats or not set(formats) <= FORMATS: raise ValueError('Unknown output format')
     plan = json.loads(plan_path.read_text())
+    items, segments = resolve_plan(plan, plan_path, formats)
+    images = []
+    for file, _ in items:
+        with Image.open(file) as im: images.append(im.convert('RGBA'))
+    if any(im.size != images[0].size for im in images):
+        raise ValueError('All images must share one canvas; prepare sizing explicitly')
+    times = [t for _, t in items]
+    return export_timeline(plan_path, out, formats, background, plan, items, segments, images, times)
+
+
+def resolve_plan(plan, plan_path, formats=('png',)):
+    plan_path = Path(plan_path).resolve()
     music = plan.get('music')
     if music and not set(formats) & {'mov','webm','mp4'}:
         raise ValueError('Music requires MOV, WebM or MP4; GIF/APNG/sprites are silent')
@@ -113,13 +125,13 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
                          'type':segment['type'], 'start_frame':start, 'end_frame_exclusive':len(items),
                          'duration_ms':sum(t for _,t in items[start:])})
     if not items: raise ValueError('Timeline must contain at least one frame')
-    # Preserve original alpha/canvas; mismatched inputs require deliberate preparation.
-    images = []
-    for file,_ in items:
-        with Image.open(file) as im: images.append(im.convert('RGBA'))
-    if any(im.size != images[0].size for im in images):
-        raise ValueError('All images must share one canvas; prepare sizing explicitly')
-    times = [t for _,t in items]
+    return items, segments
+
+
+def export_timeline(plan_path, out, formats, background, plan, items, segments, images, times, extra=None):
+    out = Path(out)
+    music = plan.get('music')
+    def resolve(name): return (plan_path.parent / name).resolve()
     out.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(dir=out.parent) as tmp:
         root = Path(tmp)/'delivery';root.mkdir();(root/'frames').mkdir()
@@ -129,6 +141,7 @@ def compose(plan_path, out, formats=('gif',), background='000000'):
                     'timeline_sha256':sha(plan_path), 'duration_ms':sum(times),
                     'semantics':'Stills add time; all pixels including VFX freeze. No invented idle motion or blend.',
                     'visual_join_review':'not assessed by script'}
+        if extra: manifest.update(extra)
         (root/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
         qc = {}
         if 'gif' in formats:

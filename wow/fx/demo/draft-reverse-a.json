@@ -1,0 +1,162 @@
+{
+  "beatmap": "beats.json",
+  "fps": 25,
+  "review": true,
+  "segments": [
+    {
+      "type": "animation",
+      "manifest": "work/verification-1793806198762943200/reverse-a/shots/000/manifest.json",
+      "in_ms": 0,
+      "out_ms": 2920,
+      "review": true,
+      "end_beat": 8
+    },
+    {
+      "type": "still",
+      "manifest": "work/verification-1793806198762943200/reverse-a/shots/001/manifest.json",
+      "review": true,
+      "frame": "first",
+      "end_beat": 16,
+      "transition": {
+        "name": "flash_cut",
+        "duration_ms": 160,
+        "review": true
+      }
+    },
+    {
+      "type": "animation",
+      "manifest": "work/verification-1793806198762943200/reverse-a/shots/002/manifest.json",
+      "in_ms": 0,
+      "out_ms": 1440,
+      "review": true,
+      "end_beat": 20,
+      "transition": {
+        "name": "whip_pan",
+        "duration_ms": 320,
+        "review": true
+      }
+    },
+    {
+      "type": "animation",
+      "manifest": "work/verification-1793806198762943200/reverse-a/shots/003/manifest.json",
+      "in_ms": 0,
+      "out_ms": 1840,
+      "review": true,
+      "end_beat": 25,
+      "transition": {
+        "name": "hex_shutter",
+        "duration_ms": 400,
+        "review": true
+      }
+    }
+  ],
+  "effects": [
+    {
+      "name": "zoom_punch",
+      "start_ms": 6240,
+      "end_ms": 6560,
+      "scale": 1.125,
+      "amount": {
+        "on": "beats",
+        "indices": [
+          17
+        ],
+        "decay_ms": 200,
+        "curve": "ease_out"
+      },
+      "review": true
+    },
+    {
+      "name": "zoom_punch",
+      "start_ms": 6600,
+      "end_ms": 6920,
+      "scale": 1.1363636363636365,
+      "amount": {
+        "on": "beats",
+        "indices": [
+          18
+        ],
+        "decay_ms": 200,
+        "curve": "ease_out"
+      },
+      "review": true
+    },
+    {
+      "name": "zoom_punch",
+      "start_ms": 8160,
+      "end_ms": 8480,
+      "scale": 1.3333333333333333,
+      "amount": {
+        "on": "beats",
+        "indices": [
+          23
+        ],
+        "decay_ms": 200,
+        "curve": "ease_out"
+      },
+      "review": true
+    },
+    {
+      "name": "zoom_punch",
+      "start_ms": 8560,
+      "end_ms": 8880,
+      "scale": 1.8333333333333333,
+      "amount": {
+        "on": "beats",
+        "indices": [
+          24
+        ],
+        "decay_ms": 200,
+        "curve": "ease_out"
+      },
+      "review": true
+    },
+    {
+      "name": "zoom_punch",
+      "start_ms": 8880,
+      "end_ms": 9160,
+      "scale": 1.8,
+      "amount": {
+        "keyframes": [
+          [
+            8880,
+            1
+          ],
+          [
+            9200,
+            0
+          ]
+        ]
+      },
+      "review": true
+    },
+    {
+      "name": "beat_bounce",
+      "start_ms": 2920,
+      "end_ms": 5860,
+      "amount": {
+        "on": "beats",
+        "indices": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "decay_ms": 200,
+        "curve": "ease_out"
+      },
+      "review": true
+    },
+    {
+      "name": "cutout_card",
+      "border_px": 6,
+      "review": true,
+      "start_beat": 8,
+      "end_beat": 16
+    }
+  ]
+}

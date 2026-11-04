@@ -1,0 +1,209 @@
+{
+  "experimental": true,
+  "beatmap": "beats.json",
+  "fps": 25,
+  "seed": 19,
+  "interpolate": "flow",
+  "music": {
+    "file": "../../../examples/neon-zen-pv/soundtrack.flac",
+    "fade_in_ms": 100,
+    "fade_out_ms": 700
+  },
+  "segments": [
+    {
+      "type": "animation",
+      "manifest": "work/a/manifest.json",
+      "end_beat": 8,
+      "ramp": {
+        "into_beat": 8,
+        "slow": 0.35,
+        "hit_ms": 240
+      }
+    },
+    {
+      "type": "animation",
+      "manifest": "work/b/manifest.json",
+      "in_ms": 0,
+      "out_ms": 2920,
+      "end_beat": 16
+    },
+    {
+      "type": "animation",
+      "manifest": "work/c/manifest.json",
+      "in_ms": 400,
+      "out_ms": 3320,
+      "end_beat": 24
+    },
+    {
+      "type": "still",
+      "image": "work/freeze.png",
+      "end_beat": 32,
+      "transition": {
+        "name": "shape_wipe",
+        "shape": "circle",
+        "softness": 6,
+        "duration_ms": 400
+      }
+    },
+    {
+      "type": "animation",
+      "manifest": "work/d/manifest.json",
+      "in_ms": 0,
+      "out_ms": 2920,
+      "end_beat": 40
+    },
+    {
+      "type": "animation",
+      "manifest": "work/a/manifest.json",
+      "in_ms": 800,
+      "out_ms": 5200,
+      "end_beat": 56,
+      "transition": {
+        "name": "luma_wipe",
+        "mask": "linear",
+        "duration_ms": 320
+      }
+    }
+  ],
+  "effects": [
+    {
+      "name": "grade",
+      "sat": 1.08,
+      "temp": 0.015,
+      "gain": 1.025
+    },
+    {
+      "name": "shake",
+      "amount": {
+        "on": "beats",
+        "indices": [
+          11,
+          19,
+          35,
+          43
+        ],
+        "decay_ms": 160,
+        "curve": "ease_out"
+      },
+      "distance": 7
+    },
+    {
+      "name": "rgb_split",
+      "amount": {
+        "on": "beats",
+        "indices": [
+          11,
+          19,
+          35,
+          43
+        ],
+        "decay_ms": 160,
+        "curve": "ease_out"
+      },
+      "distance": 4
+    },
+    {
+      "name": "text",
+      "start_beat": 0,
+      "end_beat": 8,
+      "content": "慢一拍",
+      "size": 46,
+      "x": 0.75,
+      "y": 0.78,
+      "color": "FFF4D6",
+      "scale": {
+        "on": "beats",
+        "indices": [
+          0,
+          4
+        ],
+        "min": 1,
+        "max": 1.08,
+        "decay_ms": 180
+      }
+    },
+    {
+      "name": "text",
+      "start_beat": 8,
+      "end_beat": 16,
+      "content": "讓光流動",
+      "size": 42,
+      "x": 0.5,
+      "y": 0.83,
+      "color": "FFF4D6"
+    },
+    {
+      "name": "split_screen",
+      "stage": "source",
+      "start_beat": 18,
+      "end_beat": 24,
+      "panels": {
+        "keyframes": [
+          [
+            6600,
+            2
+          ],
+          [
+            7319,
+            2
+          ],
+          [
+            7320,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "name": "parallax",
+      "stage": "source",
+      "start_beat": 24,
+      "end_beat": 32,
+      "depth": "assets/depth-small.png",
+      "distance": 14,
+      "amount": {
+        "keyframes": [
+          [
+            8800,
+            0
+          ],
+          [
+            11720,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "text",
+      "start_beat": 26,
+      "end_beat": 32,
+      "content": "浮光",
+      "size": 46,
+      "x": 0.79,
+      "y": 0.78,
+      "color": "FFF4D6"
+    },
+    {
+      "name": "film_grain",
+      "start_beat": 40,
+      "end_beat": 56,
+      "amount": 0.018
+    },
+    {
+      "name": "light_leak",
+      "start_beat": 40,
+      "end_beat": 56,
+      "amount": 0.13
+    },
+    {
+      "name": "text",
+      "start_beat": 48,
+      "end_beat": 56,
+      "content": "餘韻 / AFTERGLOW",
+      "size": 29,
+      "y": 0.83,
+      "color": "FFF4D6"
+    }
+  ]
+}

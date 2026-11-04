@@ -1,0 +1,379 @@
+{
+  "matrix": {
+    "cut": {
+      "cut": 3
+    },
+    "crossfade": {
+      "crossfade": 3
+    },
+    "whip_pan": {
+      "whip_pan": 3
+    },
+    "hex_shutter": {
+      "hex_shutter": 3
+    },
+    "flash_cut": {
+      "flash_cut": 3
+    }
+  },
+  "cases": [
+    {
+      "order": [
+        "cut",
+        "crossfade",
+        "whip_pan",
+        "hex_shutter",
+        "flash_cut"
+      ],
+      "events": [
+        {
+          "truth": "cut",
+          "time_ms": 1000,
+          "predicted": "cut",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "crossfade",
+          "time_ms": 2000,
+          "predicted": "crossfade",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "whip_pan",
+          "time_ms": 3000,
+          "predicted": "whip_pan",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "hex_shutter",
+          "time_ms": 4000,
+          "predicted": "hex_shutter",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "flash_cut",
+          "time_ms": 5000,
+          "predicted": "flash_cut",
+          "error_ms": 0.0
+        }
+      ],
+      "flashes": [
+        {
+          "time_ms": 520.0,
+          "confidence": 0.9
+        },
+        {
+          "time_ms": 5000.0,
+          "confidence": 0.9
+        }
+      ],
+      "report": {
+        "cuts": [
+          {
+            "time_ms": 1000.0,
+            "type": "cut",
+            "confidence": 0.85,
+            "duration_ms": 0,
+            "review": false
+          },
+          {
+            "time_ms": 2000.0,
+            "type": "crossfade",
+            "confidence": 0.6,
+            "duration_ms": 360.0,
+            "review": true
+          },
+          {
+            "time_ms": 3000.0,
+            "type": "whip_pan",
+            "confidence": 0.6,
+            "duration_ms": 80,
+            "review": true
+          },
+          {
+            "time_ms": 4000.0,
+            "type": "hex_shutter",
+            "confidence": 0.75,
+            "duration_ms": 400,
+            "review": true
+          },
+          {
+            "time_ms": 5000.0,
+            "type": "flash_cut",
+            "confidence": 0.8,
+            "duration_ms": 360.0,
+            "review": false
+          }
+        ],
+        "flashes": [
+          {
+            "time_ms": 520.0,
+            "confidence": 0.9
+          },
+          {
+            "time_ms": 5000.0,
+            "confidence": 0.9
+          }
+        ],
+        "directional_motion": [
+          {
+            "time_ms": 3000.0,
+            "direction": "horizontal",
+            "confidence": 0.6,
+            "review": true
+          }
+        ],
+        "zoom_punches": [],
+        "freezes": [],
+        "beat_alignment": {
+          "numerator": 5,
+          "denominator": 5,
+          "ratio": 1.0,
+          "tolerance_ms": 40.0
+        },
+        "duration_ms": 6000,
+        "analysis_frame_ms": 40.0,
+        "limitations": "Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous."
+      }
+    },
+    {
+      "order": [
+        "flash_cut",
+        "hex_shutter",
+        "cut",
+        "crossfade",
+        "whip_pan"
+      ],
+      "events": [
+        {
+          "truth": "flash_cut",
+          "time_ms": 1000,
+          "predicted": "flash_cut",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "hex_shutter",
+          "time_ms": 2000,
+          "predicted": "hex_shutter",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "cut",
+          "time_ms": 3000,
+          "predicted": "cut",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "crossfade",
+          "time_ms": 4000,
+          "predicted": "crossfade",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "whip_pan",
+          "time_ms": 5000,
+          "predicted": "whip_pan",
+          "error_ms": 0.0
+        }
+      ],
+      "flashes": [
+        {
+          "time_ms": 520.0,
+          "confidence": 0.9
+        },
+        {
+          "time_ms": 1000.0,
+          "confidence": 0.9
+        }
+      ],
+      "report": {
+        "cuts": [
+          {
+            "time_ms": 1000.0,
+            "type": "flash_cut",
+            "confidence": 0.8,
+            "duration_ms": 360.0,
+            "review": false
+          },
+          {
+            "time_ms": 2000.0,
+            "type": "hex_shutter",
+            "confidence": 0.75,
+            "duration_ms": 400,
+            "review": true
+          },
+          {
+            "time_ms": 3000.0,
+            "type": "cut",
+            "confidence": 0.85,
+            "duration_ms": 0,
+            "review": false
+          },
+          {
+            "time_ms": 4000.0,
+            "type": "crossfade",
+            "confidence": 0.6,
+            "duration_ms": 360.0,
+            "review": true
+          },
+          {
+            "time_ms": 5000.0,
+            "type": "whip_pan",
+            "confidence": 0.6,
+            "duration_ms": 80,
+            "review": true
+          }
+        ],
+        "flashes": [
+          {
+            "time_ms": 520.0,
+            "confidence": 0.9
+          },
+          {
+            "time_ms": 1000.0,
+            "confidence": 0.9
+          }
+        ],
+        "directional_motion": [
+          {
+            "time_ms": 5000.0,
+            "direction": "horizontal",
+            "confidence": 0.6,
+            "review": true
+          }
+        ],
+        "zoom_punches": [],
+        "freezes": [],
+        "beat_alignment": {
+          "numerator": 5,
+          "denominator": 5,
+          "ratio": 1.0,
+          "tolerance_ms": 40.0
+        },
+        "duration_ms": 6000,
+        "analysis_frame_ms": 40.0,
+        "limitations": "Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous."
+      }
+    },
+    {
+      "order": [
+        "whip_pan",
+        "flash_cut",
+        "crossfade",
+        "cut",
+        "hex_shutter"
+      ],
+      "events": [
+        {
+          "truth": "whip_pan",
+          "time_ms": 1000,
+          "predicted": "whip_pan",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "flash_cut",
+          "time_ms": 2000,
+          "predicted": "flash_cut",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "crossfade",
+          "time_ms": 3000,
+          "predicted": "crossfade",
+          "error_ms": 40.0
+        },
+        {
+          "truth": "cut",
+          "time_ms": 4000,
+          "predicted": "cut",
+          "error_ms": 0.0
+        },
+        {
+          "truth": "hex_shutter",
+          "time_ms": 5000,
+          "predicted": "hex_shutter",
+          "error_ms": 0.0
+        }
+      ],
+      "flashes": [
+        {
+          "time_ms": 520.0,
+          "confidence": 0.9
+        },
+        {
+          "time_ms": 2000.0,
+          "confidence": 0.9
+        }
+      ],
+      "report": {
+        "cuts": [
+          {
+            "time_ms": 1000.0,
+            "type": "whip_pan",
+            "confidence": 0.6,
+            "duration_ms": 80,
+            "review": true
+          },
+          {
+            "time_ms": 2000.0,
+            "type": "flash_cut",
+            "confidence": 0.8,
+            "duration_ms": 360.0,
+            "review": false
+          },
+          {
+            "time_ms": 3040.0,
+            "type": "crossfade",
+            "confidence": 0.6,
+            "duration_ms": 360.0,
+            "review": true
+          },
+          {
+            "time_ms": 4000.0,
+            "type": "cut",
+            "confidence": 0.85,
+            "duration_ms": 0,
+            "review": false
+          },
+          {
+            "time_ms": 5000.0,
+            "type": "hex_shutter",
+            "confidence": 0.75,
+            "duration_ms": 400,
+            "review": true
+          }
+        ],
+        "flashes": [
+          {
+            "time_ms": 520.0,
+            "confidence": 0.9
+          },
+          {
+            "time_ms": 2000.0,
+            "confidence": 0.9
+          }
+        ],
+        "directional_motion": [
+          {
+            "time_ms": 1000.0,
+            "direction": "horizontal",
+            "confidence": 0.6,
+            "review": true
+          }
+        ],
+        "zoom_punches": [],
+        "freezes": [],
+        "beat_alignment": {
+          "numerator": 5,
+          "denominator": 5,
+          "ratio": 1.0,
+          "tolerance_ms": 40.0
+        },
+        "duration_ms": 6000,
+        "analysis_frame_ms": 40.0,
+        "limitations": "Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous."
+      }
+    }
+  ],
+  "method": "Three 6s rendered PNG timelines, five edits each, all builtins three times; standalone flash at 500ms. Detection has no access to plans."
+}

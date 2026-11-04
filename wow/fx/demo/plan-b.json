@@ -1,0 +1,21 @@
+{
+  "beatmap": "beats.json", "fps": 25,
+  "music": {"file": "../../../examples/neon-zen-pv/soundtrack.flac", "in_ms": 0, "fade_in_ms": 100, "fade_out_ms": 360},
+  "segments": [
+    {"type": "animation", "manifest": "work/round1/opening-b/manifest.json", "in_ms": 0, "out_ms": 2920, "end_beat": 8},
+    {"type": "still", "image": "work/round1/card-b.png", "end_beat": 16, "transition": {"name": "flash_cut", "duration_ms": 120}},
+    {"type": "animation", "manifest": "work/round1/closing-b/manifest.json", "in_ms": 0, "out_ms": 1460, "end_beat": 20, "transition": {"name": "whip_pan", "duration_ms": 320}},
+    {"type": "animation", "manifest": "work/round1/opening-b/manifest.json", "in_ms": 3200, "out_ms": 5020, "end_beat": 25, "transition": {"name": "hex_shutter", "duration_ms": 320}}
+  ],
+  "effects": [
+    {"name": "zoom_punch", "start_beat": 0, "end_beat": 1, "scale": 1.14, "amount": {"on": "beats", "indices": [0], "decay_ms": 280}},
+    {"name": "beat_bounce", "stage": "source", "start_beat": 8, "end_beat": 16, "amount": {"on": "beats", "indices": [8, 9, 10, 12, 13, 14], "decay_ms": 240, "curve": "ease_out"}, "translate_px": 12, "rotation_deg": -1, "scale": 1.0},
+    {"name": "beat_bounce", "stage": "source", "start_beat": 8, "end_beat": 16, "amount": {"on": "beats", "indices": [11, 15], "decay_ms": 310, "curve": "ease_out"}, "translate_px": 19, "rotation_deg": 1.6, "scale": 1.015},
+    {"name": "cutout_card", "stage": "source", "start_beat": 8, "end_beat": 16, "border_px": 6, "shadow_px": 8, "shadow_blur": 5, "background": "work/round1/plate-b.png", "darken": 0.66, "blur": 12},
+    {"name": "halation", "amount": 0.65, "radius": 6, "threshold": 0.55},
+    {"name": "grade", "sat": 1.12, "temp": 0.025, "gain": 1.06},
+    {"name": "flash_white", "start_beat": 1, "end_beat": 8, "amount": {"on": "beats", "indices": [2, 6], "decay_ms": 130, "curve": "ease_out", "max": 0.65}},
+    {"name": "zoom_punch", "start_beat": 16, "end_beat": 20, "scale": 1.07, "amount": {"on": "beats", "indices": [17, 18, 19], "decay_ms": 200}},
+    {"name": "zoom_punch", "start_beat": 20, "end_beat": 25, "scale": 1.09, "amount": {"on": "beats", "indices": [21, 22, 23, 24], "decay_ms": 260}}
+  ]
+}

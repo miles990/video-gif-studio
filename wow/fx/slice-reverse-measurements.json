@@ -1,0 +1,96 @@
+{
+  "neon": {
+    "source": "examples\\neon-zen-pv\\final.mp4",
+    "analysis_samples": 750,
+    "zoom_count": 0,
+    "zooms": [],
+    "flash_count": 0,
+    "flashes": []
+  },
+  "demo": {
+    "source": "wow\\fx\\demo\\demo.mp4",
+    "analysis_samples": 230,
+    "zoom_count": 0,
+    "zooms": [],
+    "flash_count": 3,
+    "flashes": [
+      {
+        "time_ms": 740,
+        "strength": 0.6445934176445007,
+        "confidence": 0.9
+      },
+      {
+        "time_ms": 2200,
+        "strength": 0.6450229287147522,
+        "confidence": 0.9
+      },
+      {
+        "time_ms": 2920,
+        "strength": 0.9890996813774109,
+        "confidence": 0.9
+      }
+    ]
+  },
+  "roundtrip": {
+    "source": "wow\\fx\\roundtrip\\render\\frames",
+    "analysis_samples": 150,
+    "zoom_count": 1,
+    "zooms": [
+      {
+        "time_ms": 3000,
+        "scale": 1.2298939668615785,
+        "confidence": 0.7,
+        "review": true
+      }
+    ],
+    "flash_count": 1,
+    "flashes": [
+      {
+        "time_ms": 1520,
+        "strength": 0.8311801552772522,
+        "confidence": 0.9
+      }
+    ]
+  },
+  "static": {
+    "zoom_count": 0
+  },
+  "slow_pan": {
+    "zoom_count": 0
+  },
+  "validated_plans": [
+    {
+      "path": "wow/fx/demo/plan.json",
+      "experimental": false
+    },
+    {
+      "path": "wow/fx/demo/plan-b.json",
+      "experimental": false
+    },
+    {
+      "path": "wow/fx/demo2/plan.json",
+      "experimental": true
+    }
+  ],
+  "roundtrip_mp4": {
+    "source": "wow/fx/roundtrip-mp4/render/animation.mp4",
+    "zoom_count": 1,
+    "zooms": [
+      {
+        "time_ms": 3000,
+        "scale": 1.2300724774564307,
+        "confidence": 0.7,
+        "review": true
+      }
+    ],
+    "flash_count": 1,
+    "flashes": [
+      {
+        "time_ms": 1520,
+        "strength": 0.8274424076080322,
+        "confidence": 0.9
+      }
+    ],
+    "draft_valid": true
+  }
+}

@@ -1,0 +1,12 @@
+demo/work/
+neon-reverse/
+roundtrip/*/
+roundtrip-mp4/*/
+!roundtrip-mp4/reverse/
+roundtrip-mp4/reverse/source/
+roundtrip-mp4/reverse/shots/*/frames/
+demo/master-*/
+demo/*.gif
+!demo/demo.gif
+!demo/demo-b.gif
+demo2/work/

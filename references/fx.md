@@ -1,0 +1,434 @@
+# Explicit post-production effects
+
+Use this route only when the user asks for post-production effects. Effects never
+substitute for physical character motion, invent a jump, or hide a broken source join.
+Prepare the source with `gif_pipeline.py`; retain the source animation and its alpha.
+
+```sh
+python scripts/fx_render.py plan.json --out delivery --formats png gif mp4
+python scripts/fx_render.py --list --json
+python scripts/fx_render.py --preview preview.png --image prepared/frames/00000.png
+python scripts/fx_render.py plan.json --validate --formats mp4
+```
+
+`--list` alone prints names, readable parameter defaults/descriptions and source files;
+add `--json` for the machine-readable catalog. Preview includes an original reference
+tile and deliberately visible example settings (stronger than restrained film defaults).
+
+The timeline schema and exporters are shared with `compose_timeline.py`. A plan without
+effects/transitions uses that composer directly: pixel values and variable exposures
+are unchanged. `music` still requires a video output. Existing output directories are
+rejected. Rendering is staged; failed renders do not publish a partial delivery.
+
+## Contract
+
+`@effect()` functions receive `f(frame, t_ms, ctx, **params)`. `@transition()` functions
+receive `f(a, b, p, ctx, **params)`, where p runs from 0 to 1. Public decorated functions
+accept H×W×4 straight RGBA, uint8 0..255 or float32 0..1, and return the **same dtype**.
+The decorator gives the implementation fresh float32 arrays, clips the result, and
+preserves caller inputs. Write implementations in 0..1 float32; return a new array or
+modify that private copy. Builtins are vectorized NumPy/OpenCV, with no per-pixel Python
+loops. Geometry and blends use premultiplied alpha internally; hidden RGB cannot leak.
+
+Construct `Context(width, height, fps=25, beats_ms=[...], t_ms=0, segment={}, seed=0,
+downbeats_ms=[], audio={}, sampling='linear')`. Fields include `since_previous_beat`
+(0 exactly on a beat), `until_next_beat` (strictly future), segment `index`, `start_ms`,
+`end_ms`, dimensions and fps. `ctx.rng` returns a fresh NumPy generator seeded by
+`ctx.seed`; identical inputs including seed reproduce output across processes. For
+animated random noise explicitly derive a seed from an integer frame/time, never Python
+`hash()`. Avoid global RNGs, mutable plugin state and wall clocks.
+
+## Stable
+
+The default catalog contains the six round-one effects and four transitions below.
+All round-two operations are **experimental (pending quality gate)**. They are hidden
+from `--list` and `--preview` unless `--experimental` is supplied. To validate or render
+a plan using them, pass `--experimental` or set top-level `"experimental": true`.
+The delivery manifest's `experimental_items` lists used effects (`effect:name`),
+transitions (`transition:name`), and features (`speed`, `ramp`, `interpolate:mode`).
+Stable-only plans record an empty list; opting in alone does not imply experimental use.
+
+`--list` is the authoritative typed parameter/default/doc/source catalog. The following
+defaults are also usable directly as plan fields. Every numeric field accepts envelopes.
+
+| Effect | Parameters and defaults |
+|---|---|
+| flash_white | amount=1; RGB moves toward white, alpha exact |
+| beat_bounce | amount=1, translate_px=8 upward, rotation_deg=2, scale=1.01, sampling=linear |
+| halation | amount=.8, radius=6 px Gaussian sigma, warm=true, threshold=.65; alpha exact, never expands coverage |
+| grade | lift=0, gamma=1, gain=1, sat=1, temp=0; temp adds red and subtracts blue |
+| zoom_punch | amount=1, scale=1.07, sampling=linear; alpha area follows scale squared; premultiplied geometry avoids dark fringes |
+| cutout_card | border_px=6, shadow_px=7 down/right, shadow_blur=4, bg='', background='', darken=.4, blur=8, amount=1 |
+
+`cutout_card` uses the source alpha; it does not infer a foreground from an opaque image.
+It builds a continuous white silhouette behind the subject and a soft down/right shadow.
+Empty `bg` keeps distant pixels transparent. `bg: "142132"` makes an opaque flat backdrop.
+`background: "plate.png"` uses a separate image, dimmed by `darken` and blurred by `blur`.
+The subject's source RGB is preserved; alpha-over-white removes dark fringe contamination.
+
+| Transition | Parameters and defaults |
+|---|---|
+| crossfade | none; premultiplied dissolve |
+| whip_pan | blur_px=49, direction=left (or right); two adjacent shots pan together through a horizontal blur, without replicated edge stretching |
+| hex_shutter | color=121522; six-sided aperture closes then opens |
+| flash_cut | none; white midpoint and unchanged endpoints |
+
+Geometry defaults to linear filtering. Set top-level `"sampling":"nearest"` (or the
+individual geometry parameter) for pixel art: no new palette colors or soft alpha are
+introduced. Explicit preparation must also use nearest enlargement. Large scale changes
+increase coverage and may crop; choose bounds deliberately. The default punch is 1.07;
+transparent coverage scales geometrically, with premultiplication protecting edge RGB.
+
+## Plans, clocks and envelopes
+
+Add `transition` to the **incoming** segment. Its `duration_ms` window is centered on the
+original edit boundary. p=.5 is exactly the boundary; no overlap changes the timeline
+length. A transition cannot exceed either neighboring segment's duration. Before the
+incoming segment begins, its first frame is extended; after the outgoing segment ends,
+its last frame is extended. Source material outside the specified trim is never pulled in.
+
+```json
+{
+  "beatmap":"beats.json", "fps":25, "seed":7,
+  "segments":[
+    {"type":"animation","manifest":"a/manifest.json","end_beat":4},
+    {"type":"still","manifest":"subject/manifest.json","frame":"first","end_beat":8,
+     "transition":{"name":"flash_cut","duration_ms":240}}
+  ],
+  "effects":[
+    {"name":"cutout_card","stage":"source","start_beat":4,"end_beat":8,"bg":"142132"},
+    {"name":"flash_white","amount":{"on":"beats","indices":[4],"decay_ms":180,"curve":"ease_out"}}
+  ]
+}
+```
+
+Effect intervals are `[start,end)`; use start_ms/end_ms or start_beat/end_beat, not both
+for an endpoint. Omitted bounds span the whole timeline. Beat indices are zero-based.
+`music.in_ms` is subtracted from beat and downbeat clocks for both edits and envelopes.
+Edits follow the existing nearest-10ms rule. The renderer defaults to 25 fps; 1..50 is
+accepted, with exposures quantized to the exporter's 10ms grid. Beat peaks and edit
+boundaries are inserted on that grid so they cannot be skipped by nominal frame sampling.
+On an inserted beat frame, evaluate its beat envelope at the exact unrounded beat peak.
+Thus output exposures may be variable, including 10ms accents. Video exporters retain
+the exact timeline as repeated frames at 100 fps; no motion interpolation is added.
+GIF derivatives merge exposures of 20ms or less with a neighbour, retaining the first
+image of a merged group and the exact total duration. This avoids browser 100ms clamping;
+PNG and video retain the original sample times. A GIF of total duration <=20ms cannot
+represent that timing portably. Use video/APNG for such a short asset.
+
+Effects run in listed order. `stage: "post"` (default) applies after transitions.
+`stage: "source"` applies before a transition to each participating source, scoped by
+that segment's clamped output clock. Use source-stage bounce then cutout_card so the
+card and its background transition together; the white border never follows blur streaks.
+Post-stage grade/halation/flash finish the composited result.
+
+Numeric parameter forms:
+
+- Constant: `"amount":0.7`.
+- Keyframes: `{"keyframes":[[0,0],[1000,1]]}`; linear interpolation, endpoints clamped.
+- Beats: `{"on":"beats","attack_ms":100,"decay_ms":200,"curve":"linear"}`.
+  Attack leads **into** the beat; peak stays on the beat. Decay follows it. Defaults are
+  attack=0, decay=200, curve=linear. Curves: linear, ease_out (cubic falloff), smooth.
+- Selection: `"indices":[1,3]` (`beats` is an alias), or `"every":2`, starting at index 0.
+  Optional `min`=0 and `max`=1 rescale the envelope. Overlapping triggers use maximum.
+- Downbeats: `{"on":"downbeats"}`; requires actual downbeats_ms. `end_downbeat:k` is
+  supported on segments, with the same offset and 10ms rounding as end_beat.
+- Strength: `{"on":"onset"}` or `{"on":"energy"}`. The renderer recomputes 10ms RMS
+  from music.file, even when an old beats.json only contains peak timestamps/waveform.
+  Energy is linear RMS / maximum RMS; onset is positive RMS difference / maximum positive
+  difference. Energy interpolates between hops. Onset peaks accept `decay_ms` (default
+  120ms), with maximum overlapping decays. Peak sample times are inserted into the
+  render grid; audio parameters also take their maximum within each output exposure,
+  so changing music.in_ms does not randomly miss clicks. No logarithmic loudness mapping.
+  A 12dB quieter click produces approximately one quarter of the strength. Native PCM16
+  WAV works without FFmpeg; compressed audio uses media_runtime. Missing music/decoder is
+  an actionable error, never an all-zero replacement. `music_sync.py` also records these
+  curves under envelopes without changing the existing RMS beat/onset timestamp algorithm.
+
+All plan keys, parameter names/types, envelope keys, ranges of beat indices, transitions,
+source canvases and timing are checked before output creation and effect pixel processing.
+Unknown keys are errors, including top-level typos. `review` is allowed annotation metadata.
+Segment and transition duration_ms must be a multiple of 10. Transitions must last at least one requested
+output frame. Downbeats must coincide with actual beats (1ms integer-rounding tolerance).
+Nearest/pixel sampling warns when crossfade, whip_pan or flash_cut blends new colours; warnings are retained in the output manifest.
+
+## Your growing library
+
+Save the following eight-line plugin to a project folder; run with `--fx-dir folder`:
+
+```python
+from fx import effect
+
+@effect(amount="Inversion blend, 0..1")
+def my_invert(frame, t_ms, ctx, amount=1.0):
+    """Invert visible RGB while retaining alpha."""
+    result = frame.copy()
+    result[..., :3] += (1 - 2 * result[..., :3]) * amount
+    return result
+```
+
+Precedence: builtins < `~/.video-gif-studio/fx/*.py` < repeated `--fx-dir` directories,
+left to right; files within a directory load alphabetically. Set `VIDEO_GIF_FX_HOME` to
+override the automatic library location; `--no-user-fx` disables it. Missing directories
+are ignored and never created. Syntax/import failures warn with filename and line and
+skip that file; its partial registrations are rolled back. Other files and builtins remain
+available. Plugins are trusted local Python code.
+Overrides report the name and both source paths to stderr and the delivery manifest.
+Plugins from either library source default to `status="stable"`. Authors can explicitly
+declare `@effect(status="experimental")` or `@transition(status="experimental")` to
+require the same opt-in. Registry/catalog entries expose `status`; only `stable` and
+`experimental` are accepted. A plugin override's own declared status takes precedence.
+
+After a successful film: choose a distinctive name; document parameters with decorator
+keyword descriptions and typed defaults; save the .py into the user library; generate
+one --preview PNG and retain it with the source film/license notes. The next plan can use
+the name directly. Keep media-specific paths in the plan, not in the reusable function.
+Manifest entries retain full resolved defaults/envelopes, interval, triggers, source file
+and sha256. Nondeterministic manifest fields are render.seconds/render.fps; output paths
+and source absolute paths can differ across workspaces. Frame PNG bytes are deterministic.
+
+## Optional audio and matting backends
+
+`python scripts/music_sync.py song.flac --out analysis --engine beat_this` uses CPJKU's
+Beat This! CPU File2Beats/minimal postprocessor. Install `beat_this` and CPU PyTorch only
+in an optional environment. First live use may download its checkpoint. Import/model
+failure warns clearly and records engine=rms plus fallback_reason; no downbeats are
+fabricated. A downbeat-dependent plan then fails with the exact plan location and a
+`--engine beat_this` instruction. The engine_fn callable is injectable for offline tests;
+the injected-engine fixture is synthetic; the separate neon fixture records live output.
+The recorded live neon run is `wow/fx/live/beat_this-neon.json`: 82 beats and 20 downbeats
+in 30 seconds, 9.8 seconds inference. BPM now derives from model beat intervals (163.64
+for that recording, rather than the RMS analyzer's 82). Times are integer milliseconds.
+The model may report double-time; inspect the intended pulse before selecting edits.
+`tests/fixtures/beat_this_neon.json` retains the corrected timing/BPM fixture.
+
+`background_remove.py --model` accepts u2netp (unchanged default), u2net,
+birefnet-general and birefnet-portrait. For a single freeze-frame, prefer BiRefNet's more
+expensive quality-oriented models; portrait is for people. For many preview frames,
+u2netp is the smaller/faster starting point. Coordinator live CPU measurements, including
+model loading: **u2netp 10.6s/frame; birefnet-general 61.6s/frame**. The same fish-frame
+comparison in `wow/fx/live/matte-compare.jpg` shows u2netp retaining a neon pillar and
+fragments while BiRefNet separates the fish more cleanly. These are single-frame timings,
+not a throughput guarantee. The optional venv also needs `opencv-python-headless`
+(gif_pipeline imports cv2). Review hair/occlusion and edges regardless of model.
+Missing rembg gives a clean requirements-matting.txt error without traceback. No model installs/downloads occur
+in tests; injected maskers verify model provenance. Existing read-only weights may be
+selected using U2NET_HOME. See THIRD_PARTY.md for project/model licensing caveats.
+
+## Reverse a reference into an editable draft
+
+This is a clean-room implementation inspired only by rea-video's concept; no code was
+read or copied from that unlicensed repository. 拆解是為了學結構，不搬運他人畫面、音樂、肖像。
+
+```sh
+python scripts/fx_reverse.py reference.mp4 --out breakdown --beats beats.json
+python scripts/fx_render.py breakdown/draft-plan.json --validate
+```
+
+PNG sequences and GIF/APNG also work offline; --fps defaults to 25 for analysis. With
+video audio and no --beats, the existing RMS music analyzer supplies beat candidates.
+report.json includes hard/gradual edit candidates, flash peaks, horizontal motion blur,
+zoom scale estimates, holds, and the numerator/denominator of edits within one analysis
+frame of beats. shots.png labels each shot's time. The draft uses builtins, exact segment
+durations (end_beat only for near-exact matches), and review=true on uncertain reconstruction.
+All report/draft timestamps and durations are integer milliseconds. Short brightness
+peaks between nominal analysis frames are retained; white-mix strengths of .6 and above
+are detected relative to nearby clean exposures. Zoom candidates require spatially
+distributed similarity-transform agreement, centered expansion rather than dominant
+translation, and a subsequent scale decay. Cornerless full-frame stripe graphics use
+a separate consistent edge fit across bands. Slow camera zooms and punches at the very
+start/end without enough temporal evidence can be omitted; candidates remain reviewable.
+Flash-hidden edits compare clean spatial structure across the white peak; bounded
+horizontal-detail troughs identify same-palette whips. Coherent cumulative chroma paths
+can identify long dissolves. Repeated foreground poses over a static outer plate are
+reported as tentative animated-cutout freezes, with `review: true`; a locked camera or
+looping action can be ambiguous. In-shot freeze boundaries split the draft into still
+segments. This does not recover the original alpha layers or bounce parameters.
+Decoded originals remain in source/. Effect-contaminated frames in shots/ are replaced
+with nearest clean-sample holds, then inferred effects are applied. These holds are a
+reviewable approximation, not recovered unseen motion. Replace source manifests with
+licensed clean footage for an actual remake. Natural motion, lighting and dissolves are
+ambiguous; low-confidence results require review. No AI/live-action classification,
+prompt inversion or vocal separation is offered.
+
+## Measurements and limitations
+
+See `wow/fx/benchmark.json`: Windows 10 build 19045, Intel64 Family 6 Model 158 Stepping 10,
+NumPy 2.5.4, OpenCV 5.0.0. Initial 1280×720 / 90-frame run: **3.27 fps**, 27.49 seconds,
+three effects (grade, halation, beat_bounce) with a 500ms crossfade over a 3-second timeline,
+excluding PNG saving and GIF/MP4 encoding. This misses the 10 fps target. Timings can vary
+under concurrent rendering. Full demo timings and decoded QA are in wow/fx/demo/README.md.
+The serial fix-round rerun in `wow/fx/benchmark-latest.json` is **3.276 fps / 27.470s**;
+the optional 10fps target remains unmet.
+The composer and this bounded renderer retain frames in memory; use short timelines.
+
+The automatic QA's --expect-cuts checks **hard image discontinuities**, so smooth effects
+and a still-to-animation continuation should use --timeline as editorial joins instead.
+Do not falsely label that a hard-cut detector passing a transition test. Exact beat peaks
+are separately measured from decoded MP4 luminance. The strict acceptance request that
+all transition centers pass --expect-cuts remains a known semantic mismatch.
+
+## Round 2: source clock and interpolation (experimental)
+
+Segment `speed` (including explicit 1), `ramp`, and interpolation other than `none`
+require experimental opt-in. Omit these fields for a stable round-one plan.
+
+`fx_render` accepts segment `speed: 0.5`, `speed: {"keyframes":[[0,1],[1000,0.25],[2000,1]]}`,
+or `speed: {"on":"beats","decay_ms":200,"min":0.5,"max":2}`. The output duration and
+beat cut do not change. Speed is integrated on a 1ms grid; keyframe times and envelope
+beats are absolute output milliseconds. Source time starts at in_ms. Explicit speed=1 and omitted speed are identical. With an implicit out-point, a
+shorter output cut trims the source at unity speed; explicit in_ms/out_ms retains
+the legacy duration-fit operation.
+Use `ramp: {"into_beat":8,"slow":0.3,"hit_ms":200}` instead of speed: from the segment
+start to 200ms before beat 8, source speed is .3; the remaining interval runs at 2x.
+The beat must lie inside or at the segment end. Ramp never changes the cut time.
+Sources that run out hold their final frame; `source_samples[].extended_last_frame`
+is true. `source_samples` records output_ms, segment_index, source_ms and actual
+interpolation. Frames are never cyclically wrapped by the time-remap layer.
+
+Top-level `interpolate` (or CLI `--interpolate`) accepts **none, blend, flow, rife**;
+default **none**. `VIDEO_GIF_INTERPOLATE` is also gated; the CLI override wins and applies
+to validation as well as rendering. Only fractional phases at speed <1 are interpolated. none holds the
+preceding frame; blend provides a cheap ghosting reference; flow uses bidirectional
+OpenCV DIS with coherent translation correction for aperture-ambiguous graphics.
+RIFE is optional CPU ONNX: `pip install -r requirements-fx-optional.txt`, then provide
+`rife_model` or VIDEO_GIF_RIFE_MODEL pointing to `.runtime/models/rife_v4.25_lite.onnx`.
+No automatic model downloads or silent fallback. RGB+RGB+t is float32 [1,7,H,W],
+edge-padded to multiples of 32, then cropped. Alpha uses premultiplied interpolation.
+Tests inject a fake engine via `interpolate(..., engine=...)`; no real weights are read.
+
+[Same source midpoint comparison](../wow/fx/demo2/interpolation-comparison.jpg):
+none repeats a source pose, blend doubles edges, flow estimates local motion, RIFE
+uses learned interpolation. Flow can distort occlusions; inspect every ramp rather
+than assuming smoother motion is correct. Recorded live 480x270 RIFE midpoint took
+665ms including session initialization. The actual paired timings are in
+[interpolation-timings.json](../wow/fx/demo2/interpolation-timings.json).
+
+## History and additional operations
+
+Declare `@effect(history=N)`. `ctx.history` contains at most N preceding output
+samples, **newest first**, before post effects (after source effects/transitions).
+`ctx.history_times_ms` is the parallel tuple of strictly earlier output timestamps.
+Inserted 10ms samples count as frames. The buffer resets at each segment boundary;
+missing history is omitted. No feedback or future samples. echo requests four frames.
+The renderer keeps a bounded 12-source-image cache and one flow pair; the existing
+exporter still retains the complete short output film in memory.
+
+## Experimental (pending quality gate)
+
+The catalog below gives defaults; every numeric parameter accepts the existing
+beat/keyframe/audio envelope syntax. `--list --experimental --json` provides types and descriptions.
+
+| Framework feature | Opt-in condition |
+|---|---|
+| speed / ramp | Any explicit segment time remapping, including speed=1 |
+| interpolate | blend, flow or rife; none is stable |
+
+| Effect | Parameters / defaults |
+|---|---|
+| shake | amount=1, distance=9px, seed=7; built-in 220ms beat decay, 2x on downbeats; reflected edge fill |
+| rgb_split | amount=1, distance=6px, direction=0 degrees; R +d / B -d, G and alpha unchanged |
+| radial_blur | amount=1, distance=.22 radius fraction, samples=12; radial zoom integration |
+| echo | amount=.65, decay=.55; lighten premultiplied historical trails, current image retained |
+| text | content='節奏 RHYTHM', font='', size=64px, color=FFF2CE, stroke=3px, stroke_color=142132, shadow_px=4 down/right, shadow_color=080F18, x=.5, y=.5, entrance=pop, amount=1, scale=1 |
+| film_grain | amount=.025 standard deviation, seed=17; zero mean monochrome noise per output frame |
+| vignette | amount=.55; center retained, radial corner darkening |
+| light_leak | amount=.4, seed=3; warm drifting edge exposure |
+| dust_scratches | amount=.5, seed=29, density=.02; sparse animated flecks and one fine line |
+| invert_flash / black_flash | amount=1; negative / dip to black, alpha unchanged |
+| split_screen | amount=1, panels=0 auto 1→2→4 on first three beats; explicit panels=1/2/4; whole frame resized into each cell |
+| mirror | amount=1, direction=horizontal or vertical; copy left/top half by reflection |
+| kaleidoscope | amount=1, sectors=6; polar wedge reflection |
+| posterize | amount=1, levels=4 per channel |
+| halftone | amount=1, size=8px; clustered monochrome screen |
+| multi_cutout | amount=1, distance=65px, border_px=6; three overlapping outline cards |
+| parallax | amount=1 camera progress, distance=18px, depth='', model=.runtime/models/depth-anything-v2-small.onnx, cache=wow/fx/demo2/work/depth |
+
+| Transition | Parameters / defaults |
+|---|---|
+| shape_wipe | shape=circle (diamond/star/heart), softness=0px; p is revealed area; shared masks module with hex_shutter |
+| luma_wipe | mask=linear (radial/cloud or grayscale PNG path), invert=false, softness=0, seed=7 |
+| push / slide | direction=left (right/up/down); both shots move / only incoming moves |
+| spin | turns=.25; reflected edge fill, exact endpoints |
+| zoom_through | scale=1.8; centered zoom through the cut |
+| glitch | seed=7, amount=1; animated row blocks and scanlines |
+
+Geometry respects sampling=nearest. Color blends, grain, halation and soft wipes
+intentionally create colors. Opaque camera moves extend reflected edges to avoid
+black wedges; transparent geometry uses premultiplied alpha and constant transparent
+borders. The renderer converts to float32 once per sampled source and quantizes once
+at output; public function calls still return the input dtype and preserve inputs.
+
+Text searches an explicit font path, VIDEO_GIF_FONT, Windows msjh.ttc (Microsoft
+JhengHei), macOS PingFang.ttc, then Linux NotoSansCJK-Regular.ttc. Missing fonts error
+before output creation with these suggestions. No fallback to Hershey or tofu fonts.
+The manifest records the resolved font path. Pop/scale entrance lasts 180ms from the
+effect's start; a restrained 10% beat scale follows. System font files are not bundled.
+
+## Small depth and 2.5D
+
+`parallax` accepts a retained 16-bit depth PNG (`depth`) or a Small ONNX model.
+Larger depth values mean nearer. RGB is resized to dimensions divisible by 14,
+ImageNet normalized, and passed as pixel_values [1,3,H,W]; predicted_depth is resized
+back. `depth_map(..., engine=...)` supports fake engines in offline tests.
+Derived maps are SHA256-keyed by image bytes and model path in the specified cache;
+changing pixels or the model path invalidates the cache. The layer renderer dilates
+the foreground mask and inpaints its background plate before moving the foreground
+5x farther than the background. Edge extension avoids holes. Two-layer depth is a
+stylization and can simplify thin fins/occlusions; inspect the result.
+
+Only **Depth Anything V2 Small (Apache-2.0)** is supported. Names containing base,
+large, vitb or vitl are rejected before loading because those variants are CC-BY-NC.
+Missing model/runtime errors suggest beat_bounce/zoom_punch. RIFE is MIT. See
+[THIRD_PARTY](../THIRD_PARTY.md). The demo retains only a Small-derived PNG and a
+RIFE midpoint with provenance; no ONNX weights or fonts are distributed. Live Small
+inference at 480x270 took **1.248s**, including session load, on this machine.
+
+## Round 2 performance measurements
+
+Windows 10, Intel64 Family 6 Model 158, NumPy 2.5.4, OpenCV 5.0.0. Serial median of 10 public float32 RGBA calls, 1280x720, including function boundary copies; model loading excluded. Reproduce: python wow/fx/benchmark_effects.py. CPU scheduling on the shared machine affects timings.
+
+| Operation | ms/frame |
+|---|---:|
+| flash_white | 27.191 |
+| grade | 5.39 |
+| halation | 66.96 |
+| beat_bounce | 10.584 |
+| zoom_punch | 10.189 |
+| cutout_card | 268.985 |
+| shake | 44.685 |
+| rgb_split | 54.155 |
+| radial_blur | 110.709 |
+| echo | 166.963 |
+| film_grain | 39.159 |
+| vignette | 41.044 |
+| light_leak | 75.107 |
+| dust_scratches | 42.522 |
+| invert_flash | 31.06 |
+| black_flash | 15.078 |
+| split_screen | 51.362 |
+| mirror | 10.923 |
+| kaleidoscope | 111.341 |
+| posterize | 41.918 |
+| halftone | 134.052 |
+| multi_cutout | 406.852 |
+| text | 127.128 |
+| parallax | 70.721 |
+| crossfade | 92.236 |
+| whip_pan | 121.042 |
+| hex_shutter | 64.327 |
+| flash_cut | 36.968 |
+| shape_wipe | 107.885 |
+| luma_wipe | 106.179 |
+| push | 92.828 |
+| slide | 91.265 |
+| spin | 52.291 |
+| zoom_through | 49.432 |
+| glitch | 102.674 |
+| flow | 300.839 |
+
+Slowest three new operations: radial_blur 787.113 → 110.709 ms, multi_cutout 558.225 → 406.852 ms, parallax 181.474 → 70.721 ms. Premultiply once, warp/accumulate with OpenCV, unpremultiply once. Original versus optimized float32 MAD: radial 1.78e-8, multi 0, parallax 7.00e-10. No resolution or sample-count reduction. Several effects remain above the 50ms target.
+
+python -m cProfile -o wow/fx/profile-after.prof wow/fx/benchmark.py: 90-frame render-loop baseline **3.343 fps / 26.918s**, optimized **10.119 fps / 8.894s**. This includes three effects and a 500ms transition; excludes PNG and video encoding. Renderer uses float32 through the effect chain, OpenCV grade/halation/geometry, and one output quantization. Opaque camera geometry now reflects edges (intentional quality improvement; transparent geometry retains coverage). Profiles and benchmark-before.json/benchmark-latest.json retain evidence.
+
+Preview validation: python wow/fx/check_preview.py generated the original plus all effect/transition tiles in **0.779s**. Every available effect tile passed MAD >=4/255 and >=2% pixels differing by >=16/255; the optional parallax tile explicitly reports unavailable without loading a model. Measured values: [preview-measurements.json](../wow/fx/preview-measurements.json). Procedural luma examples: [linear](../wow/fx/masks/linear.png), [radial](../wow/fx/masks/radial.png), [cloud](../wow/fx/masks/cloud.png).

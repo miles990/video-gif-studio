@@ -153,3 +153,7 @@ AI 會檢查並自行下載安裝缺少的 Python、必要套件、FFmpeg／ffpr
 ## 換角影片與原聲交付
 
 參閱[換角製作與驗收](references/character-video-edit.md)。`scripts/assemble_edit.py` 提供按幀組裝、缺幀拒絕、限定時間的原片區域還原，以及分離混流後的完整原聲雜湊驗證；生成的人物、動作與運鏡仍須人工逐段驗收。
+
+## Beat-synchronized post-production FX / ??????
+
+Explicitly requested effects use `python scripts/fx_render.py plan.json --out delivery --formats gif mp4`: six pure effects, four transitions, beat/onset/energy envelopes, a reusable local library, and reference breakdown drafts. Effects never replace physical motion. See [FX guide](references/fx.md), [demo and measurements](wow/fx/demo/README.md), and [build status](wow/fx/build-notes.md).
