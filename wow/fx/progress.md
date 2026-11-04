@@ -37,3 +37,4 @@
 - 23:10 使用者：「我要效果多 同時也效果好 不夠好的不要 然後是trunk based」→ process.md：每個效果過品質閘門（自動檢查＋兩位跨廠商評審取低分 ≥ 4 才 stable；3 分重做一次；不夠好就刪）；改 trunk-based（短命切片、experimental 旗標、過審即合回 main）。進行中的 fx-build3 不中斷，完成後依此流程拆切片合回。
 - 23:25 第三輪獨立答案卷 acceptance-3.md＋保留樣本 14 條（scratchpad/fx-holdout-3.md）完成。
 - 23:40 使用者 /wow「ai 導演…找到適合最好的做法」＋「做」→ 第四輪規格 spec-4.md（S-36～S-46＋S-展示4）：素材索引（量得到的品質用程式量）、處理方案＋分鏡表、效果文法 lint、風格包、選鏡對拍、9:16 重構圖、多版本＋盲評選片、評論修訂迴圈 ≤3、缺鏡處理、導演報告。調查依據：L-Storyboard、EditDuet、CineCut-Agent、agentic-video-editor、arXiv 2509.16811（只吸收概念）。獨立出題者寫 acceptance-4 中。順序：第二輪→第三輪→第四輪，各自切片合回 main。
+- 23:55 第四輪獨立答案卷 acceptance-4.md＋保留樣本 12 條完成。三位研究員（競品／開源與研究＋可吸收清單／懷疑論）調查中。
