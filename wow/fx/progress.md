@@ -49,3 +49,4 @@
 - 03:00 使用者 /wow「…並讓影片專業有品味」→ spec-7.md（S-80～S-89 品味系統）：吸收使用者 wow 詞彙檔（mood-pacing-arc §E M1–M16、喚起度代理曲線、mastery-signals、Murch Rule of Six）成 taste_report 量測、設計曲線對照、大師訊號 lint、剪輯文法 lint、風格 token、鏡頭配色一致、參考片校準、使用者品味校準。獨立出題者寫 acceptance-7 中。
 - 03:10 使用者：「還有分鏡 也能用的」→ spec-7 加 S-90～S-94：分鏡格式含鏡頭語言＋意圖配方、算繪前分鏡品味 lint（預測強度曲線、景別遞進、30°/180°、一鏡一運動、預算）、動態分鏡（無素材用剪影卡）、由分鏡產生成提示詞（含 coverage）。
 - 03:25 使用者 /wow「…規劃設計分鏡運鏡…專業有品味」→ spec-8.md（S-100～S-109）：虛擬攝影機模型（jerk 上限）、2.5D 運鏡算繪（推拉、dolly zoom、rack focus）、真實手持頻譜、運鏡語言庫＋cam_query、從參考片抽運鏡、跨鏡運鏡連貫 lint、分鏡本＋俯視機位圖、運鏡→生成控制引導片（接 motion_pack）、運鏡量測。acceptance-6 完成（含實測校準，保留樣本 11 條＋參考排序）；acceptance-7、-8 撰寫中。
+- 03:35 acceptance-7 完成（S-80～S-94，約 25 支已知答案合成片；保留樣本 12 條）。
