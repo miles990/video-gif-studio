@@ -6,6 +6,7 @@ import re
 import subprocess
 import tempfile
 
+import numpy as np
 from PIL import Image
 from media_runtime import executable
 
@@ -47,7 +48,7 @@ def settings(size, fps=30, platform=None, proxy=False):
         width, height = (max(2, round(v*factor/2)*2) for v in (width, height))
     left, top, right, bottom = preset.get('safe_zone', (0, 0, 0, 0))
     return dict(size=[width, height], fps=fps, platform=platform, proxy=proxy,
-                bitrate=preset.get('bitrate'), safe_zone={
+                bitrate=None if proxy else preset.get('bitrate'), safe_zone={
                     'x': math.ceil(width*left), 'y': math.ceil(height*top),
                     'right': math.floor(width*(1-right)), 'bottom': math.floor(height*(1-bottom)),
                     'text_inset_px': math.ceil(width*.02)},
@@ -81,7 +82,7 @@ def encode_frames(images, target, config, background='000000'):
     if (opaque or suffix == '.webm') and (width % 2 or height % 2):
         raise ValueError('4:2:0 video requires even dimensions')
     bg = tuple(int(background[k:k+2], 16) for k in (0, 2, 4)) + (255,)
-    opts = ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18']
+    opts = ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23' if config.get('proxy') else '18']
     if config.get('legacy_100fps'): opts=['-c:v','libx264','-crf','18']
     if suffix == '.webm':
         opts = ['-c:v', 'libvpx-vp9', '-lossless', '1', '-auto-alt-ref', '0']
@@ -92,7 +93,8 @@ def encode_frames(images, target, config, background='000000'):
         opts = ['-c:v', 'libx264', '-preset', 'veryfast', '-b:v', b, '-minrate', b,
                 '-maxrate', b, '-bufsize', b, '-x264-params', 'nal-hrd=cbr:force-cfr=1:filler=1']
     pix = 'yuv420p' if opaque else ('yuva420p' if suffix == '.webm' else 'yuva444p10le')
-    opts += ['-threads', '2', '-pix_fmt', pix]
+    if not config.get('legacy_100fps'): opts += ['-threads', '2']
+    opts += ['-pix_fmt', pix]
     conversion=[]
     if not config.get('legacy_100fps'):
         opts += ['-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-color_range', 'tv']
@@ -105,7 +107,8 @@ def encode_frames(images, target, config, background='000000'):
     try:
         with tempfile.TemporaryFile(dir=target.parent) as errors:
             proc = subprocess.Popen([executable('ffmpeg'), '-v', 'error', '-nostdin',
-                '-filter_threads', '1', '-f', 'rawvideo', '-pixel_format', 'rgba',
+                *([] if config.get('legacy_100fps') else ['-filter_threads', '1']),
+                '-f', 'rawvideo', '-pixel_format', 'rgba',
                 '-video_size', f'{width}x{height}', '-framerate', str(fps), '-i', 'pipe:0',
                 '-an', *conversion,
                 *opts, '-flush_packets', '1', str(partial)], stdin=subprocess.PIPE, stderr=errors)
@@ -147,13 +150,47 @@ def encode_frames(images, target, config, background='000000'):
     return report
 
 
+def duck_envelope(args, speech_filter, root, seconds):
+    """Detect presence in 10 ms RMS windows; automate a fixed -10 dB bed.
+
+    Detection is relative to the speech track (26 dB below its loudest window).
+    Short syllable gaps are bridged; attack/release do not depend on level.
+    Only one PCM window is held in memory while analysing the temporary file.
+    """
+    pcm = root/'speech.f32'
+    run([*args, '-filter_complex', speech_filter+'[detect]', '-map', '[detect]',
+         '-ac', '1', '-ar', '48000', '-f', 'f32le', str(pcm)])
+    levels = []
+    with pcm.open('rb') as stream:
+        while raw := stream.read(480*4):
+            x = np.frombuffer(raw, dtype='<f4')
+            levels.append(float(np.sqrt(np.mean(x*x))))
+    threshold = max(max(levels, default=0)*.05, 1e-7)
+    active = np.flatnonzero(np.asarray(levels) > threshold)
+    intervals = []
+    for k in active:
+        start, end = int(k)*.01, min(seconds, (int(k)+1)*.01)
+        if intervals and start-intervals[-1][1] <= .15+1e-8:
+            intervals[-1][1] = end
+        else:
+            intervals.append([start, end])
+    # dB-linear attack (50 ms) and recovery (500 ms). max combines overlaps.
+    envelope = '0'
+    for start, end in intervals:
+        pulse = f'max(0,min(min((t-{start:.6f})/0.05,1),({end+.5:.6f}-t)/0.5))'
+        envelope = f'max({envelope},{pulse})'
+    return f"volume='pow(10,-0.5*({envelope}))':eval=frame", dict(
+        depth_db=10, attack_ms=50, release_ms=500, presence_intervals=intervals,
+        threshold_rms=threshold, detection='10 ms RMS, relative threshold, 150 ms gap bridge')
+
+
 def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, normalize=True):
     """Mix a timeline-aligned source track and music; normalize then gate encoded audio."""
     movie = Path(movie); seconds = duration_ms/1000
     if not music and not source: return {'audio': False}
     with tempfile.TemporaryDirectory(dir=movie.parent) as folder:
         root = Path(folder); mixed = root/'mixed.wav'
-        args = ['-v', 'error']; graph = []; labels = []
+        args = ['-v', 'error']; graph = []; labels = []; duck_report = None
         for index, (kind, spec) in enumerate(([("speech", source)] if source else []) + ([("music", music)] if music else [])):
             args += ['-i', str(spec['file'])]
             filt = (f'[{index}:a:0]atrim=start={spec.get("in_ms",0)/1000},asetpts=PTS-STARTPTS,'
@@ -164,22 +201,20 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
             graph.append(filt+f'[{kind}]'); labels.append(kind)
         if len(labels) == 2:
             if duck:
-                graph += ['[speech]asplit[speechout][control]',
-                          '[music][control]sidechaincompress=threshold=0.04:ratio=6:attack=15:release=600:makeup=1[bed]',
-                          '[speechout][bed]amix=inputs=2:normalize=0[out]']
+                automation, duck_report = duck_envelope(args, graph[0].removesuffix('[speech]'), root, seconds)
+                graph += ['[music]'+automation+'[bed]',
+                          '[speech][bed]amix=inputs=2:normalize=0[out]']
             else: graph += ['[speech][music]amix=inputs=2:normalize=0[out]']
         else: graph += [f'[{labels[0]}]anull[out]']
         run([*args, '-filter_complex', ';'.join(graph), '-map', '[out]', '-c:a', 'pcm_f32le', str(mixed)])
-        measured = None; filt = 'anull'
+        measured = None; filt = 'anull'; second = None
         if normalize:
             log = run(['-i', str(mixed), '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-'])
             measured = json.loads(log[log.rfind('{'):log.rfind('}')+1])
-            if not math.isfinite(float(measured['input_i'])):
-                raise ValueError('Audio is silent; omit the track for silent delivery')
-            filt = ('loudnorm=I=-14:TP=-1.5:LRA=11:linear=true:print_format=json:' +
-                    ':'.join(f'{key}={measured[value]}' for key,value in (
-                        ('measured_I','input_i'),('measured_TP','input_tp'),('measured_LRA','input_lra'),
-                        ('measured_thresh','input_thresh'),('offset','target_offset'))))
+            gain = min(-14-float(measured['input_i']), -1.5-float(measured['input_tp']))
+            if not math.isfinite(gain): gain = 0  # Intentionally silent track.
+            filt = f'volume={gain}dB'
+            second = dict(normalization_type='linear', gain_db=gain)
         candidate = root/movie.name
         log = run(['-i', str(movie), '-i', str(mixed), '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy',
              '-af', filt, '-c:a', 'libopus' if movie.suffix=='.webm' else 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2',
@@ -189,7 +224,7 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
         if any(c['level']=='FAIL' for c in checks):
             raise RuntimeError('Audio delivery QA failed: '+json.dumps(checks))
         candidate.replace(movie)
-        second = json.loads(log[log.rfind('{'):log.rfind('}')+1]) if normalize else None
     return dict(audio=True, source=source, music=music, duck=bool(duck and source and music),
+                ducking=duck_report,
                 first_pass=measured, second_pass=second, linear_requested=normalize,
-                normalization_note='FFmpeg falls back to dynamic when linear gain cannot meet TP/LRA', checks=checks)
+                normalization_note='Measured integrated loudness and true peak; constant gain only, no dynamic fallback', checks=checks)

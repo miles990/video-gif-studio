@@ -39,11 +39,30 @@ def intake(source, out, fps=30):
     info=probe(source); video=next((s for s in info['streams'] if s['codec_type']=='video'),None)
     if video is None: raise ValueError('Input contains no video stream')
     stamps=timestamps(source); differences=np.diff(stamps)
+    if not stamps: raise ValueError('Input contains no decodable video frames')
+    audio=next((s for s in info['streams'] if s['codec_type']=='audio'),None)
+    origin=min(stamps[0],float(audio.get('start_time',stamps[0]))) if audio else stamps[0]
+    positive=differences[differences>0]
+    step=float(np.median(positive)) if len(positive) else 1/fps
+    end=stamps[-1]+step
+    if audio:
+        audio_end=(float(audio.get('start_time',origin))+float(audio['duration']) if 'duration' in audio
+                   else float(info['format']['duration']))
+        end=max(end,audio_end)
+    duration=max(1,round((end-origin)*fps))/fps
     vfr=bool(len(differences)>1 and np.ptp(differences)>.0011)
     rotation=next((s['rotation'] for s in video.get('side_data_list',[]) if 'rotation' in s),0)
     hdr=video.get('color_transfer') in ('smpte2084','arib-std-b67')
-    actions=['apply display matrix once with FFmpeg autorotate',f'fps={fps}: nearest timestamp drop/duplicate', 'preserve audio timeline']
-    filters=[]
+    actions=['apply display matrix once with FFmpeg autorotate',f'shift both streams by {-origin:.6f} seconds',
+             'discard duplicate/backward video timestamps',f'fps={fps}: hold frames across timestamp gaps',
+             'pad start/end to common duration without changing relative A/V timing']
+    displayed=(video['height'],video['width']) if abs(rotation)%180==90 else (video['width'],video['height'])
+    padded=[v+v%2 for v in displayed]
+    dimensions=dict(displayed=list(displayed),encoded=padded,pad_right_px=displayed[0]%2,
+                    pad_bottom_px=displayed[1]%2,rule='pad right/bottom by one black pixel when odd, after rotation')
+    if list(displayed)!=padded: actions.append(dimensions['rule'])
+    filters=[f'setpts=PTS-{origin:.9f}/TB',"select='isnan(prev_selected_t)+gt(t,prev_selected_t)'",
+             'pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0:black']
     if hdr:
         available=run(['-filters'])
         if 'zscale' not in available:
@@ -55,22 +74,24 @@ def intake(source, out, fps=30):
         actions.append('HDR to SDR: linearize, BT.2020 to BT.709, mobius tonemap, BT.709 transfer')
     else:
         filters += ['scale=out_color_matrix=bt709:out_range=limited', 'format=yuv420p']
-    duration=round(float(info['format']['duration'])*fps)/fps
-    filters += ['tpad=stop_mode=clone:stop_duration=1',f'fps={fps}:round=near',f'trim=duration={duration}', 'setsar=1', 'setparams=range=limited:color_primaries=bt709:color_trc=bt709:colorspace=bt709']
+    filters += [f'tpad=stop_mode=clone:stop_duration={duration}',f'fps={fps}:round=near:start_time=0',f'trim=duration={duration}', 'setsar=1', 'setparams=range=limited:color_primaries=bt709:color_trc=bt709:colorspace=bt709']
     out.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(dir=out.parent) as temp:
         root=Path(temp)/'intake';root.mkdir(); movie=root/'source.mp4'
-        run(['-v','error','-filter_threads','1','-i',str(source),'-map','0:v:0','-map','0:a:0?',
+        run(['-v','error','-filter_threads','1','-copyts','-i',str(source),'-map','0:v:0','-map','0:a:0?',
              '-vf',','.join(filters),'-c:v','libx264','-preset','veryfast','-crf','16','-threads','2',
              '-pix_fmt','yuv420p','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709',
              '-color_range','tv','-metadata:s:v:0','rotate=0','-c:a','aac','-b:a','256k','-ar','48000','-ac','2',
-             '-af','aresample=48000:async=1:first_pts=0','-t',str(duration),'-movflags','+faststart',str(movie)])
+             '-af',f'asetpts=PTS-{origin:.9f}/TB,aresample=48000:async=1:first_pts=0,apad,atrim=duration={duration}',
+             '-t',str(duration),'-movflags','+faststart',str(movie)])
         sync=sync_check(movie,fps)
         if sync.get('applicable') and not sync['passed']:
             raise RuntimeError('Intake A/V timestamp check failed: '+json.dumps(sync))
         report=dict(source=str(source),fps_mode='vfr' if vfr else 'cfr',rotation=rotation,
                     color={k:video.get(k) for k in ('color_primaries','color_transfer','color_space')},
-                    actions=actions,output_fps=fps,output=probe(movie),av_sync=sync)
+                    actions=actions,output_fps=fps,output=probe(movie),av_sync=sync,dimensions=dimensions,
+                    timestamp_origin_seconds=origin,duplicate_or_backward_pts=int(np.sum(differences<=0)),
+                    timestamp_gaps=int(np.sum(differences>step*1.5)))
         (root/'intake.json').write_text(json.dumps(report,indent=2));root.rename(out)
     return report
 
@@ -81,7 +102,10 @@ def main():
     a=ap.parse_args()
     try: intake(a.source,a.out,a.fps)
     except (ValueError,RuntimeError,OSError,subprocess.SubprocessError) as exc:
-        print('intake: '+str(exc),file=sys.stderr);return 2
+        detail=' '.join(str(exc).split())
+        if isinstance(exc,RuntimeError) and len(detail)>300:
+            detail='FFmpeg could not normalize this clip; check that its streams are decodable. '+detail[-200:]
+        print('intake: '+detail,file=sys.stderr);return 2
     return 0
 
 

@@ -5,6 +5,21 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from delivery import run
 
 
+def phone_timestamp_defects(root):
+    """Common 700 ms offset, 400 ms video gap, and one exact duplicate PTS.
+
+    Flash at source 1/3 s maps to output 1/3.4 s; clicks use those same times.
+    FFV1/Matroska retains duplicate timestamps for the decoder to resolve.
+    """
+    target=Path(root)/'timestamp-defects.mkv'
+    video="color=c=gray:s=192x108:r=30:d=5,drawbox=x=0:y=0:w=192:h=75:color=white:t=fill:enable='eq(n,30)+eq(n,90)'"
+    video+=",setpts='(N-eq(N,31))/30/TB+0.7/TB+gte(N,60)*0.4/TB'"
+    audio="aevalsrc=0.25*sin(2*PI*1000*t)*(between(t\\,1\\,1.01)+between(t\\,3.4\\,3.41)):s=48000:d=5.4,asetpts=PTS+0.7/TB"
+    run(['-v','error','-copyts','-filter_threads','1','-f','lavfi','-i',video,'-f','lavfi','-i',audio,
+         '-fps_mode','passthrough','-c:v','ffv1','-threads','2','-c:a','pcm_s16le',str(target)])
+    return target
+
+
 def phone_clip(root, kind, rotation=90, seconds=2):
     if kind=='hdr': return phone_chart(root,seconds)
     root=Path(root); target=root/(kind+str(rotation)+'.mp4')

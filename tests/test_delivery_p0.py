@@ -15,7 +15,7 @@ from delivery import settings, quantize, rate, encode_frames, probe, audio_deliv
 from media_runtime import locate, executable
 from fx_render import render
 from intake import intake, timestamps
-from phone_fixtures import phone_clip, phone_chart, phone_markers
+from phone_fixtures import phone_clip, phone_chart, phone_markers, phone_timestamp_defects
 
 
 def decode(path, fmt='rgb24', limit=None):
@@ -116,13 +116,21 @@ class DeliveryTests(unittest.TestCase):
         print('P0_COLOR '+json.dumps({'max_channel_error':int(np.abs(decoded[16,16::32].astype(int)-colors).max())}),flush=True)
 
     def test_two_pass_audio_ducking_and_gate(self):
+        self.check_audio_ducking(1)
+
+    def test_quieter_speech_fixed_ducking(self):
+        self.check_audio_ducking(.1)
+
+    def check_audio_ducking(self, speech_gain):
         n=48000*20;t=np.arange(n)/48000
         white=np.random.default_rng(4).normal(0,1,n)
         frequencies=np.fft.rfftfreq(n,1/48000)
         spectrum=np.fft.rfft(white);spectrum[(frequencies<300)|(frequencies>3400)]=0
         band=np.fft.irfft(spectrum,n)
-        speech=.3*band*(.6+.4*np.sin(2*np.pi*4*t))*(((t>=4)&(t<8))|((t>=12)&(t<16)))
+        speech=speech_gain*.3*band*(.6+.4*np.sin(2*np.pi*4*t))*(((t>=4)&(t<8))|((t>=12)&(t<16)))
         music=.25*np.sin(2*np.pi*110*t)+.05*np.sin(2*np.pi*6000*t)
+        phase=t % .5
+        music+=.15*np.sin(2*np.pi*60*phase)*np.exp(-phase*35)  # 120 BPM kick.
         wav(self.root/'speech.wav',speech);wav(self.root/'music.wav',music)
         movie=self.root/'audio.mp4';encode_frames((Image.new('RGBA',(32,32),'gray') for _ in range(600)),movie,settings((32,32)))
         report=audio_delivery(movie,20000,{'file':str(self.root/'music.wav')},{'file':str(self.root/'speech.wav')},True)
@@ -135,7 +143,8 @@ class DeliveryTests(unittest.TestCase):
             x=pcm[int(a*48000):int(b*48000)];tt=np.arange(len(x))/48000
             return 20*np.log10(abs(np.mean(x*np.exp(-2j*np.pi*110*tt))))
         depth=level(1,3)-level(4.5,7.5)
-        self.assertGreater(depth,6);self.assertLess(depth,15)
+        self.assertAlmostEqual(depth,10,delta=2)
+        self.assertEqual(report['second_pass']['normalization_type'],'linear')
         baseline=np.mean([level(a,a+.05) for a in np.arange(1,3,.05)])
         attack=next(a-4 for a in np.arange(4,4.5,.05) if baseline-level(a,a+.05)>=depth*.9)
         release=next(a-8 for a in np.arange(8,9.5,.05) if baseline-level(a,a+.05)<=1)
@@ -143,7 +152,7 @@ class DeliveryTests(unittest.TestCase):
         self.assertLessEqual(attack,.15+.00001)
         self.assertGreaterEqual(release,.2-.00001);self.assertLessEqual(release,1)
         self.assertLessEqual(deviation,1)
-        print('P0_AUDIO '+json.dumps(dict(lufs=values['loudness']['lufs'],true_peak_dbtp=values['true_peak']['dbtp'],
+        print('P0_AUDIO '+json.dumps(dict(speech_gain=speech_gain,lufs=values['loudness']['lufs'],true_peak_dbtp=values['true_peak']['dbtp'],
             duck_db=depth,attack_ms=attack*1000,release_ms=release*1000,non_speech_std_db=deviation)),flush=True)
         hot=self.root/'hot.mp4'
         run(['-v','error','-i',str(movie),'-af','volume=15dB','-c:v','copy',str(hot)])
@@ -163,6 +172,60 @@ class DeliveryTests(unittest.TestCase):
                 self.assertEqual(abs(report['rotation']),90)
                 self.assertFalse(any(s.get('rotation') for s in stream.get('side_data_list',[])))
             if kind=='hdr':self.assertIn('mobius',' '.join(report['actions']))
+
+    def test_phone_timestamp_offset_gap_duplicate_and_sync(self):
+        source=phone_timestamp_defects(self.root)
+        original=timestamps(source)
+        self.assertAlmostEqual(original[0],.7,places=3)
+        self.assertTrue(np.any(np.diff(original)==0))
+        self.assertGreater(np.max(np.diff(original)),.4)
+        out=self.root/'repaired';report=intake(source,out)
+        pts=timestamps(out/'source.mp4')
+        self.assertAlmostEqual(pts[0],0)
+        self.assertTrue(np.all(np.abs(np.diff(pts)-1/30)<.0011))
+        self.assertTrue(report['av_sync']['passed'])
+        self.assertEqual(report['duplicate_or_backward_pts'],1)
+        rgb=np.frombuffer(decode(out/'source.mp4'),np.uint8).reshape(-1,108,192,3)
+        flashes=np.flatnonzero(rgb[:,:75].mean((1,2,3))>220)/30
+        pcm=np.frombuffer(subprocess.check_output([executable('ffmpeg'),'-v','error','-i',str(out/'source.mp4'),
+            '-vn','-ac','1','-ar','48000','-f','f32le','-']),np.float32)
+        skews=[]
+        for at in (1,3.4):
+            flash=flashes[np.argmin(abs(flashes-at))]
+            start=round((at-.05)*48000)
+            click=(start+np.flatnonzero(abs(pcm[start:start+4800])>.1)[0])/48000
+            skews.append(abs(flash-click)*1000)
+        self.assertLessEqual(max(skews),1000/30)
+        self.assertEqual(len(pts),162)
+        print('P0_TIMESTAMP '+json.dumps(dict(frames=len(pts),max_marker_skew_ms=max(skews),**report['av_sync'])),flush=True)
+
+    def test_true_odd_phone_dimensions_after_rotation(self):
+        base=self.root/'odd.mp4';source=self.root/'odd-rotated.mp4'
+        run(['-v','error','-filter_threads','1','-f','lavfi','-i','testsrc=size=1917x1077:rate=30:duration=0.4',
+             '-c:v','libx264','-threads','2','-pix_fmt','yuv444p',str(base)])
+        self.assertEqual([probe(base)['streams'][0][k] for k in ('width','height')],[1917,1077])
+        run(['-v','error','-display_rotation:v:0','270','-i',str(base),'-c','copy',str(source)])
+        out=self.root/'odd-intake';report=intake(source,out)
+        stream=probe(out/'source.mp4')['streams'][0]
+        self.assertEqual((stream['width'],stream['height']),(1078,1918))
+        self.assertEqual(report['dimensions']['displayed'],[1077,1917])
+        self.assertEqual(report['dimensions']['pad_right_px'],1)
+        self.assertEqual(report['dimensions']['pad_bottom_px'],1)
+        self.assertFalse(any(s.get('rotation') for s in stream.get('side_data_list',[])))
+        print('P0_ODD_DIMENSIONS '+json.dumps(report['dimensions']),flush=True)
+
+    def test_intake_failure_is_one_readable_line(self):
+        import contextlib
+        import io
+        import intake as module
+        errors=io.StringIO()
+        with patch.object(sys,'argv',['intake',str(self.root/'missing.mp4'),'--out',str(self.root/'bad')]), contextlib.redirect_stderr(errors):
+            code=module.main()
+        self.assertEqual(code,2)
+        self.assertEqual(len(errors.getvalue().splitlines()),1)
+        self.assertIn('intake:',errors.getvalue())
+        self.assertNotIn('Traceback',errors.getvalue())
+        self.assertFalse((self.root/'bad').exists())
 
     def test_proxy_event_identity_and_model_bypass(self):
         p=self.plan([dict(name='flash_white',start_ms=517,end_ms=800)],1000,(960,540),interpolate='rife',experimental=True)
@@ -209,11 +272,22 @@ class DeliveryTests(unittest.TestCase):
         blue=np.flatnonzero(rgb[:,16,16,2]>200)[0]
         self.assertEqual(blue,16);self.assertEqual(result['events'][1]['frame'],blue)
 
-    def test_raster_budget_fails_before_allocating_film(self):
-        p=self.plan([{'name':'flash_white'}],30000,(1024,1024))
-        with self.assertRaisesRegex(ValueError,'512 MiB'):
-            render(p,self.root/'huge',('apng',))
-        self.assertFalse((self.root/'huge').exists())
+    def test_legacy_png_gif_above_512_mib(self):
+        # 65 portrait exposures occupy 514.16 MiB as decoded RGBA.
+        frames=self.root/'input/frames';frames.mkdir(parents=True)
+        for i in range(65):
+            Image.new('RGBA',(1080,1920),(i*3,90,150,255)).save(frames/f'{i:05d}.png')
+        (frames.parent/'manifest.json').write_text(json.dumps({'durations_ms':[40]*65}))
+        for effects in ([],[{'name':'grade','sat':.7}]):
+            p=self.root/'large.json'
+            p.write_text(json.dumps(dict(segments=[dict(type='animation',manifest='input/manifest.json')],effects=effects,fps=25)))
+            out=self.root/('large-fx' if effects else 'large-plain')
+            render(p,out,('png','gif'))
+            self.assertEqual(len(list((out/'frames').glob('*.png'))),65)
+            with Image.open(out/'animation.gif') as gif:
+                self.assertEqual(gif.size,(1080,1920))
+                self.assertEqual(gif.n_frames,65)
+        print('P0_RASTER '+json.dumps(dict(frames=65,decoded_mib=65*1080*1920*4/1024**2,paths=2)),flush=True)
 
     def test_stream_pixels_equal_disk_frame_reference(self):
         (self.root/'beats.json').write_text(json.dumps({'beats_ms':[0,500]}))

@@ -305,8 +305,6 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
             for file,duration in zip(sorted((manifest.parent/'frames').glob('*.png')),data['durations_ms']):
                 origins[str(file.resolve())]=clock;clock+=duration
     if not streaming and not effects and not transitions and not any('end_downbeat' in s or 'ramp' in s or s.get('speed',1)!=1 for s in plan['segments']):
-        if len(items)*ctx.width*ctx.height*4>512*1024**2:
-            raise ValueError('Raster animation exceeds 512 MiB decoded-frame budget; use video or a shorter/smaller preview')
         if ctx.source_trimmed or any('speed' in s for s in plan['segments']) or _silent_derivative:
             # Explicit unity shares the exact legacy frame/exposure path.
             images=[]
@@ -350,8 +348,6 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
         for tr in transitions:
             delta=quantize(tr['cut_ms'],fps)['quantized_ms']-tr['cut_ms']
             for key in ('start_ms','end_ms','cut_ms'):tr[key]+=delta
-    if not streaming and (len(sample_edges)-1)*ctx.width*ctx.height*4>512*1024**2:
-        raise ValueError('Raster animation exceeds 512 MiB decoded-frame budget; use video or a shorter/smaller preview')
     cache = {}
     remaps={}; source_records=[]; flow_cache={}
     from fx.timewarp import source_clock, interpolate, flow_pair
