@@ -44,3 +44,4 @@
 - 01:35 審查三：第一輪可合回 main（附條件：分支帶著第二輪程式）；第二輪未達成（保留題 6 條不過、demo2 不像卡點混剪、light_leak 等多個效果預設廉價）。決定：先做「功能旗標＋fx_reverse 誤報」切片 → 合回 main＋push；再做第二輪修正與逐效果品質閘門。
 - 01:00(11-05) 功能旗標＋fx_reverse 切片完成（繞過被 oab 任務占滿的佇列，使用者同意）：第二輪功能全部 experimental；neon 誤報縮放 17→0；閃白 740/2200 偵測到；協調者複驗 211 tests／2 既有環境錯誤／0 新失敗。合回 main。
 - 01:20 第一輪＋功能旗標合回 main（ea2e790）並 push：合回前 doctor 通過、安裝目錄以合成計畫實跑 fx_render（GIF＋MP4，QC 通過）。開短命分支 p0-delivery 做 P0 交付層。
+- 02:15 P0 交付層（Codex p0-delivery2，44 分）完成：串流峰值 500 MB、30fps CFR、5 個平台預設、−14 LUFS／ducking 9.9 dB、手機進件、proxy 29%；234 tests／0 failures。清掉建造者留在 repo 根的 8 個暫存腳本。commit cb3f2d5 推到 origin/p0-delivery。獨立審查 P0 進行中（含 holdout-5 的 P0 項）。注意：720p 7.25 fps vs 先前 10.12，待審查判斷是否退步。
