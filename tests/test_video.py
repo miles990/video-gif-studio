@@ -25,10 +25,10 @@ class VideoTests(unittest.TestCase):
             (p/'manifest.json').write_text(json.dumps({'durations_ms':[30,70]}))
             for ext in ['mov','webm','mp4']:
                 with self.subTest(ext=ext):
-                    r=video.export(p/'frames',p/'manifest.json',p/f'out.{ext}')
+                    r=video.export(p/'frames',p/'manifest.json',p/f'out.{ext}',fps=100)
                     self.assertEqual(r['encoded_frames'],10)
                     self.assertEqual(r['transparent'], ext != 'mp4')
                     if ext == 'mp4': self.assertEqual(r['background'], '000000')
                     self.assertLessEqual(r['alpha_max_error_255'],2)
                     self.assertAlmostEqual(r['container_duration_ms'],100,delta=10.01)
-                    with self.assertRaises(FileExistsError):video.export(p/'frames',p/'manifest.json',p/f'out.{ext}')
+                    with self.assertRaises(FileExistsError):video.export(p/'frames',p/'manifest.json',p/f'out.{ext}',fps=100)

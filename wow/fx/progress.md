@@ -43,3 +43,4 @@
 - 01:05 第二輪建造（fx-build3）完成：A1–A8 與 S-15～S-24 皆標完成；198 tests／0 failures；720p 3.34→10.12 fps；demo2 20.5 s QA PASS。示範 MP4 6.4 MB 以 --allow-large 提交（交付示範，L11 要求在交付物內）。
 - 01:35 審查三：第一輪可合回 main（附條件：分支帶著第二輪程式）；第二輪未達成（保留題 6 條不過、demo2 不像卡點混剪、light_leak 等多個效果預設廉價）。決定：先做「功能旗標＋fx_reverse 誤報」切片 → 合回 main＋push；再做第二輪修正與逐效果品質閘門。
 - 01:00(11-05) 功能旗標＋fx_reverse 切片完成（繞過被 oab 任務占滿的佇列，使用者同意）：第二輪功能全部 experimental；neon 誤報縮放 17→0；閃白 740/2200 偵測到；協調者複驗 211 tests／2 既有環境錯誤／0 新失敗。合回 main。
+- 01:20 第一輪＋功能旗標合回 main（ea2e790）並 push：合回前 doctor 通過、安裝目錄以合成計畫實跑 fx_render（GIF＋MP4，QC 通過）。開短命分支 p0-delivery 做 P0 交付層。

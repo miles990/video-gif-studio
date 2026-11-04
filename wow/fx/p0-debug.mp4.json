@@ -1,0 +1,24 @@
+{
+  "size": [
+    360,
+    360
+  ],
+  "fps": 30,
+  "platform": "square",
+  "proxy": true,
+  "bitrate": "8M",
+  "safe_zone": {
+    "x": 18,
+    "y": 36,
+    "right": 342,
+    "bottom": 324,
+    "text_inset_px": 8
+  },
+  "color": "BT.709 limited",
+  "background": "ffffff",
+  "encoded_frames": 3,
+  "transparent": false,
+  "container_duration_ms": 100.0,
+  "audio": false,
+  "streaming": true
+}

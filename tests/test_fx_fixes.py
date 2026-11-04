@@ -31,14 +31,20 @@ class FixTests(unittest.TestCase):
                       'effects':[{'name':'flash_white','amount':{'on':channel,'decay_ms':140}}]}
                 (p/'p.json').write_text(json.dumps(plan))
                 # Pixel rendering is real; this offline test mocks only the exporter.
-                with patch('fx_render.export_timeline') as export:
-                    render(p/'p.json',p/f'out{offset}',('mp4',))
-                args=export.call_args.args;images,times=args[7:9];edges=np.cumsum([0]+times)
+                captured=[]
+                def stream(images,target,config,background):
+                    captured.extend(images)
+                    return {'container_duration_ms':len(captured)*1000/config['fps'],'encoded_frames':len(captured)}
+                # Intercept the streaming encoder, not the old whole-film exporter.
+                with patch('delivery.encode_frames',side_effect=stream), patch('music_sync.mux_music',return_value={}):
+                    render(p/'p.json',p/f'out{channel}{offset}',('mp4',))
+                images=captured;times=[1000/30]*len(images);edges=np.arange(len(images)+1)*1000/30
                 if offset==0:self.assertGreaterEqual(np.array(images[0])[:,:,:3].mean(),250)
                 peaks=[]
                 for beat in range(1,8):
                     at=beat*500-offset
-                    ids=[i for i,t in enumerate(edges[:-1]) if at<=t<=at+30]
+                    # CFR events may round earlier by half a frame.
+                    ids=[i for i,t in enumerate(edges[:-1]) if abs(t-at)<=1000/60+1e-6]
                     peaks.append(max(np.array(images[i])[:,:,:3].mean() for i in ids))
                 self.assertGreater(min(peaks),80)
                 self.assertGreater(min(peaks[1::2])-max(peaks[::2]),30)

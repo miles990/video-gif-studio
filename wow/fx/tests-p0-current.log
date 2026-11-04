@@ -1,0 +1,38 @@
+﻿python.exe : test_cfr_each_rate_and_container (test_delivery_p0.DeliveryTests.test_cfr_each_rate_and_container) ... ok
+At line:2 char:152
++ ... TECODE='1'; & C:\Users\User\.codex\skills\video-gif-studio\.venv\Scri ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_cfr_each_r...ntainer) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+test_odd_beat_pixels_and_manifest (test_delivery_p0.DeliveryTests.test_odd_beat_pixels_and_manifest) ... ok
+test_phone_vfr_rotation_hdr (test_delivery_p0.DeliveryTests.test_phone_vfr_rotation_hdr) ... FAIL
+test_platform_color_alpha_and_metadata (test_delivery_p0.DeliveryTests.test_platform_color_alpha_and_metadata) ... ok
+test_proxy_event_identity_and_model_bypass (test_delivery_p0.DeliveryTests.test_proxy_event_identity_and_model_bypass) 
+... ok
+test_stream_abort_reaps_encoder_and_does_not_publish (test_delivery_p0.DeliveryTests.test_stream_abort_reaps_encoder_an
+d_does_not_publish) ... ok
+test_two_pass_audio_ducking_and_gate (test_delivery_p0.DeliveryTests.test_two_pass_audio_ducking_and_gate) ... ok
+test_proxy_geometry_and_safe_zone (test_delivery_p0.TimingTests.test_proxy_geometry_and_safe_zone) ... ok
+test_quantization_half_up_and_valid_rates (test_delivery_p0.TimingTests.test_quantization_half_up_and_valid_rates) ... 
+ok
+
+======================================================================
+FAIL: test_phone_vfr_rotation_hdr (test_delivery_p0.DeliveryTests.test_phone_vfr_rotation_hdr)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_delivery_p0.py", line 137, in test_phone_vfr_rotation_hdr
+    self.assertEqual((stream['width'],stream['height']),(108,192))
+AssertionError: Tuples differ: (192, 108) != (108, 192)
+
+First differing element 0:
+192
+108
+
+- (192, 108)
++ (108, 192)
+
+----------------------------------------------------------------------
+Ran 9 tests in 7.084s
+
+FAILED (failures=1)

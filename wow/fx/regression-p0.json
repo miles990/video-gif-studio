@@ -1,0 +1,41 @@
+{
+  "base_commit": "ea2e790859b2cc98fd732256c44274eb0ee4cdb2",
+  "plans": [
+    {
+      "name": "P-plain",
+      "frames": 50,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "legacy_mp4_psnr_db": "identical"
+    },
+    {
+      "name": "P-base",
+      "frames": 52,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "legacy_mp4_psnr_db": "identical"
+    },
+    {
+      "name": "P-ramp",
+      "frames": 50,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "legacy_mp4_psnr_db": "identical"
+    },
+    {
+      "name": "demo2",
+      "frames": 518,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "note": "Silent visual derivative; soundtrack removed for both raster runs; no visual edits"
+    }
+  ],
+  "unavailable_plans": [
+    "demo3",
+    "demo4"
+  ]
+}

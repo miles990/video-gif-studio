@@ -40,7 +40,7 @@ Automatic analysis uses 10ms RMS-onset periodicity over 60–200 BPM. It reports
   --formats mp4 --background 000000
 ```
 
-All paths resolve from the plan. Prepared animations have `manifest.json` and sibling RGBA `frames/` from the existing GIF pipeline. Convert an existing source video with `gif_pipeline.py` first; the composer does not directly ingest arbitrary video files or retain their embedded audio.
+All paths resolve from the plan. Prepared animations have `manifest.json` and sibling RGBA `frames/` from the existing GIF pipeline. Conform phone footage with `intake.py`, then prepare frames with `gif_pipeline.py`; the visual composer reads prepared frames. To retain embedded sound, explicitly provide the aligned video/audio as `source_audio` and enable `keep_audio` (below).
 
 Editing operations:
 
@@ -56,7 +56,54 @@ Use a cut only where editorially appropriate; do not cut on every beat by defaul
 
 A `music` entry requires at least one MOV/WebM/MP4 output; GIF, APNG and sprites cannot carry audio. Additional silent previews can be requested alongside a video. The soundtrack starts at `in_ms` in the source, maps to output time zero, is gain-adjusted and trimmed to the visual duration. Short music is padded with silence, never silently looped or stretched. The configured fades apply only at the overall start/end; continuous music is not cut/faded at every visual edit.
 
-The mux step stream-copies the verified video, adding PCM in MOV, Opus in WebM or AAC in MP4. It verifies stream presence, total duration (within 100ms codec tolerance), and actual decoded audio duration. Reports record source hash, offset, gain and fades. These checks do not replace listening for clipped gain, correct accents or aesthetic timing. MOV/WebM alpha support remains player-dependent; MP4 is opaque.
+The legacy soundtrack-only mux step stream-copies video, adding PCM in MOV, Opus in WebM or AAC in MP4. It verifies stream presence, total duration (within 100ms codec tolerance), and actual decoded audio duration. Reports record source hash, offset, gain and fades. Platform/source-audio delivery uses the gated two-pass path below. These checks do not replace listening for correct accents or aesthetic timing. MOV/WebM alpha support remains player-dependent; MP4 is opaque.
+
+## Delivery audio
+
+P0 plans accept an optional continuous, timeline-aligned `source_audio` (an audio
+file or video with an audio stream), `keep_audio`, `duck` and `loudnorm`:
+
+```json
+{
+  "segments": [{"type":"still", "image":"frame.png", "duration_ms":20000}],
+  "source_audio": {"file":"phone-original.mp4", "in_ms":0, "gain_db":0},
+  "keep_audio": true,
+  "music": {"file":"music.wav", "in_ms":0, "gain_db":0},
+  "duck": true,
+  "loudnorm": true
+}
+```
+
+`fx_render --keep-audio [on|off] --duck on|off --loudnorm on|off` overrides plan
+booleans. Source retention defaults off; when source sound is requested, `source_audio`
+must name the aligned track. This is not an automatic reconstruction of audio from
+trimmed/reordered/retimed PNG manifests. Supply an edited continuous track for those
+operations. `in_ms`, `gain_db`, `fade_in_ms`, `fade_out_ms` work on both tracks.
+
+When both tracks are present, ducking defaults on: FFmpeg `sidechaincompress`
+uses the source as control, threshold 0.04, ratio 6, attack 15 ms, release 600 ms,
+makeup 1. The source is split and mixed back unchanged; only the music is compressed.
+Nominal ducking is approximately 10 dB for the synthetic speech fixture (measured
+9.91 dB, 50 ms attack and 350 ms recovery); actual depth depends on speech level.
+A lone music track never ducks. Mixed floating-point
+PCM is normalized in two passes using loudnorm I=-14 LUFS, TP=-1.5 dBTP, LRA=11.
+The extra 0.5 dB peak margin allows for AAC/Opus encoding. First-pass `input_i`,
+`input_tp`, `input_lra`, `input_thresh`, and all second-pass fields are retained in
+`manifest.audio`. Linear mode is requested; FFmpeg may use dynamic mode when the
+measured peak/LRA makes linear normalization impossible, recorded as
+`second_pass.normalization_type`.
+
+Encoded audio is independently measured with ebur128. Loudness outside -14 ±1 LUFS
+or true peak above -1 dBTP blocks publication; `qa_media.py` also returns nonzero.
+No audio track is valid silent delivery. A supplied entirely silent track cannot be
+normalized and is rejected explicitly; omit it for a silent movie. Disabling
+loudnorm does not disable the gate. Platform exports always use this gate. Existing
+non-platform music-only plans retain their legacy mux unless `loudnorm` is explicitly
+selected, preserving old soundtrack behavior; run `qa_media` before delivering them.
+
+AAC stereo 48 kHz / 256 kbps is used for MP4/MOV; WebM uses Opus. Tracks are padded
+or trimmed to the actual quantized video duration. QA establishes measured levels,
+not intelligibility or perceptual sync; listen to the final mix.
 
 Supported now: one continuous soundtrack, prepared-frame trim/reorder/split/uniform speed and duration fit, beat-aligned cuts, stills/loops and video output. Not bundled: multitrack audio mixing, subtitles, a graphical editor, automatic phrase-aware montage, music-conditioned Grok generation or an autonomous multi-generation chain runner. Future adapters should preserve explicit source/output clocks and per-event timing.
 

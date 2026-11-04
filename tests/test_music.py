@@ -46,8 +46,10 @@ class MusicTests(unittest.TestCase):
             compose(p/'plan.json',p/'out',('mp4','mov','webm'))
             m=json.loads((p/'out/manifest.json').read_text())
             self.assertEqual([v['duration_ms'] for v in m['segments']],[500,500,500])
-            self.assertEqual(m['durations_ms'][:2],[250,250])
-            with Image.open(p/'out/frames/00000.png') as im:self.assertEqual(im.getpixel((0,0)),(60,100,70,200))
+            self.assertEqual(len(m['durations_ms']),45)
+            self.assertAlmostEqual(m['durations_ms'][0],1000/30)
+            self.assertFalse((p/'out/frames').exists())
+            self.assertEqual(m['source_samples'][0]['source_ms'],100)
             for fmt in ['mp4','mov','webm']:
                 report=json.loads((p/f'out/animation.{fmt}.json').read_text())
                 self.assertIsInstance(report['audio'],dict)

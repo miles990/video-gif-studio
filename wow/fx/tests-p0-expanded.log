@@ -1,0 +1,69 @@
+test_all_rotation_angles_apply_once (test_delivery_p0.DeliveryTests.test_all_rotation_angles_apply_once) ... ok
+test_alpha_containers_decode_fractional_alpha (test_delivery_p0.DeliveryTests.test_alpha_containers_decode_fractional_alpha) ... ok
+test_bt709_color_bars (test_delivery_p0.DeliveryTests.test_bt709_color_bars) ... ok
+test_cfr_each_rate_and_container (test_delivery_p0.DeliveryTests.test_cfr_each_rate_and_container) ... ok
+test_composer_streams_and_exporter_quantizes_boundaries (test_delivery_p0.DeliveryTests.test_composer_streams_and_exporter_quantizes_boundaries) ... ok
+test_hdr_chart_decoded_gray_and_hue (test_delivery_p0.DeliveryTests.test_hdr_chart_decoded_gray_and_hue) ... ERROR
+test_hot_audio_normalizes_and_cli_gate_rejects_raw_hot (test_delivery_p0.DeliveryTests.test_hot_audio_normalizes_and_cli_gate_rejects_raw_hot) ... ok
+test_invalid_video_rate_has_clean_cli_error_and_no_output (test_delivery_p0.DeliveryTests.test_invalid_video_rate_has_clean_cli_error_and_no_output) ... ok
+test_odd_beat_pixels_and_manifest (test_delivery_p0.DeliveryTests.test_odd_beat_pixels_and_manifest) ... ok
+test_phone_vfr_barcode_and_click_sync (test_delivery_p0.DeliveryTests.test_phone_vfr_barcode_and_click_sync) ... ok
+test_phone_vfr_rotation_hdr (test_delivery_p0.DeliveryTests.test_phone_vfr_rotation_hdr) ... ERROR
+test_platform_color_alpha_and_metadata (test_delivery_p0.DeliveryTests.test_platform_color_alpha_and_metadata) ... ok
+test_process_tree_memory_is_bounded_at_small_resolution (test_delivery_p0.DeliveryTests.test_process_tree_memory_is_bounded_at_small_resolution) ... ok
+test_proxy_event_identity_and_model_bypass (test_delivery_p0.DeliveryTests.test_proxy_event_identity_and_model_bypass) ... ok
+test_raster_budget_fails_before_allocating_film (test_delivery_p0.DeliveryTests.test_raster_budget_fails_before_allocating_film) ... ok
+test_source_audio_retention_and_explicit_off (test_delivery_p0.DeliveryTests.test_source_audio_retention_and_explicit_off) ... ok
+test_stream_abort_reaps_encoder_and_does_not_publish (test_delivery_p0.DeliveryTests.test_stream_abort_reaps_encoder_and_does_not_publish) ... ok
+test_stream_pixels_equal_disk_frame_reference (test_delivery_p0.DeliveryTests.test_stream_pixels_equal_disk_frame_reference) ... ok
+test_two_pass_audio_ducking_and_gate (test_delivery_p0.DeliveryTests.test_two_pass_audio_ducking_and_gate) ... FAIL
+test_proxy_geometry_and_safe_zone (test_delivery_p0.TimingTests.test_proxy_geometry_and_safe_zone) ... ok
+test_quantization_half_up_and_valid_rates (test_delivery_p0.TimingTests.test_quantization_half_up_and_valid_rates) ... ok
+
+======================================================================
+ERROR: test_hdr_chart_decoded_gray_and_hue (test_delivery_p0.DeliveryTests.test_hdr_chart_decoded_gray_and_hue)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_delivery_p0.py", line 257, in test_hdr_chart_decoded_gray_and_hue
+    source=phone_chart(self.root);out=self.root/'hdr-chart';report=intake(source,out)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\src\vgs-fx\tests\phone_fixtures.py", line 43, in phone_chart
+    run(['-v','error','-filter_threads','1','-f','lavfi','-i',chart,'-vf',conversion,
+  File "C:\Users\User\src\vgs-fx\scripts\delivery.py", line 60, in run
+    raise RuntimeError(result.stderr.decode(errors='replace')[-2500:])
+RuntimeError: [Parsed_zscale_1 @ 000002856d40ee80] code 3074: no path between colorspaces
+    Last message repeated 1 times
+[vf#0:0 @ 000002856d42f580] Error while filtering: Generic error in an external library
+[vf#0:0 @ 000002856d42f580] Task finished with error code: -542398533 (Generic error in an external library)
+[vf#0:0 @ 000002856d42f580] Terminating thread with return code -542398533 (Generic error in an external library)
+[vost#0:0/libx265 @ 000002856d42ef40] [enc:libx265 @ 000002856d3de480] Could not open encoder before EOF
+[vost#0:0/libx265 @ 000002856d42ef40] Task finished with error code: -22 (Invalid argument)
+[vost#0:0/libx265 @ 000002856d42ef40] Terminating thread with return code -22 (Invalid argument)
+[out#0/mp4 @ 000002856d40ed80] Nothing was written into output file, because at least one of its streams received no packets.
+
+
+======================================================================
+ERROR: test_phone_vfr_rotation_hdr (test_delivery_p0.DeliveryTests.test_phone_vfr_rotation_hdr)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_delivery_p0.py", line 155, in test_phone_vfr_rotation_hdr
+    report=intake(source,out);stream=probe(out/'source.mp4')['streams'][0]
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\src\vgs-fx\scripts\intake.py", line 40, in intake
+    if video is None: raise ValueError('Input contains no video stream')
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Input contains no video stream
+
+======================================================================
+FAIL: test_two_pass_audio_ducking_and_gate (test_delivery_p0.DeliveryTests.test_two_pass_audio_ducking_and_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_delivery_p0.py", line 136, in test_two_pass_audio_ducking_and_gate
+    self.assertGreater(depth,6);self.assertLess(depth,15)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: np.float64(18.29294198783733) not less than 15
+
+----------------------------------------------------------------------
+Ran 21 tests in 29.440s
+
+FAILED (failures=1, errors=2)

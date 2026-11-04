@@ -4,6 +4,54 @@ Use this route only when the user asks for post-production effects. Effects neve
 substitute for physical character motion, invent a jump, or hide a broken source join.
 Prepare the source with `gif_pipeline.py`; retain the source animation and its alpha.
 
+## P0 delivery (2026-11-05)
+
+MP4/MOV/WebM now stream rendered frames directly to FFmpeg, defaulting to CFR 30 fps.
+Use `--fps 24|25|30|50|60`, or explicit `--fps 100` for the old 10 ms video behavior.
+GIF/APNG retain their timing and have a 512 MiB decoded-film limit before allocation.
+`--platform tiktok|reels|shorts|youtube|square` sets size, bitrate, yuv420p and actual
+BT.709-limited conversion. Preset dimensions, safe-zone rectangles and the extra
+2%-width text inset are documented in [video delivery](video-export.md#platform-presets)
+and recorded under `manifest.delivery`; later caption code can consume those bounds.
+
+`--proxy` renders at one-third resolution with the same video event/cut grid, skips
+RIFE and model-backed depth, and reuses bounded image/flow caches. Skipped model
+operations are recorded in `delivery.proxy_skipped`; their event timing remains in
+the manifest. No persistent cache or incremental shot rebuild is claimed by P0.
+Use `scripts/intake.py` before frame preparation for phone VFR, rotation and HDR.
+For opt-in original sound, supply a continuous `source_audio` and `--keep-audio`;
+see [two-pass loudness and ducking](music.md#delivery-audio).
+
+Full serial measurements are in [benchmark-p0.json](../wow/fx/benchmark-p0.json).
+The acceptance workload uses zoom_punch, rgb_split and film_grain over moving
+textured gradients at 120 BPM. The latter two remain experimental in the existing
+registry, so the harness explicitly enables them without changing quality status.
+
+| Workload | Output frames | End-to-end speed | Whole-tree peak (larger RSS / peak working set) |
+| --- | --- | --- | --- |
+| 1080×1920, 10 s | 300 | 3.42 fps | 504 MB |
+| 1080×1920, 30 s, 3 trials | 900 each | 3.39–3.44 fps | 507 MB maximum |
+| 720×1280, 30 s | 900 | 7.62 fps | 673 MB |
+| Proxy 360×640, 30 s | 900 | 14.13 fps | 139 MB |
+
+These figures include decoding PNG sources, rendering and final encoding; they are
+not effect-kernel-only timings. Hardware/runtime details and every 50 ms sample are
+in the JSON. At half wall time, the three long encodes had written 49% of final bytes;
+10 s versus 30 s peak memory differed by at most 0.55%.
+The proxy took 63.67 s, 24.18% of the mean full-render time, with identical event
+and cut frame indices in the offline regression test. Windows uses the native
+Toolhelp32Snapshot/GetProcessMemoryInfo fallback because this venv lacks psutil.
+Run `python wow/fx/benchmark_p0.py --out wow/fx/benchmark-p0.json` to reproduce;
+`--stable` measures zoom_punch + grade + halation separately. Run one heavy process
+at a time. See [build notes](../wow/fx/build-notes-p0.md) for test results and caveats.
+
+The separate [stable-only benchmark](../wow/fx/benchmark-p0-stable.json) uses
+zoom_punch + grade + halation: 1080×1920 / 30 s at **3.965 fps / 499,961,856 bytes**
+peak; the 10 s peak is **499,236,864 bytes** (growth **0.145%**). At 720×1280 the
+same stable trio runs at **7.251 fps / 268,083,200 bytes** peak. These measurements
+also include source decoding and final encoding. Its 360×640 proxy runs at
+**13.565 fps / 137,527,296 bytes**, taking **66.35 s (29.23% of full render time)**.
+
 ```sh
 python scripts/fx_render.py plan.json --out delivery --formats png gif mp4
 python scripts/fx_render.py --list --json
@@ -105,12 +153,14 @@ its last frame is extended. Source material outside the specified trim is never 
 Effect intervals are `[start,end)`; use start_ms/end_ms or start_beat/end_beat, not both
 for an endpoint. Omitted bounds span the whole timeline. Beat indices are zero-based.
 `music.in_ms` is subtracted from beat and downbeat clocks for both edits and envelopes.
-Edits follow the existing nearest-10ms rule. The renderer defaults to 25 fps; 1..50 is
+Raster edits follow the existing nearest-10ms rule. Raster rendering defaults to 25 fps; 1..50 is
 accepted, with exposures quantized to the exporter's 10ms grid. Beat peaks and edit
 boundaries are inserted on that grid so they cannot be skipped by nominal frame sampling.
 On an inserted beat frame, evaluate its beat envelope at the exact unrounded beat peak.
-Thus output exposures may be variable, including 10ms accents. Video exporters retain
-the exact timeline as repeated frames at 100 fps; no motion interpolation is added.
+Thus raster exposures may be variable, including 10ms accents. Video delivery now
+defaults to CFR 30 fps; `--fps 24|25|30|50|60` selects its grid independently of the
+legacy plan sampling rate. Events round half-up and record errors in the manifest.
+Explicit `--fps 100` retains the old repeated 10ms exposures; see [video delivery](video-export.md).
 GIF derivatives merge exposures of 20ms or less with a neighbour, retaining the first
 image of a merged group and the exact total duration. This avoids browser 100ms clamping;
 PNG and video retain the original sample times. A GIF of total duration <=20ms cannot
@@ -260,7 +310,8 @@ excluding PNG saving and GIF/MP4 encoding. This misses the 10 fps target. Timing
 under concurrent rendering. Full demo timings and decoded QA are in wow/fx/demo/README.md.
 The serial fix-round rerun in `wow/fx/benchmark-latest.json` is **3.276 fps / 27.470s**;
 the optional 10fps target remains unmet.
-The composer and this bounded renderer retain frames in memory; use short timelines.
+Historical numbers above predate P0. Video-only composition/rendering now streams
+frames to FFmpeg; raster output retains a bounded film (see P0 delivery below).
 
 The automatic QA's --expect-cuts checks **hard image discontinuities**, so smooth effects
 and a still-to-animation continuation should use --timeline as editorial joins instead.
@@ -311,8 +362,8 @@ samples, **newest first**, before post effects (after source effects/transitions
 `ctx.history_times_ms` is the parallel tuple of strictly earlier output timestamps.
 Inserted 10ms samples count as frames. The buffer resets at each segment boundary;
 missing history is omitted. No feedback or future samples. echo requests four frames.
-The renderer keeps a bounded 12-source-image cache and one flow pair; the existing
-exporter still retains the complete short output film in memory.
+The renderer keeps a bounded three-source-image cache and one flow pair. Video
+frames flow directly to FFmpeg; raster exports retain their bounded short film.
 
 ## Experimental (pending quality gate)
 
