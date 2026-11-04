@@ -33,6 +33,31 @@ def sync_check(path, fps):
                 method='stream timestamps; does not establish perceptual lip sync')
 
 
+def timestamp_repairs(stamps, step, origin, fps):
+    """Separate long discontinuities from ordinary missing-frame intervals.
+
+    PTS alone cannot establish the cause. A jump is a gap with at least 100 ms
+    (and three nominal frame periods) missing. Counts exclude the original frame.
+    Times are on the repaired, zero-origin timeline and use the CFR rounding rule.
+    """
+    jumps, drops = [], []
+    jump_threshold = max(.1, 3*step)
+    previous = stamps[0]
+    for current in stamps[1:]:
+        if current <= previous: continue
+        missing = current-previous-step
+        if missing > step*.5:
+            first = int(np.floor((previous-origin)*fps+.5))
+            last = int(np.floor((current-origin)*fps+.5))
+            record = dict(start_seconds=previous+step-origin, length_seconds=missing,
+                          frozen_frame_count=max(0, last-first-1))
+            (jumps if missing >= jump_threshold-1e-6 else drops).append(record)
+        previous = current
+    return dict(timestamp_jumps=jumps, ordinary_dropped_frames=drops,
+                timestamp_jump_threshold_seconds=jump_threshold,
+                timestamp_repair_rule='gap minus nominal frame duration; >= max(100 ms, 3 nominal frames) is a jump; frozen count excludes original frame')
+
+
 def intake(source, out, fps=30):
     rate(fps); source=Path(source).resolve(); out=Path(out)
     if out.exists(): raise ValueError('Use a new output directory')
@@ -91,7 +116,8 @@ def intake(source, out, fps=30):
                     color={k:video.get(k) for k in ('color_primaries','color_transfer','color_space')},
                     actions=actions,output_fps=fps,output=probe(movie),av_sync=sync,dimensions=dimensions,
                     timestamp_origin_seconds=origin,duplicate_or_backward_pts=int(np.sum(differences<=0)),
-                    timestamp_gaps=int(np.sum(differences>step*1.5)))
+                    timestamp_gaps=int(np.sum(differences>step*1.5)),
+                    **timestamp_repairs(stamps,step,origin,fps))
         (root/'intake.json').write_text(json.dumps(report,indent=2));root.rename(out)
     return report
 

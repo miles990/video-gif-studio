@@ -81,18 +81,28 @@ trimmed/reordered/retimed PNG manifests. Supply an edited continuous track for t
 operations. `in_ms`, `gain_db`, `fade_in_ms`, `fade_out_ms` work on both tracks.
 
 When both tracks are present, ducking defaults on. Presence detection uses 10 ms
-RMS windows and a threshold 26 dB below the loudest source window (floor 1e-7).
-Gaps up to 150 ms are bridged. Detected intervals automate music gain to **-10 dB**
+RMS windows and the larger of 26 dB below the loudest source window, 8 dB above
+the source's 20th-percentile noise floor, and 1e-7. Trailing padded silence is
+excluded from the floor estimate. Activity must last at least 40 ms before gaps
+up to 150 ms are bridged, rejecting short clicks and steady tone/noise beds.
+Detected intervals automate music gain to **-10 dB**
 with 50 ms attack and 500 ms release; the depth does not depend on speech level.
+NumPy writes a stereo 48 kHz float PCM gain envelope in one-second blocks, applied
+with `amultiply`; filter graph size does not grow with the number of intervals.
 The source is mixed back unchanged. This is level-based presence detection, not a
-speech classifier; other sustained source sounds can trigger it. A lone music
+speech classifier; varying non-speech sounds can still trigger it. A lone music
 track never ducks. `manifest.audio.ducking` records intervals and detector settings.
 
-Mixed float PCM is measured with loudnorm, then a single constant gain targets
--14 LUFS subject to a -1.5 dBTP ceiling. The extra 0.5 dB peak margin allows for
-AAC/Opus encoding. First-pass measurements and `second_pass.gain_db` are retained
-in `manifest.audio`. There is no dynamic normalization fallback to undo ducking;
-if peak-safe constant gain cannot meet the loudness gate, publication fails.
+Every input is converted to stereo before mixing, preserving distinct music L/R
+content when the source is mono. Mixed float PCM is measured with loudnorm, then
+a single constant gain targets -14 LUFS. A 192 kHz oversampled lookahead limiter
+follows, with a -1.5 dBTP ceiling, 5 ms attack, 50 ms release, makeup gain disabled
+and latency compensated; output returns to 48 kHz. This limits transient peaks
+without lowering the entire mix to accommodate them. First-pass measurements,
+`second_pass.gain_db` and limiter settings are retained in `manifest.audio`.
+The extra 0.5 dB margin accommodates encoding; the final encoded measurement
+remains authoritative. There is no dynamic loudness normalization that lifts
+ducked passages back up. Excessively peak-dense material can still fail the gate.
 
 Encoded audio is independently measured with ebur128. Loudness outside -14 ±1 LUFS
 or true peak above -1 dBTP blocks publication; `qa_media.py` also returns nonzero.

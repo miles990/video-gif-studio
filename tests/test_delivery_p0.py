@@ -186,6 +186,12 @@ class DeliveryTests(unittest.TestCase):
         self.assertTrue(np.all(np.abs(np.diff(pts)-1/30)<.0011))
         self.assertTrue(report['av_sync']['passed'])
         self.assertEqual(report['duplicate_or_backward_pts'],1)
+        self.assertEqual(len(report['timestamp_jumps']),1)
+        jump=report['timestamp_jumps'][0]
+        self.assertAlmostEqual(jump['start_seconds'],2,delta=.001)
+        self.assertAlmostEqual(jump['length_seconds'],.4,delta=.001)
+        self.assertEqual(jump['frozen_frame_count'],12)
+        self.assertEqual(len(report['ordinary_dropped_frames']),1)
         rgb=np.frombuffer(decode(out/'source.mp4'),np.uint8).reshape(-1,108,192,3)
         ids=sum((rgb[:,96,bit*24+12].mean(axis=1)>128).astype(int)*2**bit for bit in range(8))
         np.testing.assert_array_equal(ids[59:72],np.full(13,59))
@@ -203,6 +209,36 @@ class DeliveryTests(unittest.TestCase):
         self.assertLessEqual(max(skews),1000/30)
         self.assertEqual(len(pts),162)
         print('P0_TIMESTAMP '+json.dumps(dict(frames=len(pts),max_marker_skew_ms=max(skews),**report['av_sync'])),flush=True)
+
+    def test_intake_cli_records_each_jump_separately_from_drops(self):
+        source=self.root/'two-jumps.mkv'
+        video='color=gray:s=96x64:r=30:d=3,drawbox=x=0:y=48:w=96:h=16:color=black:t=fill'
+        for bit in range(8):
+            video+=f",drawbox=x={bit*12}:y=48:w=12:h=16:color=white:t=fill:enable='mod(floor(n/{2**bit}),2)'"
+        video+=",select='not(eq(n,15))',setpts='PTS+gte(T,1)*0.4/TB+gte(T,2)*0.6/TB'"
+        run(['-v','error','-filter_threads','1','-f','lavfi','-i',
+             video,
+             '-fps_mode','vfr','-c:v','ffv1','-threads','2',str(source)])
+        out=self.root/'two-jumps'
+        result=subprocess.run([sys.executable,str(Path(__file__).resolve().parents[1]/'scripts/intake.py'),
+                               str(source),'--out',str(out)],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        report=json.loads((out/'intake.json').read_text())
+        self.assertEqual(len(report['timestamp_jumps']),2)
+        for jump,start,length,count in zip(report['timestamp_jumps'],(1,2.4),(.4,.6),(12,18)):
+            self.assertAlmostEqual(jump['start_seconds'],start,delta=.001)
+            self.assertAlmostEqual(jump['length_seconds'],length,delta=.001)
+            self.assertEqual(jump['frozen_frame_count'],count)
+        self.assertEqual(len(report['ordinary_dropped_frames']),1)
+        self.assertEqual(report['ordinary_dropped_frames'][0]['frozen_frame_count'],1)
+        # Decode and count held frames, rather than trusting report arithmetic.
+        frames=np.frombuffer(decode(out/'source.mp4'),np.uint8).reshape(-1,64,96,3)
+        ids=sum((frames[:,56,bit*12+6].mean(axis=1)>128).astype(int)*2**bit for bit in range(8))
+        for index,count in ((29,12),(71,18)):
+            np.testing.assert_array_equal(ids[index:index+count+1],np.full(count+1,ids[index]))
+            self.assertNotEqual(ids[index],ids[index+count+1])
+        print('P0_FIX2 '+json.dumps(dict(case='timestamp-jumps',jumps=report['timestamp_jumps'],
+                                       ordinary_dropped_frames=report['ordinary_dropped_frames'])),flush=True)
 
     def test_true_odd_phone_dimensions_after_rotation(self):
         base=self.root/'odd.mp4';source=self.root/'odd-rotated.mp4'
@@ -485,6 +521,7 @@ class DeliveryTests(unittest.TestCase):
         peaks=[r['peak_bytes'] for r in results]
         self.assertTrue(all(0<p<1610612736 for p in peaks),peaks)
         self.assertLessEqual(abs(peaks[1]-peaks[0]),max(peaks[0]*.15,150*1024**2))
+        print('P0_FIX2 '+json.dumps(dict(case='streaming-memory',seconds=[2,6],peak_bytes=peaks)),flush=True)
 
 
 if __name__=='__main__':unittest.main()

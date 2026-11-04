@@ -151,11 +151,10 @@ def encode_frames(images, target, config, background='000000'):
 
 
 def duck_envelope(args, speech_filter, root, seconds):
-    """Detect presence in 10 ms RMS windows; automate a fixed -10 dB bed.
+    """Detect activity above the noise floor and write a bounded PCM gain track.
 
-    Detection is relative to the speech track (26 dB below its loudest window).
-    Short syllable gaps are bridged; attack/release do not depend on level.
-    Only one PCM window is held in memory while analysing the temporary file.
+    This is an energy-based presence detector, not linguistic classification.
+    Reject steady backgrounds and isolated clicks before bridging syllable gaps.
     """
     pcm = root/'speech.f32'
     run([*args, '-filter_complex', speech_filter+'[detect]', '-map', '[detect]',
@@ -165,23 +164,47 @@ def duck_envelope(args, speech_filter, root, seconds):
         while raw := stream.read(480*4):
             x = np.frombuffer(raw, dtype='<f4')
             levels.append(float(np.sqrt(np.mean(x*x))))
-    threshold = max(max(levels, default=0)*.05, 1e-7)
-    active = np.flatnonzero(np.asarray(levels) > threshold)
-    intervals = []
+    levels = np.asarray(levels)
+    # Ignore apad silence when estimating a short source's actual noise floor.
+    audible = levels[levels > 1e-7]
+    noise_floor = float(np.percentile(audible, 20)) if len(audible) else 0
+    # Genuine silence within the source is also useful evidence of its floor.
+    nonzero = np.flatnonzero(levels > 1e-7)
+    if len(nonzero):
+        noise_floor = float(np.percentile(levels[:nonzero[-1]+1], 20))
+    threshold = max(float(np.max(levels, initial=0))*.05, noise_floor*2.5, 1e-7)
+    active = np.flatnonzero(levels > threshold)
+    bursts = []
     for k in active:
-        start, end = int(k)*.01, min(seconds, (int(k)+1)*.01)
+        if bursts and k == bursts[-1][1]: bursts[-1][1] = int(k)+1
+        else: bursts.append([int(k), int(k)+1])
+    intervals = []
+    for first, last in bursts:
+        if last-first < 4: continue  # At least 40 ms; CLIP-A clicks last 10 ms.
+        start, end = first*.01, min(seconds, last*.01)
         if intervals and start-intervals[-1][1] <= .15+1e-8:
             intervals[-1][1] = end
         else:
             intervals.append([start, end])
-    # dB-linear attack (50 ms) and recovery (500 ms). max combines overlaps.
-    envelope = '0'
-    for start, end in intervals:
-        pulse = f'max(0,min(min((t-{start:.6f})/0.05,1),({end+.5:.6f}-t)/0.5))'
-        envelope = f'max({envelope},{pulse})'
-    return f"volume='pow(10,-0.5*({envelope}))':eval=frame", dict(
+    # One second at a time, independent of clip length/number of intervals.
+    # Stereo gain preserves the music's channel layout through amultiply.
+    envelope = root/'duck-gain.f32'
+    cursor = 0
+    with envelope.open('wb') as stream:
+        for first in range(0, round(seconds*48000), 48000):
+            t = np.arange(first, min(first+48000, round(seconds*48000)))/48000
+            depth = np.zeros(len(t))
+            while cursor < len(intervals) and intervals[cursor][1]+.5 < t[0]: cursor += 1
+            for start, end in intervals[cursor:]:
+                if start > t[-1]: break
+                pulse = np.clip(np.minimum((t-start)/.05, (end+.5-t)/.5), 0, 1)
+                np.maximum(depth, pulse, out=depth)
+            gain = np.power(10, -.5*depth).astype('<f4')
+            stream.write(np.repeat(gain[:, None], 2, axis=1).tobytes())
+    return envelope, dict(
         depth_db=10, attack_ms=50, release_ms=500, presence_intervals=intervals,
-        threshold_rms=threshold, detection='10 ms RMS, relative threshold, 150 ms gap bridge')
+        threshold_rms=threshold, noise_floor_rms=noise_floor, envelope='stereo PCM float32, 48000 Hz, numpy blocks',
+        detection='10 ms RMS; max(peak -26 dB, noise floor +8 dB); 40 ms minimum; 150 ms gap bridge')
 
 
 def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, normalize=True):
@@ -194,7 +217,8 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
         for index, (kind, spec) in enumerate(([("speech", source)] if source else []) + ([("music", music)] if music else [])):
             args += ['-i', str(spec['file'])]
             filt = (f'[{index}:a:0]atrim=start={spec.get("in_ms",0)/1000},asetpts=PTS-STARTPTS,'
-                    f'volume={spec.get("gain_db",0)}dB,aresample=48000,apad,atrim=duration={seconds}')
+                    f'volume={spec.get("gain_db",0)}dB,aresample=48000,'
+                    f'aformat=channel_layouts=stereo,apad,atrim=duration={seconds}')
             for edge in ('in', 'out'):
                 fade = spec.get('fade_'+edge+'_ms', 0)/1000
                 if fade: filt += f',afade=t={edge}:st={0 if edge=="in" else max(0,seconds-fade)}:d={fade}'
@@ -202,7 +226,8 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
         if len(labels) == 2:
             if duck:
                 automation, duck_report = duck_envelope(args, graph[0].removesuffix('[speech]'), root, seconds)
-                graph += ['[music]'+automation+'[bed]',
+                args += ['-f', 'f32le', '-ar', '48000', '-ac', '2', '-i', str(automation)]
+                graph += ['[music][2:a:0]amultiply[bed]',
                           '[speech][bed]amix=inputs=2:normalize=0[out]']
             else: graph += ['[speech][music]amix=inputs=2:normalize=0[out]']
         else: graph += [f'[{labels[0]}]anull[out]']
@@ -211,10 +236,15 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
         if normalize:
             log = run(['-i', str(mixed), '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-'])
             measured = json.loads(log[log.rfind('{'):log.rfind('}')+1])
-            gain = min(-14-float(measured['input_i']), -1.5-float(measured['input_tp']))
+            gain = -14-float(measured['input_i'])
             if not math.isfinite(gain): gain = 0  # Intentionally silent track.
-            filt = f'volume={gain}dB'
-            second = dict(normalization_type='linear', gain_db=gain)
+            # Oversample so the lookahead limiter catches intersample peaks.
+            # Disable its default makeup gain and compensate its 5 ms latency.
+            filt = (f'volume={gain}dB,aresample=192000,'
+                    'alimiter=limit=0.8413951416:attack=5:release=50:level=false:latency=true,aresample=48000')
+            second = dict(normalization_type='linear', gain_db=gain,
+                          limiter=dict(ceiling_dbtp=-1.5, sample_rate=192000, attack_ms=5, release_ms=50,
+                                       auto_level=False, latency_compensated=True))
         candidate = root/movie.name
         log = run(['-i', str(movie), '-i', str(mixed), '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy',
              '-af', filt, '-c:a', 'libopus' if movie.suffix=='.webm' else 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2',
@@ -227,4 +257,4 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
     return dict(audio=True, source=source, music=music, duck=bool(duck and source and music),
                 ducking=duck_report,
                 first_pass=measured, second_pass=second, linear_requested=normalize,
-                normalization_note='Measured integrated loudness and true peak; constant gain only, no dynamic fallback', checks=checks)
+                normalization_note='Measured stereo mix; constant loudness gain followed by oversampled lookahead peak limiting; encoded audio gated', checks=checks)

@@ -1,0 +1,345 @@
+{
+  "suite": {
+    "tests": 250,
+    "failures": 0,
+    "errors": 2,
+    "baseline_errors": 2,
+    "new_errors": 0,
+    "skipped": 4,
+    "seconds": 197.683
+  },
+  "measurements": [
+    {
+      "kind": "P0_FIX2",
+      "case": "duck-normal",
+      "status": "PUBLISHED",
+      "lufs": -14.3,
+      "true_peak_dbtp": -6.3
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "duck-normal",
+      "duck_db": [
+        10.00362489211582,
+        10.003580522958341
+      ]
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "duck-quiet",
+      "status": "PUBLISHED",
+      "lufs": -14.3,
+      "true_peak_dbtp": -6.8
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "duck-quiet",
+      "duck_db": [
+        10.001370119864852,
+        10.001379818916536
+      ]
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "HOT-CLIP-A",
+      "status": "PUBLISHED",
+      "lufs": -14.0,
+      "true_peak_dbtp": -11.0
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "MUS-CLIP-A",
+      "status": "PUBLISHED",
+      "lufs": -14.0,
+      "true_peak_dbtp": -5.7
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "SPEECH-only",
+      "status": "PUBLISHED",
+      "lufs": -14.0,
+      "true_peak_dbtp": -2.8
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "peak-limiter",
+      "status": "PUBLISHED",
+      "lufs": -14.0,
+      "true_peak_dbtp": -1.9
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "limiter-engaged",
+      "unlimited_peak_dbtp": 3.9399999999999986,
+      "limiter": {
+        "ceiling_dbtp": -1.5,
+        "sample_rate": 192000,
+        "attack_ms": 5,
+        "release_ms": 50,
+        "auto_level": false,
+        "latency_compensated": true
+      }
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "ambient",
+      "status": "PUBLISHED",
+      "lufs": -14.0,
+      "true_peak_dbtp": -8.1
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "stereo-LR",
+      "status": "PUBLISHED",
+      "lufs": -14.0,
+      "true_peak_dbtp": -6.0
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "stereo-separation",
+      "db": [
+        77.43574089538865,
+        67.80282300584085
+      ]
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "long-360",
+      "status": "PUBLISHED",
+      "lufs": -14.0,
+      "true_peak_dbtp": -3.1
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "long-envelope",
+      "seconds": 180,
+      "segments": 360
+    },
+    {
+      "kind": "P0_COLOR",
+      "max_channel_error": 3
+    },
+    {
+      "kind": "P0_HDR",
+      "gray_rgb_means": [
+        0.0,
+        24.0,
+        51.0,
+        75.0,
+        101.0,
+        128.0,
+        151.0,
+        174.0,
+        190.0,
+        204.0,
+        215.0
+      ],
+      "gray_y": [
+        16,
+        37,
+        60,
+        81,
+        103,
+        126,
+        146,
+        166,
+        180,
+        192,
+        201
+      ],
+      "max_hue_error_degrees": 4.0,
+      "skin_saturation_ratio": 0.9851851851851852
+    },
+    {
+      "kind": "P0_HOT",
+      "lufs": -14.0,
+      "true_peak_dbtp": -12.6
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "timestamp-jumps",
+      "jumps": [
+        {
+          "start_seconds": 1.0,
+          "length_seconds": 0.39999999999999986,
+          "frozen_frame_count": 12
+        },
+        {
+          "start_seconds": 2.4,
+          "length_seconds": 0.5999999999999999,
+          "frozen_frame_count": 18
+        }
+      ],
+      "ordinary_dropped_frames": [
+        {
+          "start_seconds": 0.5000000000000001,
+          "length_seconds": 0.03299999999999992,
+          "frozen_frame_count": 1
+        }
+      ]
+    },
+    {
+      "kind": "P0_RASTER",
+      "frames": 65,
+      "metadata_guard_mib": 514.16015625,
+      "actual_fixture_mib": 0.380859375,
+      "paths": 2
+    },
+    {
+      "kind": "P0_TIMING",
+      "fps": 24,
+      "detected_events": 10,
+      "max_error_ms": 18.666666666666515
+    },
+    {
+      "kind": "P0_TIMING",
+      "fps": 30,
+      "detected_events": 10,
+      "max_error_ms": 16.33333333333337
+    },
+    {
+      "kind": "P0_TIMING",
+      "fps": 60,
+      "detected_events": 10,
+      "max_error_ms": 3.0
+    },
+    {
+      "kind": "P0_TIMESTAMP",
+      "frames": 162,
+      "max_marker_skew_ms": 0.08333333333343518,
+      "applicable": true,
+      "start_skew_ms": 0.0,
+      "end_skew_ms": 0.0,
+      "passed": true,
+      "method": "stream timestamps; does not establish perceptual lip sync"
+    },
+    {
+      "kind": "P0_PHONE",
+      "max_source_time_error_ms": 33.333333333333655,
+      "max_flash_click_skew_ms": 0.08333333333333333,
+      "events": 10
+    },
+    {
+      "kind": "P0_PROXY",
+      "size_bytes": 3595,
+      "bitrate": 8016,
+      "seconds": 2
+    },
+    {
+      "kind": "P0_FIX2",
+      "case": "streaming-memory",
+      "seconds": [
+        2,
+        6
+      ],
+      "peak_bytes": [
+        85614592,
+        86437888
+      ]
+    },
+    {
+      "kind": "P0_AUDIO",
+      "speech_gain": 0.1,
+      "lufs": -14.3,
+      "true_peak_dbtp": -6.8,
+      "duck_db": 10.00136981265159,
+      "attack_ms": 49.99999999999982,
+      "release_ms": 450.00000000000637,
+      "non_speech_std_db": 0.013203551211283606
+    },
+    {
+      "kind": "P0_SOURCE_AUDIO",
+      "retained_440hz_increase_db": 136.81042291928017
+    },
+    {
+      "kind": "P0_ODD_DIMENSIONS",
+      "displayed": [
+        1077,
+        1917
+      ],
+      "encoded": [
+        1078,
+        1918
+      ],
+      "pad_right_px": 1,
+      "pad_bottom_px": 1,
+      "rule": "pad right/bottom by one black pixel when odd, after rotation"
+    },
+    {
+      "kind": "P0_AUDIO",
+      "speech_gain": 1,
+      "lufs": -14.3,
+      "true_peak_dbtp": -6.3,
+      "duck_db": 10.003624889846384,
+      "attack_ms": 49.99999999999982,
+      "release_ms": 450.00000000000637,
+      "non_speech_std_db": 0.013049328555103773
+    }
+  ],
+  "legacy": {
+    "base_commit": "ea2e790859b2cc98fd732256c44274eb0ee4cdb2",
+    "plans": [
+      {
+        "name": "P-plain",
+        "frames": 50,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 200,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true
+      },
+      {
+        "name": "P-base",
+        "frames": 52,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 200,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true
+      },
+      {
+        "name": "P-ramp",
+        "frames": 50,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 200,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true
+      },
+      {
+        "name": "demo",
+        "frames": 240,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 916,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true,
+        "note": "Silent visual derivative; soundtrack removed in both runs; no visual edits"
+      },
+      {
+        "name": "demo2",
+        "frames": 518,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 2054,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true,
+        "note": "Silent visual derivative; soundtrack removed in both runs; no visual edits"
+      }
+    ],
+    "unavailable_plans": [
+      "demo3",
+      "demo4"
+    ]
+  }
+}

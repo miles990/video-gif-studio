@@ -6,8 +6,9 @@ No edits to spec/acceptance/process files, examples, or either external skill/re
 The worktree already contained partial P0 edits, debug files and a progress.md change;
 those unrelated pre-existing files were preserved.
 
-The original measurements below predate the reviewer fix round. The **Fix round**
-section records the resumed WIP fixes and supersedes earlier compatibility/audio claims.
+The original measurements below predate the reviewer fixes. The **Fix round**
+and **Fix round 2** sections record subsequent changes; Fix round 2 supersedes
+the earlier audio normalization and detection behavior.
 
 ## Per-item results
 
@@ -104,9 +105,10 @@ lavfi and are generated in temporary test directories; no real phone media is re
 - Source sound is opt-in via a continuous timeline-aligned `source_audio` and
   `keep_audio`. It does not infer audio edits from PNG manifests. Old non-platform
   music-only muxing remains compatible unless loudnorm is explicitly selected.
-- Audio normalization measures loudness/true peak, then applies constant gain only.
-  There is no dynamic fallback. Peak-safe gain that misses the loudness gate blocks
-  publication. Silent tracks and absent audio have N/A loudness checks.
+- Audio normalization measures the stereo mix, applies constant loudness gain,
+  then limits transient peaks with an oversampled lookahead limiter. Encoded
+  loudness/true-peak QA still gates publication. Silent tracks and absent audio
+  have N/A loudness checks. See Fix round 2 for measurements and detector limits.
 - HDR intake requires zscale/libzimg and fails clearly if unavailable. Timestamp
   skew checks cannot establish lip sync for arbitrary speech. Dynamic Dolby Vision,
   untagged HDR and perceptual review are not claimed.
@@ -156,4 +158,65 @@ PATH (also set `VIDEO_GIF_FFMPEG` / `VIDEO_GIF_FFPROBE` to its executables):
 ```text
 python wow/fx/regression_p0.py
 python -m unittest discover -s tests -v
+```
+
+## Fix round 2
+
+2026-11-05, `p0-delivery`. Changes are confined to this worktree. One heavy
+process at a time; no commit/push, downloaded models, paid calls or edits to
+spec/acceptance/process files. Fixtures use cleaned OS temporary directories.
+
+| Reviewer item | Status | Fix and measured evidence |
+| --- | --- | --- |
+| 1. Stereo before mix | Fixed | Every source/music input explicitly becomes **48 kHz stereo before amix**. CLI with a mono CLIP-A source and a separate L/R music variant retains **77.436 dB** separation at 110 Hz and **67.803 dB** at 220 Hz. Published stereo output: **−14.0 LUFS / −6.0 dBTP**. First-pass loudness now measures the same stereo layout that is encoded, eliminating the late upmix's 3 dB discrepancy. |
+| 2. Loudness and peak limiting | Fixed; all requested CLI deliveries **PUBLISHED** | Literal MUS + CLIP-A: **−14.0 LUFS / −5.7 dBTP**; HOT + CLIP-A: **−14.0 / −11.0**; SPEECH alone: **−14.0 / −2.8**. All use `--platform tiktok --keep-audio`, default duck/loudnorm/fps, **1080×1920 / 30 fps**, and are measured from the published MP4 with acceptance's `ebur128=peak=true` command. Fixed loudness gain is followed by a **192 kHz**, **−1.5 dBTP** lookahead limiter, **5 ms attack / 50 ms release**, no automatic makeup gain, latency compensated. A separate speech-plus-impulses variant would reach **+3.94 dBTP** after fixed gain; limiting publishes **−14.0 LUFS / −1.9 dBTP**. |
+| 3. Background rejection | Fixed | Literal CLIP-A's **−30 dBFS 440 Hz** bed plus **10 ms / −12 dBFS** clicks produces **0 speech intervals**, including when its 10 s track is padded to a 20 s delivery. Steady seeded ambient noise also produces **0 intervals**; its mix publishes at **−14.0 LUFS / −8.1 dBTP**. Threshold is max(peak −26 dB, 20th-percentile floor +8 dB, 1e-7); trailing padding is excluded, and bursts shorter than **40 ms** are rejected before the **150 ms** gap bridge. |
+| 4. Long duck envelope | Fixed | NumPy writes a **48 kHz stereo float PCM** gain envelope in **1 s blocks**, applied with `amultiply`; graph size is independent of segment count. CLI **180 s / 360 detected speech intervals** publishes at **−14.0 LUFS / −3.1 dBTP**. No nested FFmpeg gain expression. The long variant uses 120 ms speech bursts twice per second and a full-duration MUS bed. |
+| 5. Individual timestamp jumps | Fixed | CLI intake of two jumps plus an ordinary dropped frame records separate entries: **start 1.0 s, length 0.4 s, 12 frozen repeats**; **start 2.4 s, length 0.6 s, 18 frozen repeats**. The ordinary drop at **0.5 s** is a separate entry with **1 repeat**. Decoded frame-number barcodes verify both holds. Counts exclude the original displayed frame (13/19 total held frames). Existing **700 ms offset / 400 ms gap / duplicate PTS** test still gives **162 CFR frames**, **0 ms** stream start/end skew and **0.0833 ms** maximum marker skew. |
+| 6. Preserve previous passes | Passed; full legacy rerun identical | Default CLI duck depths across both speech sections: normal speech **10.0036 / 10.0036 dB**, speech reduced 20 dB **10.0014 / 10.0014 dB**. Both mixes publish at **−14.3 LUFS**; peaks **−6.3 / −6.8 dBTP**. Measured attack **50 ms**, recovery **450 ms**, non-speech variation **0.0131 / 0.0132 dB**. CFR at **24/25/30/50/60**, default MOV/WebM, odd dimensions, silent QA, failure cleanup and CRF 23 proxy remain passing. Streaming **2 s / 6 s** trials peak at **85,614,592 / 86,437,888 bytes**, only **823,296 bytes (0.96%)** apart. Proxy remains **3,595 bytes / 8,016 bps / 360×640** on the static 2 s fixture. |
+
+`tests/test_delivery_audio_cli.py` generates acceptance-5's MUS/HOT/SPEECH at
+48 kHz for 20 s and the actual **1080×1920, 30 fps, 10 s CLIP-A MP4**, including
+its full-frame flashes and click/tone audio. Audio is retained directly from that
+MP4. The renderer's prepared-still visual timeline is 20 s; CLIP-A sound is padded
+after 10 s according to the existing source-audio contract. The literal fixtures
+are not lowered in gain or shortened to make publication pass. L/R, ambient,
+impulse and 180 s variants are separate named cases. Tests invoke `fx_render.py`
+as a subprocess, require exit 0 and final `animation.mp4`/manifest, reject FAIL
+checks, then independently decode/measure the published file. The 180 s and
+supplementary cases use a 32×32 visual canvas to keep the suite bounded.
+
+Detector limits: this remains energy-based presence detection, not a language
+model or semantic VAD; varying non-speech sounds may trigger it. Timestamp jump
+classification is explicitly a heuristic: missing time ≥ max(100 ms, three
+median frame periods); timestamps alone cannot prove the cause of a gap. Highly
+peak-dense audio can still fail final encoded QA after limiting. No QA gate was
+weakened or disabled.
+
+Legacy rerun exits **0** against base `ea2e790`: **5/5 complete MP4 files**
+with explicit `--fps 100` are bit-identical, with **3,570 decoded frames**
+identical (all-frame PSNR **infinite**). This includes demo **916** and demo2
+**2,054** video frames. All **910 PNG frames**, **5 GIFs** and **5 APNGs** are
+byte-identical. As in the original regression harness, demo soundtracks are
+removed identically in both visual comparison runs; demo3/demo4 are absent.
+
+Full suite: **250 tests in 197.683 s, 0 failures, 2 baseline environment errors,
+4 existing skips, 0 new failures/errors**. All **39 delivery tests** pass,
+including **9 added tests**. The two unchanged errors are
+`test_install.test_same_source_symlink_is_preserved` (WinError 1314) and
+`test_mask_review.test_review_exports_overlay_contact_sheet_and_stability_report`
+(WinError 32); suite exit status is therefore **1**, not a clean all-pass exit.
+Automatic approval review blocked cleanup of the latter test's system-temp
+folder (`tmpbgiu5o82`, outside the repository), reporting only `blocked by policy`.
+There are no new repository scratch files; retained logs/JSON are review evidence.
+
+Evidence: [full suite log](tests-p0-fix2-full.log),
+[measurement records](measurements-p0-fix2.json),
+[legacy comparison log](p0-fix2-regression.log). Reproduce serially with the
+requested venv Python and static FFmpeg directory on PATH, plus
+`VIDEO_GIF_FFMPEG` / `VIDEO_GIF_FFPROBE` set to those executables:
+
+```text
+python -m unittest discover -s tests -v
+python wow/fx/regression_p0.py
 ```

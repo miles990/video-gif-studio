@@ -100,7 +100,7 @@ reposition existing free-form `text` effects or implement captions.
 ## Audio and phone intake
 
 See [music](music.md#delivery-audio) for source retention, fixed-depth ducking,
-measured constant-gain normalization and the delivery gate. Source audio is opt-in. Supply a continuous,
+measured constant-gain normalization with peak limiting and the delivery gate. Source audio is opt-in. Supply a continuous,
 timeline-aligned `source_audio` file; automatic audio reconstruction from edited
 PNG manifests is not possible. Entirely silent tracks have N/A loudness checks.
 
@@ -115,6 +115,12 @@ the matrix. After rotation, odd dimensions are padded on the right/bottom by one
 black pixel; `intake.json.dimensions` records displayed/encoded sizes and padding.
 Both streams subtract the same earliest start timestamp. Duplicate/backward video
 PTS are discarded; timestamp gaps hold the preceding image on the CFR grid.
+`timestamp_jumps` lists each long gap's `start_seconds`, `length_seconds` and
+`frozen_frame_count`, separately from `ordinary_dropped_frames`. Times are relative
+to the common output origin; length excludes one nominal source-frame duration,
+and frozen count counts extra CFR repeats, excluding the original frame. Missing
+time of at least max(100 ms, three median source-frame periods) is classified as a
+jump. This is a timestamp heuristic; timestamps alone cannot identify its cause.
 Relative audio timing is preserved. The last visual frame is extended to the rounded container duration when
 necessary; AAC audio is resampled to 48 kHz stereo with timestamp synchronization.
 The timestamp check rejects skew beyond one frame plus 2 ms. It is not a lip-sync
