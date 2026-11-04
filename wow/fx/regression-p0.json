@@ -1,0 +1,66 @@
+{
+  "base_commit": "ea2e790859b2cc98fd732256c44274eb0ee4cdb2",
+  "plans": [
+    {
+      "name": "P-plain",
+      "frames": 50,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "legacy_mp4_frames": 200,
+      "legacy_mp4_psnr_db": "identical",
+      "legacy_mp4_min_frame_psnr_db": "identical",
+      "legacy_mp4_file_identical": true
+    },
+    {
+      "name": "P-base",
+      "frames": 52,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "legacy_mp4_frames": 200,
+      "legacy_mp4_psnr_db": "identical",
+      "legacy_mp4_min_frame_psnr_db": "identical",
+      "legacy_mp4_file_identical": true
+    },
+    {
+      "name": "P-ramp",
+      "frames": 50,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "legacy_mp4_frames": 200,
+      "legacy_mp4_psnr_db": "identical",
+      "legacy_mp4_min_frame_psnr_db": "identical",
+      "legacy_mp4_file_identical": true
+    },
+    {
+      "name": "demo",
+      "frames": 240,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "legacy_mp4_frames": 916,
+      "legacy_mp4_psnr_db": "identical",
+      "legacy_mp4_min_frame_psnr_db": "identical",
+      "legacy_mp4_file_identical": true,
+      "note": "Silent visual derivative; soundtrack removed in both runs; no visual edits"
+    },
+    {
+      "name": "demo2",
+      "frames": 518,
+      "png_bytes_identical": true,
+      "gif_bytes_identical": true,
+      "apng_bytes_identical": true,
+      "legacy_mp4_frames": 2054,
+      "legacy_mp4_psnr_db": "identical",
+      "legacy_mp4_min_frame_psnr_db": "identical",
+      "legacy_mp4_file_identical": true,
+      "note": "Silent visual derivative; soundtrack removed in both runs; no visual edits"
+    }
+  ],
+  "unavailable_plans": [
+    "demo3",
+    "demo4"
+  ]
+}

@@ -20,7 +20,10 @@ def duration(value):
     return int(value)
 
 
-def compose(plan_path, out, formats=('gif',), background='000000'):
+def compose(plan_path, out, formats=('gif',), background='000000', fps=30, platform=None, proxy=False):
+    if set(formats) & {'mp4', 'mov', 'webm'}:
+        from fx_render import render
+        return render(plan_path, out, formats, background, fps=fps, platform=platform, proxy=proxy)
     plan_path = Path(plan_path).resolve(); out = Path(out)
     if out.exists(): raise FileExistsError('Use a new output directory')
     if not formats or not set(formats) <= FORMATS: raise ValueError('Unknown output format')
@@ -172,7 +175,15 @@ def main():
     ap.add_argument('--out',type=Path,required=True)
     ap.add_argument('--formats',nargs='+',choices=sorted(FORMATS),default=['gif'])
     ap.add_argument('--background',default='000000',help='MP4 matte RGB hex')
-    a=ap.parse_args();print(json.dumps(compose(a.timeline,a.out,a.formats,a.background)))
+    ap.add_argument('--fps',type=int,default=30)
+    ap.add_argument('--platform',choices=['tiktok','reels','shorts','youtube','square'])
+    ap.add_argument('--proxy',action='store_true')
+    a=ap.parse_args()
+    try: print(json.dumps(compose(a.timeline,a.out,a.formats,a.background,a.fps,a.platform,a.proxy)))
+    except (ValueError,OSError,RuntimeError,KeyError) as exc:
+        import sys
+        print('compose_timeline: '+str(exc),file=sys.stderr);return 2
+    return 0
 
 
-if __name__=='__main__': main()
+if __name__=='__main__': raise SystemExit(main())

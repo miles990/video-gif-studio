@@ -340,6 +340,10 @@ def analyse_audio(path, info, edges):
     lufs, tp = float(loudness[1]), float(peak[1])
     raw = command([ffmpeg,'-v','error','-i',str(path),'-map','0:a:0','-ac','1','-ar','16000','-f','f32le','-'])
     x = np.frombuffer(raw,np.float32)
+    if tp == -math.inf:
+        return [dict(name=name,level='PASS',applicable=False,
+                     message='N/A: silent audio track',events=[]) for name in
+                ('loudness','true_peak','loudest_100ms','silence')]
     win, hop = 1600,800
     db = np.array([10*math.log10(float(np.mean(x[k:k+win]**2))+1e-12) for k in range(0,max(1,len(x)-win+1),hop)])
     k = int(np.argmax(db)); at=k*.05
@@ -349,7 +353,7 @@ def analyse_audio(path, info, edges):
         i,j = sample_indices(edges,[a,b])
         return event(edges,i,j,seconds=round(a,6),end_seconds=round(b,6))
     full = span(0,float(edges[-1]))
-    return [dict(name='loudness',level='PASS' if abs(lufs+14)<=1 else 'WARN',message='Integrated loudness: target -14 LUFS +/-1',
+    return [dict(name='loudness',level='PASS' if abs(lufs+14)<=1 else 'FAIL',message='Integrated loudness: target -14 LUFS +/-1',
                  events=[full],lufs=lufs if math.isfinite(lufs) else None),
             dict(name='true_peak',level='PASS' if tp<=-1 else 'FAIL',message='True peak ceiling -1 dBTP',
                  events=[full],dbtp=tp if math.isfinite(tp) else None),
@@ -406,6 +410,11 @@ def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
                   frame_times_seconds=edges[:-1].tolist(),checks=checks,sheets=sheets,
                   limitations='Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.',
                   elapsed_seconds=time.perf_counter()-started)
+    if info['kind']=='video':
+        # Mean period handles WebM's alternating 33/34 ms timestamp ticks.
+        report['fps']=round(len(durations)/float(sum(durations)),6)
+        report['cfr']=bool(np.max(np.abs(np.asarray(durations)-1/report['fps']))<=.0011)
+        if report['fps']>60:report['warnings']=['Platform may resample video above 60 fps']
     report['level'] = 'FAIL' if any(c['level']=='FAIL' for c in checks) else ('WARN' if any(c['level']=='WARN' for c in checks) else 'PASS')
     (out/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8',newline='\n')
     lines = [f'# Media QA: {report["level"]}', '', f'{path.name} | {len(durations)} frames | {edges[-1]:.3f} s', '', report['limitations'], '']

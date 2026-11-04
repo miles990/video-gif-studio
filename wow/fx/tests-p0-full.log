@@ -1,0 +1,312 @@
+test_complete_audio_bounded_restore_and_underflow (test_assemble_edit.AssemblyTest.test_complete_audio_bounded_restore_and_underflow) ... ok
+test_all_rotation_angles_apply_once (test_delivery_p0.DeliveryTests.test_all_rotation_angles_apply_once) ... ok
+test_alpha_containers_decode_fractional_alpha (test_delivery_p0.DeliveryTests.test_alpha_containers_decode_fractional_alpha) ... ok
+test_bt709_color_bars (test_delivery_p0.DeliveryTests.test_bt709_color_bars) ... P0_COLOR {"max_channel_error": 3}
+ok
+test_cfr_each_rate_and_container (test_delivery_p0.DeliveryTests.test_cfr_each_rate_and_container) ... ok
+test_composer_streams_and_exporter_quantizes_boundaries (test_delivery_p0.DeliveryTests.test_composer_streams_and_exporter_quantizes_boundaries) ... ok
+test_hdr_chart_decoded_gray_and_hue (test_delivery_p0.DeliveryTests.test_hdr_chart_decoded_gray_and_hue) ... P0_HDR {"gray_rgb_means": [0.0, 24.0, 51.0, 75.0, 101.0, 128.0, 151.0, 174.0, 190.0, 204.0, 215.0], "max_hue_error_degrees": 4.0, "skin_saturation_ratio": 0.9851851851851852}
+ok
+test_hot_audio_normalizes_and_cli_gate_rejects_raw_hot (test_delivery_p0.DeliveryTests.test_hot_audio_normalizes_and_cli_gate_rejects_raw_hot) ... ok
+test_invalid_video_rate_has_clean_cli_error_and_no_output (test_delivery_p0.DeliveryTests.test_invalid_video_rate_has_clean_cli_error_and_no_output) ... ok
+test_odd_beat_pixels_and_manifest (test_delivery_p0.DeliveryTests.test_odd_beat_pixels_and_manifest) ... P0_TIMING {"fps": 24, "detected_events": 10, "max_error_ms": 18.666666666666515}
+P0_TIMING {"fps": 30, "detected_events": 10, "max_error_ms": 16.33333333333337}
+P0_TIMING {"fps": 60, "detected_events": 10, "max_error_ms": 3.0}
+ok
+test_phone_vfr_barcode_and_click_sync (test_delivery_p0.DeliveryTests.test_phone_vfr_barcode_and_click_sync) ... P0_PHONE {"max_source_time_error_ms": 33.333333333333655, "max_flash_click_skew_ms": 0.08333333333333333, "events": 10}
+ok
+test_phone_vfr_rotation_hdr (test_delivery_p0.DeliveryTests.test_phone_vfr_rotation_hdr) ... ok
+test_platform_color_alpha_and_metadata (test_delivery_p0.DeliveryTests.test_platform_color_alpha_and_metadata) ... ok
+test_process_tree_memory_is_bounded_at_small_resolution (test_delivery_p0.DeliveryTests.test_process_tree_memory_is_bounded_at_small_resolution) ... ok
+test_proxy_event_identity_and_model_bypass (test_delivery_p0.DeliveryTests.test_proxy_event_identity_and_model_bypass) ... ok
+test_raster_budget_fails_before_allocating_film (test_delivery_p0.DeliveryTests.test_raster_budget_fails_before_allocating_film) ... ok
+test_source_audio_retention_and_explicit_off (test_delivery_p0.DeliveryTests.test_source_audio_retention_and_explicit_off) ... P0_SOURCE_AUDIO {"retained_440hz_increase_db": 130.44527534445518}
+ok
+test_stream_abort_reaps_encoder_and_does_not_publish (test_delivery_p0.DeliveryTests.test_stream_abort_reaps_encoder_and_does_not_publish) ... ok
+test_stream_pixels_equal_disk_frame_reference (test_delivery_p0.DeliveryTests.test_stream_pixels_equal_disk_frame_reference) ... ok
+test_two_pass_audio_ducking_and_gate (test_delivery_p0.DeliveryTests.test_two_pass_audio_ducking_and_gate) ... P0_AUDIO {"lufs": -14.0, "true_peak_dbtp": -5.3, "duck_db": 9.911533878252904, "attack_ms": 49.99999999999982, "release_ms": 350.000000000005, "non_speech_std_db": 0.0020621908446642975}
+ok
+test_proxy_geometry_and_safe_zone (test_delivery_p0.TimingTests.test_proxy_geometry_and_safe_zone) ... ok
+test_quantization_half_up_and_valid_rates (test_delivery_p0.TimingTests.test_quantization_half_up_and_valid_rates) ... ok
+test_ambiguous_submission_blocks_retry (test_fal.FalTest.test_ambiguous_submission_blocks_retry) ... ok
+test_download_retry_reuses_job (test_fal.FalTest.test_download_retry_reuses_job) ... ok
+test_local_key_permissions (test_fal.FalTest.test_local_key_permissions) ... ok
+test_missing_key_no_ledger (test_fal.FalTest.test_missing_key_no_ledger) ... ok
+test_mixed_modes_rejected_before_network (test_fal.FalTest.test_mixed_modes_rejected_before_network) ... ok
+test_modes_and_no_secrets_in_dry_run (test_fal.FalTest.test_modes_and_no_secrets_in_dry_run) ... ok
+test_queue_url_no_credentials_or_other_host (test_fal.FalTest.test_queue_url_no_credentials_or_other_host) ... ok
+test_reference_limit (test_fal.FalTest.test_reference_limit) ... ok
+test_submit_resume_no_duplicate_and_no_delivery_url (test_fal.FalTest.test_submit_resume_no_duplicate_and_no_delivery_url) ... ok
+test_flow_measures_translation_and_uv_follows_the_surface (test_flow_guides.FlowGuides.test_flow_measures_translation_and_uv_follows_the_surface) ... ok
+test_without_flow_manifest_says_so (test_flow_guides.FlowGuides.test_without_flow_manifest_says_so) ... ok
+test_rigid_motion_survives_reanchoring_so_layers_never_crossfade (test_flow_guides.Layers.test_rigid_motion_survives_reanchoring_so_layers_never_crossfade) ... ok
+test_still_and_rigid_points_never_change_weight_while_deformed_points_cycle (test_flow_guides.Layers.test_still_and_rigid_points_never_change_weight_while_deformed_points_cycle) ... ok
+test_weights_sum_to_one_and_vanish_at_wrap (test_flow_guides.Layers.test_weights_sum_to_one_and_vanish_at_wrap) ... ok
+test_zero_travel_keeps_one_layer_and_rigid_motion_has_no_distortion (test_flow_guides.Layers.test_zero_travel_keeps_one_layer_and_rigid_motion_has_no_distortion) ... ok
+test_canvas_texture_slides_over_moving_body_and_is_flagged (test_flow_guides.MotionCoherence.test_canvas_texture_slides_over_moving_body_and_is_flagged) ... ok
+test_declared_sliding_texture_is_allowed (test_flow_guides.MotionCoherence.test_declared_sliding_texture_is_allowed) ... ok
+test_no_motion_is_inconclusive_and_no_flow_skips (test_flow_guides.MotionCoherence.test_no_motion_is_inconclusive_and_no_flow_skips) ... ok
+test_uv_anchored_texture_moves_with_body_and_passes (test_flow_guides.MotionCoherence.test_uv_anchored_texture_moves_with_body_and_passes) ... ok
+test_fake_engine_and_fallback_offline (test_fx.FxAudioTests.test_fake_engine_and_fallback_offline) ... beat_this fallback to rms: beat_this unavailable; pip install beat_this
+ok
+test_native_no_ffmpeg_energy_onsets (test_fx.FxAudioTests.test_native_no_ffmpeg_energy_onsets) ... ok
+test_all_contracts_purity_determinism_dtype (test_fx.FxCoreTests.test_all_contracts_purity_determinism_dtype) ... ok
+test_color_alpha_and_neutral (test_fx.FxCoreTests.test_color_alpha_and_neutral) ... ok
+test_cross_process_hash_seed (test_fx.FxCoreTests.test_cross_process_hash_seed) ... ok
+test_directional_blur (test_fx.FxCoreTests.test_directional_blur) ... ok
+test_envelopes_and_context (test_fx.FxCoreTests.test_envelopes_and_context) ... ok
+test_flash_grade_crossfade (test_fx.FxCoreTests.test_flash_grade_crossfade) ... ok
+test_halation_locality (test_fx.FxCoreTests.test_halation_locality) ... ok
+test_hex_monotonic (test_fx.FxCoreTests.test_hex_monotonic) ... ok
+test_nearest_palette (test_fx.FxCoreTests.test_nearest_palette) ... ok
+test_seed_rng (test_fx.FxCoreTests.test_seed_rng) ... ok
+test_transition_endpoints (test_fx.FxCoreTests.test_transition_endpoints) ... ok
+test_transparent_geometry_area_and_clean_edges (test_fx.FxCoreTests.test_transparent_geometry_area_and_clean_edges) ... ok
+test_birefnet_injected_masker (test_fx.FxPlanTests.test_birefnet_injected_masker) ... ok
+test_cutout_hidden_rgb (test_fx.FxPlanTests.test_cutout_hidden_rgb) ... ok
+test_downbeats_missing_and_present (test_fx.FxPlanTests.test_downbeats_missing_and_present) ... ok
+test_empty_fx_exact (test_fx.FxPlanTests.test_empty_fx_exact) ... ok
+test_existing_output_and_music_gif (test_fx.FxPlanTests.test_existing_output_and_music_gif) ... ok
+test_offset_rule (test_fx.FxPlanTests.test_offset_rule) ... ok
+test_plugin_actually_renders (test_fx.FxPlanTests.test_plugin_actually_renders) ... ok
+test_plugin_override_and_auto_library (test_fx.FxPlanTests.test_plugin_override_and_auto_library) ... FX override: {'name': 'my_invert', 'previous': 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpib0ldtkc\\one\\fx.py', 'source': 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpib0ldtkc\\two\\fx.py'}
+FX override: {'name': 'my_invert', 'previous': 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpib0ldtkc\\two\\fx.py', 'source': 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpib0ldtkc\\one\\fx.py'}
+ok
+test_render_boundaries_manifest_deterministic (test_fx.FxPlanTests.test_render_boundaries_manifest_deterministic) ... ok
+test_validation_errors_locations_and_options (test_fx.FxPlanTests.test_validation_errors_locations_and_options) ... ok
+test_actual_audio_peak_render_both_offsets (test_fx_fixes.FixTests.test_actual_audio_peak_render_both_offsets) ... ERROR
+test_bad_library_skipped_and_override_preserved (test_fx_fixes.FixTests.test_bad_library_skipped_and_override_preserved) ... ok
+test_flash_cut_between_same_palette_shots (test_fx_fixes.FixTests.test_flash_cut_between_same_palette_shots) ... ok
+test_flash_during_continuous_camera_pan_is_not_cut (test_fx_fixes.FixTests.test_flash_during_continuous_camera_pan_is_not_cut) ... ok
+test_gif_browser_delay_and_exact_total (test_fx_fixes.FixTests.test_gif_browser_delay_and_exact_total) ... ok
+test_held_plate_with_repeated_foreground_accents (test_fx_fixes.FixTests.test_held_plate_with_repeated_foreground_accents) ... ok
+test_in_shot_freeze_becomes_still_segment (test_fx_fixes.FixTests.test_in_shot_freeze_becomes_still_segment) ... ok
+test_long_dissolve_one_edit_and_flash_hidden_cut (test_fx_fixes.FixTests.test_long_dissolve_one_edit_and_flash_hidden_cut) ... ok
+test_validation_and_warning_regressions (test_fx_fixes.FixTests.test_validation_and_warning_regressions) ... ok
+test_whip_two_shots_no_replicated_edges (test_fx_fixes.FixTests.test_whip_two_shots_no_replicated_edges) ... ok
+test_catalog_exact_stable_set_and_cli (test_fx_flags.FeatureFlagTests.test_catalog_exact_stable_set_and_cli) ... ok
+test_cli_interpolation_validation_does_not_leak_environment (test_fx_flags.FeatureFlagTests.test_cli_interpolation_validation_does_not_leak_environment) ... ok
+test_directory_plugins_default_stable_or_explicit_experimental (test_fx_flags.FeatureFlagTests.test_directory_plugins_default_stable_or_explicit_experimental) ... ok
+test_every_experimental_entry_requires_opt_in_before_backends (test_fx_flags.FeatureFlagTests.test_every_experimental_entry_requires_opt_in_before_backends) ... ok
+test_legacy_export_records_usage (test_fx_flags.FeatureFlagTests.test_legacy_export_records_usage) ... ok
+test_plan_and_cli_opt_in_and_manifest (test_fx_flags.FeatureFlagTests.test_plan_and_cli_opt_in_and_manifest) ... ok
+test_preview_filters_before_invoking_functions (test_fx_flags.FeatureFlagTests.test_preview_filters_before_invoking_functions) ... ok
+test_remap_and_interpolation_gates (test_fx_flags.FeatureFlagTests.test_remap_and_interpolation_gates) ... ok
+test_known_plan_offline_detection_and_draft (test_fx_reverse.ReverseTests.test_known_plan_offline_detection_and_draft) ... ok
+test_no_cuts_for_flash_or_zoom_only (test_fx_reverse.ReverseTests.test_no_cuts_for_flash_or_zoom_only) ... ok
+test_partial_flashes_and_all_nested_times_are_integer (test_fx_reverse.ReverseTests.test_partial_flashes_and_all_nested_times_are_integer) ... ok
+test_sampler_retains_flash_between_nominal_frames (test_fx_reverse.ReverseTests.test_sampler_retains_flash_between_nominal_frames) ... ok
+test_static_and_slow_pan_have_no_zooms (test_fx_reverse.ReverseTests.test_static_and_slow_pan_have_no_zooms) ... ok
+test_step_zoom_without_decay_is_not_a_punch (test_fx_reverse.ReverseTests.test_step_zoom_without_decay_is_not_a_punch) ... ok
+test_textured_centered_punch_and_translation_dominant_rejection (test_fx_reverse.ReverseTests.test_textured_centered_punch_and_translation_dominant_rejection) ... ok
+test_all_new_nearest_geometry_keeps_palette (test_fx_round2.FrameworkTests.test_all_new_nearest_geometry_keeps_palette) ... ok
+test_cjk_distinct_glyphs_and_font_manifest (test_fx_round2.FrameworkTests.test_cjk_distinct_glyphs_and_font_manifest) ... ok
+test_depth_fake_cache_license_and_parallax (test_fx_round2.FrameworkTests.test_depth_fake_cache_license_and_parallax) ... ok
+test_flow_single_bar_midpoint_and_alpha (test_fx_round2.FrameworkTests.test_flow_single_bar_midpoint_and_alpha) ... ok
+test_history_plugin_receives_previous_input_and_unity_identity (test_fx_round2.FrameworkTests.test_history_plugin_receives_previous_input_and_unity_identity) ... ok
+test_missing_cv2_and_rembg_no_traceback (test_fx_round2.FrameworkTests.test_missing_cv2_and_rembg_no_traceback) ... ok
+test_new_color_alpha_and_envelopes (test_fx_round2.FrameworkTests.test_new_color_alpha_and_envelopes) ... ok
+test_render_source_clock_and_history_reset (test_fx_round2.FrameworkTests.test_render_source_clock_and_history_reset) ... ok
+test_rife_tensor_fake_and_missing (test_fx_round2.FrameworkTests.test_rife_tensor_fake_and_missing) ... ok
+test_shape_area_and_text_missing_font (test_fx_round2.FrameworkTests.test_shape_area_and_text_missing_font) ... ok
+test_speed_integral_and_ramp (test_fx_round2.FrameworkTests.test_speed_integral_and_ramp) ... ok
+test_unity_implicit_trim_does_not_fit_long_source (test_fx_round2.FrameworkTests.test_unity_implicit_trim_does_not_fit_long_source) ... ok
+test_cumulative_freeze_with_quality_step_and_spike (test_fx_round2.RoundOneRegressions.test_cumulative_freeze_with_quality_step_and_spike) ... ok
+test_full_size_animated_cutout_on_stationary_plate (test_fx_round2.RoundOneRegressions.test_full_size_animated_cutout_on_stationary_plate) ... ok
+test_h264_mid_freeze_keyframe (test_fx_round2.RoundOneRegressions.test_h264_mid_freeze_keyframe) ... skipped 'H.264 regression needs explicit FFmpeg runtime'
+test_transition_grid_and_manifest_warning (test_fx_round2.RoundOneRegressions.test_transition_grid_and_manifest_warning) ... Warning: segments[1].transition crossfade blends colours in nearest/pixel mode
+ok
+test_connection_cli_works_outside_repo_without_adapter (test_grok.GrokTests.test_connection_cli_works_outside_repo_without_adapter) ... ok
+test_download_does_not_send_authorization (test_grok.GrokTests.test_download_does_not_send_authorization) ... ok
+test_expired_session_refreshes_once_via_cli (test_grok.GrokTests.test_expired_session_refreshes_once_via_cli) ... ok
+test_oauth_inspection_never_exposes_token (test_grok.GrokTests.test_oauth_inspection_never_exposes_token) ... ok
+test_request_shape_and_billing_error (test_grok.GrokTests.test_request_shape_and_billing_error) ... ok
+test_spending_limit_is_rejected_without_refresh_or_retry (test_grok.GrokTests.test_spending_limit_is_rejected_without_refresh_or_retry) ... ok
+test_submit_poll_download_idempotency_and_url_redaction (test_grok.GrokTests.test_submit_poll_download_idempotency_and_url_redaction) ... usage: python.exe -m unittest [-h] [--image IMAGE] [--prompt PROMPT] --out OUT
+                              [--model MODEL] [--duration DURATION]
+                              [--resolution {480p,720p,1080p}]
+                              [--auth {oauth,api-key}] (--submit | --resume)
+python.exe -m unittest: error: Job ledger exists: resume it; use a new attempt only after resolving this job
+ok
+test_terminal_job_does_not_download_or_poll_again (test_grok.GrokTests.test_terminal_job_does_not_download_or_poll_again) ... ok
+test_uncertain_submit_never_repeats (test_grok.GrokTests.test_uncertain_submit_never_repeats) ... usage: python.exe -m unittest [-h] [--image IMAGE] [--prompt PROMPT] --out OUT
+                              [--model MODEL] [--duration DURATION]
+                              [--resolution {480p,720p,1080p}]
+                              [--auth {oauth,api-key}] (--submit | --resume)
+python.exe -m unittest: error: Job ledger exists: resume it; use a new attempt only after resolving this job
+ok
+test_fresh_copy_excludes_local_state_and_installed_copy_repeats (test_install.InstallTests.test_fresh_copy_excludes_local_state_and_installed_copy_repeats) ... ok
+test_preserves_existing_unrelated_install (test_install.InstallTests.test_preserves_existing_unrelated_install) ... ok
+test_same_source_symlink_is_preserved (test_install.InstallTests.test_same_source_symlink_is_preserved) ... ERROR
+test_api_noise_is_reproducible (test_js_styles.JSPlugins.test_api_noise_is_reproducible) ... skipped 'no headless Chromium available'
+test_js_plugin_draws_on_canvas_and_is_recorded (test_js_styles.JSPlugins.test_js_plugin_draws_on_canvas_and_is_recorded) ... skipped 'no headless Chromium available'
+test_manga_action_speed_lines_only_where_motion_was_measured (test_js_styles.JSPlugins.test_manga_action_speed_lines_only_where_motion_was_measured) ... skipped 'no headless Chromium available'
+test_math_random_and_wrong_size_are_refused (test_js_styles.JSPlugins.test_math_random_and_wrong_size_are_refused) ... skipped 'no headless Chromium available'
+test_add_never_leaves_plate_foreground (test_mask_review.Edits.test_add_never_leaves_plate_foreground) ... ok
+test_bad_ops_are_refused (test_mask_review.Edits.test_bad_ops_are_refused) ... ok
+test_ops_apply_in_order_within_foreground (test_mask_review.Edits.test_ops_apply_in_order_within_foreground) ... ok
+test_reviewed_by_is_recorded_not_inferred (test_mask_review.Edits.test_reviewed_by_is_recorded_not_inferred) ... ok
+test_extract_carries_mask_manifest_review_status (test_mask_review.ExtractRecordsReview.test_extract_carries_mask_manifest_review_status) ... ok
+test_review_exports_overlay_contact_sheet_and_stability_report (test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report) ... ERROR
+test_review_refuses_mismatched_masks (test_mask_review.Review.test_review_refuses_mismatched_masks) ... ok
+test_roundtrip_and_no_overwrite (test_motion_pack.MotionPackTests.test_roundtrip_and_no_overwrite) ... ok
+test_tamper_and_traversal (test_motion_pack.MotionPackTests.test_tamper_and_traversal) ... ok
+test_rejects_corrupt_white_model_contract (test_motion_pack.WhiteModelPackTests.test_rejects_corrupt_white_model_contract) ... ok
+test_white_model_encode_preserves_provenance (test_motion_pack.WhiteModelPackTests.test_white_model_encode_preserves_provenance) ... ok
+test_auto_candidates_and_manual_grid (test_music.MusicTests.test_auto_candidates_and_manual_grid) ... C:\Users\User\miniforge3\Lib\json\encoder.py:260: ResourceWarning: unclosed file <_io.FileIO name='C:\\Users\\User\\AppData\\Local\\Temp\\tmptgwavtjj\\rv\\overlay.png' mode='rb' closefd=True>
+  def _make_iterencode(markers, _default, _encoder, _indent, _floatstr,
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_silence_does_not_invent_bpm (test_music.MusicTests.test_silence_does_not_invent_bpm) ... ok
+test_trim_fit_beat_cuts_and_soundtrack_all_formats (test_music.MusicTests.test_trim_fit_beat_cuts_and_soundtrack_all_formats) ... [opus @ 000001f686299180] Error parsing Opus packet header.
+ok
+test_duplicate_frames_preserve_timeline (test_pipeline.ExportTests.test_duplicate_frames_preserve_timeline) ... ok
+test_impact_phase_keeps_event_and_extends_its_duration (test_pipeline.ExportTests.test_impact_phase_keeps_event_and_extends_its_duration) ... ok
+test_key_preserves_skin_and_internal_background_gap (test_pipeline.ExportTests.test_key_preserves_skin_and_internal_background_gap) ... ok
+test_opaque_skin_and_magenta_are_not_transparency (test_pipeline.ExportTests.test_opaque_skin_and_magenta_are_not_transparency) ... ok
+test_pixel_export_preserves_aspect_and_integer_blocks (test_pipeline.ExportTests.test_pixel_export_preserves_aspect_and_integer_blocks) ... ok
+test_retiming_keeps_pauses_and_speeds_motion (test_pipeline.ExportTests.test_retiming_keeps_pauses_and_speeds_motion) ... ok
+test_full_scale_square_peak_fails (test_qa_media.AudioQATests.test_full_scale_square_peak_fails) ... ok
+test_loudness_peak_silence_and_loudest_window (test_qa_media.AudioQATests.test_loudness_peak_silence_and_loudest_window) ... ok
+test_no_audio_is_not_silence (test_qa_media.AudioQATests.test_no_audio_is_not_silence) ... ok
+test_black_and_flat_first_frame (test_qa_media.MediaQATests.test_black_and_flat_first_frame) ... ok
+test_cli_codes_and_missing_runtime (test_qa_media.MediaQATests.test_cli_codes_and_missing_runtime) ... ok
+test_cut_tolerance_caps_long_median_frames (test_qa_media.MediaQATests.test_cut_tolerance_caps_long_median_frames) ... ok
+test_flash_frame_and_time (test_qa_media.MediaQATests.test_flash_frame_and_time) ... ok
+test_freeze_hold_and_partial_hold (test_qa_media.MediaQATests.test_freeze_hold_and_partial_hold) ... ok
+test_hard_cuts (test_qa_media.MediaQATests.test_hard_cuts) ... ok
+test_hidden_rgb_and_visible_exposure (test_qa_media.MediaQATests.test_hidden_rgb_and_visible_exposure) ... ok
+test_merged_gif_cut_one_second_late_fails (test_qa_media.MediaQATests.test_merged_gif_cut_one_second_late_fails) ... ok
+test_no_audio_reports_not_applicable (test_qa_media.MediaQATests.test_no_audio_reports_not_applicable) ... ok
+test_normal_loop (test_qa_media.MediaQATests.test_normal_loop) ... ok
+test_position_seam (test_qa_media.MediaQATests.test_position_seam) ... ok
+test_repeated_encoder_frames_are_not_pops (test_qa_media.MediaQATests.test_repeated_encoder_frames_are_not_pops) ... ok
+test_runtime_errors_include_recovery_command (test_qa_media.MediaQATests.test_runtime_errors_include_recovery_command) ... ok
+test_short_hook (test_qa_media.MediaQATests.test_short_hook) ... ok
+test_small_patch_pop (test_qa_media.MediaQATests.test_small_patch_pop) ... ok
+test_speed_seam (test_qa_media.MediaQATests.test_speed_seam) ... ok
+test_timeline_joins_and_still (test_qa_media.MediaQATests.test_timeline_joins_and_still) ... ok
+test_varying_delays_and_apng_poster (test_qa_media.MediaQATests.test_varying_delays_and_apng_poster) ... ok
+test_recovers_a_clipped_neutral_strand_without_changing_protected_light (test_recover_chroma_detail.ChromaRecoveryTest.test_recovers_a_clipped_neutral_strand_without_changing_protected_light) ... ok
+test_rejects_non_green_key_and_misaligned_source (test_recover_chroma_detail.ChromaRecoveryTest.test_rejects_non_green_key_and_misaligned_source) ... ok
+test_review_mask_is_a_hard_boundary (test_recover_chroma_detail.ChromaRecoveryTest.test_review_mask_is_a_hard_boundary) ... ok
+test_bad_plugin_output_is_refused (test_redraw_plugins.Plugins.test_bad_plugin_output_is_refused) ... ok
+test_bundled_paper_cutout_is_deterministic_and_shadowed (test_redraw_plugins.Plugins.test_bundled_paper_cutout_is_deterministic_and_shadowed) ... ok
+test_plugin_gets_context_and_is_recorded (test_redraw_plugins.Plugins.test_plugin_gets_context_and_is_recorded) ... ok
+test_agent_notes_are_labelled_as_agent_review (test_redraw_plugins.QC.test_agent_notes_are_labelled_as_agent_review) ... ok
+test_builtin_and_canvas_grain_pass (test_redraw_plugins.QC.test_builtin_and_canvas_grain_pass) ... ok
+test_declared_silhouette_tolerance_is_respected (test_redraw_plugins.QC.test_declared_silhouette_tolerance_is_respected) ... ok
+test_nothing_still_is_inconclusive_not_passed (test_redraw_plugins.QC.test_nothing_still_is_inconclusive_not_passed) ... ok
+test_opaque_background_does_not_hide_the_figure_from_checks (test_redraw_plugins.QC.test_opaque_background_does_not_hide_the_figure_from_checks) ... ok
+test_reseeded_texture_fails_unless_boil_is_declared (test_redraw_plugins.QC.test_reseeded_texture_fails_unless_boil_is_declared) ... ok
+test_silhouette_and_determinism_failures (test_redraw_plugins.QC.test_silhouette_and_determinism_failures) ... ok
+test_texture_swimming_on_still_torso_is_caught (test_redraw_plugins.QC.test_texture_swimming_on_still_torso_is_caught) ... ok
+test_adjacent_smoothing_preserves_a_thin_attached_line (test_repair_edges.RepairTests.test_adjacent_smoothing_preserves_a_thin_attached_line) ... ok
+test_pixel_mode_removes_without_softening (test_repair_edges.RepairTests.test_pixel_mode_removes_without_softening) ... ok
+test_preserves_lighting_and_protected_overlap (test_repair_edges.RepairTests.test_preserves_lighting_and_protected_overlap) ... ok
+test_reject_mismatched_mask (test_repair_edges.RepairTests.test_reject_mismatched_mask) ... ok
+test_cli_preserves_unmodified_frames_and_protected_gap (test_repair_material_boundary.MaterialBoundaryTests.test_cli_preserves_unmodified_frames_and_protected_gap) ... ok
+test_protected_negative_space_and_hidden_rgb (test_repair_material_boundary.MaterialBoundaryTests.test_protected_negative_space_and_hidden_rgb) ... ok
+test_recovers_missing_rgb_keeps_shading_and_gap (test_repair_material_boundary.MaterialBoundaryTests.test_recovers_missing_rgb_keeps_shading_and_gap) ... ok
+test_rejects_unreviewed_or_out_of_bounds_curve (test_repair_material_boundary.MaterialBoundaryTests.test_rejects_unreviewed_or_out_of_bounds_curve) ... ok
+test_alpha_only_recovery_preserves_despill_and_source_is_explicit (test_restore_opaque_material.OpaqueRestore.test_alpha_only_recovery_preserves_despill_and_source_is_explicit) ... ok
+test_damaged_nonzero_rgb_needs_separately_reviewed_source_recovery (test_restore_opaque_material.OpaqueRestore.test_damaged_nonzero_rgb_needs_separately_reviewed_source_recovery) ... ok
+test_explicit_rgb_damage_can_fix_opaque_artifact_but_protection_wins (test_restore_opaque_material.OpaqueRestore.test_explicit_rgb_damage_can_fix_opaque_artifact_but_protection_wins) ... ok
+test_refuse_alpha_as_review_mask_or_mismatched_source (test_restore_opaque_material.OpaqueRestore.test_refuse_alpha_as_review_mask_or_mismatched_source) ... ok
+test_source_shading_preserved_without_filling_protected_gaps (test_restore_opaque_material.OpaqueRestore.test_source_shading_preserved_without_filling_protected_gaps) ... ok
+test_unreviewed_graded_contour_is_exactly_unchanged (test_restore_opaque_material.OpaqueRestore.test_unreviewed_graded_contour_is_exactly_unchanged) ... ok
+test_preserves_existing_output (test_review_pair.ReviewPairTests.test_preserves_existing_output) ... ok
+test_rejects_unbounded_requests_before_reading_media (test_review_pair.ReviewPairTests.test_rejects_unbounded_requests_before_reading_media) ... ok
+test_api_mode_has_no_cli_or_oauth_fallback (test_runtime.RuntimeTests.test_api_mode_has_no_cli_or_oauth_fallback) ... ok
+test_existing_pair_does_not_download (test_runtime.RuntimeTests.test_existing_pair_does_not_download) ... ok
+test_explicit_bad_path_never_silently_falls_back (test_runtime.RuntimeTests.test_explicit_bad_path_never_silently_falls_back) ... ok
+test_matting_preserves_rgb_input_alpha_and_timing (test_runtime.RuntimeTests.test_matting_preserves_rgb_input_alpha_and_timing) ... ok
+test_missing_pair_fetches_both_during_setup (test_runtime.RuntimeTests.test_missing_pair_fetches_both_during_setup) ... ok
+test_no_media_during_read_only_lookup (test_runtime.RuntimeTests.test_no_media_during_read_only_lookup) ... ok
+test_oauth_does_not_pick_up_ambient_api_key (test_runtime.RuntimeTests.test_oauth_does_not_pick_up_ambient_api_key) ... ok
+test_resume_cannot_switch_auth_mode (test_runtime.RuntimeTests.test_resume_cannot_switch_auth_mode) ... ok
+test_resume_inherits_api_mode_without_cli_flag (test_runtime.RuntimeTests.test_resume_inherits_api_mode_without_cli_flag) ... ok
+test_binary_mode_keeps_previous_threshold_behavior (test_soft_effect_alpha.SoftAlpha.test_binary_mode_keeps_previous_threshold_behavior) ... ok
+test_mask_edits_can_reach_low_alpha_pixels_when_asked (test_soft_effect_alpha.SoftAlpha.test_mask_edits_can_reach_low_alpha_pixels_when_asked) ... ok
+test_plate_alpha_style_needs_alpha_guides (test_soft_effect_alpha.SoftAlpha.test_plate_alpha_style_needs_alpha_guides) ... ok
+test_plate_mode_keeps_soft_pixels_and_stores_measured_alpha (test_soft_effect_alpha.SoftAlpha.test_plate_mode_keeps_soft_pixels_and_stores_measured_alpha) ... ok
+test_render_multiplies_coverage_by_measured_alpha_unless_solid (test_soft_effect_alpha.SoftAlpha.test_render_multiplies_coverage_by_measured_alpha_unless_solid) ... ok
+test_invalid_timing_creates_no_output (test_sprite.SpriteTests.test_invalid_timing_creates_no_output) ... ok
+test_multipage_rgba_timing_and_padding (test_sprite.SpriteTests.test_multipage_rgba_timing_and_padding) ... ok
+test_effect_masks_must_match_plate (test_stylized_effects.EffectGuides.test_effect_masks_must_match_plate) ... ok
+test_reviewed_effect_masks_get_their_own_layer_and_palette (test_stylized_effects.EffectGuides.test_reviewed_effect_masks_get_their_own_layer_and_palette) ... ok
+test_without_effect_masks_manifest_stays_single_layer (test_stylized_effects.EffectGuides.test_without_effect_masks_manifest_stays_single_layer) ... ok
+test_effect_keeps_its_color_without_outline_by_default (test_stylized_effects.EffectRender.test_effect_keeps_its_color_without_outline_by_default) ... ok
+test_effect_solid_fill_and_bad_effect_style (test_stylized_effects.EffectRender.test_effect_solid_fill_and_bad_effect_style) ... ok
+test_effect_style_on_single_layer_guides_is_rejected (test_stylized_effects.EffectRender.test_effect_style_on_single_layer_guides_is_rejected) ... ok
+test_order_and_opacity (test_stylized_effects.EffectRender.test_order_and_opacity) ... ok
+test_proposal_drops_small_speckles_and_refuses_bad_reference (test_stylized_effects.Proposal.test_proposal_drops_small_speckles_and_refuses_bad_reference) ... ok
+test_proposal_marks_colors_absent_from_reference_frames_and_stays_pending (test_stylized_effects.Proposal.test_proposal_marks_colors_absent_from_reference_frames_and_stays_pending) ... ok
+test_rare_reference_colors_and_small_shifts_are_not_proposed (test_stylized_effects.Proposal.test_rare_reference_colors_and_small_shifts_are_not_proposed) ... ok
+test_guides_keep_timing_holes_and_report_mask_stability (test_stylized_redraw.Guides.test_guides_keep_timing_holes_and_report_mask_stability) ... ok
+test_refuses_existing_output_mismatch_and_plate_without_alpha (test_stylized_redraw.Guides.test_refuses_existing_output_mismatch_and_plate_without_alpha) ... ok
+test_shared_palette_is_deterministic (test_stylized_redraw.Guides.test_shared_palette_is_deterministic) ... ok
+test_rejects_bad_style (test_stylized_redraw.Render.test_rejects_bad_style) ... ok
+test_render_is_byte_identical_and_translation_coherent (test_stylized_redraw.Render.test_render_is_byte_identical_and_translation_coherent) ... ok
+test_render_preserves_canvas_timing_and_hole (test_stylized_redraw.Render.test_render_preserves_canvas_timing_and_hole) ... ok
+test_solid_fill_background_and_empty_frame (test_stylized_redraw.Render.test_solid_fill_background_and_empty_frame) ... ok
+test_insert_tail_hold_then_next_first_and_animation (test_timeline.TimelineTests.test_insert_tail_hold_then_next_first_and_animation) ... ok
+test_invalid_first_previous_creates_no_output (test_timeline.TimelineTests.test_invalid_first_previous_creates_no_output) ... ok
+test_loop_exact_and_complete_cycles (test_timeline.TimelineTests.test_loop_exact_and_complete_cycles) ... ok
+test_loop_tiny_remainder_rejected (test_timeline.TimelineTests.test_loop_tiny_remainder_rejected) ... ok
+test_one_still_apng (test_timeline.TimelineTests.test_one_still_apng) ... ok
+test_actual_alpha_and_variable_timing_both_containers (test_video.VideoTests.test_actual_alpha_and_variable_timing_both_containers) ... ok
+
+======================================================================
+ERROR: test_actual_audio_peak_render_both_offsets (test_fx_fixes.FixTests.test_actual_audio_peak_render_both_offsets)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_fx_fixes.py", line 47, in test_actual_audio_peak_render_both_offsets
+    peaks.append(max(np.array(images[i])[:,:,:3].mean() for i in ids))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+
+======================================================================
+ERROR: test_same_source_symlink_is_preserved (test_install.InstallTests.test_same_source_symlink_is_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_install.py", line 40, in test_same_source_symlink_is_preserved
+    p=Path(d);source=self.source(p/'source');skills=p/'skills';skills.mkdir();target=skills/'video-gif-studio';target.symlink_to(source,target_is_directory=True)
+                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\pathlib.py", line 1386, in symlink_to
+    os.symlink(target, self, target_is_directory)
+OSError: [WinError 1314] 用戶端沒有這項特殊權限。: 'C:\\Users\\User\\AppData\\Local\\Temp\\tmp040rquwl\\source' -> 'C:\\Users\\User\\AppData\\Local\\Temp\\tmp040rquwl\\skills\\video-gif-studio'
+
+======================================================================
+ERROR: test_review_exports_overlay_contact_sheet_and_stability_report (test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\shutil.py", line 633, in _rmtree_unsafe
+    os.unlink(fullname)
+PermissionError: [WinError 32] 程序無法存取檔案，因為檔案正由另一個程序使用。: 'C:\\Users\\User\\AppData\\Local\\Temp\\tmptgwavtjj\\rv\\overlay.png'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_mask_review.py", line 25, in test_review_exports_overlay_contact_sheet_and_stability_report
+    with tempfile.TemporaryDirectory() as t:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\tempfile.py", line 946, in __exit__
+    self.cleanup()
+  File "C:\Users\User\miniforge3\Lib\tempfile.py", line 950, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+  File "C:\Users\User\miniforge3\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "C:\Users\User\miniforge3\Lib\shutil.py", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+  File "C:\Users\User\miniforge3\Lib\tempfile.py", line 905, in onexc
+    _os.unlink(path)
+PermissionError: [WinError 32] 程序無法存取檔案，因為檔案正由另一個程序使用。: 'C:\\Users\\User\\AppData\\Local\\Temp\\tmptgwavtjj\\rv\\overlay.png'
+
+----------------------------------------------------------------------
+Ran 232 tests in 76.740s
+
+FAILED (errors=3, skipped=5)

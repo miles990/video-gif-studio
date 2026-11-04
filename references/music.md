@@ -40,7 +40,7 @@ Automatic analysis uses 10ms RMS-onset periodicity over 60–200 BPM. It reports
   --formats mp4 --background 000000
 ```
 
-All paths resolve from the plan. Prepared animations have `manifest.json` and sibling RGBA `frames/` from the existing GIF pipeline. Convert an existing source video with `gif_pipeline.py` first; the composer does not directly ingest arbitrary video files or retain their embedded audio.
+All paths resolve from the plan. Prepared animations have `manifest.json` and sibling RGBA `frames/` from the existing GIF pipeline. Conform phone footage with `intake.py`, then prepare frames with `gif_pipeline.py`; the visual composer reads prepared frames. To retain embedded sound, explicitly provide the aligned video/audio as `source_audio` and enable `keep_audio` (below).
 
 Editing operations:
 
@@ -56,7 +56,65 @@ Use a cut only where editorially appropriate; do not cut on every beat by defaul
 
 A `music` entry requires at least one MOV/WebM/MP4 output; GIF, APNG and sprites cannot carry audio. Additional silent previews can be requested alongside a video. The soundtrack starts at `in_ms` in the source, maps to output time zero, is gain-adjusted and trimmed to the visual duration. Short music is padded with silence, never silently looped or stretched. The configured fades apply only at the overall start/end; continuous music is not cut/faded at every visual edit.
 
-The mux step stream-copies the verified video, adding PCM in MOV, Opus in WebM or AAC in MP4. It verifies stream presence, total duration (within 100ms codec tolerance), and actual decoded audio duration. Reports record source hash, offset, gain and fades. These checks do not replace listening for clipped gain, correct accents or aesthetic timing. MOV/WebM alpha support remains player-dependent; MP4 is opaque.
+The legacy soundtrack-only mux step stream-copies video, adding PCM in MOV, Opus in WebM or AAC in MP4. It verifies stream presence, total duration (within 100ms codec tolerance), and actual decoded audio duration. Reports record source hash, offset, gain and fades. Platform/source-audio delivery uses the gated two-pass path below. These checks do not replace listening for correct accents or aesthetic timing. MOV/WebM alpha support remains player-dependent; MP4 is opaque.
+
+## Delivery audio
+
+P0 plans accept an optional continuous, timeline-aligned `source_audio` (an audio
+file or video with an audio stream), `keep_audio`, `duck` and `loudnorm`:
+
+```json
+{
+  "segments": [{"type":"still", "image":"frame.png", "duration_ms":20000}],
+  "source_audio": {"file":"phone-original.mp4", "in_ms":0, "gain_db":0},
+  "keep_audio": true,
+  "music": {"file":"music.wav", "in_ms":0, "gain_db":0},
+  "duck": true,
+  "loudnorm": true
+}
+```
+
+`fx_render --keep-audio [on|off] --duck on|off --loudnorm on|off` overrides plan
+booleans. Source retention defaults off; when source sound is requested, `source_audio`
+must name the aligned track. This is not an automatic reconstruction of audio from
+trimmed/reordered/retimed PNG manifests. Supply an edited continuous track for those
+operations. `in_ms`, `gain_db`, `fade_in_ms`, `fade_out_ms` work on both tracks.
+
+When both tracks are present, ducking defaults on. Presence detection uses 10 ms
+RMS windows and the larger of 26 dB below the loudest source window, 8 dB above
+the source's 20th-percentile noise floor, and 1e-7. Trailing padded silence is
+excluded from the floor estimate. Activity must last at least 40 ms before gaps
+up to 150 ms are bridged, rejecting short clicks and steady tone/noise beds.
+Detected intervals automate music gain to **-10 dB**
+with 50 ms attack and 500 ms release; the depth does not depend on speech level.
+NumPy writes a stereo 48 kHz float PCM gain envelope in one-second blocks, applied
+with `amultiply`; filter graph size does not grow with the number of intervals.
+The source is mixed back unchanged. This is level-based presence detection, not a
+speech classifier; varying non-speech sounds can still trigger it. A lone music
+track never ducks. `manifest.audio.ducking` records intervals and detector settings.
+
+Every input is converted to stereo before mixing, preserving distinct music L/R
+content when the source is mono. Mixed float PCM is measured with loudnorm, then
+a single constant gain targets -14 LUFS. A 192 kHz oversampled lookahead limiter
+follows, with a -1.5 dBTP ceiling, 5 ms attack, 50 ms release, makeup gain disabled
+and latency compensated; output returns to 48 kHz. This limits transient peaks
+without lowering the entire mix to accommodate them. First-pass measurements,
+`second_pass.gain_db` and limiter settings are retained in `manifest.audio`.
+The extra 0.5 dB margin accommodates encoding; the final encoded measurement
+remains authoritative. There is no dynamic loudness normalization that lifts
+ducked passages back up. Excessively peak-dense material can still fail the gate.
+
+Encoded audio is independently measured with ebur128. Loudness outside -14 ±1 LUFS
+or true peak above -1 dBTP blocks publication; `qa_media.py` also returns nonzero.
+No audio track and an entirely silent supplied track are valid silent delivery;
+QA marks their loudness checks `applicable: false`, with an `N/A` message. Disabling
+loudnorm does not disable the gate. Platform exports always use this gate. Existing
+non-platform music-only plans retain their legacy mux unless `loudnorm` is explicitly
+selected, preserving old soundtrack behavior; run `qa_media` before delivering them.
+
+AAC stereo 48 kHz / 256 kbps is used for MP4/MOV; WebM uses Opus. Tracks are padded
+or trimmed to the actual quantized video duration. QA establishes measured levels,
+not intelligibility or perceptual sync; listen to the final mix.
 
 Supported now: one continuous soundtrack, prepared-frame trim/reorder/split/uniform speed and duration fit, beat-aligned cuts, stills/loops and video output. Not bundled: multitrack audio mixing, subtitles, a graphical editor, automatic phrase-aware montage, music-conditioned Grok generation or an autonomous multi-generation chain runner. Future adapters should preserve explicit source/output clocks and per-event timing.
 

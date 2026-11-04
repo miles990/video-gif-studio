@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 
 
-def export(frames, manifest, target, background="000000"):
+def _legacy_export(frames, manifest, target, background="000000"):
     files = sorted(Path(frames).glob('*.png'))
     data = json.loads(Path(manifest).read_text())
     durations = data['durations_ms']
@@ -109,15 +109,51 @@ def export(frames, manifest, target, background="000000"):
     return report
 
 
+def export(frames, manifest, target, background="000000", fps=30, platform=None, proxy=False):
+    from delivery import settings, encode_frames, rate, quantize
+    import bisect
+    rate(fps)
+    if fps==100 and not platform and not proxy:
+        return _legacy_export(frames,manifest,target,background)
+    files=sorted(Path(frames).glob('*.png'))
+    times=json.loads(Path(manifest).read_text())['durations_ms']
+    if not files or len(files)!=len(times) or any(not isinstance(t,(int,float)) or not math.isfinite(t) or t<=0 for t in times):
+        raise ValueError('Frame count must match positive durations_ms')
+    edges=np.cumsum([0]+times)
+    events=[quantize(float(t),fps) for t in edges]
+    frame_edges=[e['frame'] for e in events]
+    frame_count=math.floor(edges[-1]*fps/1000+.5)
+    if frame_count<1: raise ValueError('Timeline rounds to zero video frames; choose a higher fps or longer duration')
+    with Image.open(files[0]) as first: config=settings(first.size,fps,platform,proxy)
+    def frames_iter():
+        from PIL import ImageOps
+        for k in range(frame_count):
+            i=min(len(files)-1,bisect.bisect_right(frame_edges,k)-1)
+            with Image.open(files[i]) as im:
+                if im.size!=first.size: raise ValueError('All frames must have the same size')
+                yield ImageOps.pad(im.convert('RGBA'),tuple(config['size']),color=(0,0,0,0))
+    report=encode_frames(frames_iter(),target,config,background)
+    report['events']=events
+    Path(target).with_suffix(Path(target).suffix+'.json').write_text(json.dumps(report,indent=2))
+    return report
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('frames', type=Path)
     ap.add_argument('--manifest', type=Path, required=True)
     ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--background', default='000000', help='MP4 matte color, six hex digits; default black')
+    ap.add_argument('--fps',type=int,default=30)
+    ap.add_argument('--platform',choices=['tiktok','reels','shorts','youtube','square'])
+    ap.add_argument('--proxy',action='store_true')
     a = ap.parse_args()
-    print(json.dumps(export(a.frames,a.manifest,a.out,a.background)))
+    try: print(json.dumps(export(a.frames,a.manifest,a.out,a.background,a.fps,a.platform,a.proxy)))
+    except (ValueError,OSError,RuntimeError,KeyError) as exc:
+        import sys
+        print('video_export: '+str(exc),file=sys.stderr);return 2
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())
