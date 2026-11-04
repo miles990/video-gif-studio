@@ -1,6 +1,6 @@
 # wow 輕量 — video-gif-studio：程式化特效／轉場框架（fx）（2026-11-04）
 
-交付：輕量（wow references/lite.md）。分支 `fx-framework`，開發副本 C:\Users\User\src\video-gif-studio；
+交付：輕量（wow references/lite.md）。分支 `fx-framework`，開發 worktree C:\Users\User\src\vgs-fx（原 C:\Users\User\src\video-gif-studio 是安裝目錄的 junction）；
 已安裝的 ~/.codex/skills/video-gif-studio 在驗收通過、合併前不動。
 來源（使用者 2026-11-04 貼的推文 @MANISH1027512）：「特效說白了就是一個函數：輸入一幀畫面和當前時間，輸出處理好的一幀。
 轉場也一樣，輸入前後兩個鏡頭的畫面和進度，輸出中間那一幀」；例：閃白、卡片隨節拍跳、甩鏡、六邊形快門、膠片光暈、摳人；
