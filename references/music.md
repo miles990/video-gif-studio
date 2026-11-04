@@ -62,4 +62,4 @@ Supported now: one continuous soundtrack, prepared-frame trim/reorder/split/unif
 
 ## Effects and optional downbeats
 
-For requested transitions/crossfades and beat/onset/energy envelopes, use [fx_render](fx.md). The default RMS engine does not identify downbeats; optional `--engine beat_this` records real model downbeats or a clearly documented RMS fallback. Existing RMS beat/onset timestamps stay unchanged.
+For requested transitions/crossfades and beat/onset/energy envelopes, use [fx_render](fx.md). The default RMS engine does not identify downbeats; optional `--engine beat_this` records real model downbeats or a clearly documented RMS fallback. Existing RMS beat/onset timestamps stay unchanged. Model beat/downbeat times are rounded to integer milliseconds; its BPM is derived from mean model beat intervals. Beat This! can report double-time (the neon recording is about 164 BPM versus the RMS estimate of 82); inspect the intended pulse before editing.

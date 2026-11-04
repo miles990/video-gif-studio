@@ -161,6 +161,10 @@ def render(plan_path, out, formats=('gif',), background='000000'):
     # 10ms exposures retain existing exporters, with the mean requested rate.
     events = [s['start_ms'] for s in segments]
     events += [round(t/10)*10 for e in effects for t in e['trigger_times_ms']]
+    # Resolve the first decay step too: repeated maximum-white frames otherwise
+    # let tiny codec differences move the measured peak several encoded frames.
+    events += [round(t/10)*10+10 for e in effects if e['name']=='flash_white' for t in e['trigger_times_ms']]
+    events += [tr['cut_ms']+10 for tr in transitions if tr['name']=='flash_cut']
     sample_edges = sorted(set([round(k*1000/ctx.fps/10)*10 for k in range(math.ceil(total*ctx.fps/1000))]+[t for t in events if 0<=t<=total]+[total]))
     if len(sample_edges)>2 and sample_edges[-1]-sample_edges[-2]<20: sample_edges.pop(-2)
     cache = {}
@@ -224,7 +228,7 @@ def preview(out, image_path=None):
         frame[55:125,110:210,:3] = [245,195,100]
     ctx = Context(320,180); other = frame[:,::-1].copy(); other[:,:,:3] = other[:,:,:3][:,:,::-1]
     settings = {'grade':{'sat':.5,'temp':.08,'gain':1.15},'zoom_punch':{'scale':1.18},
-                'beat_bounce':{'translate_px':20,'rotation_deg':-5,'scale':1.06},'halation':{'amount':1,'radius':9}}
+                'beat_bounce':{'translate_px':20,'rotation_deg':-5,'scale':1.06},'halation':{'amount':2,'radius':12,'threshold':.35}}
     tiles = [('original',frame)]
     for name,spec in EFFECTS.items():
         source = frame.copy()

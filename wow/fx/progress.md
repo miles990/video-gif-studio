@@ -29,3 +29,5 @@
 - 21:40 審查一（獨立 Claude）判「未達成」：框架本體過（S-1/3/4/6/9/13），但成片沒有記憶點（定格不是摳原鏡頭主體、卡片沒隨拍彈、甩鏡接縫、太暗）；S-10 成片中重輕拍隨機；fx_reverse 拆不了自己的片；示範無法 fresh clone 重現；保留樣本 6/14 不過。完整審查留在 scratchpad/review1/review.md（含保留樣本細節，不給建造者、不入庫）。
 - 21:45 修正一（Codex fx-fix1）派工：8 點修正清單（保留樣本只以一般化描述轉達）。
 - 22:00 修正一（fx-fix1）跑到 11m43s 時被 Claude Code 因系統記憶體不足收掉（BiRefNet 摳像＋Numba 編譯＋其他工作階段）。已改 12 檔、未完成；殘留程序已確認無。半成品以 WIP commit 保存，待使用者同意後 `--resume 20261104-125709-fx-fix1 --sandbox workspace-write` 續跑。
+- 22:10 使用者：「好都做, 看還有沒有更好的做法?用最好合適的做法做」→ 第二輪規格 spec-2.md（S-15～S-24＋S-展示2：時間重映射、光流／RIFE 補格、畫格歷史、約 25 個新效果與轉場、2.5D 視差）。模型已下載：depth-anything-v2-small.onnx（Apache-2.0）、rife_v4.25_lite.onnx（MIT）。
+- 22:25 第二輪獨立答案卷 acceptance-2.md＋保留樣本 12 條（scratchpad/fx-holdout-2.md）完成。第二輪建造排在第一輪修正＋審查二之後。

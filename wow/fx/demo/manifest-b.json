@@ -1,0 +1,1732 @@
+{
+  "durations_ms": [
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    10,
+    10,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    10,
+    30,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    10,
+    30,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    20,
+    20,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40
+  ],
+  "source_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157,
+    158,
+    159,
+    160,
+    161,
+    162,
+    163,
+    164,
+    165,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    172,
+    173,
+    174,
+    175,
+    176,
+    177,
+    178,
+    179,
+    180,
+    181,
+    182,
+    183,
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191,
+    192,
+    193,
+    194,
+    195,
+    196,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    222,
+    223,
+    224,
+    225,
+    226,
+    227,
+    228,
+    229,
+    230,
+    231,
+    232,
+    233,
+    234,
+    235,
+    236,
+    237,
+    238,
+    239
+  ],
+  "size": [
+    640,
+    360
+  ],
+  "segments": [
+    {
+      "edit": {
+        "type": "animation",
+        "manifest": "work/round1/opening-b/manifest.json",
+        "in_ms": 0,
+        "out_ms": 2920,
+        "end_beat": 8
+      },
+      "start_ms": 0,
+      "requested_duration_ms": 2920,
+      "ending": null,
+      "type": "animation",
+      "start_frame": 0,
+      "end_frame_exclusive": 76,
+      "duration_ms": 2920
+    },
+    {
+      "edit": {
+        "type": "still",
+        "image": "work/round1/card-b.png",
+        "end_beat": 16
+      },
+      "start_ms": 2920,
+      "requested_duration_ms": 2940,
+      "ending": null,
+      "type": "still",
+      "start_frame": 76,
+      "end_frame_exclusive": 153,
+      "duration_ms": 2940
+    },
+    {
+      "edit": {
+        "type": "animation",
+        "manifest": "work/round1/closing-b/manifest.json",
+        "in_ms": 0,
+        "out_ms": 1460,
+        "end_beat": 20
+      },
+      "start_ms": 5860,
+      "requested_duration_ms": 1460,
+      "ending": null,
+      "type": "animation",
+      "start_frame": 153,
+      "end_frame_exclusive": 191,
+      "duration_ms": 1460
+    },
+    {
+      "edit": {
+        "type": "animation",
+        "manifest": "work/round1/opening-b/manifest.json",
+        "in_ms": 3200,
+        "out_ms": 5020,
+        "end_beat": 25
+      },
+      "start_ms": 7320,
+      "requested_duration_ms": 1840,
+      "ending": null,
+      "type": "animation",
+      "start_frame": 191,
+      "end_frame_exclusive": 240,
+      "duration_ms": 1840
+    }
+  ],
+  "source_frames": [
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00000.png",
+      "sha256": "c36e9ac4d39ab0dbcfdce112b84777cc1d6ff6f579886eb44061042d0b4a5d7b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00001.png",
+      "sha256": "38c4f25e0758c1f9640dcae3198facce421f8c5fdae34ff9504c4a9b6a3abc2d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00002.png",
+      "sha256": "5fd4d7cf0d3a18f2afa4a5f2310b6d09ab7f29a5cb145a8ab6d1e1e98a62c574"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00003.png",
+      "sha256": "ed7013ea4719ca406b42bc6db0fafd0f0ea2f04c0b3fe77ded1f357660a19710"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00004.png",
+      "sha256": "7ce6b210c5f6e81c7a5290f17b144bff9490770a2061590c4b2f582542e90e8c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00005.png",
+      "sha256": "140099ad77c09cd37ffca4e6d55f7a8243af2401b68b15b081a61e222e2c1152"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00006.png",
+      "sha256": "1eb8206bb0fa3ff7db8593a8d2a7c04d3631c50630c95332c70411f338f4f6e9"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00007.png",
+      "sha256": "5a2dbe75a77790e8e70b26c48ad0f511fc8a12f3672839af85763fb510f2d824"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00008.png",
+      "sha256": "b901c5dfbbefbde2aa9658523691232bc53d24302cfdf17c4c383786f8ff2aa2"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00009.png",
+      "sha256": "e827dceba92a7ad6a022a0f531dac1078902480700a3325e602b5ea3b16da2cd"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00010.png",
+      "sha256": "b9cbca1e6bbc0409a36234f2abad3cb48097f2b216581c88b8a91624cfa2987b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00011.png",
+      "sha256": "90a9138f3e66fb26894bc5ef7d595f589e0e71c14a9b47ff558f1d8a5edc60be"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00012.png",
+      "sha256": "90a9138f3e66fb26894bc5ef7d595f589e0e71c14a9b47ff558f1d8a5edc60be"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00013.png",
+      "sha256": "fbea0a767f6793c1f5602187772227152b50204c84a111c526e2f6c09ff7b4f5"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00014.png",
+      "sha256": "e35a48c684e54331707acf837bae0c40d00d9af147122dae617a124227c02f56"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00015.png",
+      "sha256": "0e21ce917bfbc814c2ac452e7008e7104c14978a4761158175589bc437cc4e7b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00016.png",
+      "sha256": "d80b405e2130d9e3239242de15df326d7e7f8c940a2e655ac5a77cd6e2ac8823"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00017.png",
+      "sha256": "29455777c0de79a9f43576adaac31eb02468288dd78270d6864f762bfa68b3ac"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00018.png",
+      "sha256": "6fc76daf4b4de7493c9c1bda76e6baaa3d19088e736940cb5ed4403a2ebfef4f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00018.png",
+      "sha256": "6fc76daf4b4de7493c9c1bda76e6baaa3d19088e736940cb5ed4403a2ebfef4f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00018.png",
+      "sha256": "6fc76daf4b4de7493c9c1bda76e6baaa3d19088e736940cb5ed4403a2ebfef4f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00019.png",
+      "sha256": "d10993bc096330d3fbf5b28330ae952a050d194edba9fbfb899005c8b9c89073"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00020.png",
+      "sha256": "2954bbf8d2eab5ca9a2bcca9d30b764dcdc214f043f93735c7f1c46bf0aea415"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00021.png",
+      "sha256": "77f7d36a2195c2240f802de0946fa778f0df5bef7215edac40aae2a4fab7cb5f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00022.png",
+      "sha256": "7c2dfd37e9d48959c322e8ed81aa6f8868cfe9c8ed88451a7ef3bf7e4b3f2455"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00023.png",
+      "sha256": "c801ef86784e916458fa1fd970c3b0278b0299a3902a624d07e604e070777b78"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00024.png",
+      "sha256": "624b525d68d68c11526018fd5411ac3ec96a6331b745272e65156607bb146ad3"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00025.png",
+      "sha256": "ebef37d494e4dce2e94cb598d8cc2b8da88a82bf8015964d9cefd79d282927f0"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00026.png",
+      "sha256": "5123074a22297553acea3c3fe968cf4dbf223a20644d4f9c8318f6d42a041ca6"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00027.png",
+      "sha256": "75b84c2fb28266c5e6df9cf889ce161f8f428d8a299c2133bbd7c3c6a6af7165"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00028.png",
+      "sha256": "a9be71b7d711bf6fec685440b591f266515c3ebbcfaeb5ec70c85e798d4a03c6"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00029.png",
+      "sha256": "2807c8040ae20fb1030ee70955cadec6c5feae986749bd9b744b4375edd6f98f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00030.png",
+      "sha256": "73fda437d1390821529ffb9693eb1990d6bfe468aa7374441ae5e439c5122b21"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00031.png",
+      "sha256": "aeb657c9b8b980463ab6a825b16ad54bc391a533a49d578cd6db0bc74560563e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00032.png",
+      "sha256": "28899da42aa29e9a67262aa9f57f51d61406d6aaf48c2688515b8e100d752382"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00033.png",
+      "sha256": "f41c8a227f5ac95eaf8acbe403ebef6481744ef391c30c5597dcf36d5cdf6f5d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00034.png",
+      "sha256": "70475ba44be0bcc73d7f211745c60e80d088358c3e070f009caf9dbbb49553bb"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00035.png",
+      "sha256": "1f093058b6b80bb41473b675888fb344c7106788b767b7ce8651a1d5aa6ce291"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00036.png",
+      "sha256": "1330c73d78a10b767922a69f19e06b53ff1c1db3ac23f2e8dcbbdff979b4142e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00037.png",
+      "sha256": "1330c73d78a10b767922a69f19e06b53ff1c1db3ac23f2e8dcbbdff979b4142e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00038.png",
+      "sha256": "f892675ce015e4f0250b498ed34893f11665826caba9cdfa5968e86e5299e9d9"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00039.png",
+      "sha256": "7f18813107a847bc3037afbb5213d643a29adf27c3d2d2e57540d0cbfe9ac699"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00040.png",
+      "sha256": "1139410907587382140a696865a67346cd4ddd0780c5f7b85a5b1f2e830a890d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00041.png",
+      "sha256": "cbcf3ef48d8d57ccea976207c96ead67e8c51497aa3eb6b565926031f17f06f5"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00042.png",
+      "sha256": "33e52cc42a079d70ebd039dd27c5751552ddb59b32eb3ba58a08339b89566d40"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00043.png",
+      "sha256": "2fec46282b80f0d5fe4217ae6ca29cd5b97f254315245fdbea9fe8129b958267"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00044.png",
+      "sha256": "73d431994f0b7877ebecdd5912d54697dd66f80acb11d6cf57020d6ddbb42094"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00045.png",
+      "sha256": "bcca4273808f788f5981337e0839615309d26af8694b51a9689244aa0c75b49a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00046.png",
+      "sha256": "f52679536686ac3456a2d23d0ec0d38f63f526d1c88bad62b69eba0232f2a54d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00047.png",
+      "sha256": "eec71edf996b29efbd3d9f52074ffe7c129b689f28e0ac4a91be795e046b9658"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00048.png",
+      "sha256": "357612e608df3735a83efb6f66dbc13b1f71710a3eb23c06b9a6e9055594326d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00049.png",
+      "sha256": "15cbcaeead0f35120190058e1c52f21ccdbd9a4b469dbec8a54ee985f3fc178e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00050.png",
+      "sha256": "802320ed579d53988f1a2663aa581b535d6c2c4a0ab997b36c708d652e9e9755"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00051.png",
+      "sha256": "ffe26d14c43b6a2da1390f275afa472e58dfe39367e4fbe1881d250e630fee3b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00052.png",
+      "sha256": "3c22270b9bdf441ad26092d3801b526018452782b3a1675f98a5e256f0a94bf3"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00053.png",
+      "sha256": "70bbccf2ab1ead849fd5948fc1a819727cb7da152c7ec6a89e8f2eb696ad6eea"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00054.png",
+      "sha256": "52c55b00581d941f502f52d9f05239a92fcdfbedf2d2722a9d947aa70577abe5"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00055.png",
+      "sha256": "b2c0c512dd5ff833a71dcdf47b0de949600fad72a84436b3f3f559896482bb2c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00055.png",
+      "sha256": "b2c0c512dd5ff833a71dcdf47b0de949600fad72a84436b3f3f559896482bb2c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00056.png",
+      "sha256": "56e07716ca29e66534ba3e5d5f2baadffedec6518cf6cc7fc20010d5f4aed887"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00057.png",
+      "sha256": "eec94e17a91260a6258fddd70a1c241246ef151c2aeaf4191f89086f4130777c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00058.png",
+      "sha256": "9d9f5bcac340e38a9165540eca36223064e3be720427ff5450fe27b406d667b1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00059.png",
+      "sha256": "c5bc75d689562ab79d7cdb87c78afa740a2a8b82155fe045f795decf9fd99a1a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00060.png",
+      "sha256": "536e8a81817e09d87fd83aa0b2202e4cee3d90f32508437f74427fac9821b234"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00061.png",
+      "sha256": "17ed71a96b664a2394c7a293822e818e115a758e56798b586d67da4850142f2a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00062.png",
+      "sha256": "17ed71a96b664a2394c7a293822e818e115a758e56798b586d67da4850142f2a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00063.png",
+      "sha256": "f1e15fac73ebf74540ca2e30fec818d50a7b2b32a7210e8ae101b2d70371d9c3"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00064.png",
+      "sha256": "f95e83875f8349f83e7886573f89bafb979f1605b57c410147d1f395ad274eda"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00065.png",
+      "sha256": "5b67a087ad7ba126bb1b5b001c976c26d3994a033cd630c07d63adb7c74e15b6"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00066.png",
+      "sha256": "fccd5c819dca0d08e4d3f9a6329fa0fc5f44457459c131a74b3a4e82ee09dd6b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00067.png",
+      "sha256": "9426b57787743d5a8697e27f9b6720f85f8b40dcd5d501a20a38fd30898589f8"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00068.png",
+      "sha256": "d8fd6e26c993a4eb8b78e136aabbde6f454127cce53cb966241ecf079fcb3591"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00069.png",
+      "sha256": "41081516932473d14b64ea313f09d23d4f060957f2c7e0e199dce274db63bd42"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00070.png",
+      "sha256": "c0a0a7cbc814fee77120c87b54c40185b31bcfe7f2a607340ea0102c72a2975c"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00071.png",
+      "sha256": "df694aa63d688a37df4ea40641aa667531ba7d0a52965c6721d5edbe152b9e13"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00072.png",
+      "sha256": "7da78f3a94ad0505614daad4ae9200f4f8fa32433ab3ceb241ed5f6f3816ebf8"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\card-b.png",
+      "sha256": "816bfb56e66a3ac3671d648e7e6c24e1d7727d1bbaac7039f2bc257cba145e64"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00000.png",
+      "sha256": "3f24b2e0a2ea95d72a7e4a61770ef46fac1b76a9eca2fb7212027054e2de74ed"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00000.png",
+      "sha256": "3f24b2e0a2ea95d72a7e4a61770ef46fac1b76a9eca2fb7212027054e2de74ed"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00001.png",
+      "sha256": "c2ebc5311901fc9b2743d3e8e9f9ff9032097166e01a4d879d71749f966bb5a8"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00002.png",
+      "sha256": "2594922a0668f8f5d5c2a7a5d0e9aaa1dd89bdbd275363a4b9ca74aeb2c8d79d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00003.png",
+      "sha256": "3a1c926c342dc2102dd75983ddf508bd702659c5af2a75f7374d807c93871ddd"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00004.png",
+      "sha256": "03095920b70aeaaf51220b457cc146886ae0aa83fc70aae7dccfe036f9f60950"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00005.png",
+      "sha256": "f95309696aeb7e5f81acd45e5c8139b048ab8a846d2270b04180a90d77f305a1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00006.png",
+      "sha256": "497c52056e3e54ed1cafa96ac28f4b6562d5704a4d5628430d263d4c0af87871"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00007.png",
+      "sha256": "ca218bccc22c8ad04548e3c1949de1ea93a2ecc3a33507a2781a8527e9db9118"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00008.png",
+      "sha256": "1a2c0305526b0b5eebfbc63c9e4e53e85b16067d4a07fd1baa38045731fca0df"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00009.png",
+      "sha256": "124ac4b9b3ec67b518bf8042727432252132b2f7b2c5e00e4d3f13045a732854"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00009.png",
+      "sha256": "124ac4b9b3ec67b518bf8042727432252132b2f7b2c5e00e4d3f13045a732854"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00010.png",
+      "sha256": "34d71ece84cd63c636bdbf96e41119df512ff4e0eaa70f4ea6ff51631fe1a9cd"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00011.png",
+      "sha256": "fc58dfbb32aa28eb999c5234633db5c3e882dfa67e18daf7642ec76818e6e56e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00012.png",
+      "sha256": "fc58dfbb32aa28eb999c5234633db5c3e882dfa67e18daf7642ec76818e6e56e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00013.png",
+      "sha256": "9e267a9b5b81d6e44fa0a28df7a4bec893026dd4299569aadd39bc8f172c8145"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00014.png",
+      "sha256": "5c78b42ba0e2c1954f0f84d6adb92b7411be136d8be50b0d8cc6174d5d0e49c1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00015.png",
+      "sha256": "726476928850d5877fc22bb745c2585872251ee9c312c7c2eded89970c2c3ab6"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00016.png",
+      "sha256": "f185b50f1dba1efed7f571789a561bfae682c47fce02c12c4d4c17617a26e5a1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00017.png",
+      "sha256": "0ed68ff5f37a0eff1693953ed5072f95a69317d9d5beee31e1e13825825f6067"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00018.png",
+      "sha256": "794335b94e436ee6d0b999276601f57b7517865d8fc90121ca99e6d6ba92c452"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00019.png",
+      "sha256": "6d713260fc751277d5492f7dc4eaf8ed085f9a91aecc45eaea5a72ddf7873205"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00020.png",
+      "sha256": "6a0861f77d7a454d9ce07c2c5880df055c8bc8cccb39619840473b23e8a031db"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00021.png",
+      "sha256": "f23e41f4e5bb4295e8f1fe4e9938e5ba86ceff9b2452d6764a638472d964857d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00022.png",
+      "sha256": "09c7fb59c381918511f74711eec2462d1e087680c13d05a4de026782c89c4898"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00023.png",
+      "sha256": "e597836d5af0dcb10853c16328989f2977598db1102bc2e782713eecefbd3a14"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00024.png",
+      "sha256": "a413e51c0f2972b1c62d572312a6a7391d11b7a5aab4aa6af0ba5a3d7b46e75b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00025.png",
+      "sha256": "001c03bfec552bf9d01e0d92e04eff70ba12f06e4dec6e2775929c2eb42a6bb6"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00026.png",
+      "sha256": "fb4970940c7f098558e438e0a4aaf487efedbd162f9998799f8413dbe20bbb83"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00027.png",
+      "sha256": "8181f07113c85a53828da6825ba1984cae5ae57fef983c3ff1a50be02bd83ef2"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00028.png",
+      "sha256": "445677462d70df1372d72ee26444366b51520be3fa397322d1fac5fc8f07e306"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00029.png",
+      "sha256": "bd1588b32b4d721cf99044ed8430167f228df04161608a7942c63ac08bd889e5"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00030.png",
+      "sha256": "465462e20286ccb7352b1b6734ba822b5c519cfef7e8632f6b374fade3fd8b08"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00031.png",
+      "sha256": "bdf6848881df2fdf67a14e8158135285a7840862aa996e9731a1ee93ef106d07"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00032.png",
+      "sha256": "0d780bf69147bdc9e62b377c1a86bcf3f67c1dd75dd5385f69d35fb34d5984c7"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00033.png",
+      "sha256": "2c45460203dc395d10fc01a2315032d461491cca88da25b52f00a85831df9741"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00034.png",
+      "sha256": "052c92eb22e43e3ba17f82d76a6cc8d27df74972a2c52b5965e3ecf692456bc3"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\closing-b\\frames\\00035.png",
+      "sha256": "6219d91b048819e2d59a26a4923b5757418fa3fbdc9e06e92d254c06515e75b7"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00080.png",
+      "sha256": "73f0b896d5105324621f1e2ba30dc4781151fdf1d09a1226be7e8ff9d7b3dd09"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00081.png",
+      "sha256": "3b410798242aad475a2f073c14881e65dca3ab81e98fabfabebacacba3711581"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00082.png",
+      "sha256": "3f424600be2adf54a2143b3ff40a37c1dd8f8da3733ed670b8db39a66ceb022a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00083.png",
+      "sha256": "727cdca2aad8cacb50e0e5db17b75f0668098863fdddc98dbe5b1da7dfbe4b11"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00084.png",
+      "sha256": "5f53641eae612d3121d2669dc7dfd619cf12fc5b5c2f5ca5de02618907734ad6"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00085.png",
+      "sha256": "334c7461d5b3a460f71ebb5d02394ca3fb5f90f7385e5d30f9097a4f9b04e187"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00086.png",
+      "sha256": "bc792eb13840f48f1a2b8833248dd78ab6b6556bae6a2cac712bb47ef683cc0f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00087.png",
+      "sha256": "bc792eb13840f48f1a2b8833248dd78ab6b6556bae6a2cac712bb47ef683cc0f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00088.png",
+      "sha256": "c82a06394cad8dc37153774be585f38437b9f6a328a718d8ccfc9b139442920d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00089.png",
+      "sha256": "4ad13ee6269ddcfc7dfc5cf2cd2e3a622d3d2f10f92e80d47bfe2886114834d9"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00089.png",
+      "sha256": "4ad13ee6269ddcfc7dfc5cf2cd2e3a622d3d2f10f92e80d47bfe2886114834d9"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00090.png",
+      "sha256": "c1946359346d70989eb5da582a560e85faee68768deea90f8ccd6c287660028f"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00091.png",
+      "sha256": "5a10159fe77bea098f605a69618bda3928158b9a83c54a9c002cb2019c5e1535"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00091.png",
+      "sha256": "5a10159fe77bea098f605a69618bda3928158b9a83c54a9c002cb2019c5e1535"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00092.png",
+      "sha256": "e78fe924653855846edb847fc2db29c75200f82004f4e59e1bf6f4de2cf8f821"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00093.png",
+      "sha256": "06a96a610d40b83cf6890781aeb2bec1c56df34f72f92e93e0d5c251a7a57e45"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00094.png",
+      "sha256": "7c085d06221423e648a527efc5bbc4271aab19a5885e24f73244a06219e63230"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00095.png",
+      "sha256": "92cd5d5038c8504b5820ebf76d9e376b9c0e958fcb8666cfa2a1f178ab43a504"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00096.png",
+      "sha256": "4165c1cf816095ce954306cd1a317034efc07428ac98c457007a4f98d3a05ae4"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00097.png",
+      "sha256": "9a0d80e77b6ac2d0f8439130c1e5bb6d4fc1ec772346f72b096f876677dd0554"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00098.png",
+      "sha256": "44133da79f9430ba2454d85433031391e50a2a4213f4e42110602c5124f8015e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00098.png",
+      "sha256": "44133da79f9430ba2454d85433031391e50a2a4213f4e42110602c5124f8015e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00099.png",
+      "sha256": "a3d2df2bfdfb82b3feb9c03369c3d9d9a7ccc15a169da1b92732ffa5845b0c74"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00100.png",
+      "sha256": "97538dfaed2276caa559ac7efa8a3070739f252f9ceca0bba1651589520b5ec2"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00101.png",
+      "sha256": "3b4dda40f90b1fa6f205072c2c9fc20c99aace9e3ccf9802ef37d7f2c61afed5"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00102.png",
+      "sha256": "6ca679473b7a23e873669e718c249cbba127330294648092b43a0df561eea0c2"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00103.png",
+      "sha256": "bc498fa2c8217cb9e4078eee0ef554eaa099481ee6d055016b95bddb5644f7f1"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00104.png",
+      "sha256": "34258b324ad98319675f113927ec1b4c2615fceb2c401c7ae8c17d4d648e019e"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00105.png",
+      "sha256": "1d3cb54cbe9524e5b7e5876b23b3c7502183d6abd388c2477ad79f315660728b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00106.png",
+      "sha256": "0cf67f7420ee369fb2cd33c36994bab9be486cb6c638a16557d1b782ef9a49dc"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00107.png",
+      "sha256": "a7341e2406f65a7cf91251b676dc149ed484ff2763516a9a85978ce62ae80379"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00107.png",
+      "sha256": "a7341e2406f65a7cf91251b676dc149ed484ff2763516a9a85978ce62ae80379"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00108.png",
+      "sha256": "b9f75aed68b1a3ceed8219225287ecdd5b0f747c36747bbdb87a640cfc6557fa"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00109.png",
+      "sha256": "79e6ead8765aaf1e5752160670c2c2508d9871757698322eedd567fd03f43407"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00110.png",
+      "sha256": "833d4456fceef105a17d726af4d29a2f14755bf9449eab6763cedfff90e6053d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00111.png",
+      "sha256": "7062aa5d9d30744af45f96a91f4d9082643a3907c0f7acbdd10ad743c6148c20"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00112.png",
+      "sha256": "7062aa5d9d30744af45f96a91f4d9082643a3907c0f7acbdd10ad743c6148c20"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00113.png",
+      "sha256": "611e0897868f33e13fc076fde40d2e731b81d682fdd27ad77f0eae228ba119ab"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00114.png",
+      "sha256": "0f956c017e6a10512bd986c530c138beec825c310c5f4646e2f1bdd97a55f14b"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00115.png",
+      "sha256": "18e822878693c46924bb9ad2dc6531c3577df0402e2fcae1928ea1367ec0ea0d"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00116.png",
+      "sha256": "18f19d0296f715286604f66ce091f74217b58b77153fd7727bd9ba4cd2843909"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00117.png",
+      "sha256": "6dd5399ec5feaef28e8084a61b5a91b7022ca26121efd7c0df1e5f4021b91697"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00118.png",
+      "sha256": "f2e4ddc46e98471f3b3de90f5f459cc7465035ee824d303a2f17c20b5e0f75ce"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00119.png",
+      "sha256": "d6c1c5e3537f38351d4d2b0021294aafe3a65aa7e036b59588f8dcc9f515a2ac"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00120.png",
+      "sha256": "94ac953054270979adb67262c9d134a89ad5905599137ae4e7d153fd5916bfca"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00121.png",
+      "sha256": "3499f0f656118945695bbff2c5540dd43ea8e636e809d25164b7cae925a2fe5a"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00122.png",
+      "sha256": "650c349c21bd93df16746de56a8dbcd45c155ae6b3cda40de4728db0cb850af4"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00123.png",
+      "sha256": "4364b2ba53362229f78c3b9089d07ea27ec7b690476ba7c041a50d1c05894a37"
+    },
+    {
+      "file": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\opening-b\\frames\\00124.png",
+      "sha256": "38e90e1d44e48b3afa62d286f8d06a579edf7339f078438ebfcd6ab109706f2c"
+    }
+  ],
+  "timeline_sha256": "356737e61683e073152f23e53b49095cfd58e43d32c9fcf1de77d68e0460f9c3",
+  "duration_ms": 9160,
+  "semantics": "Centered transitions; source endpoints extended; effect intervals end-exclusive; no motion synthesized.",
+  "visual_join_review": "not assessed by script",
+  "effects": [
+    {
+      "name": "beat_bounce",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "decay_ms": 240,
+          "curve": "ease_out"
+        },
+        "translate_px": 20,
+        "rotation_deg": -3,
+        "scale": 1.06,
+        "sampling": "linear"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\beat_bounce.py",
+      "sha256": "9cba55eddb9da993a97eec03a7af0ba88aaba56b0392c28833566812c58c3678",
+      "stage": "source",
+      "start_ms": 2920,
+      "end_ms": 5860,
+      "trigger_times_ms": [
+        2920,
+        3280,
+        3660,
+        4020,
+        4400,
+        4760,
+        5120,
+        5480
+      ]
+    },
+    {
+      "name": "cutout_card",
+      "params": {
+        "border_px": 3,
+        "shadow_px": 8,
+        "shadow_blur": 5,
+        "bg": "",
+        "background": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\work\\round1\\plate-b.png",
+        "darken": 0.55,
+        "blur": 12,
+        "amount": 1.0
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\cutout_card.py",
+      "sha256": "c9e10821ecbdcbdc288a55f9227b78bc3c9b160aeba5cc14cb26fe28dc59adaf",
+      "stage": "source",
+      "start_ms": 2920,
+      "end_ms": 5860,
+      "trigger_times_ms": []
+    },
+    {
+      "name": "halation",
+      "params": {
+        "amount": 0.16,
+        "radius": 3,
+        "warm": true,
+        "threshold": 0.65
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\halation.py",
+      "sha256": "a13e321817bdc6c90f4b9b8a86f00d0259c0735f9aa8ce70e261b2b6d360646b",
+      "stage": "post",
+      "start_ms": 0,
+      "end_ms": 9160,
+      "trigger_times_ms": []
+    },
+    {
+      "name": "grade",
+      "params": {
+        "lift": 0.0,
+        "gamma": 1.0,
+        "gain": 1.03,
+        "sat": 1.06,
+        "temp": 0.01
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\grade.py",
+      "sha256": "8f02254c647ebecf0af1a69ca67677904017e3c925ffc9ea31deefc4b2fdfa69",
+      "stage": "post",
+      "start_ms": 0,
+      "end_ms": 9160,
+      "trigger_times_ms": []
+    },
+    {
+      "name": "flash_white",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            2,
+            6
+          ],
+          "decay_ms": 130,
+          "curve": "ease_out",
+          "max": 0.65
+        }
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\flash_white.py",
+      "sha256": "886066b687c108037c2f91999ce23ebbeb1ba6a1bfe9be128635f319d1e6e841",
+      "stage": "post",
+      "start_ms": 360,
+      "end_ms": 2920,
+      "trigger_times_ms": [
+        740,
+        2200
+      ]
+    },
+    {
+      "name": "zoom_punch",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            17,
+            18,
+            19
+          ],
+          "decay_ms": 200
+        },
+        "scale": 1.07,
+        "sampling": "linear"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\zoom_punch.py",
+      "sha256": "4b76e34f14d999acfc69e274c717418c18efbea270cf92ecd0054cbf197825a8",
+      "stage": "post",
+      "start_ms": 5860,
+      "end_ms": 7320,
+      "trigger_times_ms": [
+        6220,
+        6600,
+        6960
+      ]
+    },
+    {
+      "name": "zoom_punch",
+      "params": {
+        "amount": {
+          "on": "beats",
+          "indices": [
+            21,
+            22,
+            23,
+            24
+          ],
+          "decay_ms": 260
+        },
+        "scale": 1.09,
+        "sampling": "linear"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\effects\\zoom_punch.py",
+      "sha256": "4b76e34f14d999acfc69e274c717418c18efbea270cf92ecd0054cbf197825a8",
+      "stage": "post",
+      "start_ms": 7320,
+      "end_ms": 9160,
+      "trigger_times_ms": [
+        7700,
+        8060,
+        8420,
+        8800
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "name": "flash_cut",
+      "params": {},
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\flash_cut.py",
+      "sha256": "5291446050d6cfbb8a593e9a42b0f85d87969bbd7473e3d180da57656fbeef41",
+      "start_ms": 2860.0,
+      "end_ms": 2980.0,
+      "cut_ms": 2920,
+      "segment_index": 1
+    },
+    {
+      "name": "whip_pan",
+      "params": {
+        "blur_px": 49.0,
+        "direction": "left"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\whip_pan.py",
+      "sha256": "7a64cae8c30b21de4e70d348f18bee52d3ec8e8d881e7103178b613ae74cc43d",
+      "start_ms": 5700.0,
+      "end_ms": 6020.0,
+      "cut_ms": 5860,
+      "segment_index": 2
+    },
+    {
+      "name": "hex_shutter",
+      "params": {
+        "color": "121522"
+      },
+      "source": "C:\\Users\\User\\src\\vgs-fx\\scripts\\fx\\transitions\\hex_shutter.py",
+      "sha256": "c63b02610a43bda87bd8da30efda1eed5723b3d59a44542022c9e48442fd54dd",
+      "start_ms": 7160.0,
+      "end_ms": 7480.0,
+      "cut_ms": 7320,
+      "segment_index": 3
+    }
+  ],
+  "fx_overrides": [],
+  "render": {
+    "seconds": 28.63031239999691,
+    "fps": 8.382723759592155,
+    "requested_fps": 25
+  }
+}

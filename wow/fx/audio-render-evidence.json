@@ -1,0 +1,222 @@
+[
+  {
+    "channel": "onset",
+    "in_ms": 0,
+    "every_visible_beat_flashes": true,
+    "loud_min": 255.0,
+    "quiet_max": 94.0,
+    "luma_gap": 161.0,
+    "events": [
+      {
+        "beat": 0,
+        "trigger_ms": 0,
+        "peak_ms": 0.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 1,
+        "trigger_ms": 500,
+        "peak_ms": 500.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 2,
+        "trigger_ms": 1000,
+        "peak_ms": 1000.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 3,
+        "trigger_ms": 1500,
+        "peak_ms": 1500.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 4,
+        "trigger_ms": 2000,
+        "peak_ms": 2000.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 5,
+        "trigger_ms": 2500,
+        "peak_ms": 2500.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 6,
+        "trigger_ms": 3000,
+        "peak_ms": 3000.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 7,
+        "trigger_ms": 3500,
+        "peak_ms": 3500.0,
+        "luma": 94.0
+      }
+    ]
+  },
+  {
+    "channel": "onset",
+    "in_ms": 20,
+    "every_visible_beat_flashes": true,
+    "loud_min": 255.0,
+    "quiet_max": 94.0,
+    "luma_gap": 161.0,
+    "events": [
+      {
+        "beat": 1,
+        "trigger_ms": 480,
+        "peak_ms": 480.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 2,
+        "trigger_ms": 980,
+        "peak_ms": 980.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 3,
+        "trigger_ms": 1480,
+        "peak_ms": 1480.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 4,
+        "trigger_ms": 1980,
+        "peak_ms": 1980.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 5,
+        "trigger_ms": 2480,
+        "peak_ms": 2480.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 6,
+        "trigger_ms": 2980,
+        "peak_ms": 2980.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 7,
+        "trigger_ms": 3480,
+        "peak_ms": 3480.0,
+        "luma": 94.0
+      }
+    ]
+  },
+  {
+    "channel": "energy",
+    "in_ms": 0,
+    "every_visible_beat_flashes": true,
+    "loud_min": 255.0,
+    "quiet_max": 94.0,
+    "luma_gap": 161.0,
+    "events": [
+      {
+        "beat": 0,
+        "trigger_ms": 0,
+        "peak_ms": 0.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 1,
+        "trigger_ms": 500,
+        "peak_ms": 500.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 2,
+        "trigger_ms": 1000,
+        "peak_ms": 1000.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 3,
+        "trigger_ms": 1500,
+        "peak_ms": 1500.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 4,
+        "trigger_ms": 2000,
+        "peak_ms": 2000.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 5,
+        "trigger_ms": 2500,
+        "peak_ms": 2500.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 6,
+        "trigger_ms": 3000,
+        "peak_ms": 3000.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 7,
+        "trigger_ms": 3500,
+        "peak_ms": 3500.0,
+        "luma": 94.0
+      }
+    ]
+  },
+  {
+    "channel": "energy",
+    "in_ms": 20,
+    "every_visible_beat_flashes": true,
+    "loud_min": 255.0,
+    "quiet_max": 94.0,
+    "luma_gap": 161.0,
+    "events": [
+      {
+        "beat": 1,
+        "trigger_ms": 480,
+        "peak_ms": 480.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 2,
+        "trigger_ms": 980,
+        "peak_ms": 980.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 3,
+        "trigger_ms": 1480,
+        "peak_ms": 1480.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 4,
+        "trigger_ms": 1980,
+        "peak_ms": 1980.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 5,
+        "trigger_ms": 2480,
+        "peak_ms": 2480.0,
+        "luma": 94.0
+      },
+      {
+        "beat": 6,
+        "trigger_ms": 2980,
+        "peak_ms": 2980.0,
+        "luma": 255.0
+      },
+      {
+        "beat": 7,
+        "trigger_ms": 3480,
+        "peak_ms": 3480.0,
+        "luma": 94.0
+      }
+    ]
+  }
+]

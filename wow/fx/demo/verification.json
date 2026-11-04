@@ -1,0 +1,276 @@
+{
+  "a": {
+    "cut_errors_ms": [
+      1.7280399333685637e-11,
+      0,
+      1.127773430198431e-10
+    ],
+    "cut_types": [
+      "flash_cut",
+      "whip_pan",
+      "hex_shutter"
+    ],
+    "freeze_segments": [
+      {
+        "type": "still",
+        "manifest": "work/verification-1793801966338814400/reverse-a/shots/001/manifest.json",
+        "review": true,
+        "frame": "first",
+        "end_beat": 16,
+        "transition": {
+          "name": "flash_cut",
+          "duration_ms": 160,
+          "review": true
+        }
+      }
+    ],
+    "qa_level": "PASS",
+    "qa_checks": [
+      {
+        "name": "frame0",
+        "level": "PASS",
+        "message": "Visible composition has exposure and contrast",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "flashes",
+        "level": "PASS",
+        "message": "Single-frame flash scan",
+        "events": []
+      },
+      {
+        "name": "pops",
+        "level": "PASS",
+        "message": "Small transient pop scan; inspect in context",
+        "events": []
+      },
+      {
+        "name": "freeze",
+        "level": "PASS",
+        "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+        "events": []
+      },
+      {
+        "name": "cuts",
+        "level": "PASS",
+        "message": "Detected cut candidates (no hard cuts required)",
+        "events": []
+      },
+      {
+        "name": "timeline_joins",
+        "level": "PASS",
+        "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+        "events": [
+          {
+            "frame": 292,
+            "seconds": 2.92
+          },
+          {
+            "frame": 586,
+            "seconds": 5.86
+          },
+          {
+            "frame": 732,
+            "seconds": 7.32
+          }
+        ]
+      },
+      {
+        "name": "loop",
+        "level": "PASS",
+        "message": "N/A: no loop requested",
+        "events": []
+      },
+      {
+        "name": "loudness",
+        "level": "PASS",
+        "message": "Integrated loudness: target -14 LUFS +/-1",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0,
+            "end_frame": 915,
+            "end_seconds": 9.16
+          }
+        ]
+      },
+      {
+        "name": "true_peak",
+        "level": "PASS",
+        "message": "True peak ceiling -1 dBTP",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0,
+            "end_frame": 915,
+            "end_seconds": 9.16
+          }
+        ]
+      },
+      {
+        "name": "loudest_100ms",
+        "level": "PASS",
+        "message": "Loudest 100 ms RMS window (50 ms hop)",
+        "events": [
+          {
+            "frame": 240,
+            "seconds": 2.4,
+            "end_frame": 250,
+            "end_seconds": 2.5
+          }
+        ]
+      },
+      {
+        "name": "silence",
+        "level": "PASS",
+        "message": "Silence >=0.4 s; inspect whether intended",
+        "events": []
+      }
+    ],
+    "matte_rgb_exact": true,
+    "source_luma": 65.81727127083333,
+    "matte_sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+  },
+  "b": {
+    "cut_errors_ms": [
+      1.7280399333685637e-11,
+      0,
+      1.127773430198431e-10
+    ],
+    "cut_types": [
+      "flash_cut",
+      "whip_pan",
+      "hex_shutter"
+    ],
+    "freeze_segments": [
+      {
+        "type": "still",
+        "manifest": "work/verification-1793801966338814400/reverse-b/shots/001/manifest.json",
+        "review": true,
+        "frame": "first",
+        "end_beat": 16,
+        "transition": {
+          "name": "flash_cut",
+          "duration_ms": 160,
+          "review": true
+        }
+      }
+    ],
+    "qa_level": "PASS",
+    "qa_checks": [
+      {
+        "name": "frame0",
+        "level": "PASS",
+        "message": "Visible composition has exposure and contrast",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "flashes",
+        "level": "PASS",
+        "message": "Single-frame flash scan",
+        "events": []
+      },
+      {
+        "name": "pops",
+        "level": "PASS",
+        "message": "Small transient pop scan; inspect in context",
+        "events": []
+      },
+      {
+        "name": "freeze",
+        "level": "PASS",
+        "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+        "events": []
+      },
+      {
+        "name": "cuts",
+        "level": "PASS",
+        "message": "Detected cut candidates (no hard cuts required)",
+        "events": []
+      },
+      {
+        "name": "timeline_joins",
+        "level": "PASS",
+        "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+        "events": [
+          {
+            "frame": 292,
+            "seconds": 2.92
+          },
+          {
+            "frame": 586,
+            "seconds": 5.86
+          },
+          {
+            "frame": 732,
+            "seconds": 7.32
+          }
+        ]
+      },
+      {
+        "name": "loop",
+        "level": "PASS",
+        "message": "N/A: no loop requested",
+        "events": []
+      },
+      {
+        "name": "loudness",
+        "level": "PASS",
+        "message": "Integrated loudness: target -14 LUFS +/-1",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0,
+            "end_frame": 915,
+            "end_seconds": 9.16
+          }
+        ]
+      },
+      {
+        "name": "true_peak",
+        "level": "PASS",
+        "message": "True peak ceiling -1 dBTP",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0,
+            "end_frame": 915,
+            "end_seconds": 9.16
+          }
+        ]
+      },
+      {
+        "name": "loudest_100ms",
+        "level": "PASS",
+        "message": "Loudest 100 ms RMS window (50 ms hop)",
+        "events": [
+          {
+            "frame": 240,
+            "seconds": 2.4,
+            "end_frame": 250,
+            "end_seconds": 2.5
+          }
+        ]
+      },
+      {
+        "name": "silence",
+        "level": "PASS",
+        "message": "Silence >=0.4 s; inspect whether intended",
+        "events": []
+      }
+    ],
+    "matte_rgb_exact": true,
+    "source_luma": 95.58484216145833,
+    "matte_sha256": "272422b7a224c4a137449d9b966602647a8b10d430f3e43339334023344315e1"
+  }
+}

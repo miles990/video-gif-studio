@@ -1,7 +1,7 @@
 {
-  "input": "wow\\fx\\demo\\demo.mp4",
-  "frames": 878,
-  "duration_seconds": 8.78,
+  "input": "C:\\Users\\User\\src\\vgs-fx\\wow\\fx\\demo\\demo.mp4",
+  "frames": 916,
+  "duration_seconds": 9.16,
   "frame_times_seconds": [
     0.0,
     0.01,
@@ -880,7 +880,45 @@
     8.74,
     8.75,
     8.76,
-    8.77
+    8.77,
+    8.78,
+    8.79,
+    8.8,
+    8.81,
+    8.82,
+    8.83,
+    8.84,
+    8.85,
+    8.86,
+    8.87,
+    8.88,
+    8.89,
+    8.9,
+    8.91,
+    8.92,
+    8.93,
+    8.94,
+    8.95,
+    8.96,
+    8.97,
+    8.98,
+    8.99,
+    9.0,
+    9.01,
+    9.02,
+    9.03,
+    9.04,
+    9.05,
+    9.06,
+    9.07,
+    9.08,
+    9.09,
+    9.1,
+    9.11,
+    9.12,
+    9.13,
+    9.14,
+    9.15
   ],
   "checks": [
     {
@@ -893,8 +931,8 @@
           "seconds": 0.0
         }
       ],
-      "mean": 54.45999526977539,
-      "contrast": 49.433475494384766
+      "mean": 53.62841796875,
+      "contrast": 49.393001556396484
     },
     {
       "name": "flashes",
@@ -913,20 +951,7 @@
       "level": "PASS",
       "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
       "events": [],
-      "designed_holds": [
-        {
-          "frame": 312,
-          "seconds": 3.12,
-          "end_frame": 439,
-          "end_seconds": 4.39
-        },
-        {
-          "frame": 312,
-          "seconds": 3.12,
-          "end_frame": 439,
-          "end_seconds": 4.39
-        }
-      ]
+      "designed_holds": []
     },
     {
       "name": "cuts",
@@ -935,8 +960,32 @@
       "events": [],
       "detected": [
         {
-          "frame": 585,
-          "seconds": 5.85
+          "frame": 74,
+          "seconds": 0.74
+        },
+        {
+          "frame": 75,
+          "seconds": 0.75
+        },
+        {
+          "frame": 80,
+          "seconds": 0.8
+        },
+        {
+          "frame": 220,
+          "seconds": 2.2
+        },
+        {
+          "frame": 224,
+          "seconds": 2.24
+        },
+        {
+          "frame": 292,
+          "seconds": 2.92
+        },
+        {
+          "frame": 296,
+          "seconds": 2.96
         }
       ],
       "expected_seconds": []
@@ -947,16 +996,16 @@
       "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
       "events": [
         {
-          "frame": 293,
-          "seconds": 2.93
+          "frame": 292,
+          "seconds": 2.92
         },
         {
-          "frame": 439,
-          "seconds": 4.39
+          "frame": 586,
+          "seconds": 5.86
         },
         {
-          "frame": 585,
-          "seconds": 5.85
+          "frame": 732,
+          "seconds": 7.32
         }
       ]
     },
@@ -974,8 +1023,8 @@
         {
           "frame": 0,
           "seconds": 0,
-          "end_frame": 877,
-          "end_seconds": 8.78
+          "end_frame": 915,
+          "end_seconds": 9.16
         }
       ],
       "lufs": -14.3
@@ -988,11 +1037,11 @@
         {
           "frame": 0,
           "seconds": 0,
-          "end_frame": 877,
-          "end_seconds": 8.78
+          "end_frame": 915,
+          "end_seconds": 9.16
         }
       ],
-      "dbtp": -3.1
+      "dbtp": -2.8
     },
     {
       "name": "loudest_100ms",
@@ -1000,13 +1049,13 @@
       "message": "Loudest 100 ms RMS window (50 ms hop)",
       "events": [
         {
-          "frame": 475,
-          "seconds": 4.75,
-          "end_frame": 485,
-          "end_seconds": 4.85
+          "frame": 240,
+          "seconds": 2.4,
+          "end_frame": 250,
+          "end_seconds": 2.5
         }
       ],
-      "dbfs": -10.1708212931927
+      "dbfs": -9.881655363233154
     },
     {
       "name": "silence",
@@ -1023,48 +1072,48 @@
         "seconds": 0.0
       },
       {
-        "frame": 79,
-        "seconds": 0.79
+        "frame": 83,
+        "seconds": 0.83
       },
       {
-        "frame": 159,
-        "seconds": 1.59
+        "frame": 166,
+        "seconds": 1.66
       },
       {
-        "frame": 239,
-        "seconds": 2.39
+        "frame": 249,
+        "seconds": 2.49
       },
       {
-        "frame": 319,
-        "seconds": 3.19
+        "frame": 333,
+        "seconds": 3.33
       },
       {
-        "frame": 399,
-        "seconds": 3.99
+        "frame": 416,
+        "seconds": 4.16
       },
       {
-        "frame": 478,
-        "seconds": 4.78
+        "frame": 499,
+        "seconds": 4.99
       },
       {
-        "frame": 558,
-        "seconds": 5.58
+        "frame": 582,
+        "seconds": 5.82
       },
       {
-        "frame": 638,
-        "seconds": 6.38
+        "frame": 666,
+        "seconds": 6.66
       },
       {
-        "frame": 718,
-        "seconds": 7.18
+        "frame": 749,
+        "seconds": 7.49
       },
       {
-        "frame": 798,
-        "seconds": 7.98
+        "frame": 832,
+        "seconds": 8.32
       },
       {
-        "frame": 877,
-        "seconds": 8.77
+        "frame": 915,
+        "seconds": 9.15
       }
     ],
     "phone_sheet": [
@@ -1103,6 +1152,10 @@
       {
         "frame": 800,
         "seconds": 8.0
+      },
+      {
+        "frame": 900,
+        "seconds": 9.0
       }
     ],
     "hook_sheet": [
@@ -1133,6 +1186,6 @@
     ]
   },
   "limitations": "Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.",
-  "elapsed_seconds": 4.278396499983501,
+  "elapsed_seconds": 3.614679399994202,
   "level": "PASS"
 }

@@ -6,6 +6,7 @@ are required, unless --rematte is requested. All writes stay under wow/fx/demo.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -24,6 +25,12 @@ from gif_pipeline import encode, verify, browser_gif_timing
 
 def prepare(work, rematte=False):
     work.mkdir(parents=True,exist_ok=True)
+    session = None
+    if rematte:
+        os.environ['NUMBA_DISABLE_JIT']='1'
+        os.environ.setdefault('OMP_NUM_THREADS','2')
+        from rembg import new_session, remove
+        session = new_session('birefnet-general', providers=['CPUExecutionProvider'])
     for tag,segment,closing in [('a','01','04'),('b','03','05')]:
         for kind,number in [('opening',segment),('closing',closing)]:
             source=REPO/f'examples/neon-zen-pv/segment-{number}/generation/source.mp4'
@@ -34,10 +41,11 @@ def prepare(work, rematte=False):
             (folder/'manifest.json').write_text(json.dumps({'durations_ms':[40]*len(files),
                 'source':str(source.relative_to(REPO)),'sha256':hashlib.sha256(source.read_bytes()).hexdigest()}))
         if rematte:
-            from rembg import new_session, remove
             with Image.open(ROOT/f'assets/freeze-{tag}.png') as source:
-                rgba=source.convert('RGBA');rgba.putalpha(remove(source.convert('RGB'),session=new_session('birefnet-general'),only_mask=True))
+                started=time.perf_counter()
+                rgba=source.convert('RGBA');rgba.putalpha(remove(source.convert('RGB'),session=session,only_mask=True))
                 rgba.save(ROOT/f'assets/matte-{tag}.png')
+                print(f'Matted {tag}: {time.perf_counter()-started:.2f}s',flush=True)
         # Fixed framing of this single freeze, with real source RGB and soft model alpha.
         with Image.open(ROOT/f'assets/matte-{tag}.png') as im:
             subject=im.convert('RGBA');box=subject.getbbox();subject=subject.crop(box)
@@ -75,6 +83,24 @@ def write_plan(data,target):
     target.write_text('\n'.join(lines+['  ]','}'])+'\n')
 
 
+def export_preview(out, gif):
+    """Retain 12.5fps cadence; choose the largest preview under the byte budget."""
+    m=json.loads((out/'manifest.json').read_text())
+    for width in (360,320,288,256,240):
+        frames=[];times=[];pending=0
+        for i,duration in enumerate(m['durations_ms']):
+            if pending==0:
+                with Image.open(out/'frames'/f'{i:05d}.png') as im:
+                    frame=im.convert('RGBA').resize((width,round(width*9/16)),Image.Resampling.LANCZOS)
+            pending+=duration
+            if pending>=80 or i==len(m['durations_ms'])-1:
+                frames.append(frame);times.append(pending);pending=0
+        encode(frames,times,gif)
+        if gif.stat().st_size<=3_000_000:
+            return {'gif_bytes':gif.stat().st_size,'gif_width':width,'gif':verify(gif,frames,times)}
+    raise RuntimeError('GIF preview exceeds 3 MB')
+
+
 def build(prepare_only=False,rematte=False):
     work=ROOT/'work/round1';prepare(work,rematte)
     reports={}
@@ -84,18 +110,10 @@ def build(prepare_only=False,rematte=False):
         out=work/f'master-{tag}-{time.time_ns()}';started=time.perf_counter()
         render(file,out,('png','mp4'))
         name='demo' if tag=='a' else 'demo-b';shutil.copy2(out/'animation.mp4',ROOT/f'{name}.mp4')
-        m=json.loads((out/'manifest.json').read_text());frames=[]
-        # 360px, 12.5fps compatibility preview. Accumulate time, never stretch it.
-        pending=0
-        for i,duration in enumerate(m['durations_ms']):
-            if pending==0:
-                with Image.open(out/'frames'/f'{i:05d}.png') as im:frame=im.convert('RGBA').resize((360,202),Image.Resampling.LANCZOS)
-            pending+=duration
-            if pending>=80 or i==len(m['durations_ms'])-1:
-                frames.append((frame,pending));pending=0
-        images,times=zip(*frames);gif=ROOT/f'{name}.gif';encode(images,times,gif)
+        m=json.loads((out/'manifest.json').read_text())
+        gif_report=export_preview(out,ROOT/f'{name}.gif')
         reports[tag]={'wall_seconds':time.perf_counter()-started,'master':str(out.relative_to(ROOT)),
-                      'gif_bytes':gif.stat().st_size,'gif':verify(gif,images,times),'render':m['render']}
+                      **gif_report,'render':m['render']}
         (ROOT/f'manifest-{tag}.json').write_text(json.dumps(m,indent=2))
     if not prepare_only:
         preview(ROOT/'preview.png',ROOT/'assets/freeze-a.png')

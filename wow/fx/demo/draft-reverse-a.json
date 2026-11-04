@@ -1,0 +1,54 @@
+{
+  "beatmap": "beats.json",
+  "fps": 25,
+  "review": true,
+  "segments": [
+    {
+      "type": "animation",
+      "manifest": "work/verification-1793801966338814400/reverse-a/shots/000/manifest.json",
+      "in_ms": 0,
+      "out_ms": 2920,
+      "review": true,
+      "end_beat": 8
+    },
+    {
+      "type": "still",
+      "manifest": "work/verification-1793801966338814400/reverse-a/shots/001/manifest.json",
+      "review": true,
+      "frame": "first",
+      "end_beat": 16,
+      "transition": {
+        "name": "flash_cut",
+        "duration_ms": 160,
+        "review": true
+      }
+    },
+    {
+      "type": "animation",
+      "manifest": "work/verification-1793801966338814400/reverse-a/shots/002/manifest.json",
+      "in_ms": 0,
+      "out_ms": 1440,
+      "review": true,
+      "end_beat": 20,
+      "transition": {
+        "name": "whip_pan",
+        "duration_ms": 240,
+        "review": true
+      }
+    },
+    {
+      "type": "animation",
+      "manifest": "work/verification-1793801966338814400/reverse-a/shots/003/manifest.json",
+      "in_ms": 0,
+      "out_ms": 1840,
+      "review": true,
+      "end_beat": 25,
+      "transition": {
+        "name": "hex_shutter",
+        "duration_ms": 400,
+        "review": true
+      }
+    }
+  ],
+  "effects": []
+}

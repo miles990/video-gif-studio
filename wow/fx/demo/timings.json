@@ -1,92 +1,128 @@
 {
   "a": {
-    "encoded_fps": 100.0,
+    "duration_ms": 9160.0,
+    "gif_duration_ms": 9160,
+    "gif_min_delay_ms": 40,
+    "gif_bytes": 2928071,
     "flash_peaks": [
       {
-        "trigger_ms": 2926.829268292683,
-        "peak_ms": 2930.0,
-        "error_ms": 3.170731707316918,
-        "rise_over_3_encoded_frames": 120.51081789149302,
-        "pass": true
+        "trigger_ms": 740,
+        "peak_ms": 740.0,
+        "error_ms": 0.0,
+        "rise_luma": 128.30390548706055
       },
       {
-        "trigger_ms": 5853.658536585366,
-        "peak_ms": 5860.0,
-        "error_ms": 6.341463414633836,
-        "rise_over_3_encoded_frames": 173.59197924913192,
-        "pass": true
+        "trigger_ms": 2200,
+        "peak_ms": 2200.0,
+        "error_ms": 0.0,
+        "rise_luma": 123.66496276855469
       }
     ],
-    "render": {
-      "seconds": 23.394806800002698,
-      "fps": 9.532029988808212,
-      "requested_fps": 25
+    "freeze_beats_ms": [
+      2920,
+      3280,
+      3660,
+      4020,
+      4400,
+      4760,
+      5120,
+      5480
+    ],
+    "card_rest": {
+      "centroid_y": 184.46582009038562,
+      "height_px": 176
     },
-    "duration_ms": 8780,
-    "gif_bytes": 14632718,
-    "gif_qc": {
-      "decoded_frames": 159,
-      "source_output_frames": 223,
-      "duration_ms": 8780,
-      "alpha_mismatch_pixels": 0,
-      "mean_visible_rgb_error": 3.209095849711196,
-      "technical_pass": true,
-      "visual_motion_approval": "not assessed by script"
+    "card_peak": {
+      "centroid_y": 165.31993151228792,
+      "height_px": 195
     },
+    "bounce_displacement_px": 19.145888578097697,
+    "freeze_luma_mean": 51.356704666137695,
     "transitions": [
       {
-        "cut_ms": 2930,
-        "midpoint_ms": 2930.0
+        "name": "flash_cut",
+        "cut_ms": 2920,
+        "midpoint_ms": 2920.0
       },
       {
-        "cut_ms": 5850,
-        "midpoint_ms": 5850.0
+        "name": "whip_pan",
+        "cut_ms": 5860,
+        "midpoint_ms": 5860.0
+      },
+      {
+        "name": "hex_shutter",
+        "cut_ms": 7320,
+        "midpoint_ms": 7320.0
       }
-    ]
+    ],
+    "last_accent_ms": 8800,
+    "render": {
+      "seconds": 29.69346909999149,
+      "fps": 8.082585405962849,
+      "requested_fps": 25
+    }
   },
   "b": {
-    "encoded_fps": 100.0,
+    "duration_ms": 9160.0,
+    "gif_duration_ms": 9160,
+    "gif_min_delay_ms": 40,
+    "gif_bytes": 2839422,
     "flash_peaks": [
       {
-        "trigger_ms": 2926.829268292683,
-        "peak_ms": 2930.0,
-        "error_ms": 3.170731707316918,
-        "rise_over_3_encoded_frames": 97.92433913454857,
-        "pass": true
+        "trigger_ms": 740,
+        "peak_ms": 740.0,
+        "error_ms": 0.0,
+        "rise_luma": 118.55044555664062
       },
       {
-        "trigger_ms": 5853.658536585366,
-        "peak_ms": 5860.0,
-        "error_ms": 6.341463414633836,
-        "rise_over_3_encoded_frames": 173.40332193229165,
-        "pass": true
+        "trigger_ms": 2200,
+        "peak_ms": 2200.0,
+        "error_ms": 0.0,
+        "rise_luma": 102.50042724609375
       }
     ],
-    "render": {
-      "seconds": 24.004034899990074,
-      "fps": 9.290104806508685,
-      "requested_fps": 25
+    "freeze_beats_ms": [
+      2920,
+      3280,
+      3660,
+      4020,
+      4400,
+      4760,
+      5120,
+      5480
+    ],
+    "card_rest": {
+      "centroid_y": 182.76712009187187,
+      "height_px": 178
     },
-    "duration_ms": 8780,
-    "gif_bytes": 13444870,
-    "gif_qc": {
-      "decoded_frames": 159,
-      "source_output_frames": 223,
-      "duration_ms": 8780,
-      "alpha_mismatch_pixels": 0,
-      "mean_visible_rgb_error": 3.468918311373156,
-      "technical_pass": true,
-      "visual_motion_approval": "not assessed by script"
+    "card_peak": {
+      "centroid_y": 163.46256776723322,
+      "height_px": 191
     },
+    "bounce_displacement_px": 19.30455232463865,
+    "freeze_luma_mean": 65.59281686401367,
     "transitions": [
       {
-        "cut_ms": 2930,
-        "midpoint_ms": 2930.0
+        "name": "flash_cut",
+        "cut_ms": 2920,
+        "midpoint_ms": 2920.0
       },
       {
-        "cut_ms": 5850,
-        "midpoint_ms": 5850.0
+        "name": "whip_pan",
+        "cut_ms": 5860,
+        "midpoint_ms": 5860.0
+      },
+      {
+        "name": "hex_shutter",
+        "cut_ms": 7320,
+        "midpoint_ms": 7320.0
       }
-    ]
+    ],
+    "last_accent_ms": 8800,
+    "render": {
+      "seconds": 28.63031239999691,
+      "fps": 8.382723759592155,
+      "requested_fps": 25
+    }
   }
 }

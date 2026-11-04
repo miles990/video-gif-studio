@@ -1,6 +1,6 @@
 # Media QA: PASS
 
-demo.mp4 | 878 frames | 8.780 s
+demo.mp4 | 916 frames | 9.160 s
 
 Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.
 
@@ -11,8 +11,8 @@ Visible composition has exposure and contrast
 
 ```json
 {
-  "mean": 54.45999526977539,
-  "contrast": 49.433475494384766
+  "mean": 53.62841796875,
+  "contrast": 49.393001556396484
 }
 ```
 
@@ -30,20 +30,7 @@ Frozen stretches; mark intended pauses with --holds START-END or timeline still 
 
 ```json
 {
-  "designed_holds": [
-    {
-      "frame": 312,
-      "seconds": 3.12,
-      "end_frame": 439,
-      "end_seconds": 4.39
-    },
-    {
-      "frame": 312,
-      "seconds": 3.12,
-      "end_frame": 439,
-      "end_seconds": 4.39
-    }
-  ]
+  "designed_holds": []
 }
 ```
 
@@ -55,8 +42,32 @@ Detected cut candidates (no hard cuts required)
 {
   "detected": [
     {
-      "frame": 585,
-      "seconds": 5.85
+      "frame": 74,
+      "seconds": 0.74
+    },
+    {
+      "frame": 75,
+      "seconds": 0.75
+    },
+    {
+      "frame": 80,
+      "seconds": 0.8
+    },
+    {
+      "frame": 220,
+      "seconds": 2.2
+    },
+    {
+      "frame": 224,
+      "seconds": 2.24
+    },
+    {
+      "frame": 292,
+      "seconds": 2.92
+    },
+    {
+      "frame": 296,
+      "seconds": 2.96
     }
   ],
   "expected_seconds": []
@@ -66,9 +77,9 @@ Detected cut candidates (no hard cuts required)
 ## PASS — timeline_joins
 
 Continuation/edit boundaries are not required hard cuts; review continuity
-- f293 / 2.930 s
-- f439 / 4.390 s
-- f585 / 5.850 s
+- f292 / 2.920 s
+- f586 / 5.860 s
+- f732 / 7.320 s
 
 ## PASS — loop
 
@@ -77,7 +88,7 @@ N/A: no loop requested
 ## PASS — loudness
 
 Integrated loudness: target -14 LUFS +/-1
-- f0 / 0.000 s to f877 / 8.780 s (time end exclusive)
+- f0 / 0.000 s to f915 / 9.160 s (time end exclusive)
 
 ```json
 {
@@ -88,22 +99,22 @@ Integrated loudness: target -14 LUFS +/-1
 ## PASS — true_peak
 
 True peak ceiling -1 dBTP
-- f0 / 0.000 s to f877 / 8.780 s (time end exclusive)
+- f0 / 0.000 s to f915 / 9.160 s (time end exclusive)
 
 ```json
 {
-  "dbtp": -3.1
+  "dbtp": -2.8
 }
 ```
 
 ## PASS — loudest_100ms
 
 Loudest 100 ms RMS window (50 ms hop)
-- f475 / 4.750 s to f485 / 4.850 s (time end exclusive)
+- f240 / 2.400 s to f250 / 2.500 s (time end exclusive)
 
 ```json
 {
-  "dbfs": -10.1708212931927
+  "dbfs": -9.881655363233154
 }
 ```
 
@@ -121,4 +132,4 @@ Silence >=0.4 s; inspect whether intended
 ![phone_sheet](phone_sheet.jpg)
 ![hook_sheet](hook_sheet.jpg)
 
-Analysis and sheets: 4.278 s.
+Analysis and sheets: 3.615 s.

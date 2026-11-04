@@ -1,0 +1,404 @@
+{
+  "a": {
+    "duration_ms": 9160.0,
+    "gif_duration_ms": 9160,
+    "gif_min_delay_ms": 40,
+    "gif_bytes": 2928071,
+    "flash_peaks": [
+      {
+        "trigger_ms": 740,
+        "peak_ms": 740.0,
+        "error_ms": 0.0,
+        "rise_luma": 128.30390548706055
+      },
+      {
+        "trigger_ms": 2200,
+        "peak_ms": 2200.0,
+        "error_ms": 0.0,
+        "rise_luma": 123.66496276855469
+      }
+    ],
+    "freeze_beats_ms": [
+      2920,
+      3280,
+      3660,
+      4020,
+      4400,
+      4760,
+      5120,
+      5480
+    ],
+    "card_rest": {
+      "centroid_y": 184.46582009038562,
+      "height_px": 176
+    },
+    "card_peak": {
+      "centroid_y": 165.31993151228792,
+      "height_px": 195
+    },
+    "bounce_displacement_px": 19.145888578097697,
+    "freeze_luma_mean": 51.356704666137695,
+    "transitions": [
+      {
+        "name": "flash_cut",
+        "cut_ms": 2920,
+        "midpoint_ms": 2920.0
+      },
+      {
+        "name": "whip_pan",
+        "cut_ms": 5860,
+        "midpoint_ms": 5860.0
+      },
+      {
+        "name": "hex_shutter",
+        "cut_ms": 7320,
+        "midpoint_ms": 7320.0
+      }
+    ],
+    "last_accent_ms": 8800,
+    "render": {
+      "seconds": 29.69346909999149,
+      "fps": 8.082585405962849,
+      "requested_fps": 25
+    }
+  },
+  "b": {
+    "duration_ms": 9160.0,
+    "gif_duration_ms": 9160,
+    "gif_min_delay_ms": 40,
+    "gif_bytes": 2839422,
+    "flash_peaks": [
+      {
+        "trigger_ms": 740,
+        "peak_ms": 740.0,
+        "error_ms": 0.0,
+        "rise_luma": 118.55044555664062
+      },
+      {
+        "trigger_ms": 2200,
+        "peak_ms": 2200.0,
+        "error_ms": 0.0,
+        "rise_luma": 102.50042724609375
+      }
+    ],
+    "freeze_beats_ms": [
+      2920,
+      3280,
+      3660,
+      4020,
+      4400,
+      4760,
+      5120,
+      5480
+    ],
+    "card_rest": {
+      "centroid_y": 182.76712009187187,
+      "height_px": 178
+    },
+    "card_peak": {
+      "centroid_y": 163.46256776723322,
+      "height_px": 191
+    },
+    "bounce_displacement_px": 19.30455232463865,
+    "freeze_luma_mean": 65.59281686401367,
+    "transitions": [
+      {
+        "name": "flash_cut",
+        "cut_ms": 2920,
+        "midpoint_ms": 2920.0
+      },
+      {
+        "name": "whip_pan",
+        "cut_ms": 5860,
+        "midpoint_ms": 5860.0
+      },
+      {
+        "name": "hex_shutter",
+        "cut_ms": 7320,
+        "midpoint_ms": 7320.0
+      }
+    ],
+    "last_accent_ms": 8800,
+    "render": {
+      "seconds": 28.63031239999691,
+      "fps": 8.382723759592155,
+      "requested_fps": 25
+    }
+  }
+}
+{
+  "a": {
+    "cut_errors_ms": [
+      1.7280399333685637e-11,
+      0,
+      1.127773430198431e-10
+    ],
+    "cut_types": [
+      "flash_cut",
+      "whip_pan",
+      "hex_shutter"
+    ],
+    "freeze_segments": [
+      {
+        "type": "still",
+        "manifest": "work/verification-1793801966338814400/reverse-a/shots/001/manifest.json",
+        "review": true,
+        "frame": "first",
+        "end_beat": 16,
+        "transition": {
+          "name": "flash_cut",
+          "duration_ms": 160,
+          "review": true
+        }
+      }
+    ],
+    "qa_level": "PASS",
+    "qa_checks": [
+      {
+        "name": "frame0",
+        "level": "PASS",
+        "message": "Visible composition has exposure and contrast",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "flashes",
+        "level": "PASS",
+        "message": "Single-frame flash scan",
+        "events": []
+      },
+      {
+        "name": "pops",
+        "level": "PASS",
+        "message": "Small transient pop scan; inspect in context",
+        "events": []
+      },
+      {
+        "name": "freeze",
+        "level": "PASS",
+        "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+        "events": []
+      },
+      {
+        "name": "cuts",
+        "level": "PASS",
+        "message": "Detected cut candidates (no hard cuts required)",
+        "events": []
+      },
+      {
+        "name": "timeline_joins",
+        "level": "PASS",
+        "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+        "events": [
+          {
+            "frame": 292,
+            "seconds": 2.92
+          },
+          {
+            "frame": 586,
+            "seconds": 5.86
+          },
+          {
+            "frame": 732,
+            "seconds": 7.32
+          }
+        ]
+      },
+      {
+        "name": "loop",
+        "level": "PASS",
+        "message": "N/A: no loop requested",
+        "events": []
+      },
+      {
+        "name": "loudness",
+        "level": "PASS",
+        "message": "Integrated loudness: target -14 LUFS +/-1",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0,
+            "end_frame": 915,
+            "end_seconds": 9.16
+          }
+        ]
+      },
+      {
+        "name": "true_peak",
+        "level": "PASS",
+        "message": "True peak ceiling -1 dBTP",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0,
+            "end_frame": 915,
+            "end_seconds": 9.16
+          }
+        ]
+      },
+      {
+        "name": "loudest_100ms",
+        "level": "PASS",
+        "message": "Loudest 100 ms RMS window (50 ms hop)",
+        "events": [
+          {
+            "frame": 240,
+            "seconds": 2.4,
+            "end_frame": 250,
+            "end_seconds": 2.5
+          }
+        ]
+      },
+      {
+        "name": "silence",
+        "level": "PASS",
+        "message": "Silence >=0.4 s; inspect whether intended",
+        "events": []
+      }
+    ],
+    "matte_rgb_exact": true,
+    "source_luma": 65.81727127083333,
+    "matte_sha256": "717620ef86db694b6dde4d64f16acb13472b1896c1a3676fc3c3c52224d1edcf"
+  },
+  "b": {
+    "cut_errors_ms": [
+      1.7280399333685637e-11,
+      0,
+      1.127773430198431e-10
+    ],
+    "cut_types": [
+      "flash_cut",
+      "whip_pan",
+      "hex_shutter"
+    ],
+    "freeze_segments": [
+      {
+        "type": "still",
+        "manifest": "work/verification-1793801966338814400/reverse-b/shots/001/manifest.json",
+        "review": true,
+        "frame": "first",
+        "end_beat": 16,
+        "transition": {
+          "name": "flash_cut",
+          "duration_ms": 160,
+          "review": true
+        }
+      }
+    ],
+    "qa_level": "PASS",
+    "qa_checks": [
+      {
+        "name": "frame0",
+        "level": "PASS",
+        "message": "Visible composition has exposure and contrast",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "flashes",
+        "level": "PASS",
+        "message": "Single-frame flash scan",
+        "events": []
+      },
+      {
+        "name": "pops",
+        "level": "PASS",
+        "message": "Small transient pop scan; inspect in context",
+        "events": []
+      },
+      {
+        "name": "freeze",
+        "level": "PASS",
+        "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+        "events": []
+      },
+      {
+        "name": "cuts",
+        "level": "PASS",
+        "message": "Detected cut candidates (no hard cuts required)",
+        "events": []
+      },
+      {
+        "name": "timeline_joins",
+        "level": "PASS",
+        "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+        "events": [
+          {
+            "frame": 292,
+            "seconds": 2.92
+          },
+          {
+            "frame": 586,
+            "seconds": 5.86
+          },
+          {
+            "frame": 732,
+            "seconds": 7.32
+          }
+        ]
+      },
+      {
+        "name": "loop",
+        "level": "PASS",
+        "message": "N/A: no loop requested",
+        "events": []
+      },
+      {
+        "name": "loudness",
+        "level": "PASS",
+        "message": "Integrated loudness: target -14 LUFS +/-1",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0,
+            "end_frame": 915,
+            "end_seconds": 9.16
+          }
+        ]
+      },
+      {
+        "name": "true_peak",
+        "level": "PASS",
+        "message": "True peak ceiling -1 dBTP",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0,
+            "end_frame": 915,
+            "end_seconds": 9.16
+          }
+        ]
+      },
+      {
+        "name": "loudest_100ms",
+        "level": "PASS",
+        "message": "Loudest 100 ms RMS window (50 ms hop)",
+        "events": [
+          {
+            "frame": 240,
+            "seconds": 2.4,
+            "end_frame": 250,
+            "end_seconds": 2.5
+          }
+        ]
+      },
+      {
+        "name": "silence",
+        "level": "PASS",
+        "message": "Silence >=0.4 s; inspect whether intended",
+        "events": []
+      }
+    ],
+    "matte_rgb_exact": true,
+    "source_luma": 95.58484216145833,
+    "matte_sha256": "272422b7a224c4a137449d9b966602647a8b10d430f3e43339334023344315e1"
+  }
+}

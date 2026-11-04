@@ -1,0 +1,66 @@
+....................beat_this fallback to rms: beat_this unavailable; pip install beat_this
+.....................FX override: {'name': 'my_invert', 'previous': 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpk8sej0ue\\one\\fx.py', 'source': 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpk8sej0ue\\two\\fx.py'}
+FX override: {'name': 'my_invert', 'previous': 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpk8sej0ue\\two\\fx.py', 'source': 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpk8sej0ue\\one\\fx.py'}
+...onset offset=0ms: quiet=94.00, loud=255.00, gap=161.00
+onset offset=20ms: quiet=94.00, loud=255.00, gap=161.00
+energy offset=0ms: quiet=94.00, loud=255.00, gap=161.00
+energy offset=20ms: quiet=94.00, loud=255.00, gap=161.00
+..................usage: python.exe -m unittest [-h] [--image IMAGE] [--prompt PROMPT] --out OUT
+                              [--model MODEL] [--duration DURATION]
+                              [--resolution {480p,720p,1080p}]
+                              [--auth {oauth,api-key}] (--submit | --resume)
+python.exe -m unittest: error: Job ledger exists: resume it; use a new attempt only after resolving this job
+..usage: python.exe -m unittest [-h] [--image IMAGE] [--prompt PROMPT] --out OUT
+                              [--model MODEL] [--duration DURATION]
+                              [--resolution {480p,720p,1080p}]
+                              [--auth {oauth,api-key}] (--submit | --resume)
+python.exe -m unittest: error: Job ledger exists: resume it; use a new attempt only after resolving this job
+...Essss.....E.....C:\Users\User\src\vgs-fx\scripts\music_sync.py:69: ResourceWarning: unclosed file <_io.FileIO name='C:\\Users\\User\\AppData\\Local\\Temp\\tmpcyf43gsv\\rv\\overlay.png' mode='rb' closefd=True>
+  candidates.sort(key=lambda a:a['periodicity'],reverse=True)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..[opus @ 000002025b9d92c0] Error parsing Opus packet header.
+.................................................................................................
+======================================================================
+ERROR: test_same_source_symlink_is_preserved (test_install.InstallTests.test_same_source_symlink_is_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_install.py", line 40, in test_same_source_symlink_is_preserved
+    p=Path(d);source=self.source(p/'source');skills=p/'skills';skills.mkdir();target=skills/'video-gif-studio';target.symlink_to(source,target_is_directory=True)
+                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\pathlib.py", line 1386, in symlink_to
+    os.symlink(target, self, target_is_directory)
+OSError: [WinError 1314] 用戶端沒有這項特殊權限。: 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpb62gl_vl\\source' -> 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpb62gl_vl\\skills\\video-gif-studio'
+
+======================================================================
+ERROR: test_review_exports_overlay_contact_sheet_and_stability_report (test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\miniforge3\Lib\shutil.py", line 633, in _rmtree_unsafe
+    os.unlink(fullname)
+PermissionError: [WinError 32] 程序無法存取檔案，因為檔案正由另一個程序使用。: 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpcyf43gsv\\rv\\overlay.png'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\User\src\vgs-fx\tests\test_mask_review.py", line 25, in test_review_exports_overlay_contact_sheet_and_stability_report
+    with tempfile.TemporaryDirectory() as t:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\tempfile.py", line 946, in __exit__
+    self.cleanup()
+  File "C:\Users\User\miniforge3\Lib\tempfile.py", line 950, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+  File "C:\Users\User\miniforge3\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "C:\Users\User\miniforge3\Lib\shutil.py", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\miniforge3\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+  File "C:\Users\User\miniforge3\Lib\tempfile.py", line 905, in onexc
+    _os.unlink(path)
+PermissionError: [WinError 32] 程序無法存取檔案，因為檔案正由另一個程序使用。: 'C:\\Users\\User\\AppData\\Local\\Temp\\tmpcyf43gsv\\rv\\overlay.png'
+
+----------------------------------------------------------------------
+Ran 182 tests in 43.500s
+
+FAILED (errors=2, skipped=4)

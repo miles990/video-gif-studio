@@ -1,0 +1,22 @@
+{
+  "a": {
+    "source": "examples/neon-zen-pv/segment-01/generation/source.mp4",
+    "prepared_frame_index": 72,
+    "prepared_time_ms": 2880,
+    "thumbnail_mean_absolute_difference": 1.4024769067764282,
+    "model": "birefnet-general",
+    "inference_seconds_excluding_shared_load": 41.48,
+    "NUMBA_DISABLE_JIT": "1",
+    "processing": "one CPU session, two sequential frames; original RGB preserved"
+  },
+  "b": {
+    "source": "examples/neon-zen-pv/segment-03/generation/source.mp4",
+    "prepared_frame_index": 72,
+    "prepared_time_ms": 2880,
+    "thumbnail_mean_absolute_difference": 1.7043981552124023,
+    "model": "birefnet-general",
+    "inference_seconds_excluding_shared_load": 58.25,
+    "NUMBA_DISABLE_JIT": "1",
+    "processing": "one CPU session, two sequential frames; original RGB preserved"
+  }
+}

@@ -26,14 +26,15 @@ class FixTests(unittest.TestCase):
             x=np.sin(2*np.pi*1000*t)*np.where((t//.5).astype(int)%2==0,.8,.2)*np.exp(-local*100)*(local<.03)
             with wave.open(str(p/'click.wav'),'wb') as w:
                 w.setnchannels(1);w.setsampwidth(2);w.setframerate(rate);w.writeframes((x*32767).astype('<i2').tobytes())
-            for offset in (0,20):
+            for channel,offset in (('onset',0),('onset',20),('energy',0),('energy',20)):
                 plan={'fps':25,'music':{'file':'click.wav','in_ms':offset},'segments':[{'type':'still','image':'frame.png','duration_ms':3800}],
-                      'effects':[{'name':'flash_white','amount':{'on':'onset','decay_ms':140}}]}
+                      'effects':[{'name':'flash_white','amount':{'on':channel,'decay_ms':140}}]}
                 (p/'p.json').write_text(json.dumps(plan))
-                # Pixel rendering and PNG encode are real; audio mux only is irrelevant here.
+                # Pixel rendering is real; this offline test mocks only the exporter.
                 with patch('fx_render.export_timeline') as export:
                     render(p/'p.json',p/f'out{offset}',('mp4',))
                 args=export.call_args.args;images,times=args[7:9];edges=np.cumsum([0]+times)
+                if offset==0:self.assertGreaterEqual(np.array(images[0])[:,:,:3].mean(),250)
                 peaks=[]
                 for beat in range(1,8):
                     at=beat*500-offset
@@ -41,6 +42,7 @@ class FixTests(unittest.TestCase):
                     peaks.append(max(np.array(images[i])[:,:,:3].mean() for i in ids))
                 self.assertGreater(min(peaks),80)
                 self.assertGreater(min(peaks[1::2])-max(peaks[::2]),30)
+                print(f'{channel} offset={offset}ms: quiet={max(peaks[::2]):.2f}, loud={min(peaks[1::2]):.2f}, gap={min(peaks[1::2])-max(peaks[::2]):.2f}',flush=True)
                 self.assertGreater(evaluate({'on':'onset','decay_ms':140},1050-offset,Context(1,1,audio={'times_ms':[1000],'onset':[1],'offset_ms':offset})),0)
 
     def test_whip_two_shots_no_replicated_edges(self):
@@ -112,5 +114,36 @@ class FixTests(unittest.TestCase):
             draft=json.loads((p/'rev/draft-plan.json').read_text())
             self.assertTrue(any(s['type']=='still' and s.get('duration_ms',0)>=1000 for s in draft['segments']),draft)
             validate_plan(p/'rev/draft-plan.json')
+
+    def test_flash_cut_between_same_palette_shots(self):
+        rng=np.random.default_rng(17)
+        a=rng.integers(30,180,(90,160,3),dtype=np.uint8);b=a[:,::-1].copy()
+        frames=[Image.fromarray(a)]*25+[Image.new('RGB',(160,90),'white')]+[Image.fromarray(b)]*25
+        r=inspect_frames(frames,np.arange(len(frames))*40,len(frames)*40)
+        self.assertEqual(len(r['cuts']),1,r)
+        self.assertEqual(r['cuts'][0]['type'],'flash_cut')
+        self.assertEqual(r['cuts'][0]['time_ms'],1000)
+
+    def test_held_plate_with_repeated_foreground_accents(self):
+        rng=np.random.default_rng(18);base=rng.integers(20,80,(90,160,3),dtype=np.uint8)
+        frames=[]
+        for i in range(90):
+            a=base.copy()
+            if 20<=i<75:
+                y=30+min((i-20)%9,5)*3;a[y:y+24,50:110]=240
+            else:a=np.roll(a,i*3,axis=1)
+            frames.append(Image.fromarray(a))
+        r=inspect_frames(frames,np.arange(len(frames))*40,len(frames)*40)
+        self.assertTrue(any(f.get('kind')=='animated_cutout_on_held_plate' and f['end_ms']-f['start_ms']>=1800 for f in r['freezes']),r)
+
+    def test_flash_during_continuous_camera_pan_is_not_cut(self):
+        rng=np.random.default_rng(19)
+        a=rng.integers(20,200,(90,160,3),dtype=np.uint8);frames=[]
+        for i in range(50):
+            image=np.roll(a,i,axis=1).copy()
+            if i==25:image[:]=255
+            frames.append(Image.fromarray(image))
+        r=inspect_frames(frames,np.arange(50)*40,2000)
+        self.assertEqual(r['cuts'],[],r)
 
 if __name__=='__main__': unittest.main()

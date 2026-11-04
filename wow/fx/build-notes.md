@@ -1,3 +1,72 @@
+# Fix round 1 — resumed from fabaf61 (2026-11-04)
+
+This section supersedes the original handoff below. Work stayed in
+`C:/Users/User/src/vgs-fx`; no commit/push, installed-skill edits, examples/ edits,
+required-dependency changes or spec.md/acceptance.md edits. The coordinator's concurrent
+progress.md/spec-2.md/acceptance-2.md changes were left alone. Two matte PNGs are retained
+under demo/assets for the coordinator's eventual commit; no inference is needed to build.
+
+**Builder status: all eight requested fixes implemented and measured.** Two new films
+and frame evidence are ready for independent review. Memorable/striking quality and
+music listening are not independently certified. The optional 10 fps benchmark remains
+unmet. The old strict QA hard-cut-vs-transition mismatch remains a documented limitation,
+not a claim that the old acceptance wording has been waived.
+
+## Per-item result
+
+| Fix | Status | Measured evidence |
+|---|---|---|
+| 1 — audio accent sampling | Fixed | Onset and energy maxima are sampled on the audio clock/over each output exposure; onset supports decay_ms (default 120). Synthetic alternating clicks, in_ms 0 and 20: loud Y=255, quiet Y=94, gap **161**, all visible beats flash in all four cases. The first untrimmed beat is also asserted. Flash first-decay samples prevent repeated maxima shifting decoded peaks. |
+| 2 — both demos | Rebuilt and visually inspected | Same-shot BiRefNet fish, **8/8 freeze beats**, centroid movement **19.15 / 19.30 px**, subject rest **176 / 178 px** and peak **195 / 191 px** on 360px canvas; scale 1.06, rotation −3°, background multiplier .55 and blur 12. Freeze luma **51.36 / 65.59**, versus source frames **65.82 / 95.58**. Hex shutter at 7320 ms; whip at 5860 ms has no stacked flash; closing accents through **8800 ms**, total **9160 ms**. Both films' flash peak errors **0 ms**, luma rises **102.50–128.30**. |
+| 3 — whip geometry | Fixed | Adjacent shots pan as one continuous strip; no BORDER_REPLICATE. Both directions tested at **p=.25/.5/.75**; edge marker occupancy ≤2 columns, no stretched edge fill; output alpha 255 for opaque sources. Preview and both films' transition neighbors were viewed: no extra seam line or replicated streak. The moving shot boundary and directional blur are intentional. |
+| 4 — fresh rebuild | Implemented and run | build_demo.py extracts all four repository videos, rebuilds cards/plates and both 19-line plans using the two retained matte PNGs. No optional venv needed. Final render/export **57.40 / 56.05 s**, excluding source preparation. GIF **2,928,071 / 2,839,422 bytes** at 240×135 (12.5fps sampling); both below 3,000,000 bytes. Verification is a second reproducible script. |
+| 5 — reverse | Fixed on requested evidence | Both new films: exactly **3 cuts**, flash_cut **2920**, whip_pan **5860**, hex_shutter **7320 ms**, all **0 ms** error; **2920–5860 ms still** written in both validated drafts. 1200ms synthetic dissolve: **one crossfade**, center **1600 ms**, duration **1200 ms**. Feature continuity rejects panning-under-flash false cuts; same-palette flash and animated-card holds have offline regression tests. Heuristics remain reviewable, not universal recognition. |
+| 6 — validation/library gaps | Fixed | 101ms duration errors (10ms multiples required); 20ms transition errors at 25fps (minimum **40ms**); downbeat 250 against beats [0,500,1000] errors; nearest blending warning names the transition; broken bad.py:1 warns and is skipped, good files load, same-name overrides are still reported. |
+| 7 — GIF timing | Fixed | ≤20ms exposures merge with neighbors, preserving total time. Mixed synthetic exposures preserve **220ms** with no short decoded frames. Both actual GIFs decode to **9160ms**, same as MP4: **0ms drift**, minimum exposure **40ms**, alpha mismatch **0 pixels**. |
+| 8 — defaults/docs | Fixed | zoom_punch default **1.07**, premultiplied alpha tests retained; original + 6 effects + 12 transition phases = **19 preview tiles**, measured **0.295s**. Human-readable --list plus --json verified. Missing rembg in the normal venv exits **2**, names requirements-matting.txt, no traceback. BiRefNet live comparison and opencv-python-headless documented. Beat This! neon fixture **163.636 BPM**, integer-ms downbeats, double-time caveat. |
+
+## Tests and retained evidence
+
+- `tests-full-round1.log`: **182 tests**, **0 failures**, **2 existing environment
+  errors**, **4 skips**, **43.500s**. Errors remain Windows symlink privilege
+  (test_install) and open overlay.png cleanup (test_mask_review). No optional engine ran.
+- `fix-tests-resumed.log`: final focused **10/10** regression tests pass (including
+  the first audio beat and both onset/energy channels). The earlier full FX subset
+  also passed. Tests cover requested items 1, 3, 5, 6 and 7 plus reverse false positives.
+- `fix-evidence.json`, `catalog.text`, `catalog.json`: long-dissolve, missing-backend,
+  catalog and preview evidence; reproduce with `python wow/fx/check_fixes.py`.
+- `audio-render-evidence.json`: four actual encoded MP4 renders, decoded again with
+  OpenCV (onset/energy × in_ms 0/20). Every visible beat, including the first at 0,
+  flashes; loud **255**, quiet **94**, gap **161**, matching the offline pixel tests.
+  Reproduce with `python wow/fx/check_audio_render.py`.
+- `demo/build-results.json`, `timings.json`, `verification.json`, both reverse reports
+  and draft plans: final quantitative evidence. Both MP4 QA reports are **PASS** under
+  documented timeline-join semantics. Draft source frames live under ignored work/;
+  `verify_demo.py` regenerates them from the delivered MP4s.
+- `demo/inspection-{a,b}-1.jpg` through `-7.jpg`: every beat −40/0/+120/+280ms,
+  transition neighbors and .25/.5/.75 targets, ending frames. All sheets were viewed;
+  final flash-decay neighbors and the 19-tile preview were re-viewed after changes.
+- `demo/assets/`: two source freezes, two mattes, green-background checks and provenance.
+  Matte RGB equals source RGB exactly. Nearest prepared source frame is **72 (2880ms)**
+  in both opening clips; thumbnail MAE **1.40 / 1.70** documents extraction differences.
+- Final protected-path diff is empty; `git diff --check` has no whitespace errors.
+  Separate coordinator-created second-round files were not changed by this builder.
+
+## Memory and performance
+
+Only one heavy job ran at a time: one BiRefNet session processed two frames sequentially
+with NUMBA_DISABLE_JIT=1 and OMP_NUM_THREADS=2, then exited before tests/rendering.
+Measured inference was **41.48s / 58.25s**, excluding shared initialization. Coordinator
+load-inclusive comparison remains **u2netp 10.6s / BiRefNet 61.6s** in live/README.md.
+The normal rebuild uses retained mattes, never loads rembg/torch/Beat This!.
+
+Optional performance target **not fixed**: benchmark-latest.json gives **3.276 fps**,
+**90 frames / 27.470s** at 1280×720, 3 effects + crossfade, excluding codecs and PNG I/O.
+No performance refactor was mixed into this correctness/visual repair round.
+
+---
+
+# Original handoff (historical; superseded above)
 # FX builder handoff — 2026-11-04
 
 Worktree: `C:\Users\User\src\vgs-fx`, fx-framework. No commit/push. No edits to

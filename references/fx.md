@@ -68,8 +68,8 @@ The subject's source RGB is preserved; alpha-over-white removes dark fringe cont
 Geometry defaults to linear filtering. Set top-level `"sampling":"nearest"` (or the
 individual geometry parameter) for pixel art: no new palette colors or soft alpha are
 introduced. Explicit preparation must also use nearest enlargement. Large scale changes
-increase coverage and may crop; choose bounds deliberately. The default small transparent
-punch is subtle; it does not meet the stronger 5% stripe-growth target in S-2.
+increase coverage and may crop; choose bounds deliberately. The default punch is 1.07;
+transparent coverage scales geometrically, with premultiplication protecting edge RGB.
 
 ## Plans, clocks and envelopes
 
@@ -183,7 +183,7 @@ in an optional environment. First live use may download its checkpoint. Import/m
 failure warns clearly and records engine=rms plus fallback_reason; no downbeats are
 fabricated. A downbeat-dependent plan then fails with the exact plan location and a
 `--engine beat_this` instruction. The engine_fn callable is injectable for offline tests;
-the fixture is explicitly synthetic, not a claim of live model measurement.
+the injected-engine fixture is synthetic; the separate neon fixture records live output.
 The recorded live neon run is `wow/fx/live/beat_this-neon.json`: 82 beats and 20 downbeats
 in 30 seconds, 9.8 seconds inference. BPM now derives from model beat intervals (163.64
 for that recording, rather than the RMS analyzer's 82). Times are integer milliseconds.
@@ -219,6 +219,12 @@ report.json includes hard/gradual edit candidates, flash peaks, horizontal motio
 zoom scale estimates, holds, and the numerator/denominator of edits within one analysis
 frame of beats. shots.png labels each shot's time. The draft uses builtins, exact segment
 durations (end_beat only for near-exact matches), and review=true on uncertain reconstruction.
+Flash-hidden edits compare clean spatial structure across the white peak; bounded
+horizontal-detail troughs identify same-palette whips. Coherent cumulative chroma paths
+can identify long dissolves. Repeated foreground poses over a static outer plate are
+reported as tentative animated-cutout freezes, with `review: true`; a locked camera or
+looping action can be ambiguous. In-shot freeze boundaries split the draft into still
+segments. This does not recover the original alpha layers or bounce parameters.
 Decoded originals remain in source/. Effect-contaminated frames in shots/ are replaced
 with nearest clean-sample holds, then inferred effects are applied. These holds are a
 reviewable approximation, not recovered unseen motion. Replace source manifests with
@@ -233,6 +239,8 @@ NumPy 2.5.4, OpenCV 5.0.0. Initial 1280×720 / 90-frame run: **3.27 fps**, 27.49
 three effects (grade, halation, beat_bounce) with a 500ms crossfade over a 3-second timeline,
 excluding PNG saving and GIF/MP4 encoding. This misses the 10 fps target. Timings can vary
 under concurrent rendering. Full demo timings and decoded QA are in wow/fx/demo/README.md.
+The serial fix-round rerun in `wow/fx/benchmark-latest.json` is **3.276 fps / 27.470s**;
+the optional 10fps target remains unmet.
 The composer and this bounded renderer retain frames in memory; use short timelines.
 
 The automatic QA's --expect-cuts checks **hard image discontinuities**, so smooth effects

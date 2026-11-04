@@ -1,0 +1,14 @@
+{
+  "seconds": 27.46974189998582,
+  "frames": 90,
+  "fps": 3.2763322031812194,
+  "resolution": [
+    1280,
+    720
+  ],
+  "numpy": "2.5.4",
+  "opencv": "5.0.0",
+  "machine": "Windows-10-10.0.19045-SP0",
+  "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+  "method": "90 RGBA frames; grade + halation + beat_bounce, centered crossfade 500ms; excludes PNG/codec I/O"
+}

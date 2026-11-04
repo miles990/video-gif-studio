@@ -1,0 +1,51 @@
+EFFECTS
+  flash_white: Beat accent with preserved coverage.
+    amount=1.0 (number): White mix, 0 identity, 1 white; alpha unchanged
+    source: C:\Users\User\src\vgs-fx\scripts\fx\effects\flash_white.py
+  grade: Lift/gamma/gain, luminance saturation and restrained warmth.
+    lift=0.0 (number): lift
+    gamma=1.0 (number): gamma
+    gain=1.0 (number): gain
+    sat=1.0 (number): Saturation multiplier
+    temp=0.0 (number): Warmth: red +temp, blue -temp
+    source: C:\Users\User\src\vgs-fx\scripts\fx\effects\grade.py
+  halation: Local highlight bloom; alpha never expands.
+    amount=0.8 (number): Spill gain
+    radius=6.0 (number): Gaussian sigma in pixels
+    warm=True (bool): Warm highlight spill
+    threshold=0.65 (number): threshold
+    source: C:\Users\User\src\vgs-fx\scripts\fx\effects\halation.py
+  beat_bounce: A card accent, never a substitute for character movement.
+    amount=1.0 (number): Envelope strength
+    translate_px=8.0 (number): Upward displacement at peak
+    rotation_deg=2.0 (number): Peak rotation
+    scale=1.01 (number): Peak scale multiplier
+    sampling='linear' (str): linear or nearest
+    source: C:\Users\User\src\vgs-fx\scripts\fx\effects\beat_bounce.py
+  zoom_punch: Centered camera punch; use scale=1.2 for a strong opaque shot.
+    amount=1.0 (number): Envelope strength
+    scale=1.07 (number): Peak zoom
+    sampling='linear' (str): linear or nearest
+    source: C:\Users\User\src\vgs-fx\scripts\fx\effects\zoom_punch.py
+  cutout_card: Alpha silhouette, solid white border, soft shadow down/right; clean straight RGB.
+    border_px=6.0 (number): White border radius
+    shadow_px=7.0 (number): Shadow offset down and right
+    shadow_blur=4.0 (number): shadow blur
+    bg='' (str): Empty preserves transparency; otherwise RGB hex
+    background='' (str): Optional image path behind subject
+    darken=0.4 (number): Background brightness multiplier
+    blur=8.0 (number): Background blur sigma
+    amount=1.0 (number): Card opacity
+    source: C:\Users\User\src\vgs-fx\scripts\fx\effects\cutout_card.py
+TRANSITIONS
+  crossfade: Coverage-correct premultiplied dissolve.
+    source: C:\Users\User\src\vgs-fx\scripts\fx\transitions\crossfade.py
+  whip_pan: Horizontal camera sweep, with directional motion blur.
+    blur_px=49.0 (number): Peak horizontal blur width
+    direction='left' (str): left or right
+    source: C:\Users\User\src\vgs-fx\scripts\fx\transitions\whip_pan.py
+  hex_shutter: Six-sided aperture closes at the cut and opens onto the next shot.
+    color='121522' (str): Shutter RGB hex
+    source: C:\Users\User\src\vgs-fx\scripts\fx\transitions\hex_shutter.py
+  flash_cut: White peak at the cut, with original endpoints and source coverage.
+    source: C:\Users\User\src\vgs-fx\scripts\fx\transitions\flash_cut.py

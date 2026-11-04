@@ -46,6 +46,46 @@ def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
     for center in shutters:
         cuts.append({'time_ms':float(times[center]),'type':'hex_shutter','confidence':.75,'duration_ms':400,'review':True})
         occupied.update(range(max(0,center-round(300/step)),min(n,center+round(300/step)+1)))
+    # A white frame erases chroma. Compare clean spatial structure on both sides,
+    # including same-palette shots which a median-colour detector cannot separate.
+    for center in flash_idx:
+        radius=max(2,round(240/step));lo=max(0,center-radius);hi=min(n-1,center+radius)
+        left=rgb[lo]/max(1,float(mean[lo]));right=rgb[hi]/max(1,float(mean[hi]))
+        # A panning shot can move far across a flash without changing shots.
+        # Consistent forward/backward features veto that false positive.
+        prev,cur=gray[lo].astype(np.uint8),gray[hi].astype(np.uint8)
+        points=cv2.goodFeaturesToTrack(prev,120,.01,4);continuous=False
+        if points is not None and len(points)>=8:
+            moved,ok,_=cv2.calcOpticalFlowPyrLK(prev,cur,points,None)
+            back,back_ok,_=cv2.calcOpticalFlowPyrLK(cur,prev,moved,None)
+            good=(ok.ravel()>0)&(back_ok.ravel()>0)&(np.linalg.norm((back-points).reshape(-1,2),axis=1)<1)
+            if good.sum()>=8:
+                _,inliers=cv2.estimateAffinePartial2D(points[good],moved[good])
+                continuous=inliers is not None and good.sum()>.45*len(points) and inliers.sum()>.3*len(points)
+        if not continuous and np.abs(left-right).mean()>.45 and np.abs(rgb[lo]-rgb[hi]).mean()>20:
+            cuts.append({'time_ms':float(times[center]),'type':'flash_cut','confidence':.75,'duration_ms':160,'review':True})
+            occupied.update(range(lo,hi+1))
+    # Whips lose horizontal detail over a bounded window, while the two clean
+    # shots need not have different dominant colours. Exclude shutter/flash windows.
+    sharp=np.abs(np.diff(gray,n=2,axis=2)).mean(axis=(1,2))
+    radius=max(3,round(320/step));blurred=[]
+    for i in range(1,n-1):
+        baseline=min(max(sharp[max(0,i-radius):i],default=0),max(sharp[i+1:min(n,i+radius+1)],default=0))
+        near_flash=any(abs(times[i]-times[f])<=240 for f in flash_idx)
+        if i not in occupied and not near_flash and baseline>1 and sharp[i]<baseline*.5 and diff[i]>8 and mean[i]>35:
+            blurred.append(i)
+    for g in groups(blurred):
+        if len(g)<2 or len(g)*step>600:continue
+        center=int(g[np.argmin(sharp[g])]);position=float(center)
+        if 0<center<n-1:
+            denominator=sharp[center-1]-2*sharp[center]+sharp[center+1]
+            if denominator>1e-6:
+                position+=float(np.clip(.5*(sharp[center-1]-sharp[center+1])/denominator,-.5,.5))
+        at=round(float(np.interp(position,np.arange(n),times))/10)*10
+        length=round((len(g)+2)*step/10)*10
+        cuts.append({'time_ms':at,'type':'whip_pan','confidence':.65,'duration_ms':length,'review':True})
+        motions.append({'time_ms':at,'direction':'horizontal','confidence':.65,'review':True})
+        occupied.update(range(max(0,g[0]-2),min(n,g[-1]+3)))
     # A long dissolve has small *per-frame* deltas but large cumulative change.
     # Require a coherent path between endpoints rather than two threshold crossings.
     for g in groups(np.flatnonzero(change>.0015)):
@@ -87,6 +127,24 @@ def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
             nearby = [c['time_ms'] for c in cuts if 0<=c['time_ms']-end<=300 and c['type']!='cut']
             if nearby: end=min(nearby)
             freezes.append({'start_ms':float(times[a]),'end_ms':end,'confidence':.9})
+    # A freeze with a beat-animated cutout retains its plate and repeatedly returns
+    # to the same foreground pose. Label this weaker inference for human review.
+    border=np.ones((90,160),bool);border[15:75,30:130]=False
+    plate_diff=np.r_[0,np.abs(np.diff(rgb,axis=0))[:,border].mean(axis=(1,2))]
+    for g in groups(np.flatnonzero(plate_diff[1:]<.3)+1,max(1,round(80/step))):
+        a,b=g[0]-1,g[-1]+1
+        if (b-a)*step<1000 or np.percentile(diff[a:b],90)<3:continue
+        repeat=[]
+        for i in range(a+round(800/step),b):
+            repeat.append(min(np.abs(rgb[i]-rgb[j]).mean() for j in range(i-round(800/step),i-max(1,round(200/step))))<.6)
+        if not repeat or np.mean(repeat)<.3:continue
+        start=float(times[a]);end=float(times[b]) if b<n else duration_ms
+        before=[c['time_ms'] for c in cuts if 0<=start-c['time_ms']<=400]
+        after=[c['time_ms'] for c in cuts if 0<=c['time_ms']-end<=400]
+        if before:start=max(before)
+        if after:end=min(after)
+        if not any(f['start_ms']<=start and f['end_ms']>=end for f in freezes):
+            freezes.append({'start_ms':start,'end_ms':end,'confidence':.65,'kind':'animated_cutout_on_held_plate','review':True})
     zooms = []
     for i in range(1,n):
         if diff[i]<.5 or any(abs(times[i]-c['time_ms'])<300 for c in cuts) or any(abs(times[i]-times[f])<250 for f in flash_idx): continue

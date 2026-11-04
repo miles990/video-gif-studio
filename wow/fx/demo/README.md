@@ -1,97 +1,92 @@
-# Freeze / cutout / beat
+﻿# Freeze / cutout / beat — fix round 1
 
-Final candidates: [demo.mp4](demo.mp4) and [demo-b.mp4](demo-b.mp4), with continuous music.
-Silent 480px previews: [demo.gif](demo.gif) and [demo-b.gif](demo-b.gif).
-[preview.png](preview.png) shows all six effects and all four transitions at three phases.
+Deliveries: [demo.mp4](demo.mp4), [demo-b.mp4](demo-b.mp4), and silent GIF previews
+[demo.gif](demo.gif), [demo-b.gif](demo-b.gif). Both films are 640×360, 9.160 seconds,
+with the original soundtrack. MP4 is opaque. The 240×135 GIFs retain 12.5 fps sampling
+and exact total time; they are deliberately smaller than the video masters.
 
-From the worktree root, reproduce the primary film in a **new** output directory:
-
-```powershell
-& C:/Users/User/.codex/skills/video-gif-studio/.venv/Scripts/python.exe scripts/fx_render.py wow/fx/demo/plan.json --out wow/fx/demo/reproduced-a --formats png gif mp4 --no-user-fx
-```
-
-Use plan-b.json and a different --out for the second material. The 17-line plans differ
-only in material paths: neon clip manifest, character manifest and background plate image.
-All timings, effects, numeric parameters, beatmap and music are identical. Prepared
-sources are already retained under work/. `prepare_demo.py` recreates character canvases
-from repository RGBA exports; neon sources were prepared with gif_pipeline.py, e.g.:
+From a fresh checkout, with the normal project Python and FFmpeg available:
 
 ```powershell
-& C:/Users/User/.codex/skills/video-gif-studio/.venv/Scripts/python.exe scripts/gif_pipeline.py examples/neon-zen-pv/segment-01/generation/source.mp4 --out wow/fx/demo/work/neon-a-new --width 640
+$env:VIDEO_GIF_FFMPEG='C:/Users/User/.codex/skills/video-gif-studio/.venv/Lib/site-packages/static_ffmpeg/bin/win32/ffmpeg.exe'
+$env:VIDEO_GIF_FFPROBE='C:/Users/User/.codex/skills/video-gif-studio/.venv/Lib/site-packages/static_ffmpeg/bin/win32/ffprobe.exe'
+& C:/Users/User/.codex/skills/video-gif-studio/.venv/Scripts/python.exe wow/fx/demo/build_demo.py
+& C:/Users/User/.codex/skills/video-gif-studio/.venv/Scripts/python.exe wow/fx/demo/verify_demo.py
 ```
 
-The final full-resolution deliveries are **master-a/** and **master-b/**: RGBA frames,
-manifest.json (including resolved effects/provenance and timings), qc.json, GIF and MP4.
-Root demo.mp4/demo-b.mp4 are copies of those final MP4s. `inspect_demo.py` creates the
-smaller GIF previews, decoded beat measurements and detailed inspection sheets.
-Older candidates are preserved under work/archive-*; they are not the delivered version.
+`build_demo.py` rebuilds all prepared sources under `work/round1/` from repository
+videos and retained `assets/` PNGs. It writes both 19-line plans, both MP4s, bounded GIFs,
+the original-plus-effects preview, manifests and `build-results.json`. User FX libraries
+are not loaded. No model or optional inference environment is needed for this route.
+It creates a new master directory each run; `build-results.json` identifies the current
+masters. `verify_demo.py` creates decoded beat sheets, QA, reverse drafts and measurements.
+Reverse draft source paths point into that run's scratch directory: rerun verification
+to rebuild them after a fresh checkout. `prepare_demo.py` belongs to the superseded demo.
 
-## Measured delivery
-
-| Metric | A: chibi + neon segment 01 | B: robot + neon segment 03 |
+| Measurement | A | B |
 |---|---:|---:|
-| Duration | 8.780 s | 8.780 s |
-| Canvas | 640×360 | 640×360 |
-| Master exposures | 223 | 223 |
-| Nominal render rate | 25 fps plus exact 10ms event boundaries | same |
-| Exported video | 100 fps repeated frames, H.264 + AAC | same |
-| Full render/export wall time | 44.515 s | 45.021 s |
-| Pixel render wall time | 23.395 s | 24.004 s |
-| Pixel render speed | 9.53 fps | 9.29 fps |
-| 480px GIF preview | 14,632,718 bytes | 13,444,870 bytes |
-| GIF alpha mismatch | 0 pixels | 0 pixels |
+| Render + MP4 + bounded GIF export, excluding source preparation | 57.40 s | 56.05 s |
+| Pixel render | 29.69 s / 8.08 fps | 28.63 s / 8.38 fps |
+| GIF bytes | 2,928,071 | 2,839,422 |
+| Decoded GIF / MP4 duration | 9160 / 9160 ms | 9160 / 9160 ms |
+| Smallest GIF exposure | 40 ms | 40 ms |
+| Foreground resting / peak height | 176 / 195 px | 178 / 191 px |
+| Peak centroid displacement | 19.15 px up | 19.30 px up |
+| Freeze mean luma | 51.36 | 65.59 |
+| Original retained freeze luma | 65.82 | 95.58 |
+| Flash peak timing errors, 740 and 2200 ms | 0 / 0 ms | 0 / 0 ms |
+| Flash luma rises against 120 ms before | 128.30 / 123.66 | 118.55 / 102.50 |
+| Reverse cut errors, 2920 / 5860 / 7320 ms | 0 / 0 / 0 ms | 0 / 0 / 0 ms |
 
-Wall timings exclude source preparation and the separate smaller-GIF preview export.
-See wall-times.json and timings.json for machine-readable evidence. Video output keeps
-the existing 10ms exporter clock, rather than generating interpolated physical motion.
+The freeze is 2920–5860 ms. Beats 8–15 (2920, 3280, 3660, 4020, 4400, 4760,
+5120, 5480 ms) all drive the same-shot foreground, with 20 px translation, 1.06 scale,
+−3° rotation and 240 ms decay. Its plate is blurred at sigma 12 and multiplied by .55.
+The flash_cut enters the freeze; the whip at 5860 ms has no stacked flash. A hex shutter
+at 7320 ms leads to closing zoom punches through 8800 ms (360 ms before the end).
+A and B plans differ only in material paths. These are editorial card accents, not
+newly synthesized fish motion.
 
-Flash peaks in the decoded MP4:
+Both reverse reports contain exactly three edits with the correct transition types,
+and a 2920–5860 ms still in directly validated drafts. Animated-cutout freeze inference
+is explicitly `review: true`; the reverse tool cannot recover the separated layers.
 
-| Material | Music trigger after in_ms | Measured peak | Error | Luminance rise vs 3 encoded frames before |
-|---|---:|---:|---:|---:|
-| A | 2926.829 ms | 2930 ms | +3.171 ms | 120.51 |
-| A | 5853.659 ms | 5860 ms | +6.341 ms | 173.59 |
-| B | 2926.829 ms | 2930 ms | +3.171 ms | 97.92 |
-| B | 5853.659 ms | 5860 ms | +6.341 ms | 173.40 |
+Both decoded MP4 QA reports are PASS: [A](qa/report.md), [B](qa-b/report.md). These use
+`--timeline` semantics for designed transitions. This does not claim the legacy strict
+`--expect-cuts` hard-discontinuity detector recognizes smooth transition midpoints.
+The builder viewed every beat's neighbors, every transition at .25/.5/.75, freeze
+start/middle/end, and closing frames in `inspection-a-1.jpg` through `inspection-b-7.jpg`.
+No replicated-edge streak or extra seam line was seen; the moving boundary between
+the adjacent shots is intentional. The hexagonal aperture is visible and the white
+card outline remains continuous. Final flash peaks were rechecked after adding their
+first decay samples. Playback/listening and independent aesthetic approval remain
+unverified; frame inspection and numeric QA are not substitutes for those judgments.
 
-All four meet ±1 encoded frame (10ms) and rise ≥40. Transition midpoints are exactly
-2930 and 5850ms. The still is 2930–4390ms; the next character segment resumes motion.
-Audio is the original neon soundtrack, in_ms=20, with 100ms fade-in and 500ms fade-out.
+## Retained matte provenance and optional regeneration
 
-## QA and visual inspection
+A uses neon segment 01 for the opening/freeze and segment 04 for the middle shot.
+B uses segment 03 and segment 05. The closing section returns to the opening material.
+All video paths are `examples/neon-zen-pv/segment-XX/generation/source.mp4`; music is
+`examples/neon-zen-pv/soundtrack.flac`. Nothing under examples/ is modified.
+`beats.json` is the recorded Beat This! grid: 163.636 BPM, double-time relative to the
+82 BPM RMS estimate. Model timing provenance is included in the JSON.
 
-[Primary QA](qa/report.md) and [second-material QA](qa-b/report.md) are **PASS** on the
-final decoded MP4s: frame 0, flashes, pops, freeze, cuts, timeline joins, loudness, true
-peak and silence. Command:
+`assets/freeze-a.png` and `freeze-b.png` are the source frames; `matte-a.png` and
+`matte-b.png` retain their RGB exactly and add BiRefNet alpha. The two `check-*.png`
+files composite them over green for edge review. Matte SHA256 and exact-RGB checks are
+in `verification.json`. They replace the unrelated character sprites from the old demo.
+
+Only to regenerate the TWO mattes, run this separate process, let it exit, then run the
+normal build above. The optional environment needs rembg, its ONNX runtime and
+opencv-python-headless; point U2NET_HOME at existing BiRefNet weights.
 
 ```powershell
-& C:/Users/User/.codex/skills/video-gif-studio/.venv/Scripts/python.exe scripts/qa_media.py wow/fx/demo/demo.mp4 --out wow/fx/demo/qa-reproduced --timeline wow/fx/demo/master-a/manifest.json --holds 2.93-4.39
+$env:NUMBA_DISABLE_JIT='1'
+$env:OMP_NUM_THREADS='2'
+$env:U2NET_HOME='C:/Users/User/.codex/skills/video-gif-studio/.runtime/models'
+& C:/Users/User/src/fx-optdeps/venv/Scripts/python.exe wow/fx/demo/build_demo.py --prepare-only --rematte
 ```
 
-**Strict acceptance gap:** the requested `--expect-cuts 2.93,4.39,5.85` command fails
-the existing QA hard-cut detector, because these are a flash transition, a continuous
-still-to-motion join and a whip transition. The failed probe is retained in
-work/archive-qa-initial/report.md. The passing reports above use the existing documented
-editorial-join semantics, not that strict hard-cut invocation. This difference is not
-claimed as satisfying the unchanged acceptance line; S-展示 remains a candidate.
-
-The builder inspected [A](inspection-final-a.jpg), [B](inspection-final-b.jpg), the QA
-contact sheets and preview.png, including each transition's neighboring frames. The
-first version applied borders after whip blur, creating thick white streak silhouettes;
-source-stage processing fixed that. Reflected edges initially duplicated the subject;
-edge replication removed the duplicate. Final cards retain continuous white contours,
-consistent down/right shadows, and readable subjects on a dark blurred plate. A's pink
-particle is present in the original RGBA animation, not a newly invented effect.
-No real-time audiovisual playback/listening or independent aesthetic sign-off occurred
-in this builder session; numeric checks and frame inspection are the evidence available.
-
-## Sources
-
-- examples/chibi-running-dash/final.apng: original RGBA animation, frames 18–47.
-- examples/robot-wave-no-reference/final.gif: original transparent animation, frames 25–54.
-- examples/neon-zen-pv/segment-01/generation/source.mp4 and segment-03/generation/source.mp4.
-- examples/neon-zen-pv/music-analysis/beats.json and soundtrack.flac.
-
-All are existing repository works. Preparation used fixed union crops and a shared
-640×360 canvas; no per-frame recentering or new character movement. examples/ was not
-modified. Optional Beat This! and BiRefNet were not installed or live-run here.
+One CPU session processes A and B sequentially. This run: 41.48 s and 58.25 s inference,
+excluding shared model initialization. The coordinator's separate load-inclusive
+comparison was u2netp 10.6 s versus BiRefNet 61.6 s (`../live/matte-compare.jpg`).
+Keep at most one matting/render/test process active on this shared 16 GB machine.

@@ -1,0 +1,99 @@
+{
+  "cuts": [
+    {
+      "time_ms": 2920.0000000000173,
+      "type": "flash_cut",
+      "confidence": 0.75,
+      "duration_ms": 160,
+      "review": true
+    },
+    {
+      "time_ms": 5860,
+      "type": "whip_pan",
+      "confidence": 0.65,
+      "duration_ms": 320,
+      "review": true
+    },
+    {
+      "time_ms": 7320.000000000113,
+      "type": "hex_shutter",
+      "confidence": 0.75,
+      "duration_ms": 400,
+      "review": true
+    }
+  ],
+  "flashes": [
+    {
+      "time_ms": 2920.0000000000173,
+      "confidence": 0.9
+    }
+  ],
+  "directional_motion": [
+    {
+      "time_ms": 5860,
+      "direction": "horizontal",
+      "confidence": 0.65,
+      "review": true
+    }
+  ],
+  "zoom_punches": [],
+  "freezes": [
+    {
+      "start_ms": 2920.0000000000173,
+      "end_ms": 5860,
+      "confidence": 0.65,
+      "kind": "animated_cutout_on_held_plate",
+      "review": true
+    }
+  ],
+  "beat_alignment": {
+    "numerator": 3,
+    "denominator": 3,
+    "ratio": 1.0,
+    "tolerance_ms": 40.00000000000091
+  },
+  "duration_ms": 9160.000000000153,
+  "analysis_frame_ms": 40.00000000000091,
+  "limitations": "Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous.",
+  "draft_notes": "Draft uses reviewed reconstruction candidates with clean-sample holds where effects were baked. Replace each shots/* manifest with licensed source footage; inferred effects, scale and transition lengths require review. source/ retains the decoded original.",
+  "suggested_effects": [
+    {
+      "name": "flash_white",
+      "start_ms": 2920.0000000000173,
+      "end_ms": 3080.0000000000173,
+      "amount": {
+        "keyframes": [
+          [
+            2920.0000000000173,
+            1
+          ],
+          [
+            3040.0000000000173,
+            0
+          ]
+        ]
+      },
+      "review": true
+    }
+  ],
+  "suggested_transitions": [
+    {
+      "name": "flash_cut",
+      "cut_ms": 2920.0000000000173,
+      "duration_ms": 160,
+      "review": true
+    },
+    {
+      "name": "whip_pan",
+      "cut_ms": 5860,
+      "duration_ms": 320,
+      "review": true
+    },
+    {
+      "name": "hex_shutter",
+      "cut_ms": 7320.000000000113,
+      "duration_ms": 400,
+      "review": true
+    }
+  ]
+}

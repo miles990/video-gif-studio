@@ -1,0 +1,9 @@
+onset offset=0ms: quiet=94.00, loud=255.00, gap=161.00
+onset offset=20ms: quiet=94.00, loud=255.00, gap=161.00
+energy offset=0ms: quiet=94.00, loud=255.00, gap=161.00
+energy offset=20ms: quiet=94.00, loud=255.00, gap=161.00
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 1.521s
+
+OK
