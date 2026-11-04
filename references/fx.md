@@ -11,6 +11,10 @@ python scripts/fx_render.py --preview preview.png --image prepared/frames/00000.
 python scripts/fx_render.py plan.json --validate --formats mp4
 ```
 
+`--list` alone prints names, readable parameter defaults/descriptions and source files;
+add `--json` for the machine-readable catalog. Preview includes an original reference
+tile and deliberately visible example settings (stronger than restrained film defaults).
+
 The timeline schema and exporters are shared with `compose_timeline.py`. A plan without
 effects/transitions uses that composer directly: pixel values and variable exposures
 are unchanged. `music` still requires a video output. Existing output directories are
@@ -45,7 +49,7 @@ defaults are also usable directly as plan fields. Every numeric field accepts en
 | beat_bounce | amount=1, translate_px=8 upward, rotation_deg=2, scale=1.01, sampling=linear |
 | halation | amount=.8, radius=6 px Gaussian sigma, warm=true, threshold=.65; alpha exact, never expands coverage |
 | grade | lift=0, gamma=1, gain=1, sat=1, temp=0; temp adds red and subtracts blue |
-| zoom_punch | amount=1, scale=1.014, sampling=linear; conservative default protects transparent coverage, set scale=1.2 for opaque camera punches |
+| zoom_punch | amount=1, scale=1.07, sampling=linear; alpha area follows scale squared; premultiplied geometry avoids dark fringes |
 | cutout_card | border_px=6, shadow_px=7 down/right, shadow_blur=4, bg='', background='', darken=.4, blur=8, amount=1 |
 
 `cutout_card` uses the source alpha; it does not infer a foreground from an opaque image.
@@ -57,7 +61,7 @@ The subject's source RGB is preserved; alpha-over-white removes dark fringe cont
 | Transition | Parameters and defaults |
 |---|---|
 | crossfade | none; premultiplied dissolve |
-| whip_pan | blur_px=49, direction=left (or right); horizontal blur and translation |
+| whip_pan | blur_px=49, direction=left (or right); two adjacent shots pan together through a horizontal blur, without replicated edge stretching |
 | hex_shutter | color=121522; six-sided aperture closes then opens |
 | flash_cut | none; white midpoint and unchanged endpoints |
 
@@ -99,6 +103,10 @@ boundaries are inserted on that grid so they cannot be skipped by nominal frame 
 On an inserted beat frame, evaluate its beat envelope at the exact unrounded beat peak.
 Thus output exposures may be variable, including 10ms accents. Video exporters retain
 the exact timeline as repeated frames at 100 fps; no motion interpolation is added.
+GIF derivatives merge exposures of 20ms or less with a neighbour, retaining the first
+image of a merged group and the exact total duration. This avoids browser 100ms clamping;
+PNG and video retain the original sample times. A GIF of total duration <=20ms cannot
+represent that timing portably. Use video/APNG for such a short asset.
 
 Effects run in listed order. `stage: "post"` (default) applies after transitions.
 `stage: "source"` applies before a transition to each participating source, scoped by
@@ -120,7 +128,10 @@ Numeric parameter forms:
 - Strength: `{"on":"onset"}` or `{"on":"energy"}`. The renderer recomputes 10ms RMS
   from music.file, even when an old beats.json only contains peak timestamps/waveform.
   Energy is linear RMS / maximum RMS; onset is positive RMS difference / maximum positive
-  difference. The curves linearly interpolate between hops; no logarithmic loudness mapping.
+  difference. Energy interpolates between hops. Onset peaks accept `decay_ms` (default
+  120ms), with maximum overlapping decays. Peak sample times are inserted into the
+  render grid; audio parameters also take their maximum within each output exposure,
+  so changing music.in_ms does not randomly miss clicks. No logarithmic loudness mapping.
   A 12dB quieter click produces approximately one quarter of the strength. Native PCM16
   WAV works without FFmpeg; compressed audio uses media_runtime. Missing music/decoder is
   an actionable error, never an all-zero replacement. `music_sync.py` also records these
@@ -129,6 +140,9 @@ Numeric parameter forms:
 All plan keys, parameter names/types, envelope keys, ranges of beat indices, transitions,
 source canvases and timing are checked before output creation and effect pixel processing.
 Unknown keys are errors, including top-level typos. `review` is allowed annotation metadata.
+Segment duration_ms must be a multiple of 10. Transitions must last at least one requested
+output frame. Downbeats must coincide with actual beats (1ms integer-rounding tolerance).
+Nearest/pixel sampling warns when crossfade, whip_pan or flash_cut blends new colours.
 
 ## Your growing library
 
@@ -148,8 +162,9 @@ def my_invert(frame, t_ms, ctx, amount=1.0):
 Precedence: builtins < `~/.video-gif-studio/fx/*.py` < repeated `--fx-dir` directories,
 left to right; files within a directory load alphabetically. Set `VIDEO_GIF_FX_HOME` to
 override the automatic library location; `--no-user-fx` disables it. Missing directories
-are ignored and never created. Syntax/import failures stop with file and line information;
-builtins work on the next run with `--no-user-fx`. Plugins are trusted local Python code.
+are ignored and never created. Syntax/import failures warn with filename and line and
+skip that file; its partial registrations are rolled back. Other files and builtins remain
+available. Plugins are trusted local Python code.
 Overrides report the name and both source paths to stderr and the delivery manifest.
 
 After a successful film: choose a distinctive name; document parameters with decorator
@@ -169,13 +184,22 @@ failure warns clearly and records engine=rms plus fallback_reason; no downbeats 
 fabricated. A downbeat-dependent plan then fails with the exact plan location and a
 `--engine beat_this` instruction. The engine_fn callable is injectable for offline tests;
 the fixture is explicitly synthetic, not a claim of live model measurement.
+The recorded live neon run is `wow/fx/live/beat_this-neon.json`: 82 beats and 20 downbeats
+in 30 seconds, 9.8 seconds inference. BPM now derives from model beat intervals (163.64
+for that recording, rather than the RMS analyzer's 82). Times are integer milliseconds.
+The model may report double-time; inspect the intended pulse before selecting edits.
+`tests/fixtures/beat_this_neon.json` retains the corrected timing/BPM fixture.
 
 `background_remove.py --model` accepts u2netp (unchanged default), u2net,
 birefnet-general and birefnet-portrait. For a single freeze-frame, prefer BiRefNet's more
 expensive quality-oriented models; portrait is for people. For many preview frames,
-u2netp is the smaller/faster starting point. BiRefNet quality and seconds/frame are
-**not live measured in this sandbox**. Review hair/occlusion and edges, regardless of
-model. Missing rembg points to requirements-matting.txt. No model installs/downloads occur
+u2netp is the smaller/faster starting point. Coordinator live CPU measurements, including
+model loading: **u2netp 10.6s/frame; birefnet-general 61.6s/frame**. The same fish-frame
+comparison in `wow/fx/live/matte-compare.jpg` shows u2netp retaining a neon pillar and
+fragments while BiRefNet separates the fish more cleanly. These are single-frame timings,
+not a throughput guarantee. The optional venv also needs `opencv-python-headless`
+(gif_pipeline imports cv2). Review hair/occlusion and edges regardless of model.
+Missing rembg gives a clean requirements-matting.txt error without traceback. No model installs/downloads occur
 in tests; injected maskers verify model provenance. Existing read-only weights may be
 selected using U2NET_HOME. See THIRD_PARTY.md for project/model licensing caveats.
 

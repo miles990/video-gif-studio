@@ -46,6 +46,18 @@ def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
     for center in shutters:
         cuts.append({'time_ms':float(times[center]),'type':'hex_shutter','confidence':.75,'duration_ms':400,'review':True})
         occupied.update(range(max(0,center-round(300/step)),min(n,center+round(300/step)+1)))
+    # A long dissolve has small *per-frame* deltas but large cumulative change.
+    # Require a coherent path between endpoints rather than two threshold crossings.
+    for g in groups(np.flatnonzero(change>.0015)):
+        a,b=g[0],g[-1];before=max(0,a-1)
+        if (b-a+1)*step<400 or any(i in occupied for i in g): continue
+        path=chroma[before:b+1];delta=path[-1]-path[0];distance=float(np.linalg.norm(delta))
+        travel=float(np.linalg.norm(np.diff(path,axis=0),axis=1).sum())
+        if distance<.12 or distance/max(travel,1e-8)<.92: continue
+        center=round((before+b)/2)
+        cuts.append({'time_ms':float(times[center]),'type':'crossfade','confidence':.7,
+                     'duration_ms':float(times[b]-times[before]),'review':True})
+        occupied.update(range(a,b+1))
     for g in candidate:
         if any(i in occupied for i in g): continue
         a,b = g[0],g[-1]; before=max(0,a-1); after=min(n-1,b+1)
@@ -130,8 +142,11 @@ def reverse(source, out, beats=None, fps=25):
     edges=[round(t/10)*10 for t in times]+[round(cursor/10)*10]
     durations=np.diff(edges).astype(int).tolist()
     (out/'source/manifest.json').write_text(json.dumps({'durations_ms':durations}))
-    bounds=[0]+[round(c['time_ms']/10)*10 for c in report['cuts']]+[edges[-1]]
+    cut_times={round(c['time_ms']/10)*10:c for c in report['cuts']}
+    bounds=sorted(set([0]+list(cut_times)+[edges[-1]]+[
+        round(f[k]/10)*10 for f in report['freezes'] for k in ('start_ms','end_ms')]))
     draft={'beatmap':'beats.json','fps':fps,'review':True,'segments':[],'effects':[]}
+    if not beatdata['beats_ms']: draft.pop('beatmap')
     excluded=[]
     for c in report['cuts']:
         if c['type']!='cut':
@@ -155,11 +170,13 @@ def reverse(source, out, beats=None, fps=25):
             segment.pop('in_ms');segment.pop('out_ms');segment['type']='still';segment['frame']='first'
         exact=[k for k,t in enumerate(beatdata['beats_ms']) if abs(t-b)<5]
         if exact:segment.pop('duration_ms');segment['end_beat']=exact[0]
-        if shot:
-            event=report['cuts'][shot-1]
+        if a in cut_times:
+            event=cut_times[a]
             if event['type']!='cut':
                 length=240 if event['type']=='whip_pan' else event['duration_ms']
-                segment['transition']={'name':event['type'],'duration_ms':min(length,b-a,a-bounds[shot-1]),'review':True}
+                length=min(length,b-a,a-bounds[shot-1])
+                if length>=1000/fps:
+                    segment['transition']={'name':event['type'],'duration_ms':length,'review':True}
         draft['segments'].append(segment)
     draft['effects']=[{'name':'flash_white','start_ms':e['time_ms'],'end_ms':min(edges[-1],e['time_ms']+160),'amount':{'keyframes':[[e['time_ms'],1],[e['time_ms']+120,0]]},'review':True} for e in report['flashes']
                       if not any(c['type']=='flash_cut' and abs(c['time_ms']-e['time_ms'])<200 for c in report['cuts'])]

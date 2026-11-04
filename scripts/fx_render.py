@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from compose_timeline import compose, resolve_plan, export_timeline, FORMATS
 from fx import Context, EFFECTS, TRANSITIONS, evaluate
-from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers
+from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers, audio_peaks
 
 TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review'}
 SEGMENT = {'type','manifest','image','previous','frame','duration_ms','in_ms','out_ms','speed','ending','end_beat','end_downbeat','transition','review'}
@@ -74,12 +74,18 @@ def validate_plan(plan_path, formats=('png',)):
         values = beats.get(k,[])
         if not isinstance(values,list) or any(type(v) not in (int,float) or not math.isfinite(v) or v<0 for v in values) or any(b<=a for a,b in zip(values,values[1:])):
             raise ValueError(f'beatmap.{k}: expected strictly increasing finite nonnegative times')
+    for t in beats.get('downbeats_ms',[]):
+        if not any(abs(t-b)<=1 for b in beats.get('beats_ms',[])):
+            raise ValueError(f'beatmap.downbeats_ms: {t} is not in beats_ms (1ms rounding tolerance)')
     ctx = Context(0,0,fps,[v-offset for v in beats.get('beats_ms',[])],seed=plan.get('seed',0),downbeats_ms=[v-offset for v in beats.get('downbeats_ms',[])],sampling=plan.get('sampling','linear'))
     prepared = dict(plan); prepared['segments'] = []
     cursor = 0
     for i, original in enumerate(plan['segments']):
         where = f'segments[{i}]'; keys(original,SEGMENT,where)
         segment = dict(original)
+        if 'duration_ms' in segment:
+            duration = number(segment['duration_ms'],where+'.duration_ms',10)
+            if duration%10: raise ValueError(f'{where}.duration_ms: must be a multiple of 10')
         if 'end_downbeat' in segment:
             if not ctx.downbeats_ms: raise ValueError(f'{where}.end_downbeat: downbeats_ms missing; use --engine beat_this')
             if 'end_beat' in segment or 'duration_ms' in segment: raise ValueError(f'{where}: choose end_downbeat, end_beat or duration_ms')
@@ -124,7 +130,9 @@ def validate_plan(plan_path, formats=('png',)):
         entry = segment['transition']
         tr = validate_entry(entry,TRANSITIONS,ctx,where,{'name','duration_ms','review'})
         limit = min(segments[i-1]['duration_ms'],segments[i]['duration_ms'])
-        length = number(entry.get('duration_ms',400),where+'.duration_ms',20,limit)
+        length = number(entry.get('duration_ms',400),where+'.duration_ms',1000/fps,limit)
+        if ctx.sampling=='nearest' and tr['name'] in ('crossfade','whip_pan','flash_cut'):
+            print(f'Warning: {where} {tr["name"]} blends colours in nearest/pixel mode',file=sys.stderr)
         cut = segments[i]['start_ms']
         tr.update(start_ms=cut-length/2,end_ms=cut+length/2,cut_ms=cut,segment_index=i)
         transitions.append(tr)
@@ -135,6 +143,10 @@ def validate_plan(plan_path, formats=('png',)):
         if not music: raise ValueError('effects: onset/energy require music.file for 10ms RMS analysis')
         from music_sync import audio_envelopes
         ctx.audio = audio_envelopes(path.parent/music['file']); ctx.audio['offset_ms'] = offset
+        for effect in effects:
+            effect['trigger_times_ms'] = sorted(set(effect['trigger_times_ms']+[
+                t for value in effect['params'].values() if isinstance(value,dict) and value.get('on') in ('onset','energy')
+                for t,_ in audio_peaks(ctx.audio,value['on']) if effect['start_ms']<=t<effect['end_ms']]))
     return plan, items, segments, ctx, effects, transitions
 
 def render(plan_path, out, formats=('gif',), background='000000'):
@@ -152,7 +164,7 @@ def render(plan_path, out, formats=('gif',), background='000000'):
     sample_edges = sorted(set([round(k*1000/ctx.fps/10)*10 for k in range(math.ceil(total*ctx.fps/1000))]+[t for t in events if 0<=t<=total]+[total]))
     if len(sample_edges)>2 and sample_edges[-1]-sample_edges[-2]<20: sample_edges.pop(-2)
     cache = {}
-    def parameters(effect,t):
+    def parameters(effect,t,end=None):
         result = {}
         for key,value in effect['params'].items():
             at = t
@@ -160,6 +172,11 @@ def render(plan_path, out, formats=('gif',), background='000000'):
                 candidates = [beat for beat in triggers(value,ctx) if round(beat/10)*10==t]
                 if candidates: at = min(candidates,key=lambda beat:abs(beat-t))
             result[key] = evaluate(value,at,ctx)
+            if isinstance(value,dict) and value.get('on') in ('onset','energy') and end is not None:
+                # Integrate peaks over the exposure; a subframe onset cannot disappear.
+                samples = [s-ctx.audio.get('offset_ms',0) for s in ctx.audio['times_ms']
+                           if t<=s-ctx.audio.get('offset_ms',0)<end]
+                result[key] = max([result[key]]+[evaluate(value,s,ctx) for s in samples])
         return result
     def source(t, index=None):
         index = max(0,bisect.bisect_right([s['start_ms'] for s in segments],t)-1) if index is None else index
@@ -174,7 +191,7 @@ def render(plan_path, out, formats=('gif',), background='000000'):
         active_t = max(segments[index]['start_ms'],min(t,segments[index]['start_ms']+segments[index]['duration_ms']-1e-6))
         for effect in effects:
             if effect['stage']=='source' and effect['start_ms']<=active_t<effect['end_ms']:
-                frame = EFFECTS[effect['name']]['function'](frame,t,ctx,**parameters(effect,t))
+                frame = EFFECTS[effect['name']]['function'](frame,t,ctx,**parameters(effect,t,end))
         ctx.segment = previous_segment
         return frame,file
     images, output_items = [], []
@@ -186,10 +203,10 @@ def render(plan_path, out, formats=('gif',), background='000000'):
             if tr['start_ms']<=t<tr['end_ms']:
                 j = tr['segment_index']; a,_ = source(t,j-1); b,_ = source(t,j)
                 p = (t-tr['start_ms'])/(tr['end_ms']-tr['start_ms'])
-                frame = TRANSITIONS[tr['name']]['function'](a,b,p,ctx,**{k:evaluate(v,t,ctx) for k,v in tr['params'].items()})
+                frame = TRANSITIONS[tr['name']]['function'](a,b,p,ctx,**parameters(tr,t,end))
         for effect in effects:
             if effect['stage']=='post' and effect['start_ms']<=t<effect['end_ms']:
-                frame = EFFECTS[effect['name']]['function'](frame,t,ctx,**parameters(effect,t))
+                frame = EFFECTS[effect['name']]['function'](frame,t,ctx,**parameters(effect,t,end))
         images.append(Image.fromarray(frame)); output_items.append((file,end-t))
     elapsed = time.perf_counter()-started
     extra = {'effects':effects,'transitions':transitions,'fx_overrides':list(OVERRIDES),'render':{'seconds':elapsed,'fps':len(images)/elapsed,'requested_fps':ctx.fps},'semantics':'Centered transitions; source endpoints extended; effect intervals end-exclusive; no motion synthesized.'}
@@ -206,7 +223,14 @@ def preview(out, image_path=None):
         frame[:,:,:3] = np.stack((30+xx//3,30+yy//2,120+xx//4),axis=2); frame[:,:,3] = 255
         frame[55:125,110:210,:3] = [245,195,100]
     ctx = Context(320,180); other = frame[:,::-1].copy(); other[:,:,:3] = other[:,:,:3][:,:,::-1]
-    tiles = [(name,spec['function'](frame,0,ctx)) for name,spec in EFFECTS.items()]
+    settings = {'grade':{'sat':.5,'temp':.08,'gain':1.15},'zoom_punch':{'scale':1.18},
+                'beat_bounce':{'translate_px':20,'rotation_deg':-5,'scale':1.06},'halation':{'amount':1,'radius':9}}
+    tiles = [('original',frame)]
+    for name,spec in EFFECTS.items():
+        source = frame.copy()
+        if name=='cutout_card':
+            source[:,:,3]=0; source[35:150,80:240,3]=255
+        tiles.append((name,spec['function'](source,0,ctx,**settings.get(name,{}))))
     tiles += [(f'{name}  p={p}',spec['function'](frame,other,p,ctx)) for name,spec in TRANSITIONS.items() for p in (.25,.5,.75)]
     sheet = Image.new('RGB',(320*3,212*math.ceil(len(tiles)/3)),(18,22,30)); draw = ImageDraw.Draw(sheet)
     for i,(label,arr) in enumerate(tiles):
@@ -226,7 +250,16 @@ def main(argv=None):
     try:
         if not a.no_user_fx: load_directory(os.environ.get('VIDEO_GIF_FX_HOME',str(Path.home()/'.video-gif-studio/fx')))
         for directory in a.fx_dir: load_directory(directory)
-        if a.list: print(json.dumps(catalog(),indent=2)); return 0
+        if a.list:
+            if a.json: print(json.dumps(catalog(),indent=2))
+            else:
+                for kind,entries in catalog().items():
+                    print(kind.upper())
+                    for name,spec in entries.items():
+                        print(f'  {name}: {spec["doc"]}')
+                        for key,param in spec['params'].items(): print(f'    {key}={param["default"]!r} ({param["type"]}): {param["doc"]}')
+                        print(f'    source: {spec["source"]}')
+            return 0
         if a.preview: preview(a.preview,a.image); return 0
         if not a.plan: raise ValueError('plan required, or use --list / --preview FILE.png')
         if a.validate: validate_plan(a.plan,a.formats); print('Plan valid'); return 0

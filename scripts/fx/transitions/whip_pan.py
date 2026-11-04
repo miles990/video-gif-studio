@@ -7,9 +7,10 @@ def whip_pan(a, b, p, ctx, blur_px=49.0, direction='left'):
     """Horizontal camera sweep, with directional motion blur."""
     if p<=0: return a
     if p>=1: return b
-    sign = -1 if direction=='left' else 1
-    x = sign*ctx.width*(p if p<.5 else p-1)
-    source = premultiply(a if p<.5 else b)
-    moved = cv2.warpAffine(source,np.float32([[1,0,x],[0,1,0]]),(ctx.width,ctx.height),borderMode=cv2.BORDER_REPLICATE)
+    # One continuous film strip: both shots exist throughout the sweep.
+    strip = premultiply(np.concatenate((a,b) if direction=='left' else (b,a),axis=1))
+    x = ctx.width*(p if direction=='left' else 1-p)
     kernel = max(1,round(blur_px*np.sin(np.pi*p)))
-    return straight(cv2.blur(moved,(kernel,1)))
+    strip = cv2.blur(strip,(kernel,1),borderType=cv2.BORDER_REFLECT_101)
+    moved = cv2.warpAffine(strip,np.float32([[1,0,-x],[0,1,0]]),(ctx.width,ctx.height),flags=cv2.INTER_LINEAR)
+    return straight(moved)

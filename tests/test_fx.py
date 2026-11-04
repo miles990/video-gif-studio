@@ -144,7 +144,8 @@ class FxCoreTests(unittest.TestCase):
         a=np.full_like(self.a,[255,0,255,0]);a[50:130,100:220]=[80,190,140,255]
         for name in ('beat_bounce','zoom_punch'):
             b=EFFECTS[name]['function'](a,0,self.ctx)
-            self.assertLessEqual(abs(float(b[:,:,3].sum())/a[:,:,3].sum()-1),.03)
+            scale=EFFECTS[name]['params']['scale']['default']
+            self.assertLessEqual(abs(float(b[:,:,3].sum())/a[:,:,3].sum()-scale**2),.03)
             np.testing.assert_allclose(b[b[:,:,3]>12,:3],np.tile([80,190,140],(np.count_nonzero(b[:,:,3]>12),1)),atol=1)
 
 
@@ -266,6 +267,7 @@ class FxAudioTests(unittest.TestCase):
             with patch('music_sync.executable',return_value='offline'),patch('music_sync.subprocess.check_output',return_value=raw):
                 r=analyze(p/'x.wav',p/'yes',engine='beat_this',engine_fn=lambda source:fixture)
                 self.assertEqual(r['engine'],'beat_this');self.assertEqual(r['downbeats_ms'],[0,2000,4000,6000])
+                self.assertEqual(r['bpm'],120)
                 def missing(source):raise RuntimeError('beat_this unavailable; pip install beat_this')
                 r=analyze(p/'x.wav',p/'no',engine='beat_this',engine_fn=missing)
                 self.assertEqual(r['engine'],'rms');self.assertNotIn('downbeats_ms',r);self.assertIn('pip install',r['fallback_reason'])

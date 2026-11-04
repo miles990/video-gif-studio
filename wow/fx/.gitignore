@@ -7,3 +7,5 @@ roundtrip-mp4/reverse/source/
 roundtrip-mp4/reverse/shots/*/frames/
 demo/master-*/
 demo/*.gif
+!demo/demo.gif
+!demo/demo-b.gif

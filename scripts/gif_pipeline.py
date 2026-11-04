@@ -105,7 +105,25 @@ def timing(count, fps, phases):
     return indices, np.diff(edges).astype(int).tolist()
 
 
+def browser_gif_timing(frames, durations):
+    """Merge <=20ms exposures into neighbours, preserving total time (>20ms).
+
+    Keep the first image of a merged group, so a short onset peak survives.
+    This affects only the GIF derivative, never PNG/video master timing.
+    """
+    images, times = [], []
+    for frame, duration in zip(frames,durations):
+        if times and times[-1]<=20:
+            times[-1] += duration
+        else:
+            images.append(frame); times.append(duration)
+    if len(times)>1 and times[-1]<=20:
+        tail=times.pop(); times[-1] += tail; images.pop()
+    return images,times
+
+
 def encode(frames, durations, target):
+    frames,durations = browser_gif_timing(frames,durations)
     # Fixed-size sampled training bounds palette-training memory, not output quality dimensions.
     samples = []
     for frame in frames:
@@ -137,6 +155,7 @@ def encode(frames, durations, target):
 
 
 def verify(target, frames, durations):
+    frames,durations = browser_gif_timing(frames,durations)
     decoded = []
     actual_durations = []
     with Image.open(target) as gif:

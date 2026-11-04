@@ -94,6 +94,12 @@ def triggers(value, ctx):
     indices = value.get('indices',value.get('beats',range(0,len(times),value.get('every',1))))
     return [times[i] for i in indices]
 
+def audio_peaks(data, channel):
+    """Local maxima on the analysis clock, including the first audio hop."""
+    v = np.asarray(data[channel])
+    ids = np.flatnonzero((v > 0) & (v >= np.r_[-1, v[:-1]]) & (v > np.r_[v[1:], -1]))
+    return [(data['times_ms'][i]-data.get('offset_ms',0), float(v[i])) for i in ids]
+
 def evaluate(value, t_ms, ctx):
     if not isinstance(value,dict): return value
     if 'keyframes' in value:
@@ -103,7 +109,14 @@ def evaluate(value, t_ms, ctx):
     if on in ('energy','onset'):
         data = ctx.audio
         if on not in data: raise ValueError('Missing 10ms '+on+' analysis; provide music.file')
-        result = float(np.interp(t_ms+data.get('offset_ms',0), data['times_ms'], data[on]))
+        if on=='onset':
+            decay = value.get('decay_ms',120)
+            result = max((strength*max(0,1-(t_ms-t)/decay) if decay else strength*float(t_ms==t)
+                          for t,strength in audio_peaks(data,on) if t<=t_ms),default=0.)
+            if value.get('curve')=='ease_out': result = result**3
+            elif value.get('curve')=='smooth': result = result*result*(3-2*result)
+        else:
+            result = float(np.interp(t_ms+data.get('offset_ms',0), data['times_ms'], data[on]))
     else:
         attack, decay = value.get('attack_ms',0), value.get('decay_ms',200)
         result = 0.
@@ -140,11 +153,15 @@ def load_directory(directory):
     path = Path(directory).expanduser()
     if not path.exists(): return
     for file in sorted(path.glob('*.py')):
+        saved_effects, saved_transitions, saved_overrides = dict(EFFECTS), dict(TRANSITIONS), list(OVERRIDES)
         try:
             spec = importlib.util.spec_from_file_location('vgs_fx_'+hashlib.sha256(str(file).encode()).hexdigest(),file)
             module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
         except Exception as exc:
-            raise ValueError(f'FX library {file}:{getattr(exc,"lineno", "?")}: {exc}') from None
+            EFFECTS.clear(); EFFECTS.update(saved_effects)
+            TRANSITIONS.clear(); TRANSITIONS.update(saved_transitions)
+            OVERRIDES[:] = saved_overrides
+            print(f'Warning: skipped FX library {file}:{getattr(exc,"lineno", "?")}: {exc}',file=sys.stderr)
 
 def catalog():
     return {kind:{name:{k:v for k,v in item.items() if k!='function'} for name,item in reg.items()} for kind,reg in [('effects',EFFECTS),('transitions',TRANSITIONS)]}

@@ -93,8 +93,11 @@ def analyze(source, out, bpm=None, offset_ms=None, engine='rms', engine_fn=None)
                     raise ValueError(f'beat_this {key} must be finite, nonnegative, strictly increasing')
             if any(min(abs(t-b) for b in result['beats_ms'])>10 for t in result['downbeats_ms']):
                 raise ValueError('beat_this downbeats must coincide with beats within 10ms')
+            result = {key:[int(round(v)) for v in result[key]] for key in ('beats_ms','downbeats_ms')}
             record.update(result); record['engine']='beat_this'; record['method']='Beat This! CPU, minimal postprocessor'
-            record['review']='Model beat/downbeat candidates; inspect timing and meter before editing.'
+            record['bpm'] = float(60000/np.mean(np.diff(result['beats_ms']))) if len(result['beats_ms'])>1 else None
+            record['offset_ms'] = result['beats_ms'][0]
+            record['review']='Model beat/downbeat candidates; may report double-time. BPM derives from mean model beat intervals; inspect meter before editing.'
             beats = result['beats_ms']
         except (ImportError,RuntimeError,OSError,ValueError) as exc:
             record['fallback_reason'] = str(exc)
