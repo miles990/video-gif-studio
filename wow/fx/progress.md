@@ -46,3 +46,4 @@
 - 01:20 第一輪＋功能旗標合回 main（ea2e790）並 push：合回前 doctor 通過、安裝目錄以合成計畫實跑 fx_render（GIF＋MP4，QC 通過）。開短命分支 p0-delivery 做 P0 交付層。
 - 02:15 P0 交付層（Codex p0-delivery2，44 分）完成：串流峰值 500 MB、30fps CFR、5 個平台預設、−14 LUFS／ducking 9.9 dB、手機進件、proxy 29%；234 tests／0 failures。清掉建造者留在 repo 根的 8 個暫存腳本。commit cb3f2d5 推到 origin/p0-delivery。獨立審查 P0 進行中（含 holdout-5 的 P0 項）。注意：720p 7.25 fps vs 先前 10.12，待審查判斷是否退步。
 - 02:45 使用者 /wow「可以讓AI導演影片用的效果…」→ spec-6.md（S-70～S-77）：效果卡（意圖、觀感強度、需求、搭配音效、成本、閘門分數、預覽）、觀感強度校準、意圖配方、可見度／刺眼度（WCAG 2.3.1）自動檢查、效果預算、關鍵時刻候選、fx_query。排在 P2 之後、P3 導演之前。獨立出題者寫 acceptance-6 中。
+- 03:00 使用者 /wow「…並讓影片專業有品味」→ spec-7.md（S-80～S-89 品味系統）：吸收使用者 wow 詞彙檔（mood-pacing-arc §E M1–M16、喚起度代理曲線、mastery-signals、Murch Rule of Six）成 taste_report 量測、設計曲線對照、大師訊號 lint、剪輯文法 lint、風格 token、鏡頭配色一致、參考片校準、使用者品味校準。獨立出題者寫 acceptance-7 中。
