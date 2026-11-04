@@ -31,3 +31,5 @@
 - 22:00 修正一（fx-fix1）跑到 11m43s 時被 Claude Code 因系統記憶體不足收掉（BiRefNet 摳像＋Numba 編譯＋其他工作階段）。已改 12 檔、未完成；殘留程序已確認無。半成品以 WIP commit 保存，待使用者同意後 `--resume 20261104-125709-fx-fix1 --sandbox workspace-write` 續跑。
 - 22:10 使用者：「好都做, 看還有沒有更好的做法?用最好合適的做法做」→ 第二輪規格 spec-2.md（S-15～S-24＋S-展示2：時間重映射、光流／RIFE 補格、畫格歷史、約 25 個新效果與轉場、2.5D 視差）。模型已下載：depth-anything-v2-small.onnx（Apache-2.0）、rife_v4.25_lite.onnx（MIT）。
 - 22:25 第二輪獨立答案卷 acceptance-2.md＋保留樣本 12 條（scratchpad/fx-holdout-2.md）完成。第二輪建造排在第一輪修正＋審查二之後。
+- 22:45 審查二（另一位獨立 Claude）判「未達成，差距很小」：成片已是定格摳像卡點、S-10 修好、fresh clone 位元一致重建；剩 H7/H10/H13、縮放偵測退步、S-12 traceback、示範定格不是原地浮起等 8 點。決定：併入第二輪建造的 A 部分（省一輪往返），第二輪審查同時重驗 A 部分＋保留樣本 1。偏離 lite「審查 ≤ 2 輪」：因使用者追加第二輪範圍，審查輪次按輪別各自計。
+- 22:50 第二輪建造（Codex fx-build3：A1–A8＋S-15～S-24＋S-展示2＋效能）派工。
