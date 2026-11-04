@@ -13,6 +13,9 @@ def phone_timestamp_defects(root):
     """
     target=Path(root)/'timestamp-defects.mkv'
     video="color=c=gray:s=192x108:r=30:d=5,drawbox=x=0:y=0:w=192:h=75:color=white:t=fill:enable='eq(n,30)+eq(n,90)'"
+    video+=',drawbox=x=0:y=84:w=192:h=24:color=black:t=fill'
+    for bit in range(8):
+        video+=f",drawbox=x={bit*24}:y=84:w=24:h=24:color=white:t=fill:enable='mod(floor(n/{2**bit}),2)'"
     video+=",setpts='(N-eq(N,31))/30/TB+0.7/TB+gte(N,60)*0.4/TB'"
     audio="aevalsrc=0.25*sin(2*PI*1000*t)*(between(t\\,1\\,1.01)+between(t\\,3.4\\,3.41)):s=48000:d=5.4,asetpts=PTS+0.7/TB"
     run(['-v','error','-copyts','-filter_threads','1','-f','lavfi','-i',video,'-f','lavfi','-i',audio,

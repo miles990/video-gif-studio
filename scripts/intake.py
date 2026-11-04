@@ -15,7 +15,7 @@ from media_runtime import executable
 def timestamps(path):
     data = json.loads(subprocess.check_output([executable('ffprobe'), '-v', 'error',
         '-select_streams', 'v:0', '-show_entries', 'frame=best_effort_timestamp_time',
-        '-of', 'json', str(path)]))
+        '-of', 'json', str(path)],stderr=subprocess.PIPE))
     return [float(f['best_effort_timestamp_time']) for f in data['frames']]
 
 

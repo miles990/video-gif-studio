@@ -340,6 +340,10 @@ def analyse_audio(path, info, edges):
     lufs, tp = float(loudness[1]), float(peak[1])
     raw = command([ffmpeg,'-v','error','-i',str(path),'-map','0:a:0','-ac','1','-ar','16000','-f','f32le','-'])
     x = np.frombuffer(raw,np.float32)
+    if tp == -math.inf:
+        return [dict(name=name,level='PASS',applicable=False,
+                     message='N/A: silent audio track',events=[]) for name in
+                ('loudness','true_peak','loudest_100ms','silence')]
     win, hop = 1600,800
     db = np.array([10*math.log10(float(np.mean(x[k:k+win]**2))+1e-12) for k in range(0,max(1,len(x)-win+1),hop)])
     k = int(np.argmax(db)); at=k*.05

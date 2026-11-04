@@ -64,7 +64,7 @@ def run(args):
 
 def probe(path):
     return json.loads(subprocess.check_output([executable('ffprobe'), '-v', 'error',
-        '-show_streams', '-show_format', '-of', 'json', str(path)]))
+        '-show_streams', '-show_format', '-of', 'json', str(path)],stderr=subprocess.PIPE))
 
 
 def encode_frames(images, target, config, background='000000'):

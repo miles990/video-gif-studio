@@ -275,6 +275,8 @@ def render(plan_path, out, formats=('gif',), background='000000', experimental=F
             if raster:
                 part=Path(temp)/'raster'; render(plan_path,part,raster,background,experimental,interpolate,_silent_derivative=True)
                 shutil.move(str(part),str(root/'raster'))
+                if 'gif' in raster:
+                    shutil.copy2(root/'raster/animation.gif',root/'animation.gif')
             root.rename(out)
         return {'out':str(out),'formats':list(formats)}
     return _render(plan_path,out,formats,background,experimental,interpolate,fps,platform,proxy,keep_audio,duck,loudnorm,_silent_derivative)
@@ -340,6 +342,13 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
         for i,effect in enumerate(effects):
             times=effect['trigger_times_ms'] or [effect['start_ms']]
             effect['quantization']=[dict(quantize(t,fps),effect_index=i) for t in times]
+            groups={}
+            for event_index,event in enumerate(effect['quantization']):
+                groups.setdefault(event['frame'],[]).append(event_index)
+            for event_index,event in enumerate(effect['quantization']):
+                peers=groups[event['frame']]
+                event.update(event_index=event_index,merged=len(peers)>1,
+                             merged_event_indices=peers if len(peers)>1 else [])
             quantized.extend(effect['quantization'])
             for edge in ('start_ms','end_ms'):
                 effect[edge]=quantize(effect[edge],fps)['quantized_ms']
@@ -566,6 +575,9 @@ def main(argv=None):
                 raise ValueError('keep_audio requires a timeline-aligned source_audio file')
             events=[quantize(t,a.fps)['frame'] for e in data[4] for t in e['trigger_times_ms']]
             if len(events)!=len(set(events)):print('Warning: same-frame events evaluated together; maximum envelope wins',file=sys.stderr)
+            beats=data[3].beats_ms
+            if any(right-left < 1000/a.fps for left,right in zip(beats,beats[1:])):
+                print(f'Warning: beat spacing < 1 frame ({1000/a.fps:.3f} ms at {a.fps} fps)',file=sys.stderr)
             print('Plan valid'); return 0
         if not a.out: raise ValueError('--out required')
         print(json.dumps(render(a.plan,a.out,a.formats,a.background,a.experimental,a.interpolate,a.fps,a.platform,a.proxy, None if a.keep_audio is None else a.keep_audio=='on',None if a.duck is None else a.duck=='on',None if a.loudnorm is None else a.loudnorm=='on'))); return 0

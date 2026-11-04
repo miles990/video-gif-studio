@@ -1,0 +1,210 @@
+{
+  "P0_COLOR": [
+    {
+      "max_channel_error": 3
+    }
+  ],
+  "P0_HDR": [
+    {
+      "gray_rgb_means": [
+        0.0,
+        24.0,
+        51.0,
+        75.0,
+        101.0,
+        128.0,
+        151.0,
+        174.0,
+        190.0,
+        204.0,
+        215.0
+      ],
+      "gray_y": [
+        16,
+        37,
+        60,
+        81,
+        103,
+        126,
+        146,
+        166,
+        180,
+        192,
+        201
+      ],
+      "max_hue_error_degrees": 4.0,
+      "skin_saturation_ratio": 0.9851851851851852
+    }
+  ],
+  "P0_HOT": [
+    {
+      "lufs": -14.0,
+      "true_peak_dbtp": -12.6
+    }
+  ],
+  "P0_RASTER": [
+    {
+      "frames": 65,
+      "metadata_guard_mib": 514.16015625,
+      "actual_fixture_mib": 0.380859375,
+      "paths": 2
+    }
+  ],
+  "P0_TIMING": [
+    {
+      "fps": 24,
+      "detected_events": 10,
+      "max_error_ms": 18.666666666666515
+    },
+    {
+      "fps": 30,
+      "detected_events": 10,
+      "max_error_ms": 16.33333333333337
+    },
+    {
+      "fps": 60,
+      "detected_events": 10,
+      "max_error_ms": 3.0
+    }
+  ],
+  "P0_TIMESTAMP": [
+    {
+      "frames": 162,
+      "max_marker_skew_ms": 0.08333333333343518,
+      "applicable": true,
+      "start_skew_ms": 0.0,
+      "end_skew_ms": 0.0,
+      "passed": true,
+      "method": "stream timestamps; does not establish perceptual lip sync"
+    }
+  ],
+  "P0_PHONE": [
+    {
+      "max_source_time_error_ms": 33.333333333333655,
+      "max_flash_click_skew_ms": 0.08333333333333333,
+      "events": 10
+    }
+  ],
+  "P0_PROXY": [
+    {
+      "size_bytes": 3595,
+      "bitrate": 8016,
+      "seconds": 2
+    }
+  ],
+  "P0_AUDIO": [
+    {
+      "speech_gain": 0.1,
+      "lufs": -14.3,
+      "true_peak_dbtp": -6.7,
+      "duck_db": 10.001421642290975,
+      "attack_ms": 99.99999999999964,
+      "release_ms": 500.0000000000071,
+      "non_speech_std_db": 0.013196827161170151
+    },
+    {
+      "speech_gain": 1,
+      "lufs": -14.3,
+      "true_peak_dbtp": -5.8,
+      "duck_db": 10.003775559466096,
+      "attack_ms": 99.99999999999964,
+      "release_ms": 500.0000000000071,
+      "non_speech_std_db": 0.01300722407244398
+    }
+  ],
+  "P0_SOURCE_AUDIO": [
+    {
+      "retained_440hz_increase_db": 136.3509808658235
+    }
+  ],
+  "P0_ODD_DIMENSIONS": [
+    {
+      "displayed": [
+        1077,
+        1917
+      ],
+      "encoded": [
+        1078,
+        1918
+      ],
+      "pad_right_px": 1,
+      "pad_bottom_px": 1,
+      "rule": "pad right/bottom by one black pixel when odd, after rotation"
+    }
+  ],
+  "suite": {
+    "tests": 241,
+    "seconds": 81.648,
+    "failures": 0,
+    "errors": 2,
+    "skips": 4,
+    "new_failures_or_errors": 0,
+    "p0_tests": 30
+  },
+  "legacy": {
+    "base_commit": "ea2e790859b2cc98fd732256c44274eb0ee4cdb2",
+    "plans": [
+      {
+        "name": "P-plain",
+        "frames": 50,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 200,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true
+      },
+      {
+        "name": "P-base",
+        "frames": 52,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 200,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true
+      },
+      {
+        "name": "P-ramp",
+        "frames": 50,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 200,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true
+      },
+      {
+        "name": "demo",
+        "frames": 240,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 916,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true,
+        "note": "Silent visual derivative; soundtrack removed in both runs; no visual edits"
+      },
+      {
+        "name": "demo2",
+        "frames": 518,
+        "png_bytes_identical": true,
+        "gif_bytes_identical": true,
+        "apng_bytes_identical": true,
+        "legacy_mp4_frames": 2054,
+        "legacy_mp4_psnr_db": "identical",
+        "legacy_mp4_min_frame_psnr_db": "identical",
+        "legacy_mp4_file_identical": true,
+        "note": "Silent visual derivative; soundtrack removed in both runs; no visual edits"
+      }
+    ],
+    "unavailable_plans": [
+      "demo3",
+      "demo4"
+    ]
+  }
+}

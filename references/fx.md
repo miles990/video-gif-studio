@@ -8,7 +8,8 @@ Prepare the source with `gif_pipeline.py`; retain the source animation and its a
 
 MP4/MOV/WebM now stream rendered frames directly to FFmpeg, defaulting to CFR 30 fps.
 Use `--fps 24|25|30|50|60`, or explicit `--fps 100` for the old 10 ms video behavior.
-GIF/APNG retain their timing and have a 512 MiB decoded-film limit before allocation.
+GIF/APNG/PNG retain their legacy timing and supported lengths; no 512 MiB cap is imposed.
+Raster export still retains the film in memory, so prefer video for long timelines.
 `--platform tiktok|reels|shorts|youtube|square` sets size, bitrate, yuv420p and actual
 BT.709-limited conversion. Preset dimensions, safe-zone rectangles and the extra
 2%-width text inset are documented in [video delivery](video-export.md#platform-presets)
@@ -20,7 +21,7 @@ operations are recorded in `delivery.proxy_skipped`; their event timing remains 
 the manifest. No persistent cache or incremental shot rebuild is claimed by P0.
 Use `scripts/intake.py` before frame preparation for phone VFR, rotation and HDR.
 For opt-in original sound, supply a continuous `source_audio` and `--keep-audio`;
-see [two-pass loudness and ducking](music.md#delivery-audio).
+see [measured loudness and ducking](music.md#delivery-audio).
 
 Full serial measurements are in [benchmark-p0.json](../wow/fx/benchmark-p0.json).
 The acceptance workload uses zoom_punch, rgb_split and film_grain over moving
@@ -311,7 +312,7 @@ under concurrent rendering. Full demo timings and decoded QA are in wow/fx/demo/
 The serial fix-round rerun in `wow/fx/benchmark-latest.json` is **3.276 fps / 27.470s**;
 the optional 10fps target remains unmet.
 Historical numbers above predate P0. Video-only composition/rendering now streams
-frames to FFmpeg; raster output retains a bounded film (see P0 delivery below).
+frames to FFmpeg; raster output retains the film in memory (see P0 delivery above).
 
 The automatic QA's --expect-cuts checks **hard image discontinuities**, so smooth effects
 and a still-to-animation continuation should use --timeline as editorial joins instead.
@@ -363,7 +364,7 @@ samples, **newest first**, before post effects (after source effects/transitions
 Inserted 10ms samples count as frames. The buffer resets at each segment boundary;
 missing history is omitted. No feedback or future samples. echo requests four frames.
 The renderer keeps a bounded three-source-image cache and one flow pair. Video
-frames flow directly to FFmpeg; raster exports retain their bounded short film.
+frames flow directly to FFmpeg; raster exports retain their film in memory.
 
 ## Experimental (pending quality gate)
 

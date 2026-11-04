@@ -29,9 +29,6 @@ def compose(plan_path, out, formats=('gif',), background='000000', fps=30, platf
     if not formats or not set(formats) <= FORMATS: raise ValueError('Unknown output format')
     plan = json.loads(plan_path.read_text())
     items, segments = resolve_plan(plan, plan_path, formats)
-    with Image.open(items[0][0]) as first:
-        if len(items)*first.width*first.height*4>512*1024**2:
-            raise ValueError('Raster animation exceeds 512 MiB decoded-frame budget; use video or a shorter/smaller preview')
     images = []
     for file, _ in items:
         with Image.open(file) as im: images.append(im.convert('RGBA'))

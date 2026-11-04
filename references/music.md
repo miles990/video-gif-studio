@@ -80,23 +80,24 @@ must name the aligned track. This is not an automatic reconstruction of audio fr
 trimmed/reordered/retimed PNG manifests. Supply an edited continuous track for those
 operations. `in_ms`, `gain_db`, `fade_in_ms`, `fade_out_ms` work on both tracks.
 
-When both tracks are present, ducking defaults on: FFmpeg `sidechaincompress`
-uses the source as control, threshold 0.04, ratio 6, attack 15 ms, release 600 ms,
-makeup 1. The source is split and mixed back unchanged; only the music is compressed.
-Nominal ducking is approximately 10 dB for the synthetic speech fixture (measured
-9.91 dB, 50 ms attack and 350 ms recovery); actual depth depends on speech level.
-A lone music track never ducks. Mixed floating-point
-PCM is normalized in two passes using loudnorm I=-14 LUFS, TP=-1.5 dBTP, LRA=11.
-The extra 0.5 dB peak margin allows for AAC/Opus encoding. First-pass `input_i`,
-`input_tp`, `input_lra`, `input_thresh`, and all second-pass fields are retained in
-`manifest.audio`. Linear mode is requested; FFmpeg may use dynamic mode when the
-measured peak/LRA makes linear normalization impossible, recorded as
-`second_pass.normalization_type`.
+When both tracks are present, ducking defaults on. Presence detection uses 10 ms
+RMS windows and a threshold 26 dB below the loudest source window (floor 1e-7).
+Gaps up to 150 ms are bridged. Detected intervals automate music gain to **-10 dB**
+with 50 ms attack and 500 ms release; the depth does not depend on speech level.
+The source is mixed back unchanged. This is level-based presence detection, not a
+speech classifier; other sustained source sounds can trigger it. A lone music
+track never ducks. `manifest.audio.ducking` records intervals and detector settings.
+
+Mixed float PCM is measured with loudnorm, then a single constant gain targets
+-14 LUFS subject to a -1.5 dBTP ceiling. The extra 0.5 dB peak margin allows for
+AAC/Opus encoding. First-pass measurements and `second_pass.gain_db` are retained
+in `manifest.audio`. There is no dynamic normalization fallback to undo ducking;
+if peak-safe constant gain cannot meet the loudness gate, publication fails.
 
 Encoded audio is independently measured with ebur128. Loudness outside -14 ±1 LUFS
 or true peak above -1 dBTP blocks publication; `qa_media.py` also returns nonzero.
-No audio track is valid silent delivery. A supplied entirely silent track cannot be
-normalized and is rejected explicitly; omit it for a silent movie. Disabling
+No audio track and an entirely silent supplied track are valid silent delivery;
+QA marks their loudness checks `applicable: false`, with an `N/A` message. Disabling
 loudnorm does not disable the gate. Platform exports always use this gate. Existing
 non-platform music-only plans retain their legacy mux unless `loudnorm` is explicitly
 selected, preserving old soundtrack behavior; run `qa_media` before delivering them.

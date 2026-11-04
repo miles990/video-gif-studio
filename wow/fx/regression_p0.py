@@ -1,7 +1,7 @@
 """Compare raster bytes and explicit legacy MP4 pixels against the worktree base.
 
 Archives tracked scripts to a temporary directory; never checks out or changes Git.
-No downloads, optional models, or writes outside this worktree.
+No downloads or optional models. Scratch files use the OS temporary directory.
 """
 import argparse
 import hashlib
@@ -39,8 +39,7 @@ def main():
     results={'base_commit':base,'plans':[],'unavailable_plans':['demo3','demo4']}
     sys.path.insert(0,str(ROOT/'scripts'))
     from media_runtime import executable
-    work=ROOT/'wow/fx/p0-work';work.mkdir(exist_ok=True)
-    with tempfile.TemporaryDirectory(dir=work) as temp:
+    with tempfile.TemporaryDirectory(prefix='vgs-p0-regression-') as temp:
         p=Path(temp);baseline=p/'base';baseline.mkdir()
         with tarfile.open(fileobj=io.BytesIO(archive)) as tar:tar.extractall(baseline,filter='data')
         source=p/'source';(source/'frames').mkdir(parents=True)

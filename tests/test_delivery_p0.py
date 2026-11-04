@@ -25,7 +25,7 @@ def decode(path, fmt='rgb24', limit=None):
 
 def wav(path, x):
     with wave.open(str(path),'wb') as f:
-        f.setnchannels(1);f.setsampwidth(2);f.setframerate(48000)
+        f.setnchannels(1 if x.ndim==1 else x.shape[1]);f.setsampwidth(2);f.setframerate(48000)
         f.writeframes((np.clip(x,-1,1)*32767).astype('<i2').tobytes())
 
 
@@ -45,6 +45,7 @@ class TimingTests(unittest.TestCase):
             self.assertLessEqual(min(conf['size']),540)
             self.assertEqual(conf['fps'],60)
             self.assertGreater(conf['safe_zone']['text_inset_px'],0)
+            self.assertIsNone(conf['bitrate'])
 
 
 @unittest.skipUnless(locate('ffmpeg') and locate('ffprobe'),'FFmpeg/ffprobe required')
@@ -131,7 +132,7 @@ class DeliveryTests(unittest.TestCase):
         music=.25*np.sin(2*np.pi*110*t)+.05*np.sin(2*np.pi*6000*t)
         phase=t % .5
         music+=.15*np.sin(2*np.pi*60*phase)*np.exp(-phase*35)  # 120 BPM kick.
-        wav(self.root/'speech.wav',speech);wav(self.root/'music.wav',music)
+        wav(self.root/'speech.wav',speech);wav(self.root/'music.wav',np.column_stack((music,music)))
         movie=self.root/'audio.mp4';encode_frames((Image.new('RGBA',(32,32),'gray') for _ in range(600)),movie,settings((32,32)))
         report=audio_delivery(movie,20000,{'file':str(self.root/'music.wav')},{'file':str(self.root/'speech.wav')},True)
         values={c['name']:c for c in report['checks']}
@@ -186,6 +187,10 @@ class DeliveryTests(unittest.TestCase):
         self.assertTrue(report['av_sync']['passed'])
         self.assertEqual(report['duplicate_or_backward_pts'],1)
         rgb=np.frombuffer(decode(out/'source.mp4'),np.uint8).reshape(-1,108,192,3)
+        ids=sum((rgb[:,96,bit*24+12].mean(axis=1)>128).astype(int)*2**bit for bit in range(8))
+        np.testing.assert_array_equal(ids[59:72],np.full(13,59))
+        np.testing.assert_array_equal(ids[30:33],[30,30,32])
+        self.assertEqual(ids[72],60)
         flashes=np.flatnonzero(rgb[:,:75].mean((1,2,3))>220)/30
         pcm=np.frombuffer(subprocess.check_output([executable('ffmpeg'),'-v','error','-i',str(out/'source.mp4'),
             '-vn','-ac','1','-ar','48000','-f','f32le','-']),np.float32)
@@ -245,13 +250,13 @@ class DeliveryTests(unittest.TestCase):
         self.assertIn('effect:parallax',m['delivery']['proxy_skipped'])
         self.assertEqual(m['events'][0]['frame'],16)
 
-    def test_silent_track_is_rejected_and_no_audio_is_valid(self):
+    def test_silent_track_and_no_audio_are_not_applicable(self):
         from qa_media import analyse_audio
         wav(self.root/'silence.wav',np.zeros(48000*2))
         p=self.plan(duration=2000,music={'file':'silence.wav'},loudnorm=True)
-        with self.assertRaisesRegex(ValueError,'silent'):
-            render(p,self.root/'silent-track',('mp4',))
-        self.assertFalse((self.root/'silent-track').exists())
+        render(p,self.root/'silent-track',('mp4',))
+        checks=analyse_audio(self.root/'silent-track/animation.mp4',{'audio':True},[0,2])
+        self.assertTrue(all(c['level']=='PASS' and not c['applicable'] and 'N/A' in c['message'] for c in checks))
         p=self.plan(duration=2000);render(p,self.root/'silent-video',('mp4',))
         self.assertTrue(all(c['level']=='PASS' and not c['applicable'] for c in
             analyse_audio(self.root/'silent-video/animation.mp4',{'audio':False},[0,2])))
@@ -273,10 +278,18 @@ class DeliveryTests(unittest.TestCase):
         self.assertEqual(blue,16);self.assertEqual(result['events'][1]['frame'],blue)
 
     def test_legacy_png_gif_above_512_mib(self):
-        # 65 portrait exposures occupy 514.16 MiB as decoded RGBA.
+        # Exercise the former 514 MiB metadata guard without allocating that film.
+        from compose_timeline import compose
+        p=self.plan(duration=2600,size=(1080,1920))
+        p.write_text(json.dumps({'segments':[dict(type='still',image='source.png',duration_ms=40)]*65}))
+        small=Image.new('RGBA',(32,48),'red')
+        with patch.object(Image.Image,'convert',return_value=small), patch('compose_timeline.export_timeline') as export:
+            compose(p,self.root/'large-metadata',('png','gif'))
+        self.assertEqual(len(export.call_args.args[7]),65)
+        # Real 65-frame encode on both paths, keeping the fixture below 1 MiB.
         frames=self.root/'input/frames';frames.mkdir(parents=True)
         for i in range(65):
-            Image.new('RGBA',(1080,1920),(i*3,90,150,255)).save(frames/f'{i:05d}.png')
+            Image.new('RGBA',(32,48),(i*73%256,i*149%256,i*193%256,255)).save(frames/f'{i:05d}.png')
         (frames.parent/'manifest.json').write_text(json.dumps({'durations_ms':[40]*65}))
         for effects in ([],[{'name':'grade','sat':.7}]):
             p=self.root/'large.json'
@@ -285,9 +298,43 @@ class DeliveryTests(unittest.TestCase):
             render(p,out,('png','gif'))
             self.assertEqual(len(list((out/'frames').glob('*.png'))),65)
             with Image.open(out/'animation.gif') as gif:
-                self.assertEqual(gif.size,(1080,1920))
+                self.assertEqual(gif.size,(32,48))
                 self.assertEqual(gif.n_frames,65)
-        print('P0_RASTER '+json.dumps(dict(frames=65,decoded_mib=65*1080*1920*4/1024**2,paths=2)),flush=True)
+        print('P0_RASTER '+json.dumps(dict(frames=65,metadata_guard_mib=65*1080*1920*4/1024**2,actual_fixture_mib=65*32*48*4/1024**2,paths=2)),flush=True)
+
+    def test_event_merges_and_close_beat_validation(self):
+        import contextlib
+        import io
+        from fx_render import main
+        (self.root/'beats.json').write_text(json.dumps({'beats_ms':[0,10,40,60]}))
+        p=self.plan([dict(name='flash_white',amount=dict(on='beats',decay_ms=10))],200,beatmap='beats.json')
+        render(p,self.root/'merged',('mp4',))
+        events=json.loads((self.root/'merged/manifest.json').read_text())['events']
+        self.assertEqual([e['merged_event_indices'] for e in events],[[0,1],[0,1],[],[]])
+        self.assertEqual([e['merged'] for e in events],[True,True,False,False])
+        # Close beats on adjacent frames must also warn, even with no effects.
+        (self.root/'beats.json').write_text(json.dumps({'beats_ms':[20,40]}))
+        p=self.plan(duration=200,beatmap='beats.json')
+        errors=io.StringIO()
+        with contextlib.redirect_stderr(errors):
+            self.assertEqual(main([str(p),'--validate','--formats','mp4']),0)
+        self.assertIn('beat spacing < 1 frame',errors.getvalue())
+
+    def test_mixed_formats_preserve_top_level_gif(self):
+        p=self.plan([dict(name='grade',sat=.7)],duration=200)
+        render(p,self.root/'mixed',('mp4','gif','png'))
+        self.assertEqual((self.root/'mixed/animation.gif').read_bytes(),
+                         (self.root/'mixed/raster/animation.gif').read_bytes())
+        self.assertTrue((self.root/'mixed/animation.mp4').exists())
+
+    def test_platform_proxy_uses_crf_and_small_file(self):
+        p=self.plan(duration=2000)
+        render(p,self.root/'proxy-platform',('mp4',),platform='tiktok',proxy=True)
+        movie=self.root/'proxy-platform/animation.mp4'
+        stream=probe(movie)['streams'][0]
+        self.assertEqual((stream['width'],stream['height']),(360,640))
+        self.assertLess(movie.stat().st_size,500000)
+        print('P0_PROXY '+json.dumps(dict(size_bytes=movie.stat().st_size,bitrate=int(stream['bit_rate']),seconds=2)),flush=True)
 
     def test_stream_pixels_equal_disk_frame_reference(self):
         (self.root/'beats.json').write_text(json.dumps({'beats_ms':[0,500]}))

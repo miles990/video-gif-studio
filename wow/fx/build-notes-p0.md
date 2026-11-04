@@ -6,6 +6,9 @@ No edits to spec/acceptance/process files, examples, or either external skill/re
 The worktree already contained partial P0 edits, debug files and a progress.md change;
 those unrelated pre-existing files were preserved.
 
+The original measurements below predate the reviewer fix round. The **Fix round**
+section records the resumed WIP fixes and supersedes earlier compatibility/audio claims.
+
 ## Per-item results
 
 | Item | Status | Measured evidence |
@@ -65,10 +68,10 @@ and were not manufactured or claimed as verified.
 
 The streaming-versus-PNG-reference test also compares decoded video bytes exactly.
 The injected failure after frame 450 verifies that the FFmpeg process has exited,
-the partial file is gone and no completed movie is published. Raster output is
-guarded before film allocation at **512 MiB decoded RGBA** (64 exposures at
-1080×1920); palette/working buffers are additional. This keeps the existing demo2
-plan usable while rejecting unbounded GIF/APNG requests.
+the partial file is gone and no completed movie is published. The fix round removes
+the new **512 MiB decoded RGBA** raster guard from both renderer and composer to
+preserve legacy PNG/GIF support. Raster export still holds the film in memory;
+it is not claimed to have video's bounded memory behavior.
 
 Final full suite: **234 tests in 83.561 s, zero failures, two baseline errors,
 four existing Chromium skips; zero new failures/errors**. All **23 P0 tests pass**.
@@ -90,7 +93,8 @@ lavfi and are generated in temporary test directories; no real phone media is re
 ## Scope and limits
 
 - Video-only delivery writes frames directly to FFmpeg; mixed requests render video
-  and raster timing domains separately, with raster derivatives under `raster/`.
+  and raster timing domains separately, with raster derivatives under `raster/`
+  and a byte-identical GIF copy at the top level.
 - Plan `fps` retains legacy raster sampling semantics. Video CLI `--fps` controls
   CFR; half ties round later. Explicit 100 is rejected with platform presets;
   fractional 29.97 is not supported. GIF/APNG keep their 10 ms timing.
@@ -100,9 +104,9 @@ lavfi and are generated in temporary test directories; no real phone media is re
 - Source sound is opt-in via a continuous timeline-aligned `source_audio` and
   `keep_audio`. It does not infer audio edits from PNG manifests. Old non-platform
   music-only muxing remains compatible unless loudnorm is explicitly selected.
-- Loudnorm logs both passes and requests linear processing; FFmpeg's reported
-  dynamic fallback is retained when peak/LRA constraints prevent linear gain.
-  Silent tracks are rejected; no track is a valid silent delivery.
+- Audio normalization measures loudness/true peak, then applies constant gain only.
+  There is no dynamic fallback. Peak-safe gain that misses the loudness gate blocks
+  publication. Silent tracks and absent audio have N/A loudness checks.
 - HDR intake requires zscale/libzimg and fails clearly if unavailable. Timestamp
   skew checks cannot establish lip sync for arbitrary speech. Dynamic Dolby Vision,
   untagged HDR and perceptual review are not claimed.
@@ -110,3 +114,46 @@ lavfi and are generated in temporary test directories; no real phone media is re
   incremental shot caches and caption/shot-review UI belong to later slices.
 - Modern streaming MOV/WebM alpha is covered by decode tests, not a retained
   full-film per-frame alpha reference. Check target players for alpha support.
+
+## Fix round
+
+Resumed from WIP `f1f186c`; no commit/push. Completed its audio, intake and legacy
+changes, removed the remaining composer cap, and added the missing metadata,
+validation, silent-audio and mixed-format behavior. All heavy jobs ran serially.
+
+| Reviewer item | Status | Fix and measured evidence |
+| --- | --- | --- |
+| 1. Level-independent ducking | Fixed | 20 s acceptance-style band-limited speech + stereo MUS/kick fixture: **10.0038 dB** ducking; speech reduced **20 dB**: **10.0014 dB**. Both **−14.3 LUFS**, true peak **−5.8 / −6.7 dBTP**. Measured attack **100 ms**, recovery **500 ms**. Presence-controlled −10 dB gain, 50 ms nominal attack / 500 ms release; normalization uses measured constant gain, never dynamic loudnorm. |
+| 2. Intake timestamps | Fixed | Synthetic **700 ms offset**, **400 ms gap**, **1 duplicate PTS** → **162 frames at 30 fps**, output starts at **0**; start/end A/V skew **0 / 0 ms**, maximum flash/click skew **0.0833 ms**. Barcode confirms **13 frames** hold source frame 59 across the gap and duplicate frame 31 is discarded. Both streams use the same offset. |
+| 3. Legacy `--fps 100` | Fixed | Restored x264 defaults (no forced `-threads 2` or preset). Against base `ea2e790`: demo **916** frames and demo2 **2054** frames are decoded-pixel and complete MP4-file **bit-identical** (mean/min PSNR **∞**). Three synthetic plans also match exactly. **910 PNG frames**, all **5 GIFs** and **5 APNGs** match byte-for-byte. Demo soundtracks removed identically from both visual comparison runs; all visual/effect plans retained. |
+| 4. Odd phone dimensions/errors | Fixed | True **1917×1077**, rotation **270°** → displayed **1077×1917**, encoded **1078×1918**. Pad **1 black pixel right + 1 bottom**, after rotation; record displayed/encoded geometry and padding in intake report. Rotation metadata removed. CLI error test: **1 line**, exit **2**, no traceback/output. |
+| 5. Raster cap regression | Fixed | Removed the new **512 MiB** cap from renderer and composer. Test exercises **65 × 1080×1920** metadata (**514.160 MiB**) with substituted tiny decoded buffers; real plain/effect PNG+GIF tests each export **65 frames** at **32×48** (**0.381 MiB** fixture). No full-size raster stress rerun: legacy raster still retains the film in RAM. |
+| 6. Proxy bitrate | Fixed | H.264 proxy uses **CRF 23**, no inherited platform CBR/filler. TikTok proxy test: **360×640**, **2 s**, **3,595 bytes**, **8,016 bps** video on a static fixture. This verifies removal of the fixed 10 Mbps floor, not a size prediction for textured clips. |
+| 7. Timing metadata and silent QA | Fixed | Per-event `event_index`, `merged`, `merged_event_indices`; **2** events at **0/10 ms** share frame 0 and cross-reference each other. A separate **20 ms** beat spacing warns at **30 fps** (frame **33.333 ms**) even without effects/collision. Entirely silent track: **4** audio checks show N/A (`PASS`, `applicable:false`), no loudness failure. |
+| 8. Mixed outputs and preset sources | Fixed | Mixed PNG/GIF/MP4 keeps **2 byte-identical GIF copies** (top-level and `raster/`). Added **5 official source links** in `references/video-export.md`, distinguishing official guidance from project bitrate/safe-margin defaults. Meta links were login/rate-limited during verification; that limitation is explicit. |
+
+Evidence: [legacy comparison](regression-p0.json),
+[legacy run log](p0-fix-regression-resumed.log),
+[full suite log](tests-p0-fix-full.log),
+[extracted fix measurements](measurements-p0-fix.json). Fixtures and assertions live in
+`tests/test_delivery_p0.py` and `tests/phone_fixtures.py`; regression harness uses
+an automatically cleaned OS temporary directory and compares decoded frames one
+at a time. The two complete demo plans retain their original dimensions/effects.
+
+Final suite: **241 tests in 81.648 s, 0 failures, 2 baseline environment errors,
+4 existing skips; 0 new failures/errors**. All **30 P0 tests pass**. The errors
+remain `test_install.test_same_source_symlink_is_preserved` (WinError 1314) and
+`test_mask_review.test_review_exports_overlay_contact_sheet_and_stability_report`
+(WinError 32). The suite therefore exits 1; the standalone legacy regression exits 0.
+Cleaned this run's temporary directories, the locked-file test's leftover after
+process exit, and the interrupted run's untracked `wow/fx/p0-work/` scratch archive.
+Preserved the pre-existing `wow/fx/progress.md` edit. No spec, acceptance, process,
+example, external skill, or external repository edits.
+
+Reproduce serially with the requested venv Python and static FFmpeg directory on
+PATH (also set `VIDEO_GIF_FFMPEG` / `VIDEO_GIF_FFPROBE` to its executables):
+
+```text
+python wow/fx/regression_p0.py
+python -m unittest discover -s tests -v
+```
