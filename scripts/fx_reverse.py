@@ -22,6 +22,113 @@ def groups(indices, gap=1):
     return result
 
 
+def scale_motion(prev, cur):
+    """Return coherent scale and center displacement; reject local object motion.
+
+    Corners must agree across the canvas, including forward/backward tracking.
+    A strictly one-dimensional graphic has no corners: fit both subpixel edges
+    independently in four bands instead (never infer scale from bright-pixel count).
+    """
+    h,w=prev.shape; center=np.array([w/2,h/2])
+    points=cv2.goodFeaturesToTrack(prev,160,.01,4)
+    if points is not None:
+        points=points[((points[:,0]>[w*.1,h*.1])&(points[:,0]<[w*.9,h*.9])).all(axis=1)]
+    if points is not None and len(points)>=12:
+        moved,ok,_=cv2.calcOpticalFlowPyrLK(prev,cur,points,None,winSize=(15,15))
+        back,back_ok,_=cv2.calcOpticalFlowPyrLK(cur,prev,moved,None,winSize=(15,15))
+        good=(ok.ravel()>0)&(back_ok.ravel()>0)&(np.linalg.norm((back-points).reshape(-1,2),axis=1)<.6)
+        if good.sum()<12 or good.mean()<.7:return None
+        a=points[good].reshape(-1,2);b=moved[good].reshape(-1,2)
+        matrix,inliers=cv2.estimateAffinePartial2D(a,b,method=cv2.RANSAC,ransacReprojThreshold=.7)
+        if matrix is None or inliers.mean()<.8:return None
+        a=a[inliers.ravel()>0];b=b[inliers.ravel()>0]
+        quadrants=(a[:,0]>center[0]).astype(int)+2*(a[:,1]>center[1])
+        if len(set(quadrants))<4 or np.any(np.ptp(a,axis=0)<[w*.5,h*.5]):return None
+        residual=np.linalg.norm(a@matrix[:,:2].T+matrix[:,2]-b,axis=1)
+        if np.percentile(residual,90)>.6 or abs(np.arctan2(matrix[1,0],matrix[0,0]))>.015:return None
+        scale=float(np.hypot(matrix[0,0],matrix[1,0]))
+        drift=float(np.linalg.norm(matrix[:,:2]@center+matrix[:,2]-center))
+        radial=abs(scale-1)*float(np.median(np.linalg.norm(a-center,axis=1)))
+        return scale,drift,radial
+    # Only a full-height/width stripe qualifies for the degenerate fit. Natural
+    # scenes cannot enter this path just because their optical flow was unreliable.
+    for first,second in ((prev,cur),(prev.T,cur.T)):
+        if max(np.std(first.astype(float),axis=0).mean(),np.std(second.astype(float),axis=0).mean())>1:continue
+        fits=[]
+        for band_a,band_b in zip(np.array_split(first,4),np.array_split(second,4)):
+            edges=[]
+            for band in (band_a,band_b):
+                profile=band.mean(axis=0);level=(profile.max()+profile.min())/2
+                if np.ptp(profile)<35:break
+                crossings=np.flatnonzero(np.diff(profile>level))
+                if len(crossings)!=2:break
+                edge=crossings+(level-profile[crossings])/(profile[crossings+1]-profile[crossings])
+                if edge[1]-edge[0]<5:break
+                edges.append(edge)
+            if len(edges)!=2:break
+            a,b=edges;scale=(b[1]-b[0])/(a[1]-a[0]);mid=first.shape[1]/2
+            drift=abs(float(np.mean(b-mid-scale*(a-mid))))
+            fits.append((scale,drift,abs(scale-1)*float(np.mean(abs(a-mid)))))
+        if len(fits)==4 and np.ptp(np.array(fits)[:,0])<.015:
+            return tuple(np.mean(fits,axis=0))
+    return None
+
+
+def punch_events(gray,times,blocked):
+    """A centered expansion must be followed by a coherent, bounded scale decay."""
+    fits=[None]+[scale_motion(a.astype(np.uint8),b.astype(np.uint8))
+                 if i not in blocked else None for i,(a,b) in enumerate(zip(gray,gray[1:]),1)]
+    events=[]
+    for i,fit in enumerate(fits):
+        if fit is None:continue
+        scale,drift,radial=fit
+        if not 1.1<=scale<1.8 or drift>max(.6,radial*.55):continue
+        if events and times[i]-events[-1]['time_ms']<600:continue
+        accumulated=scale;falling=0;recovered=False
+        for j in range(i+1,len(fits)):
+            if times[j]-times[i]>600 or j in blocked:break
+            if fits[j] is None:break
+            step=fits[j][0]
+            if step>1.025:break
+            accumulated*=step
+            falling+=step<.995
+            if falling>=2 and accumulated<=1+(scale-1)*.5:
+                recovered=True;break
+        if recovered:events.append({'time_ms':int(round(times[i])),'scale':float(scale),'confidence':.7,'review':True})
+    return events
+
+
+def integer_times(value, key=''):
+    """Normalize every report/draft clock, including nested envelope timestamps."""
+    if isinstance(value,dict):return {k:integer_times(v,k) for k,v in value.items()}
+    if isinstance(value,list):
+        if key=='keyframes':return [[int(round(t)),v] for t,v in value]
+        return [integer_times(v,key) for v in value]
+    if key.endswith('_ms') and isinstance(value,(int,float,np.number)):return int(round(value))
+    return value
+
+
+def sample_frames(source, info, fps):
+    """Keep nominal samples plus short brightness peaks between them.
+
+    The renderer inserts 10ms accents; a fixed 25fps subsample can entirely miss
+    a .65 flash. Retain a local peak using only one pending decoded frame.
+    """
+    images=[];times=[];cursor=0.;next_sample=0.;pending=None;last_brightness=0.
+    for im,seconds in zip(media_frames(source,info),info['durations']):
+        brightness=float(np.asarray(im.convert('L').resize((40,24))).mean())
+        if pending is not None:
+            frame,at,peak=pending
+            if peak>brightness+1 and peak>last_brightness+15 and (not times or at>times[-1]+1e-5):
+                images.append(frame);times.append(at);last_brightness=peak
+        if cursor+1e-5>=next_sample:
+            images.append(im.copy());times.append(cursor);next_sample=cursor+1000/fps
+            last_brightness=brightness
+        pending=(im.copy(),cursor,brightness)
+        cursor+=seconds*1000
+    return images,times,cursor
+
+
 def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
     """Bounded thumbnails; median chroma rejects subject motion and brightness accents."""
     rgb = np.asarray([np.asarray(im.convert('RGB').resize((160,90)),np.float32) for im in images])
@@ -30,9 +137,15 @@ def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
     gray = rgb @ np.array([.2126,.7152,.0722],np.float32)
     mean = gray.mean(axis=(1,2)); diff = np.r_[0,np.abs(np.diff(rgb,axis=0)).mean(axis=(1,2,3))]
     change = np.r_[0,np.linalg.norm(np.diff(chroma,axis=0),axis=1)]
-    flash_idx = [int(g[np.argmax(mean[g])]) for g in groups(np.flatnonzero(mean>190))
-                 if max(mean[g])-min(mean[max(0,g[0]-5):min(n,g[-1]+6)])>40]
-    flashes = [{'time_ms':float(times[i]),'confidence':.9} for i in flash_idx]
+    # White-mix strength is relative to the local unflashed exposure. A .6 flash
+    # on a dark plate need not reach the old absolute 190/255 threshold.
+    strengths=np.zeros(n)
+    for i in range(1,n-1):
+        radius=max(2,round(240/step))
+        baseline=max(float(min(mean[max(0,i-radius):i])),float(min(mean[i+1:min(n,i+radius+1)])))
+        strengths[i]=(mean[i]-baseline)/max(1,255-baseline)
+    flash_idx=[int(g[np.argmax(mean[g])]) for g in groups(np.flatnonzero((strengths>=.58)&(mean>140)))]
+    flashes = [{'time_ms':float(times[i]),'strength':float(strengths[i]),'confidence':.9} for i in flash_idx]
     # Flat dark centers bracket an aperture closure. Require visible brighter neighbors.
     shutters = []
     for g in groups(np.flatnonzero(mean<30)):
@@ -158,35 +271,17 @@ def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
         if after:end=min(after)
         if not any(f['start_ms']<=start and f['end_ms']>=end for f in freezes):
             freezes.append({'start_ms':start,'end_ms':end,'confidence':.65,'kind':'animated_cutout_on_held_plate','review':True})
-    zooms = []
-    for i in range(1,n):
-        if diff[i]<.5 or any(abs(times[i]-c['time_ms'])<300 for c in cuts) or any(abs(times[i]-times[f])<250 for f in flash_idx): continue
-        # Track feature similarity affine scale where textured material supports it.
-        prev,cur=gray[i-1].astype(np.uint8),gray[i].astype(np.uint8)
-        points=cv2.goodFeaturesToTrack(prev,80,.01,3)
-        scale=1.
-        if points is not None and len(points)>=4:
-            moved,ok,_=cv2.calcOpticalFlowPyrLK(prev,cur,points,None)
-            valid=ok.ravel()>0
-            if valid.sum()>=4:
-                matrix,_=cv2.estimateAffinePartial2D(points[valid],moved[valid])
-                if matrix is not None: scale=float(np.hypot(matrix[0,0],matrix[0,1]))
-        if scale<1.1:
-            # Stripe-like graphics have no corners; compare bright feature widths.
-            widths=[]
-            for image in (prev,cur):
-                profile=image.mean(axis=0); widths.append(np.count_nonzero(profile>profile.min()+.75*(profile.max()-profile.min())))
-            if widths[0]>2 and widths[1]>2: scale=max(scale,widths[1]/widths[0])
-        if 1.1<=scale<2 and (not zooms or times[i]-zooms[-1]['time_ms']>250):
-            zooms.append({'time_ms':float(times[i]),'scale':scale,'confidence':.5,'review':True})
+    blocked={i for i in range(n) if any(abs(times[i]-c['time_ms'])<300 for c in cuts)
+             or any(abs(times[i]-times[f])<250 for f in flash_idx)}
+    zooms=punch_events(gray,times,blocked)
     aligned=sum(bool(beats_ms) and min(abs(c['time_ms']-t) for t in beats_ms)<=step+1e-6 for c in cuts)
     for events in (cuts,flashes,motions,zooms,freezes):
         for event in events:
             for key in list(event):
                 if key.endswith('_ms'): event[key]=int(round(event[key]))
-    return {'cuts':cuts,'flashes':flashes,'directional_motion':motions,'zoom_punches':zooms,'freezes':freezes,
+    return integer_times({'cuts':cuts,'flashes':flashes,'directional_motion':motions,'zoom_punches':zooms,'freezes':freezes,
             'beat_alignment':{'numerator':aligned,'denominator':len(cuts),'ratio':aligned/len(cuts) if cuts else None,'tolerance_ms':step},
-            'duration_ms':int(round(duration_ms)),'analysis_frame_ms':int(round(step)),'limitations':'Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous.'}
+            'duration_ms':int(round(duration_ms)),'analysis_frame_ms':int(round(step)),'limitations':'Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous.'})
 
 
 def reverse(source, out, beats=None, fps=25):
@@ -198,11 +293,7 @@ def reverse(source, out, beats=None, fps=25):
         saved=json.loads((source.parent/'manifest.json').read_text())
         if len(saved['durations_ms'])!=len(info['durations']): raise ValueError('Source manifest timing/frame mismatch')
         info['durations']=[t/1000 for t in saved['durations_ms']]
-    images=[];times=[];cursor=0.;next_sample=0.
-    for im,seconds in zip(media_frames(source,info),info['durations']):
-        if cursor+1e-5>=next_sample:
-            images.append(im.copy());times.append(cursor);next_sample=cursor+1000/fps
-        cursor+=seconds*1000
+    images,times,cursor=sample_frames(source,info,fps)
     beatdata=json.loads(Path(beats).read_text()) if beats else {'beats_ms':[]}
     report=inspect_frames(images,times,cursor,beatdata['beats_ms'])
     out.mkdir(parents=True)
@@ -272,10 +363,11 @@ def reverse(source, out, beats=None, fps=25):
     if not beats:
         report['limitations']+=' The on-beat ratio depends on estimated beats; supply --beats with reviewed timestamps.'
         report['beat_alignment']['beat_source']='estimated'
-    (out/'draft-plan.json').write_text(json.dumps(draft,indent=2))
+    (out/'draft-plan.json').write_text(json.dumps(integer_times(draft),indent=2))
     report['draft_notes']='Draft uses reviewed reconstruction candidates with clean-sample holds where effects were baked. Replace each shots/* manifest with licensed source footage; inferred effects, scale and transition lengths require review. source/ retains the decoded original.'
     report['suggested_effects']=[{'name':'flash_white','start_ms':e['time_ms'],'end_ms':min(cursor,e['time_ms']+160),'amount':{'keyframes':[[e['time_ms'],1],[e['time_ms']+120,0]]},'review':True} for e in report['flashes']]
     report['suggested_transitions']=[dict(name=c['type'],cut_ms=c['time_ms'],duration_ms=c['duration_ms'],review=True) for c in report['cuts'] if c['type']!='cut']
+    report=integer_times(report)
     (out/'report.json').write_text(json.dumps(report,indent=2))
     board=Image.new('RGB',(320*3,210*math.ceil((len(bounds)-1)/3)),(18,22,30));draw=ImageDraw.Draw(board)
     for i,(a,b) in enumerate(zip(bounds,bounds[1:])):

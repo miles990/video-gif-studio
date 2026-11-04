@@ -26,7 +26,7 @@ def lettering(width,height,content,font,size,color,stroke,stroke_color,shadow_px
     return np.array(layer,dtype=np.float32)/255
 
 
-@effect(content='Unicode text',font='System font file path; empty searches CJK fonts',size='Font pixels',x='Center x fraction',y='Center y fraction',entrance='pop or scale',amount='Layer opacity',scale='Additional envelope scale')
+@effect(status='experimental',content='Unicode text',font='System font file path; empty searches CJK fonts',size='Font pixels',x='Center x fraction',y='Center y fraction',entrance='pop or scale',amount='Layer opacity',scale='Additional envelope scale')
 def text(frame,t,ctx,content='節奏 RHYTHM',font='',size=64.0,color='FFF2CE',stroke=3.0,stroke_color='142132',shadow_px=4.0,shadow_color='080F18',x=.5,y=.5,entrance='pop',amount=1.0,scale=1.0):
     """Centered CJK lettering with stroke, shadow, 180ms entrance and subtle beat pop."""
     if amount==0:return frame

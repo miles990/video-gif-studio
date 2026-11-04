@@ -1,4 +1,5 @@
 {
+  "experimental": true,
   "beatmap": "beats.json",
   "fps": 25,
   "seed": 19,

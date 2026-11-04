@@ -50,6 +50,7 @@ def plan():
     beat=json.loads((ROOT/'beats.json').read_text())['beats_ms'];accent=[11,19,35,43]
     env={'on':'beats','indices':accent,'decay_ms':160,'curve':'ease_out'}
     result={'beatmap':'beats.json','fps':25,'seed':19,'interpolate':'flow',
+      'experimental':True,
       'music':{'file':'../../../examples/neon-zen-pv/soundtrack.flac','fade_in_ms':100,'fade_out_ms':700},
       'segments':[
         {'type':'animation','manifest':'work/a/manifest.json','end_beat':8,'ramp':{'into_beat':8,'slow':.35,'hit_ms':240}},
@@ -90,7 +91,7 @@ def build():
     plan();out=WORK/f'master-{time.time_ns()}';started=time.perf_counter();render(ROOT/'plan.json',out,('png','mp4'))
     shutil.copy2(out/'animation.mp4',ROOT/'demo.mp4');shutil.copy2(out/'manifest.json',ROOT/'manifest.json')
     record=export_preview(out,ROOT/'demo.gif',exposure=160,widths=(240,216,192,160,128));record.update(wall_seconds=time.perf_counter()-started,master=str(out.relative_to(ROOT)))
-    (ROOT/'build-results.json').write_text(json.dumps(record,indent=2));preview(ROOT/'preview.png',WORK/'freeze.png');comparisons();print(record,flush=True)
+    (ROOT/'build-results.json').write_text(json.dumps(record,indent=2));preview(ROOT/'preview.png',WORK/'freeze.png',experimental=True);comparisons();print(record,flush=True)
 
 
 if __name__=='__main__':

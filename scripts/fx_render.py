@@ -16,7 +16,7 @@ from compose_timeline import compose, resolve_plan, export_timeline, FORMATS
 from fx import Context, EFFECTS, TRANSITIONS, evaluate
 from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers, audio_peaks
 
-TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model'}
+TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model','experimental'}
 SEGMENT = {'type','manifest','image','previous','frame','duration_ms','in_ms','out_ms','speed','ramp','ending','end_beat','end_downbeat','transition','review'}
 META = {'name','start_ms','end_ms','start_beat','end_beat','review','stage'}
 
@@ -35,11 +35,13 @@ def beat_index(index, times, where):
         raise ValueError(f'{where}: {index!r}; valid beat range 0..{len(times)-1}')
     return times[index]
 
-def validate_entry(entry, registry, ctx, where, metadata):
+def validate_entry(entry, registry, ctx, where, metadata, experimental=False):
     if not isinstance(entry,dict): raise ValueError(f'{where}: expected object with name; available {sorted(registry)}')
     name = entry.get('name')
     if name not in registry: raise ValueError(f'{where}: unknown {name!r}; available {sorted(registry)}')
     spec = registry[name]
+    if spec['status']=='experimental' and not experimental:
+        raise ValueError(f'{where}: {name} is experimental; pass --experimental or set "experimental": true in the plan')
     keys(entry,set(spec['params'])|metadata,where)
     params = {k:entry.get(k,v['default']) for k,v in spec['params'].items()}
     for k,v in params.items():
@@ -65,16 +67,22 @@ def validate_entry(entry, registry, ctx, where, metadata):
             from fx.timewarp import session
             try:session(params['model'])
             except ValueError as exc:raise ValueError(f'{where}: {exc}; .runtime/models/depth-anything-v2-small.onnx; use beat_bounce/zoom_punch instead') from None
-    return {'name':name,'params':params,'source':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest()}
+    return {'name':name,'status':spec['status'],'params':params,'source':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest()}
 
-def validate_plan(plan_path, formats=('png',)):
+def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=None):
     path = Path(plan_path).resolve()
     plan = json.loads(path.read_text(encoding='utf-8-sig'))
     if os.environ.get('VIDEO_GIF_INTERPOLATE'):plan['interpolate']=os.environ['VIDEO_GIF_INTERPOLATE']
+    if interpolate is not None: plan['interpolate']=interpolate
     keys(plan,TOP,'plan')
+    if type(plan.get('experimental',False)) is not bool: raise ValueError('experimental: expected boolean')
+    experimental = experimental or plan.get('experimental',False)
     if not isinstance(plan.get('segments'),list) or not plan['segments']: raise ValueError('segments: expected nonempty list')
     fps = number(plan.get('fps',25),'fps',1,50)
-    if plan.get('interpolate','flow') not in ('none','blend','flow','rife'): raise ValueError('interpolate: choose none, blend, flow, rife')
+    if plan.get('interpolate','none') not in ('none','blend','flow','rife'): raise ValueError('interpolate: choose none, blend, flow, rife')
+    features = experimental_items(plan)
+    if features and not experimental:
+        raise ValueError(f'Experimental items: {", ".join(features)}; pass --experimental or set "experimental": true in the plan')
     if plan.get('interpolate')=='rife':
         from fx.timewarp import session
         session(plan.get('rife_model',os.environ.get('VIDEO_GIF_RIFE_MODEL','.runtime/models/rife_v4.25_lite.onnx')))
@@ -164,7 +172,7 @@ def validate_plan(plan_path, formats=('png',)):
     if not isinstance(plan.get('effects',[]),list): raise ValueError('effects: expected list of effect objects')
     for i, entry in enumerate(plan.get('effects',[])):
         where = f'effects[{i}]'
-        effect = validate_entry(entry,EFFECTS,ctx,where,META)
+        effect = validate_entry(entry,EFFECTS,ctx,where,META,experimental)
         effect['stage'] = entry.get('stage','post')
         if effect['stage'] not in ('source','post'): raise ValueError(f'{where}.stage: valid options source, post')
         for edge,default in [('start',0),('end',cursor)]:
@@ -187,7 +195,7 @@ def validate_plan(plan_path, formats=('png',)):
         where = f'segments[{i}].transition'
         if i==0: raise ValueError(f'{where}: requires a previous segment; valid index 1..{len(segments)-1}')
         entry = segment['transition']
-        tr = validate_entry(entry,TRANSITIONS,ctx,where,{'name','duration_ms','review'})
+        tr = validate_entry(entry,TRANSITIONS,ctx,where,{'name','duration_ms','review'},experimental)
         if tr['name']=='luma_wipe' and tr['params']['mask'] not in ('linear','radial','cloud'):
             tr['params']['mask']=str((path.parent/tr['params']['mask']).resolve())
             if not Path(tr['params']['mask']).is_file():raise ValueError(where+'.mask: expected grayscale image or linear/radial/cloud')
@@ -214,11 +222,28 @@ def validate_plan(plan_path, formats=('png',)):
                 for t,_ in audio_peaks(ctx.audio,value['on']) if effect['start_ms']<=t<effect['end_ms']]))
     return plan, items, segments, ctx, effects, transitions
 
-def render(plan_path, out, formats=('gif',), background='000000'):
+def experimental_items(plan):
+    """Sorted names of opted-in operations, including the legacy export path."""
+    used = set()
+    for entry in plan.get('effects',[]):
+        if isinstance(entry,dict) and EFFECTS.get(entry.get('name'),{}).get('status')=='experimental':
+            used.add('effect:'+entry['name'])
+    for segment in plan.get('segments',[]):
+        if not isinstance(segment,dict): continue
+        for feature in ('speed','ramp'):
+            if feature in segment: used.add(feature)
+        entry=segment.get('transition',{})
+        if isinstance(entry,dict) and TRANSITIONS.get(entry.get('name'),{}).get('status')=='experimental':
+            used.add('transition:'+entry['name'])
+    if plan.get('interpolate','none')!='none': used.add('interpolate:'+str(plan['interpolate']))
+    return sorted(used)
+
+
+def render(plan_path, out, formats=('gif',), background='000000', experimental=False, interpolate=None):
     out = Path(out); path = Path(plan_path).resolve()
     if out.exists(): raise ValueError('Use a new output directory')
     if not formats or not set(formats)<=FORMATS: raise ValueError(f'formats: valid options {sorted(FORMATS)}')
-    plan,items,segments,ctx,effects,transitions = validate_plan(path,formats)
+    plan,items,segments,ctx,effects,transitions = validate_plan(path,formats,experimental,interpolate)
     origins={}
     for s in plan['segments']:
         if s.get('type') in ('animation','loop') and s.get('manifest'):
@@ -237,6 +262,7 @@ def render(plan_path, out, formats=('gif',), background='000000'):
         for file,duration in items:
             index=max(0,bisect.bisect_right([s['start_ms'] for s in segments],clock)-1)
             record['source_samples'].append({'output_ms':clock,'segment_index':index,'source_ms':origins.get(str(file.resolve()),0),'interpolation':'none','extended_last_frame':False});clock+=duration
+        record['experimental_items']=experimental_items(plan)
         manifest_path.write_text(json.dumps(record,indent=2));return result
     started = time.perf_counter()
     edges = np.cumsum([0]+[t for _,t in items]).tolist(); total = edges[-1]
@@ -299,7 +325,7 @@ def render(plan_path, out, formats=('gif',), background='000000'):
             speed=(source_clock(original,local+1,ctx)-source_clock(original,local,ctx))
             phase=(source_ms-source_edges[k])/(source_edges[k+1]-source_edges[k])
             if speed<1-1e-6 and phase>1e-6 and k+1<len(files) and source_edges[k+1]<limit:
-                method=plan.get('interpolate','flow');other=read(files[k+1]);flows=None
+                method=plan.get('interpolate','none');other=read(files[k+1]);flows=None
                 if method=='flow':
                     key=(str(file),str(files[k+1]))
                     if key not in flow_cache:
@@ -342,12 +368,13 @@ def render(plan_path, out, formats=('gif',), background='000000'):
     extra = {'effects':effects,'transitions':transitions,'fx_overrides':list(OVERRIDES),'render':{'seconds':elapsed,'fps':len(images)/elapsed,'requested_fps':ctx.fps},'semantics':'Centered transitions; source endpoints extended; effect intervals end-exclusive; no motion synthesized.'}
     extra['warnings'] = [tr['warning'] for tr in transitions if 'warning' in tr]
     extra['source_samples']=source_records
+    extra['experimental_items']=experimental_items(plan)
     for segment in segments:
         segment['start_frame'] = bisect.bisect_left(sample_edges,segment['start_ms'])
         segment['end_frame_exclusive'] = bisect.bisect_left(sample_edges,segment['start_ms']+segment['duration_ms'])
     return export_timeline(path,out,formats,background,plan,output_items,segments,images,[t for _,t in output_items],extra)
 
-def preview(out, image_path=None):
+def preview(out, image_path=None, experimental=False):
     if image_path:
         with Image.open(image_path) as im: frame = np.array(im.convert('RGBA').resize((320,180)))
     else:
@@ -363,6 +390,7 @@ def preview(out, image_path=None):
     ctx.history=(np.roll(frame.astype(np.float32)/255,40,axis=1),np.roll(frame.astype(np.float32)/255,80,axis=1))
     tiles = [('original',frame)]
     for name,spec in EFFECTS.items():
+        if not experimental and spec['status']!='stable': continue
         source = frame.copy()
         if name in ('cutout_card','multi_cutout'):
             source[:,:,3]=0; source[35:150,80:240,3]=255
@@ -370,7 +398,7 @@ def preview(out, image_path=None):
         except (ValueError,OSError) as exc:
             unavailable=Image.new('RGBA',(320,180),(28,30,40,255));d=ImageDraw.Draw(unavailable)
             d.text((8,65),'unavailable: '+str(exc)[:38],fill='white');tiles.append((name,np.array(unavailable)))
-    tiles += [(f'{name}  p={p}',spec['function'](frame,other,p,ctx)) for name,spec in TRANSITIONS.items() for p in (.25,.5,.75)]
+    tiles += [(f'{name}  p={p}',spec['function'](frame,other,p,ctx)) for name,spec in TRANSITIONS.items() if experimental or spec['status']=='stable' for p in (.25,.5,.75)]
     sheet = Image.new('RGB',(320*3,212*math.ceil(len(tiles)/3)),(18,22,30)); draw = ImageDraw.Draw(sheet)
     for i,(label,arr) in enumerate(tiles):
         x,y = i%3*320,i//3*212
@@ -386,28 +414,26 @@ def main(argv=None):
     ap.add_argument('--no-user-fx',action='store_true'); ap.add_argument('--list',action='store_true'); ap.add_argument('--json',action='store_true')
     ap.add_argument('--preview',type=Path); ap.add_argument('--image',type=Path); ap.add_argument('--validate',action='store_true')
     ap.add_argument('--interpolate',choices=['none','blend','flow','rife'])
+    ap.add_argument('--experimental',action='store_true',help='Enable effects and features pending the quality gate')
     a = ap.parse_args(argv)
     try:
         if not a.no_user_fx: load_directory(os.environ.get('VIDEO_GIF_FX_HOME',str(Path.home()/'.video-gif-studio/fx')))
         for directory in a.fx_dir: load_directory(directory)
         if a.list:
-            if a.json: print(json.dumps(catalog(),indent=2))
+            if a.json: print(json.dumps(catalog(a.experimental),indent=2))
             else:
-                for kind,entries in catalog().items():
+                for kind,entries in catalog(a.experimental).items():
                     print(kind.upper())
                     for name,spec in entries.items():
-                        print(f'  {name}: {spec["doc"]}')
+                        print(f'  {name} [{spec["status"]}]: {spec["doc"]}')
                         for key,param in spec['params'].items(): print(f'    {key}={param["default"]!r} ({param["type"]}): {param["doc"]}')
                         print(f'    source: {spec["source"]}')
             return 0
-        if a.preview: preview(a.preview,a.image); return 0
+        if a.preview: preview(a.preview,a.image,a.experimental); return 0
         if not a.plan: raise ValueError('plan required, or use --list / --preview FILE.png')
-        if a.validate: validate_plan(a.plan,a.formats); print('Plan valid'); return 0
+        if a.validate: validate_plan(a.plan,a.formats,a.experimental,a.interpolate); print('Plan valid'); return 0
         if not a.out: raise ValueError('--out required')
-        if a.interpolate:
-            # Override remains in memory; never rewrite the user's plan.
-            os.environ['VIDEO_GIF_INTERPOLATE']=a.interpolate
-        print(json.dumps(render(a.plan,a.out,a.formats,a.background))); return 0
+        print(json.dumps(render(a.plan,a.out,a.formats,a.background,a.experimental,a.interpolate))); return 0
     except (OSError,ValueError,KeyError,TypeError,IndexError,RuntimeError) as exc:
         print(f'fx_render: {exc}',file=sys.stderr); return 2
 

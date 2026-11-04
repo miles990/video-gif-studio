@@ -11,7 +11,7 @@ def transform(frame,ctx,angle=0,scale=1,dx=0,dy=0):
         flags=cv2.INTER_NEAREST if ctx.sampling=='nearest' else cv2.INTER_LINEAR,borderMode=cv2.BORDER_REFLECT_101))
 
 
-@effect(amount='Strength; built-in 220ms beat decay',distance='Peak translation px',seed='Stable shake seed')
+@effect(status='experimental',amount='Strength; built-in 220ms beat decay',distance='Peak translation px',seed='Stable shake seed')
 def shake(frame,t,ctx,amount=1.0,distance=9.0,seed=7.0):
     """Beat-decaying camera shake, doubled on downbeats; reflected edges fill canvas."""
     pulse=evaluate({'on':'beats','decay_ms':220},t,ctx) if ctx.beats_ms else 1
@@ -24,7 +24,7 @@ def shake(frame,t,ctx,amount=1.0,distance=9.0,seed=7.0):
     return transform(frame,ctx,dx=d*np.cos(angle),dy=d*np.sin(angle))
 
 
-@effect(distance='R +distance, B -distance in pixels',direction='Degrees: 0 horizontal, 90 vertical')
+@effect(status='experimental',distance='R +distance, B -distance in pixels',direction='Degrees: 0 horizontal, 90 vertical')
 def rgb_split(frame,t,ctx,amount=1.0,distance=6.0,direction=0.0):
     """Chromatic offset; original alpha and green retained; hidden RGB excluded."""
     if amount==0:return frame
@@ -37,7 +37,7 @@ def rgb_split(frame,t,ctx,amount=1.0,distance=6.0,direction=0.0):
     return out
 
 
-@effect(distance='Radial integration length, fraction of radius',samples='Integration samples')
+@effect(status='experimental',distance='Radial integration length, fraction of radius',samples='Integration samples')
 def radial_blur(frame,t,ctx,amount=1.0,distance=.22,samples=12.0):
     """Zoom-direction blur preserves spokes and softens concentric rings."""
     if amount==0:return frame
@@ -51,7 +51,7 @@ def radial_blur(frame,t,ctx,amount=1.0,distance=.22,samples=12.0):
     return result
 
 
-@effect(history=4,decay='Older echoes decay geometrically',amount='Trail strength')
+@effect(status='experimental',history=4,decay='Older echoes decay geometrically',amount='Trail strength')
 def echo(frame,t,ctx,amount=.65,decay=.55):
     """Lighten premultiplied trails, newest first, without dimming current pixels."""
     result=premultiply(frame)

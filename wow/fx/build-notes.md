@@ -1,3 +1,67 @@
+## Slice: feature flag + reverse fixes
+
+2026-11-05, builder worktree `C:/Users/User/src/vgs-fx`, branch `fx-framework`.
+Preserved the status/decorator edits present at handoff and completed their integration.
+No commit/push, installed-skill/source-checkout edits, or spec/acceptance/process edits.
+Commands used the requested installed venv Python with `PYTHONDONTWRITEBYTECODE=1`
+and explicit `VIDEO_GIF_FFMPEG` / `VIDEO_GIF_FFPROBE`; heavy processes ran serially.
+
+- **Feature gate:** the 6 round-one effects + 4 transitions are stable; all 25
+  round-two registry entries are experimental. Default catalog/preview expose only
+  the 10 stable entries (preview: original + 6 effects + 12 transition phases).
+  `--experimental` reveals/enables the experimental entries; top-level
+  `"experimental": true` also enables plan validation/rendering. Explicit speed
+  (even 1), ramp, and non-none interpolation require opt-in. Interpolation defaults
+  to none; CLI/env overrides are gated, including `--validate`, and CLI calls no
+  longer leave an interpolation override in the process environment.
+- **Provenance:** manifests record `experimental_items` on both normal and legacy
+  export paths; resolved effects/transitions include status. Directory/user plugins
+  default to stable unless their decorator declares experimental. `references/fx.md`
+  documents this contract and separates Stable / Experimental (pending quality gate).
+  Round-one demo plans remain unflagged and validate; demo2's plan and builder opt in,
+  including its preview generation.
+- **Reverse:** forward/backward corner tracking and RANSAC similarity fits require
+  coverage across all four quadrants, consistent residuals and centered scale change.
+  Translation-dominant fits are rejected. Cornerless full-canvas stripes use matching
+  subpixel edges across four bands, replacing the bright-pixel width shortcut. A zoom
+  onset must have a subsequent multi-frame decay that removes at least half its gain
+  within 600ms. White flashes use relative white-mix strength; sampling retains brief
+  brightness peaks between nominal 25fps samples. All nested report/draft millisecond
+  fields and envelope keyframe timestamps are rounded to integers.
+
+Measured results (`slice-reverse-measurements.json`; reproduce core measurements with
+`python wow/fx/check_slice.py`, using the explicit FFmpeg environment):
+
+| Input / check | Result |
+|---|---|
+| Neon source, 30s / 750 analysis samples | **0 zooms**, down from the reported 17; 0 flashes |
+| Static and slow-pan negatives | **0 zooms** each; tests also cover full-height stripe pans |
+| Translation-dominant motion / step zoom without decay | **0 zooms** in both regression fixtures |
+| Textured centered punch | **1 zoom at 800ms** in the regression fixture |
+| P-rt PNG | **1 zoom at 3000ms, scale 1.229894**; flash at 1520ms |
+| P-rt encoded MP4 | **1 zoom at 3000ms, scale 1.230072**; flash at 1520ms; generated draft validates |
+| Round-one encoded demo | **3 flash peaks:** 740ms (strength .644593), 2200ms (.645023), 2920ms (.989100, flash-cut peak); 0 zoom candidates |
+| Synthetic .60 / .65 flashes | Both detected; separate 10ms peak at 740ms retained between nominal samples |
+| Demo plans | demo/plan.json and plan-b.json validate without opt-in; demo2/plan.json validates with its explicit opt-in |
+
+The MP4 P-rt measurement also ran the full `reverse()` export in a temporary worktree
+directory and validated its generated draft before cleanup. The conservative zoom
+detector needs observed onset/decay; demo punches at the first frame or below 1.1
+are not expected to appear. This is bounded heuristic evidence, not a quality-gate
+approval for the experimental effects.
+
+**Full suite:** `python -m unittest discover -s tests -v`: **211 tests in 61.219s;
+201 passed, 8 skipped, 2 errors, 0 failures**. All 13 new tests pass. The two errors
+match the 198-test baseline: Windows symlink privilege in
+`test_install.test_same_source_symlink_is_preserved` and a locked `overlay.png` during
+temporary-directory cleanup in `test_mask_review`. Zero new failures/errors.
+Eight baseline skips remain (some legacy tests look for FFmpeg on PATH rather than
+the explicit runtime); the H.264 freeze regression and direct MP4 measurements did run.
+Full log: `test-slice-full.log`; initial development failures are retained separately
+as `test-slice-fx-initial.log` and are superseded by that full run.
+`python scripts/doctor.py` returned **0**, local GIF/media runtime ready; evidence:
+`slice-doctor.json`. `git diff --check` passes.
+
 # Round 2 builder handoff — 2026-11-04
 
 This section supersedes the historical round-1 notes below. All source changes and

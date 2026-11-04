@@ -38,7 +38,15 @@ downbeats_ms=[], audio={}, sampling='linear')`. Fields include `since_previous_b
 animated random noise explicitly derive a seed from an integer frame/time, never Python
 `hash()`. Avoid global RNGs, mutable plugin state and wall clocks.
 
-## Builtins
+## Stable
+
+The default catalog contains the six round-one effects and four transitions below.
+All round-two operations are **experimental (pending quality gate)**. They are hidden
+from `--list` and `--preview` unless `--experimental` is supplied. To validate or render
+a plan using them, pass `--experimental` or set top-level `"experimental": true`.
+The delivery manifest's `experimental_items` lists used effects (`effect:name`),
+transitions (`transition:name`), and features (`speed`, `ramp`, `interpolate:mode`).
+Stable-only plans record an empty list; opting in alone does not imply experimental use.
 
 `--list` is the authoritative typed parameter/default/doc/source catalog. The following
 defaults are also usable directly as plan fields. Every numeric field accepts envelopes.
@@ -166,6 +174,10 @@ are ignored and never created. Syntax/import failures warn with filename and lin
 skip that file; its partial registrations are rolled back. Other files and builtins remain
 available. Plugins are trusted local Python code.
 Overrides report the name and both source paths to stderr and the delivery manifest.
+Plugins from either library source default to `status="stable"`. Authors can explicitly
+declare `@effect(status="experimental")` or `@transition(status="experimental")` to
+require the same opt-in. Registry/catalog entries expose `status`; only `stable` and
+`experimental` are accepted. A plugin override's own declared status takes precedence.
 
 After a successful film: choose a distinctive name; document parameters with decorator
 keyword descriptions and typed defaults; save the .py into the user library; generate
@@ -219,6 +231,13 @@ report.json includes hard/gradual edit candidates, flash peaks, horizontal motio
 zoom scale estimates, holds, and the numerator/denominator of edits within one analysis
 frame of beats. shots.png labels each shot's time. The draft uses builtins, exact segment
 durations (end_beat only for near-exact matches), and review=true on uncertain reconstruction.
+All report/draft timestamps and durations are integer milliseconds. Short brightness
+peaks between nominal analysis frames are retained; white-mix strengths of .6 and above
+are detected relative to nearby clean exposures. Zoom candidates require spatially
+distributed similarity-transform agreement, centered expansion rather than dominant
+translation, and a subsequent scale decay. Cornerless full-frame stripe graphics use
+a separate consistent edge fit across bands. Slow camera zooms and punches at the very
+start/end without enough temporal evidence can be omitted; candidates remain reviewable.
 Flash-hidden edits compare clean spatial structure across the white peak; bounded
 horizontal-detail troughs identify same-palette whips. Coherent cumulative chroma paths
 can identify long dissolves. Repeated foreground poses over a static outer plate are
@@ -249,7 +268,10 @@ Do not falsely label that a hard-cut detector passing a transition test. Exact b
 are separately measured from decoded MP4 luminance. The strict acceptance request that
 all transition centers pass --expect-cuts remains a known semantic mismatch.
 
-## Round 2: source clock and interpolation
+## Round 2: source clock and interpolation (experimental)
+
+Segment `speed` (including explicit 1), `ramp`, and interpolation other than `none`
+require experimental opt-in. Omit these fields for a stable round-one plan.
 
 `fx_render` accepts segment `speed: 0.5`, `speed: {"keyframes":[[0,1],[1000,0.25],[2000,1]]}`,
 or `speed: {"on":"beats","decay_ms":200,"min":0.5,"max":2}`. The output duration and
@@ -265,7 +287,8 @@ is true. `source_samples` records output_ms, segment_index, source_ms and actual
 interpolation. Frames are never cyclically wrapped by the time-remap layer.
 
 Top-level `interpolate` (or CLI `--interpolate`) accepts **none, blend, flow, rife**;
-default flow. Only fractional phases at speed <1 are interpolated. none holds the
+default **none**. `VIDEO_GIF_INTERPOLATE` is also gated; the CLI override wins and applies
+to validation as well as rendering. Only fractional phases at speed <1 are interpolated. none holds the
 preceding frame; blend provides a cheap ghosting reference; flow uses bidirectional
 OpenCV DIS with coherent translation correction for aperture-ambiguous graphics.
 RIFE is optional CPU ONNX: `pip install -r requirements-fx-optional.txt`, then provide
@@ -291,8 +314,15 @@ missing history is omitted. No feedback or future samples. echo requests four fr
 The renderer keeps a bounded 12-source-image cache and one flow pair; the existing
 exporter still retains the complete short output film in memory.
 
+## Experimental (pending quality gate)
+
 The catalog below gives defaults; every numeric parameter accepts the existing
-beat/keyframe/audio envelope syntax. `--list --json` provides types and descriptions.
+beat/keyframe/audio envelope syntax. `--list --experimental --json` provides types and descriptions.
+
+| Framework feature | Opt-in condition |
+|---|---|
+| speed / ramp | Any explicit segment time remapping, including speed=1 |
+| interpolate | blend, flow or rife; none is stable |
 
 | Effect | Parameters / defaults |
 |---|---|

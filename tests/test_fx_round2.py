@@ -107,7 +107,7 @@ class FrameworkTests(unittest.TestCase):
             p=Path(d);(p/'source/frames').mkdir(parents=True)
             for i in range(50):Image.new('RGBA',(24,16),(i*4,30,50,255)).save(p/'source/frames'/f'{i:05d}.png')
             (p/'source/manifest.json').write_text(json.dumps({'durations_ms':[40]*50}))
-            plan={'interpolate':'none','segments':[{'type':'animation','manifest':'source/manifest.json','duration_ms':1000,'speed':.5},
+            plan={'experimental':True,'interpolate':'none','segments':[{'type':'animation','manifest':'source/manifest.json','duration_ms':1000,'speed':.5},
                   {'type':'animation','manifest':'source/manifest.json','duration_ms':1000,'speed':.5}],'effects':[{'name':'echo'}]}
             (p/'p.json').write_text(json.dumps(plan));render(p/'p.json',p/'out',('png',))
             manifest=json.loads((p/'out/manifest.json').read_text());samples=manifest['source_samples']
@@ -123,7 +123,7 @@ class FrameworkTests(unittest.TestCase):
             for name,speed in [('implicit',None),('unity',1)]:
                 segment={'type':'animation','manifest':'source/manifest.json','end_beat':4}
                 if speed is not None:segment['speed']=speed
-                (p/'p.json').write_text(json.dumps({'beatmap':'beats.json','segments':[segment]}));render(p/'p.json',p/name,('png',))
+                (p/'p.json').write_text(json.dumps({'experimental':True,'beatmap':'beats.json','segments':[segment]}));render(p/'p.json',p/name,('png',))
                 m=json.loads((p/name/'manifest.json').read_text());self.assertEqual(m['source_samples'][25]['source_ms'],1000)
                 self.assertEqual(np.array(Image.open(p/name/'frames/00025.png'))[0,0,0],25)
             self.assertEqual((p/'implicit/frames/00025.png').read_bytes(),(p/'unity/frames/00025.png').read_bytes())
@@ -198,6 +198,7 @@ class FrameworkTests(unittest.TestCase):
             (p/'source/manifest.json').write_text(json.dumps({'durations_ms':[40]*10}))
             plan={'segments':[{'type':'animation','manifest':'source/manifest.json'}]}
             (p/'p.json').write_text(json.dumps(plan));render(p/'p.json',p/'plain',('png',))
+            plan['experimental']=True
             plan['segments'][0]['speed']=1;(p/'p.json').write_text(json.dumps(plan));render(p/'p.json',p/'unity',('png',))
             for f in (p/'plain/frames').glob('*.png'):self.assertEqual(f.read_bytes(),(p/'unity/frames'/f.name).read_bytes())
             plan['effects']=[{'name':'round2_peek'}];(p/'p.json').write_text(json.dumps(plan));render(p/'p.json',p/'history',('png',))

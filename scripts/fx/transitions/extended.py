@@ -10,7 +10,7 @@ def masked(a,b,mask):
     return straight(premultiply(a)*(1-mask[...,None])+premultiply(b)*mask[...,None])
 
 
-@transition(shape='circle, diamond, star or heart',softness='Soft edge width in pixels')
+@transition(status='experimental',shape='circle, diamond, star or heart',softness='Soft edge width in pixels')
 def shape_wipe(a,b,p,ctx,shape='circle',softness=0.0):
     """Centered expanding shape; progress measures revealed area, not radius."""
     if p<=0:return a
@@ -18,7 +18,7 @@ def shape_wipe(a,b,p,ctx,shape='circle',softness=0.0):
     return masked(a,b,reveal(field(ctx.width,ctx.height,shape),p,softness))
 
 
-@transition(mask='linear, radial, cloud, or grayscale image path',invert='Reverse reveal order')
+@transition(status='experimental',mask='linear, radial, cloud, or grayscale image path',invert='Reverse reveal order')
 def luma_wipe(a,b,p,ctx,mask='linear',invert=False,softness=0.0,seed=7.0):
     """Reveal in mask luminance order; procedural masks need no asset files."""
     if p<=0:return a
@@ -37,19 +37,19 @@ def moving(a,b,p,ctx,direction,slide=False):
     return straight(right+left*(1-right[...,3:4]))
 
 
-@transition(direction='left, right, up or down')
+@transition(status='experimental',direction='left, right, up or down')
 def push(a,b,p,ctx,direction='left'):
     """Both shots move together across the same straight boundary."""
     return moving(a,b,p,ctx,direction)
 
 
-@transition(direction='left, right, up or down')
+@transition(status='experimental',direction='left, right, up or down')
 def slide(a,b,p,ctx,direction='left'):
     """Incoming shot covers the stationary outgoing shot."""
     return moving(a,b,p,ctx,direction,True)
 
 
-@transition(turns='Rotation turns at midpoint')
+@transition(status='experimental',turns='Rotation turns at midpoint')
 def spin(a,b,p,ctx,turns=.25):
     """Rotating outgoing/incoming shot, reflected edge fill avoids black wedges."""
     if p<=0:return a
@@ -57,7 +57,7 @@ def spin(a,b,p,ctx,turns=.25):
     return transform(a if p<.5 else b,ctx,angle=360*turns*np.sin(np.pi*p),scale=1+.15*np.sin(np.pi*p))
 
 
-@transition(scale='Peak camera scale')
+@transition(status='experimental',scale='Peak camera scale')
 def zoom_through(a,b,p,ctx,scale=1.8):
     """Centered zoom into the cut and back out; reflected edges maintain coverage."""
     if p<=0:return a
@@ -65,7 +65,7 @@ def zoom_through(a,b,p,ctx,scale=1.8):
     return transform(a if p<.5 else b,ctx,scale=1+(scale-1)*np.sin(np.pi*p))
 
 
-@transition(seed='Deterministic animated block pattern',amount='Displacement strength')
+@transition(status='experimental',seed='Deterministic animated block pattern',amount='Displacement strength')
 def glitch(a,b,p,ctx,seed=7.0,amount=1.0):
     """Brief block displacement and alternating scanlines, with unchanged endpoints."""
     if p<=0:return a

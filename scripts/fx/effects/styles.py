@@ -9,7 +9,7 @@ def grid(ctx):
     return np.indices((ctx.height,ctx.width),dtype=np.float32)
 
 
-@effect(amount='Noise standard deviation in 0..1',seed='Stable seed')
+@effect(status='experimental',amount='Noise standard deviation in 0..1',seed='Stable seed')
 def film_grain(frame,t,ctx,amount=.025,seed=17.0):
     """Zero-mean moving monochrome film grain; exact original alpha."""
     rng=np.random.default_rng(int(seed)+ctx.seed+int(t*ctx.fps/1000))
@@ -18,7 +18,7 @@ def film_grain(frame,t,ctx,amount=.025,seed=17.0):
     return frame
 
 
-@effect(amount='Corner darkness')
+@effect(status='experimental',amount='Corner darkness')
 def vignette(frame,t,ctx,amount=.55):
     """Smooth radial falloff with untouched image center."""
     y,x=grid(ctx);r=((x-(ctx.width-1)/2)/(ctx.width/2))**2+((y-(ctx.height-1)/2)/(ctx.height/2))**2
@@ -26,7 +26,7 @@ def vignette(frame,t,ctx,amount=.55):
     return frame
 
 
-@effect(amount='Warm edge exposure gain',seed='Drift phase')
+@effect(status='experimental',amount='Warm edge exposure gain',seed='Drift phase')
 def light_leak(frame,t,ctx,amount=.4,seed=3.0):
     """A broad amber edge leak drifting on a seconds clock."""
     y,x=grid(ctx);phase=t/1000+seed*.3
@@ -35,7 +35,7 @@ def light_leak(frame,t,ctx,amount=.4,seed=3.0):
     return frame
 
 
-@effect(amount='Scratch opacity',seed='Moving pattern seed',density='Dust coverage fraction, capped below five percent')
+@effect(status='experimental',amount='Scratch opacity',seed='Moving pattern seed',density='Dust coverage fraction, capped below five percent')
 def dust_scratches(frame,t,ctx,amount=.5,seed=29.0,density=.02):
     """Sparse dust flecks and fine scratches covering less than five percent."""
     rng=np.random.default_rng(int(seed)+ctx.seed+int(t*ctx.fps/1000));mask=(rng.random(frame.shape[:2],dtype=np.float32)<min(.04,max(0,density))).astype(np.float32)
@@ -47,21 +47,21 @@ def dust_scratches(frame,t,ctx,amount=.5,seed=29.0,density=.02):
     return frame
 
 
-@effect()
+@effect(status='experimental')
 def invert_flash(frame,t,ctx,amount=1.0):
     """Beat-driven photographic negative with unchanged coverage."""
     frame[...,:3]+=(1-2*frame[...,:3])*amount
     return frame
 
 
-@effect()
+@effect(status='experimental')
 def black_flash(frame,t,ctx,amount=1.0):
     """Beat-driven dip to black with unchanged coverage."""
     frame[...,:3]*=1-amount
     return frame
 
 
-@effect(panels='0: automatic 1,2,4 on successive beats; or 1,2,4',amount='0 identity, positive enables layout')
+@effect(status='experimental',panels='0: automatic 1,2,4 on successive beats; or 1,2,4',amount='0 identity, positive enables layout')
 def split_screen(frame,t,ctx,amount=1.0,panels=0.0):
     """Resize the entire source into two columns or four synchronized quadrants."""
     if amount==0:return frame
@@ -72,7 +72,7 @@ def split_screen(frame,t,ctx,amount=1.0,panels=0.0):
     return straight(cv2.resize(np.tile(small,(rows,cols,1)),(ctx.width,ctx.height),interpolation=cv2.INTER_NEAREST))
 
 
-@effect(direction='horizontal or vertical',amount='0 identity, positive enables reflection')
+@effect(status='experimental',direction='horizontal or vertical',amount='0 identity, positive enables reflection')
 def mirror(frame,t,ctx,amount=1.0,direction='horizontal'):
     """Reflect the left or upper half into the other half."""
     if amount==0:return frame
@@ -81,7 +81,7 @@ def mirror(frame,t,ctx,amount=1.0,direction='horizontal'):
     return frame
 
 
-@effect(sectors='Rotational sectors',amount='0 identity, positive enables geometry')
+@effect(status='experimental',sectors='Rotational sectors',amount='0 identity, positive enables geometry')
 def kaleidoscope(frame,t,ctx,amount=1.0,sectors=6.0):
     """Fold polar angles into repeating mirrored wedges."""
     if amount==0:return frame
@@ -91,14 +91,14 @@ def kaleidoscope(frame,t,ctx,amount=1.0,sectors=6.0):
     return straight(cv2.remap(premultiply(frame),mx,my,cv2.INTER_NEAREST if ctx.sampling=='nearest' else cv2.INTER_LINEAR,borderMode=cv2.BORDER_REFLECT_101))
 
 
-@effect(levels='Quantization levels per channel')
+@effect(status='experimental',levels='Quantization levels per channel')
 def posterize(frame,t,ctx,amount=1.0,levels=4.0):
     """Discrete color platforms, blended by amount."""
     n=max(2,round(levels))-1;frame[...,:3]+=(np.rint(frame[...,:3]*n)/n-frame[...,:3])*amount
     return frame
 
 
-@effect(size='Ordered screen cell size in pixels')
+@effect(status='experimental',size='Ordered screen cell size in pixels')
 def halftone(frame,t,ctx,amount=1.0,size=8.0):
     """Clustered-dot monochrome screen preserving local mean luminance."""
     y,x=grid(ctx);s=max(2,round(size));r=((x%s+.5)/s-.5)**2+((y%s+.5)/s-.5)**2
@@ -109,7 +109,7 @@ def halftone(frame,t,ctx,amount=1.0,size=8.0):
     return frame
 
 
-@effect(distance='Separation between the three overlapping silhouette cards')
+@effect(status='experimental',distance='Separation between the three overlapping silhouette cards')
 def multi_cutout(frame,t,ctx,amount=1.0,distance=65.0,border_px=6.0):
     """Three explicitly overlapping white-outline cards; the original is in front."""
     if amount==0:return frame

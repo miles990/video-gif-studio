@@ -70,7 +70,9 @@ def warp(a, matrix, ctx, sampling=None):
         return cv2.warpAffine(a,matrix,(ctx.width,ctx.height),flags=mode,borderMode=cv2.BORDER_REFLECT_101)
     return straight(cv2.warpAffine(premultiply(a), matrix, (ctx.width, ctx.height), flags=mode, borderMode=cv2.BORDER_CONSTANT))
 
-def register(registry, name=None, **docs):
+def register(registry, name=None, status='stable', **docs):
+    if status not in ('stable', 'experimental'):
+        raise ValueError('FX status must be stable or experimental')
     def decorate(fn):
         key = name or fn.__name__
         params = {}
@@ -91,7 +93,7 @@ def register(registry, name=None, **docs):
         def owned(*args,**kwargs):
             result=fn(*args,**kwargs)
             return np.clip(result,0,1,out=result)
-        registry[key] = {'function':wrapped,'owned':owned,'params':params,'doc':inspect.getdoc(fn) or key,'source':source,'history':int(docs.get('history',0))}
+        registry[key] = {'function':wrapped,'owned':owned,'status':status,'params':params,'doc':inspect.getdoc(fn) or key,'source':source,'history':int(docs.get('history',0))}
         return wrapped
     return decorate
 
@@ -174,5 +176,7 @@ def load_directory(directory):
             OVERRIDES[:] = saved_overrides
             print(f'Warning: skipped FX library {file}:{getattr(exc,"lineno", "?")}: {exc}',file=sys.stderr)
 
-def catalog():
-    return {kind:{name:{k:v for k,v in item.items() if k not in ('function','owned')} for name,item in reg.items()} for kind,reg in [('effects',EFFECTS),('transitions',TRANSITIONS)]}
+def catalog(experimental=False):
+    return {kind:{name:{k:v for k,v in item.items() if k not in ('function','owned')}
+                  for name,item in reg.items() if experimental or item['status']=='stable'}
+            for kind,reg in [('effects',EFFECTS),('transitions',TRANSITIONS)]}

@@ -20,7 +20,7 @@ def layers(raw,shape,depth_file):
     return premultiply(np.dstack((plate,frame[...,3]))),premultiply(foreground)
 
 
-@effect(depth='Cached Small depth PNG, larger means nearer',model='Small ONNX path',cache='Derived depth cache directory',distance='Near-layer horizontal travel pixels',amount='Camera progress 0..1; may be keyframed')
+@effect(status='experimental',depth='Cached Small depth PNG, larger means nearer',model='Small ONNX path',cache='Derived depth cache directory',distance='Near-layer horizontal travel pixels',amount='Camera progress 0..1; may be keyframed')
 def parallax(frame,t,ctx,amount=1.0,depth='',model='.runtime/models/depth-anything-v2-small.onnx',cache='wow/fx/demo2/work/depth',distance=18.0):
     """Two depth layers; dilated foreground removal and inpaint prevent exposed holes."""
     check_model(model)
