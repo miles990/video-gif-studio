@@ -16,10 +16,13 @@
 ## 步驟
 - [x] 1a 規格 spec.md（18:09）
 - [x] 1b 驗收條目 acceptance.md（獨立 Claude 出題者，18:50 完成）＋保留樣本 14 條（repo 外 scratchpad/fx-holdout.md）
-- [ ] 2 建造（Codex，wow-agent 標籤 fx-build，18:55 開始，上限 150 分）
+- [x] 2 建造（Codex fx-build2，完成）
 - [ ] 3 審查一 → 修正 → 審查二
 - [ ] 4 首次使用＋示範
 - 19:10 選用依賴實測（repo 外 venv）：Beat This! final0 CPU 在 neon soundtrack 17.1 s → 82 拍、20 重拍（≈164 BPM、4/4；與既有 tempo 候選 82/164 一致）。BiRefNet 下載遇 SSL 抖動，改 curl 續傳中。
 - 19:40 建造派工 fx-build 在共用佇列等待時，Claude Code 因系統記憶體不足（可用約 3.6 GB，其他工作階段的 probes／competitors 佔用）把它收掉；建造尚未開始，repo 無半改檔。等使用者同意後用 `wow-agent --resume 20261104-101808-fx-build` 續跑。
 - 19:20 BiRefNet-general 模型（973 MB）已下載到 .runtime/models（gitignored），rembg 載入成功。
 - 19:50 發現 C:\Users\User\src\video-gif-studio 是已安裝 skill 的 junction（spec 的「已安裝 skill 不動」原本不成立，fx-framework 分支其實切在安裝目錄上）。已把安裝目錄切回 main，改用獨立 worktree C:\Users\User\src\vgs-fx。上一次續跑因 --resume 沒帶寫入權限而唯讀、零改檔；重新派工 fx-build2 並明示 --sandbox workspace-write。
+- 20:55 建造（Codex fx-build2）完成：172 tests／0 failures／2 既有環境錯誤；建造者自評「未完成候選」（S-2 zoom 條紋條件、S-展示 --expect-cuts、S-7 720p 3.27 fps < 10）。commit 723abd6（中間影格與 14 MB GIF 不入庫，wow/fx/.gitignore）。
+- 21:10 主 agent 沙盒外實測 S-11／S-12（wow/fx/live/）：Beat This! 可用但 bpm 欄位錯成 82、重拍浮點雜訊；BiRefNet 明顯優於 u2netp。
+- 21:15 審查一（獨立 Claude 子代理，含 14 條保留樣本）進行中。
