@@ -45,3 +45,4 @@
 - 01:00(11-05) 功能旗標＋fx_reverse 切片完成（繞過被 oab 任務占滿的佇列，使用者同意）：第二輪功能全部 experimental；neon 誤報縮放 17→0；閃白 740/2200 偵測到；協調者複驗 211 tests／2 既有環境錯誤／0 新失敗。合回 main。
 - 01:20 第一輪＋功能旗標合回 main（ea2e790）並 push：合回前 doctor 通過、安裝目錄以合成計畫實跑 fx_render（GIF＋MP4，QC 通過）。開短命分支 p0-delivery 做 P0 交付層。
 - 02:15 P0 交付層（Codex p0-delivery2，44 分）完成：串流峰值 500 MB、30fps CFR、5 個平台預設、−14 LUFS／ducking 9.9 dB、手機進件、proxy 29%；234 tests／0 failures。清掉建造者留在 repo 根的 8 個暫存腳本。commit cb3f2d5 推到 origin/p0-delivery。獨立審查 P0 進行中（含 holdout-5 的 P0 項）。注意：720p 7.25 fps vs 先前 10.12，待審查判斷是否退步。
+- 02:45 使用者 /wow「可以讓AI導演影片用的效果…」→ spec-6.md（S-70～S-77）：效果卡（意圖、觀感強度、需求、搭配音效、成本、閘門分數、預覽）、觀感強度校準、意圖配方、可見度／刺眼度（WCAG 2.3.1）自動檢查、效果預算、關鍵時刻候選、fx_query。排在 P2 之後、P3 導演之前。獨立出題者寫 acceptance-6 中。
