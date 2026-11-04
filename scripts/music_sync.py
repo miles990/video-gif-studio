@@ -5,13 +5,51 @@ import hashlib
 import json
 import math
 import subprocess
+import sys
+import wave
 from media_runtime import executable
 import tempfile
 from pathlib import Path
 import numpy as np
 
 
-def analyze(source, out, bpm=None, offset_ms=None):
+def envelope_arrays(x, rate):
+    """10ms linear RMS and positive RMS differences, normalized independently."""
+    hop = round(rate*.01); count = len(x)//hop
+    if not count: raise ValueError('Audio needs at least 10ms of samples')
+    energy = np.sqrt(np.mean(x[:count*hop].reshape(count,hop)**2,axis=1))
+    onset = np.maximum(energy-np.concatenate(([0],energy[:-1])),0)
+    return {'times_ms':(np.arange(count)*10).tolist(),
+            'energy':(energy/max(float(energy.max()),1e-12)).tolist(),
+            'onset':(onset/max(float(onset.max()),1e-12)).tolist(), 'hop_ms':10}
+
+
+def audio_envelopes(source):
+    """PCM16 WAV is offline/native; compressed formats use managed FFmpeg."""
+    source = Path(source)
+    if source.suffix.lower()=='.wav':
+        with wave.open(str(source),'rb') as wav:
+            if wav.getsampwidth()!=2: raise ValueError('Native WAV analysis requires PCM16; convert with FFmpeg')
+            rate = wav.getframerate()
+            x = np.frombuffer(wav.readframes(wav.getnframes()),'<i2').astype(np.float32).reshape(-1,wav.getnchannels()).mean(axis=1)/32768
+    else:
+        rate = 8000
+        raw = subprocess.check_output([executable('ffmpeg'),'-v','error','-i',str(source),'-vn','-ac','1','-ar',str(rate),'-f','f32le','pipe:1'])
+        x = np.frombuffer(raw,'<f4')
+    return envelope_arrays(x,rate)
+
+
+def beat_this_engine(source):
+    """Optional CPU engine; caller may inject an offline engine with this interface."""
+    try:
+        from beat_this.inference import File2Beats
+    except ImportError:
+        raise RuntimeError('beat_this unavailable; install optional backend: pip install beat_this (PyTorch CPU required)') from None
+    beats, downbeats = File2Beats(device='cpu',dbn=False)(str(source))
+    return {'beats_ms':(np.asarray(beats)*1000).tolist(),'downbeats_ms':(np.asarray(downbeats)*1000).tolist()}
+
+
+def analyze(source, out, bpm=None, offset_ms=None, engine='rms', engine_fn=None):
     source=Path(source).resolve();out=Path(out)
     if out.exists(): raise FileExistsError('Use a new analysis directory')
     if bpm is not None and (not math.isfinite(bpm) or not 20 <= bpm <= 400): raise ValueError('BPM must be 20..400')
@@ -43,6 +81,24 @@ def analyze(source, out, bpm=None, offset_ms=None):
             'waveform':wave,'tempo_candidates':candidates[:5],
             'method':'Manual BPM' if bpm is not None else '10ms RMS-onset periodicity heuristic',
             'review':'Unreviewed candidates. Not downbeat/chord/phrase detection; half/double-tempo and variable-tempo errors possible. Edit beats_ms or override BPM/offset.'}
+    record['engine'] = 'rms'
+    record['envelopes'] = envelope_arrays(x,8000)
+    if engine not in ('rms','beat_this'): raise ValueError('engine must be rms or beat_this')
+    if engine=='beat_this':
+        try:
+            result = (engine_fn or beat_this_engine)(source)
+            for key in ('beats_ms','downbeats_ms'):
+                values = result[key]
+                if not values or any(not math.isfinite(v) or v<0 for v in values) or any(b<=a for a,b in zip(values,values[1:])):
+                    raise ValueError(f'beat_this {key} must be finite, nonnegative, strictly increasing')
+            if any(min(abs(t-b) for b in result['beats_ms'])>10 for t in result['downbeats_ms']):
+                raise ValueError('beat_this downbeats must coincide with beats within 10ms')
+            record.update(result); record['engine']='beat_this'; record['method']='Beat This! CPU, minimal postprocessor'
+            record['review']='Model beat/downbeat candidates; inspect timing and meter before editing.'
+            beats = result['beats_ms']
+        except (ImportError,RuntimeError,OSError,ValueError) as exc:
+            record['fallback_reason'] = str(exc)
+            print(f'beat_this fallback to rms: {exc}',file=sys.stderr)
     out.mkdir(parents=True);(out/'beats.json').write_text(json.dumps(record,indent=2)+'\n')
     scale=max(max(wave),1e-9);points=' '.join(f'{i*1200/max(1,len(wave)-1):.2f},{120-v/scale*90:.2f}' for i,v in enumerate(wave))
     lines=''.join(f'<path d="M {t/total_ms*1200:.2f} 15 V 225" stroke="#ea9d2d" opacity=".6"/>' for t in beats[:1000])
@@ -80,7 +136,13 @@ def mux_music(movie, source, duration_ms, in_ms=0, gain_db=0, fade_in_ms=30, fad
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('music',type=Path);ap.add_argument('--out',required=True,type=Path);ap.add_argument('--bpm',type=float);ap.add_argument('--offset-ms',type=float)
-    a=ap.parse_args();r=analyze(a.music,a.out,a.bpm,a.offset_ms);print(json.dumps({k:r[k] for k in ('duration_ms','bpm','offset_ms','review')}))
+    ap.add_argument('--engine',choices=['rms','beat_this'],default='rms')
+    a=ap.parse_args()
+    try:
+        r=analyze(a.music,a.out,a.bpm,a.offset_ms,a.engine)
+    except (OSError,RuntimeError,ValueError,subprocess.SubprocessError) as exc:
+        print(f'music_sync: {exc}',file=sys.stderr); return 2
+    print(json.dumps({k:r[k] for k in ('duration_ms','bpm','offset_ms','review','engine')})); return 0
 
 
-if __name__=='__main__':main()
+if __name__=='__main__': raise SystemExit(main())

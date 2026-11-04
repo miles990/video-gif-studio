@@ -58,4 +58,8 @@ A `music` entry requires at least one MOV/WebM/MP4 output; GIF, APNG and sprites
 
 The mux step stream-copies the verified video, adding PCM in MOV, Opus in WebM or AAC in MP4. It verifies stream presence, total duration (within 100ms codec tolerance), and actual decoded audio duration. Reports record source hash, offset, gain and fades. These checks do not replace listening for clipped gain, correct accents or aesthetic timing. MOV/WebM alpha support remains player-dependent; MP4 is opaque.
 
-Supported now: one continuous soundtrack, prepared-frame trim/reorder/split/uniform speed and duration fit, beat-aligned cuts, stills/loops and video output. Not bundled: multitrack audio mixing, transitions/crossfades, subtitles, a graphical editor, automatic phrase-aware montage, reliable downbeat tracking, music-conditioned Grok generation or an autonomous multi-generation chain runner. Future adapters should preserve explicit source/output clocks and per-event timing.
+Supported now: one continuous soundtrack, prepared-frame trim/reorder/split/uniform speed and duration fit, beat-aligned cuts, stills/loops and video output. Not bundled: multitrack audio mixing, subtitles, a graphical editor, automatic phrase-aware montage, music-conditioned Grok generation or an autonomous multi-generation chain runner. Future adapters should preserve explicit source/output clocks and per-event timing.
+
+## Effects and optional downbeats
+
+For requested transitions/crossfades and beat/onset/energy envelopes, use [fx_render](fx.md). The default RMS engine does not identify downbeats; optional `--engine beat_this` records real model downbeats or a clearly documented RMS fallback. Existing RMS beat/onset timestamps stay unchanged.

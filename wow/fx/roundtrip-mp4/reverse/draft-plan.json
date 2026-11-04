@@ -1,0 +1,103 @@
+{
+  "beatmap": "beats.json",
+  "fps": 25,
+  "review": true,
+  "segments": [
+    {
+      "type": "animation",
+      "manifest": "shots/000/manifest.json",
+      "in_ms": 0,
+      "out_ms": 1040,
+      "review": true,
+      "end_beat": 2
+    },
+    {
+      "type": "animation",
+      "manifest": "shots/001/manifest.json",
+      "in_ms": 0,
+      "out_ms": 1040,
+      "duration_ms": 1040,
+      "review": true
+    },
+    {
+      "type": "animation",
+      "manifest": "shots/002/manifest.json",
+      "in_ms": 0,
+      "out_ms": 1440,
+      "duration_ms": 1480,
+      "review": true,
+      "transition": {
+        "name": "whip_pan",
+        "duration_ms": 240,
+        "review": true
+      }
+    },
+    {
+      "type": "still",
+      "manifest": "shots/003/manifest.json",
+      "duration_ms": 960,
+      "review": true,
+      "frame": "first"
+    },
+    {
+      "type": "animation",
+      "manifest": "shots/004/manifest.json",
+      "in_ms": 0,
+      "out_ms": 720,
+      "duration_ms": 720,
+      "review": true,
+      "transition": {
+        "name": "hex_shutter",
+        "duration_ms": 400,
+        "review": true
+      }
+    },
+    {
+      "type": "animation",
+      "manifest": "shots/005/manifest.json",
+      "in_ms": 0,
+      "out_ms": 800,
+      "review": true,
+      "end_beat": 12
+    }
+  ],
+  "effects": [
+    {
+      "name": "flash_white",
+      "start_ms": 1519.9999999999989,
+      "end_ms": 1679.9999999999989,
+      "amount": {
+        "keyframes": [
+          [
+            1519.9999999999989,
+            1
+          ],
+          [
+            1639.9999999999989,
+            0
+          ]
+        ]
+      },
+      "review": true
+    },
+    {
+      "name": "zoom_punch",
+      "start_ms": 3000.000000000019,
+      "end_ms": 3320.000000000019,
+      "scale": 1.125,
+      "amount": {
+        "keyframes": [
+          [
+            3000.000000000019,
+            1
+          ],
+          [
+            3320.000000000019,
+            0
+          ]
+        ]
+      },
+      "review": true
+    }
+  ]
+}

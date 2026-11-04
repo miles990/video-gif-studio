@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import sys
 import numpy as np
 from PIL import Image
 from gif_pipeline import natural
@@ -24,7 +25,7 @@ def separate(frames, manifest, out, model='u2netp', masker=None):
         try:
             from rembg import new_session, remove
         except ImportError:
-            raise RuntimeError('Install optional backend with scripts/install.py --with-matting') from None
+            raise RuntimeError('Install optional backend: pip install -r requirements-matting.txt (or scripts/install.py --with-matting)') from None
         session = new_session(model)
         masker = lambda im: remove(im.convert('RGB'), session=session, only_mask=True)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -65,6 +66,9 @@ if __name__ == '__main__':
     parser.add_argument('frames', type=Path)
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--model', choices=['u2netp', 'u2net'], default='u2netp')
+    parser.add_argument('--model', choices=['u2netp', 'u2net', 'birefnet-general', 'birefnet-portrait'], default='u2netp')
     args = parser.parse_args()
-    print(json.dumps(separate(args.frames, args.manifest, args.out, args.model)))
+    try:
+        print(json.dumps(separate(args.frames, args.manifest, args.out, args.model)))
+    except (OSError,RuntimeError,ValueError) as exc:
+        print(f'background_remove: {exc}',file=sys.stderr); raise SystemExit(2)

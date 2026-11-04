@@ -1,0 +1,20 @@
+[
+  {
+    "plan": 0,
+    "frames": 101,
+    "pixel_sha256_identical": true,
+    "durations_identical": true
+  },
+  {
+    "plan": 1,
+    "frames": 71,
+    "pixel_sha256_identical": true,
+    "durations_identical": true
+  },
+  {
+    "plan": 2,
+    "frames": 64,
+    "pixel_sha256_identical": true,
+    "durations_identical": true
+  }
+]

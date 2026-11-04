@@ -1,0 +1,92 @@
+{
+  "a": {
+    "encoded_fps": 100.0,
+    "flash_peaks": [
+      {
+        "trigger_ms": 2926.829268292683,
+        "peak_ms": 2930.0,
+        "error_ms": 3.170731707316918,
+        "rise_over_3_encoded_frames": 120.51081789149302,
+        "pass": true
+      },
+      {
+        "trigger_ms": 5853.658536585366,
+        "peak_ms": 5860.0,
+        "error_ms": 6.341463414633836,
+        "rise_over_3_encoded_frames": 173.59197924913192,
+        "pass": true
+      }
+    ],
+    "render": {
+      "seconds": 23.394806800002698,
+      "fps": 9.532029988808212,
+      "requested_fps": 25
+    },
+    "duration_ms": 8780,
+    "gif_bytes": 14632718,
+    "gif_qc": {
+      "decoded_frames": 159,
+      "source_output_frames": 223,
+      "duration_ms": 8780,
+      "alpha_mismatch_pixels": 0,
+      "mean_visible_rgb_error": 3.209095849711196,
+      "technical_pass": true,
+      "visual_motion_approval": "not assessed by script"
+    },
+    "transitions": [
+      {
+        "cut_ms": 2930,
+        "midpoint_ms": 2930.0
+      },
+      {
+        "cut_ms": 5850,
+        "midpoint_ms": 5850.0
+      }
+    ]
+  },
+  "b": {
+    "encoded_fps": 100.0,
+    "flash_peaks": [
+      {
+        "trigger_ms": 2926.829268292683,
+        "peak_ms": 2930.0,
+        "error_ms": 3.170731707316918,
+        "rise_over_3_encoded_frames": 97.92433913454857,
+        "pass": true
+      },
+      {
+        "trigger_ms": 5853.658536585366,
+        "peak_ms": 5860.0,
+        "error_ms": 6.341463414633836,
+        "rise_over_3_encoded_frames": 173.40332193229165,
+        "pass": true
+      }
+    ],
+    "render": {
+      "seconds": 24.004034899990074,
+      "fps": 9.290104806508685,
+      "requested_fps": 25
+    },
+    "duration_ms": 8780,
+    "gif_bytes": 13444870,
+    "gif_qc": {
+      "decoded_frames": 159,
+      "source_output_frames": 223,
+      "duration_ms": 8780,
+      "alpha_mismatch_pixels": 0,
+      "mean_visible_rgb_error": 3.468918311373156,
+      "technical_pass": true,
+      "visual_motion_approval": "not assessed by script"
+    },
+    "transitions": [
+      {
+        "cut_ms": 2930,
+        "midpoint_ms": 2930.0
+      },
+      {
+        "cut_ms": 5850,
+        "midpoint_ms": 5850.0
+      }
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "case": 0,
+    "exit_code": 2,
+    "seconds": 0.46965790004469454,
+    "out_exists": false,
+    "traceback": false,
+    "message": "fx_render: effects[0]: unknown 'flash_whit'; available ['beat_bounce', 'cutout_card', 'flash_white', 'grade', 'halation', 'zoom_punch']"
+  },
+  {
+    "case": 1,
+    "exit_code": 2,
+    "seconds": 0.3922607999993488,
+    "out_exists": false,
+    "traceback": false,
+    "message": "fx_render: effects[0]: unknown ['amout']; valid keys ['amount', 'end_beat', 'end_ms', 'name', 'review', 'stage', 'start_beat', 'start_ms']"
+  },
+  {
+    "case": 2,
+    "exit_code": 2,
+    "seconds": 0.3956171000027098,
+    "out_exists": false,
+    "traceback": false,
+    "message": "fx_render: effects[1].border_px: 'wide'; expected number in -inf..inf"
+  },
+  {
+    "case": 3,
+    "exit_code": 2,
+    "seconds": 0.38656340003944933,
+    "out_exists": false,
+    "traceback": false,
+    "message": "fx_render: effects[0].amount: unknown ['decya_ms']; envelope keys ['attack_ms', 'beats', 'curve', 'decay_ms', 'every', 'indices', 'keyframes', 'max', 'min', 'on']"
+  },
+  {
+    "case": 4,
+    "exit_code": 2,
+    "seconds": 0.3990426000091247,
+    "out_exists": false,
+    "traceback": false,
+    "message": "fx_render: effects[0].start_beat: 99; valid beat range 0..12"
+  },
+  {
+    "case": 5,
+    "exit_code": 2,
+    "seconds": 0.3877974000060931,
+    "out_exists": false,
+    "traceback": false,
+    "message": "fx_render: segments[2].transition: unknown 'hexshutter'; available ['crossfade', 'flash_cut', 'hex_shutter', 'whip_pan']"
+  },
+  {
+    "case": 6,
+    "exit_code": 2,
+    "seconds": 0.39432960003614426,
+    "out_exists": false,
+    "traceback": false,
+    "message": "fx_render: segments[1].transition.duration_ms: 3000; expected number in 20..2000"
+  },
+  {
+    "case": 7,
+    "exit_code": 2,
+    "seconds": 0.3536450000246987,
+    "out_exists": false,
+    "traceback": false,
+    "message": "fx_render: plan: unknown ['effcts']; valid keys ['beatmap', 'effects', 'fps', 'music', 'review', 'sampling', 'seed', 'segments']"
+  }
+]

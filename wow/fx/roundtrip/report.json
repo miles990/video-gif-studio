@@ -1,0 +1,77 @@
+{
+  "cuts": [
+    {
+      "time_ms": 1000.0,
+      "type": "cut",
+      "confidence": 0.85,
+      "duration_ms": 0,
+      "review": false
+    },
+    {
+      "time_ms": 2000.0,
+      "type": "whip_pan",
+      "confidence": 0.6,
+      "duration_ms": 80,
+      "review": true
+    },
+    {
+      "time_ms": 3520.0,
+      "type": "cut",
+      "confidence": 0.85,
+      "duration_ms": 0,
+      "review": false
+    },
+    {
+      "time_ms": 4480.0,
+      "type": "hex_shutter",
+      "confidence": 0.75,
+      "duration_ms": 400,
+      "review": true
+    },
+    {
+      "time_ms": 5200.0,
+      "type": "cut",
+      "confidence": 0.85,
+      "duration_ms": 0,
+      "review": false
+    }
+  ],
+  "flashes": [
+    {
+      "time_ms": 1520.0,
+      "confidence": 0.9
+    }
+  ],
+  "directional_motion": [
+    {
+      "time_ms": 2000.0,
+      "direction": "horizontal",
+      "confidence": 0.6,
+      "review": true
+    }
+  ],
+  "zoom_punches": [
+    {
+      "time_ms": 3000.0,
+      "scale": 1.125,
+      "confidence": 0.5,
+      "review": true
+    }
+  ],
+  "freezes": [
+    {
+      "start_ms": 3520.0,
+      "end_ms": 4480.0,
+      "confidence": 0.9
+    }
+  ],
+  "beat_alignment": {
+    "numerator": 4,
+    "denominator": 5,
+    "ratio": 0.8,
+    "tolerance_ms": 40.0
+  },
+  "duration_ms": 6000,
+  "analysis_frame_ms": 40.0,
+  "limitations": "Heuristic candidates: review low-confidence events. Natural motion, exposure changes and long dissolves can be ambiguous."
+}
