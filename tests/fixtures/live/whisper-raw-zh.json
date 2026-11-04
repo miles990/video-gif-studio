@@ -1,0 +1,179 @@
+{
+ "language": "zh",
+ "words": [
+  {
+   "word": "每",
+   "start": 0.0,
+   "end": 0.24,
+   "probability": 0.943
+  },
+  {
+   "word": "一",
+   "start": 0.24,
+   "end": 0.46,
+   "probability": 0.3
+  },
+  {
+   "word": "格",
+   "start": 0.46,
+   "end": 0.64,
+   "probability": 0.978
+  },
+  {
+   "word": "画",
+   "start": 0.64,
+   "end": 0.86,
+   "probability": 0.831
+  },
+  {
+   "word": "面",
+   "start": 0.86,
+   "end": 1.1,
+   "probability": 1.0
+  },
+  {
+   "word": "都是",
+   "start": 1.1,
+   "end": 1.48,
+   "probability": 0.996
+  },
+  {
+   "word": "程",
+   "start": 1.48,
+   "end": 1.82,
+   "probability": 0.442
+  },
+  {
+   "word": "式",
+   "start": 1.82,
+   "end": 2.08,
+   "probability": 0.996
+  },
+  {
+   "word": "写",
+   "start": 2.08,
+   "end": 2.32,
+   "probability": 0.997
+  },
+  {
+   "word": "的。",
+   "start": 2.32,
+   "end": 2.56,
+   "probability": 0.989
+  },
+  {
+   "word": "拍",
+   "start": 3.32,
+   "end": 3.54,
+   "probability": 0.922
+  },
+  {
+   "word": "点",
+   "start": 3.54,
+   "end": 3.78,
+   "probability": 0.987
+  },
+  {
+   "word": "一",
+   "start": 3.78,
+   "end": 4.0,
+   "probability": 0.77
+  },
+  {
+   "word": "落,",
+   "start": 4.0,
+   "end": 4.22,
+   "probability": 0.87
+  },
+  {
+   "word": "卡",
+   "start": 4.5,
+   "end": 4.68,
+   "probability": 0.987
+  },
+  {
+   "word": "片",
+   "start": 4.68,
+   "end": 4.94,
+   "probability": 0.998
+  },
+  {
+   "word": "就",
+   "start": 4.94,
+   "end": 5.16,
+   "probability": 0.933
+  },
+  {
+   "word": "弹",
+   "start": 5.16,
+   "end": 5.4,
+   "probability": 0.676
+  },
+  {
+   "word": "起",
+   "start": 5.4,
+   "end": 5.64,
+   "probability": 0.998
+  },
+  {
+   "word": "来,",
+   "start": 5.64,
+   "end": 5.92,
+   "probability": 1.0
+  },
+  {
+   "word": "字",
+   "start": 6.16,
+   "end": 6.3,
+   "probability": 0.994
+  },
+  {
+   "word": "幕",
+   "start": 6.3,
+   "end": 6.54,
+   "probability": 0.989
+  },
+  {
+   "word": "跟",
+   "start": 6.54,
+   "end": 6.74,
+   "probability": 0.997
+  },
+  {
+   "word": "着",
+   "start": 6.74,
+   "end": 6.98,
+   "probability": 0.993
+  },
+  {
+   "word": "每",
+   "start": 6.98,
+   "end": 7.2,
+   "probability": 0.986
+  },
+  {
+   "word": "一个",
+   "start": 7.2,
+   "end": 7.5,
+   "probability": 0.992
+  },
+  {
+   "word": "字",
+   "start": 7.5,
+   "end": 7.76,
+   "probability": 1.0
+  },
+  {
+   "word": "出",
+   "start": 7.76,
+   "end": 7.98,
+   "probability": 0.998
+  },
+  {
+   "word": "现。",
+   "start": 7.98,
+   "end": 8.26,
+   "probability": 0.993
+  }
+ ]
+}

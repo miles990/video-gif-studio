@@ -1,5 +1,60 @@
 # Third-party attribution
 
+## Robert Penner easing equations (P1)
+
+`scripts/fx/easing.py` adapts normalized easeInExpo, easeOutExpo,
+easeInOutCubic, easeOutCubic and easeInOutSine from Robert Penner's easing
+equations under the BSD option. Camera names, oscillator spring, tracking,
+caption layout and procedural audio are original project code.
+Source and license: https://robertpenner.com/easing/ and
+https://robertpenner.com/easing_terms_of_use.html (checked 2026-11-05).
+
+Copyright © 2001 Robert Penner
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+3. Neither the name of the author nor the names of contributors may be used to
+   endorse or promote products derived from this software without specific prior
+   written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+## Kenney CC0 audio (P1, downloaded separately)
+
+Kenney: https://kenney.nl/assets/interface-sounds (100 audio files, CC0),
+https://kenney.nl/assets/impact-sounds and https://kenney.nl/assets/digital-audio.
+CC0 dedication: https://creativecommons.org/publicdomain/zero/1.0/ .
+`scripts/download_kenney_audio.py` downloads only on explicit invocation, verifies
+the archive includes a CC0 license, retains original names/license, and records
+the archive SHA256 and official pack page in provenance.json. The user supplies
+a reviewed `sfx-map.json` mapping the six semantic categories to those filenames.
+There are **zero bundled Kenney audio files**. Tests use original synthesized
+fingerprint WAVs and a fake archive; these are not represented as Kenney assets.
+
+## Optional faster-whisper (P1)
+
+SYSTRAN / Guillaume Klein, https://github.com/SYSTRAN/faster-whisper, MIT.
+`scripts/captions.py` calls the public WhisperModel/transcribe API with
+word_timestamps=True and local_files_only=True. No upstream source, model weights,
+or recorded model output is redistributed. The checked-in timing fixture is
+authored synthetic data, explicitly marked as such. The optional dependency
+retains its own MIT license in its installation.
+
 Measurement and independent review in `scripts/qa_media.py` and `references/quality-review.md` are adapted from [win4r/video-director](https://github.com/win4r/video-director), MIT, © 2026 win4r. Local adaptations support alpha, variable delays, designed holds and continuation timelines.
 
 MIT License
@@ -101,3 +156,11 @@ SOFTWARE.
 [Depth-Anything-V2](https://github.com/DepthAnything/Depth-Anything-V2), Small weights under Apache-2.0; ONNX conversion: [onnx-community/depth-anything-v2-small](https://huggingface.co/onnx-community/depth-anything-v2-small). [Apache-2.0 license text](https://github.com/DepthAnything/Depth-Anything-V2/blob/main/LICENSE). Base/Large are CC-BY-NC and are not used; the adapter refuses base/large/vitb/vitl filenames before loading. Only a small derived depth PNG is distributed, with source provenance.
 
 System fonts are read locally and never distributed. Windows Microsoft JhengHei, macOS PingFang, and Linux Noto CJK remain subject to their respective font licenses.
+
+## Optional OpenCC Traditional Chinese conversion
+
+[OpenCC](https://github.com/BYVoid/OpenCC) and the optional
+[opencc-python-reimplemented](https://github.com/yichen0831/opencc-python)
+adapter use Apache-2.0. Install separately with `pip install opencc-python-reimplemented`
+to enable captions `--traditional` (`s2twp`). No OpenCC code or dictionaries are
+vendored. Conversion preserves word timing; it is not speech recognition.

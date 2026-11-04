@@ -18,7 +18,7 @@ and recorded under `manifest.delivery`; later caption code can consume those bou
 `--proxy` renders at one-third resolution with the same video event/cut grid, skips
 RIFE and model-backed depth, and reuses bounded image/flow caches. Skipped model
 operations are recorded in `delivery.proxy_skipped`; their event timing remains in
-the manifest. No persistent cache or incremental shot rebuild is claimed by P0.
+the manifest. P1's separate `--review-html` workflow adds an independent-shot cache.
 Use `scripts/intake.py` before frame preparation for phone VFR, rotation and HDR.
 For opt-in original sound, supply a continuous `source_audio` and `--keep-audio`;
 see [measured loudness and ducking](music.md#delivery-audio).
@@ -45,6 +45,13 @@ Toolhelp32Snapshot/GetProcessMemoryInfo fallback because this venv lacks psutil.
 Run `python wow/fx/benchmark_p0.py --out wow/fx/benchmark-p0.json` to reproduce;
 `--stable` measures zoom_punch + grade + halation separately. Run one heavy process
 at a time. See [build notes](../wow/fx/build-notes-p0.md) for test results and caveats.
+
+Intake timestamp reports record both `observed_pts_gap_seconds` (raw gap) and
+`length_seconds` (gap minus one nominal frame). A timestamp jump adjacent to a
+dropped frame is one combined missing interval: **the reported jump length includes
+the adjacent dropped frame**. PTS alone cannot separate those causes. The report
+also includes `nominal_frame_seconds`, interpretation, and frozen-frame count;
+the count excludes the original held frame.
 
 The separate [stable-only benchmark](../wow/fx/benchmark-p0-stable.json) uses
 zoom_punch + grade + halation: 1080×1920 / 30 s at **3.965 fps / 499,961,856 bytes**
@@ -484,3 +491,210 @@ Slowest three new operations: radial_blur 787.113 → 110.709 ms, multi_cutout 5
 python -m cProfile -o wow/fx/profile-after.prof wow/fx/benchmark.py: 90-frame render-loop baseline **3.343 fps / 26.918s**, optimized **10.119 fps / 8.894s**. This includes three effects and a 500ms transition; excludes PNG and video encoding. Renderer uses float32 through the effect chain, OpenCV grade/halation/geometry, and one output quantization. Opaque camera geometry now reflects edges (intentional quality improvement; transparent geometry retains coverage). Profiles and benchmark-before.json/benchmark-latest.json retain evidence.
 
 Preview validation: python wow/fx/check_preview.py generated the original plus all effect/transition tiles in **0.779s**. Every available effect tile passed MAD >=4/255 and >=2% pixels differing by >=16/255; the optional parallax tile explicitly reports unavailable without loading a model. Measured values: [preview-measurements.json](../wow/fx/preview-measurements.json). Procedural luma examples: [linear](../wow/fx/masks/linear.png), [radial](../wow/fx/masks/radial.png), [cloud](../wow/fx/masks/cloud.png).
+
+## P1 experimental captions
+
+> **Known issues (independent review 2026-11-05; do not use for delivery or demos until fixed):**
+> mixed Chinese/English captions can drop or mistime words (a timed word split across lines never shows; leading-space CJK tokens shift word indices);
+> zh-TW output keeps half-width commas; English words keep a leading space; keyword picking can split `v2.0` / `1,234`;
+> `crash_out` at its default duration jumps one frame; `qa_media` counts named camera moves as cuts/flashes.
+> All of these are experimental features; a follow-up slice (P1b) fixes them before any quality gate.
+
+All four caption presets (`pop`, `typewriter`, `bounce`, `clean`), named camera
+moves, layered edit styles, SFX and reframe require `--experimental` or plan
+`"experimental": true`. None is promoted to stable: independent cross-vendor
+quality review and user spot checks remain pending. Preset status is retained in
+the manifest; these are not added to the stable effect table.
+
+```json
+{
+  "experimental": true,
+  "segments": [{"type":"still","image":"shot.png","duration_ms":3000}],
+  "captions": {
+    "words":"words.json",
+    "keywords":["真的嗎"],
+    "style": {
+      "preset":"pop","font":"C:/Windows/Fonts/msjh.ttc","size":96,
+      "stroke":6,"stroke_color":"080808","shadow":4,"shadow_color":"080808",
+      "box":"111111","color":"FFFFFF","keyword_color":"FFE45E",
+      "entrance":"pop","words_per_line":12,"position":"bottom"
+    }
+  }
+}
+```
+
+`words.json` is a list (or `{"words":[...]}`) of
+`{"text":"台北市政府","start_ms":600,"end_ms":1000}`. Times are finite,
+nonnegative milliseconds with ordered starts and positive durations. Inline lists
+also work. Put spaces in the text where desired; English words usually include a
+leading space after the first word. Timings can be supplied per character for exact
+typewriter timing. For a multi-character word, typewriter distributes characters
+uniformly across that word's interval; other entrances expose the whole word at
+its onset. Words stay visible until the next line/end. Do not put a whole paragraph
+into one timed word: automatic line reflow cannot preserve simultaneous words on
+different single-line screens.
+
+Alternate inputs: `"srt":"speech.srt"`, `"script":"Hello world","duration_ms":3000`,
+or `"audio":"speech.wav","model":"/cached/faster-whisper-model"`. SRT cue boundaries
+are preserved; words inside a multiword cue are proportionally timed. Plain script
+fallback is also proportional and emits a warning. **Neither fallback is acoustic
+forced alignment.** For exact alignment supply corrected word JSON, or inject a
+`TimingEngine(audio, script=None)` returning words into `load_words`. The optional
+faster-whisper adapter requests word timestamps from a CPU int8 model, two threads,
+local-files-only. A missing engine gives `pip install faster-whisper` / `--srt`
+guidance. Script mismatches error instead of silently replacing user text.
+
+```sh
+python scripts/captions.py --srt words.srt --style pop --experimental --out captions
+python scripts/captions.py --audio speech.wav --model /cached/whisper --experimental --out transcript
+python scripts/captions.py --audio speech-zh.wav --model small --model-cache /cached/whisper --language zh --traditional --experimental --out transcript-tw
+```
+
+The CLI exports editable captions.json and word-level captions.srt. Whisper audio
+is decoded by FFmpeg to mono 16 kHz float32 and passed as an array, bypassing the
+engine's PyAV decoder. NumPy scalar timestamps are normalized to Python floats;
+raw Whisper JSON (`word`, `start`, `end` in seconds) is also accepted as `--words`.
+`--model` accepts a CTranslate2 directory, a cache root containing one model,
+or a model name plus `--model-cache`. Cache roots with multiple models require a
+name; no downloads occur. `--language zh-TW` maps to Whisper's `zh`.
+Optional `--traditional` uses `pip install opencc-python-reimplemented`
+(OpenCC, Apache-2.0), `s2twp` conversion per timed word, preserving timing. It also
+sets a Traditional Chinese initial prompt; the conversion, not the prompt alone,
+ensures 畫 rather than 画. A missing OpenCC dependency gives an actionable error.
+Plan keys are `model_cache`, `language`, `traditional`. Word-level conversion can
+miss phrase context across word boundaries; exported text remains editable.
+Tests replay `tests/fixtures/live/whisper-raw-{en,zh}.json` and decode the real TTS
+WAVs without loading weights. ASS export and a packaged forced aligner are absent.
+
+Size/stroke/shadow are pixels at 1920 output height, scaled with the canvas.
+Position is top/center/bottom. `box:null` disables the box. `safe_zone` optionally
+supplies fractional x/y/right/bottom bounds; they intersect P0 platform bounds and
+its 2%-width text inset, never relax them. Animated maximum extents are included
+when laying out. Text reflows to fit the actual font; oversized unbreakable tokens
+error before rendering. Bold system fonts are preferred (Microsoft JhengHei Bold /
+Noto CJK Bold); the default is 112 px with 8 px dark stroke. `pop` is bold yellow
+current-word emphasis with a 1.22×/180 ms pulse on each new word; `typewriter` reveals
+graphemes with a mint current-word highlight and dark box; `clean` is a smaller
+88 px outlined white style; `bounce` uses a navy growing box, amber current word
+and a damped 400 ms entrance. Boxes grow with revealed text. `current_word:false`
+disables active-word emphasis independently of keyword selection. These numeric
+properties do not substitute for the pending visual-quality gate.
+
+Line limits use fullwidth=1, halfwidth=0.5; actual pixel width can force shorter
+lines. Longest dictionary matching protects 台北市政府 / 開放資料 / 效果 and the
+additional words in `captions.LEXICON`; English words, decimal/version numbers,
+number+GB/MB/KB/TB units, comma-grouped numbers (1,234), v2.0, skin-tone/ZWJ emoji
+and paired …… and —— are atomic. Sentence-final punctuation and pauses of at least
+150 ms start a new line; width-wrapped singleton tails are rebalanced when possible.
+Pixel reflow repeats this check; a short phrase may be uniformly reduced by up to
+26% to keep its last word attached, while preserving the platform safe zone.
+An inherently one-word sentence or too-wide preceding token can still stand alone.
+Opening punctuation stays
+with following content, closing punctuation with preceding content. This is a
+documented small lexicon, not a general Chinese linguistic segmenter. Automatic
+keywords are 台北市政府 / 開放資料 / 效果 and numbers. An explicit `keywords` list
+replaces the keyword selection; `[]` disables keyword highlights. Set
+`current_word:false` as well to disable active-word emphasis.
+
+Unicode cmap 4/12 coverage is read without fontTools. Unsupported graphemes are
+dropped as whole units, with a warning listing their `U+XXXX` code points and
+`dropped_codepoints` in the manifest. This includes unsupported emoji: no tofu or
+partial ZWJ/skin-tone sequence is drawn and the render continues, even if all
+text is dropped. Original text/timing remains in the word export. The resolved
+font path is recorded; fonts are not bundled.
+
+## P1 named camera vocabulary (experimental)
+
+Call a move in effects as `{"move":"crash_in","start_ms":500}`; equivalent to
+`{"name":"camera_move","move":"crash_in"}`. Unknown names list valid choices.
+`duration_ms:0` and `target:0` select table defaults. Optional direction is
+left/right/up/down; anchor is center or subject (alpha centroid, center fallback
+for fully opaque source). Keep `end_ms` long enough to include the movement.
+Truncated whip intervals are rejected before rendering, because they cannot land
+back on the original framing.
+
+| Move | Target | Default duration | Easing | Use |
+| --- | --- | --- | --- | --- |
+| crash_in | 1 → 1.35 scale | 100 ms | easeOutExpo | fast emphasis |
+| crash_out | 1 → 1.35 → 1 scale | 100 ms | 30% easeInOutCubic preparation, 70% easeOutExpo reveal | reveal without a first-frame jump |
+| expo_in | 1 → 1.30 scale | 800 ms | easeInExpo | accelerating push |
+| smooth_in | 1 → 1.20 scale | 1000 ms | easeInOutCubic | restrained push |
+| whip | 0 → 0.85 → 0 frame widths/heights | 160 ms | sine-squared excursion | directional whip returning to original framing |
+| punch | 1 → 1.18 → 1 scale | 200 ms | sine-squared pulse | beat impact |
+| drift | 1 → 1.08 scale, 4% pan | 2000 ms | easeInOutSine | slow motion |
+| spring_in | 1 → 1.20 with overshoot | physical seconds | analytic spring | elastic settle |
+
+Penner equations are attributed in source and THIRD_PARTY. Spring is an original
+analytic unit-step oscillator, parameters stiffness=180, damping=18, mass=1;
+critical and overdamped cases are supported. `duration_ms` does not rescale spring
+physics; actual seconds and those physical parameters determine settling.
+Opaque zoom borders reflect, transparent imagery uses premultiplied alpha. Whip
+uses edge extension and motion-axis blur during its excursion; its first and last
+frames are exact originals. To land on another shot use the `whip_pan` transition.
+Whip whoosh peak aligns to the maximum delivered frame displacement.
+
+## P1 subject-following portrait reframe (experimental)
+
+```json
+{"experimental":true,"reframe":{"masks":"subject/manifest.json"}}
+```
+
+Combine with `--platform tiktok` (or another 9:16 preset); this renders at the
+platform size/fps. Masks must match the source canvas and **edited timeline**,
+not an untrimmed source clock. Supply a manifest with positive `durations_ms` and
+`masks:["mask-000.png",...]`, or RGBA frames beside the manifest produced by
+`background_remove.py --model birefnet-general` / `birefnet-portrait`. Existing
+cached masks are read; no model is imported by reframe. A standalone adapter is:
+
+```sh
+python scripts/reframe.py prepared/frames --manifest prepared/manifest.json --masks subject/manifest.json --experimental --out portrait
+```
+
+The standalone adapter writes prepared PNGs with 10 ms-grid exposures (30/40 ms
+alternation at 30 fps), compatible with compose_timeline. Final video delivery
+uses P0's CFR clock. The direct plan-integrated path renders straight onto that
+CFR grid without this intermediate exposure quantization.
+
+The crop is the largest 9:16 rectangle entirely inside the source; no black
+padding is introduced. The path uses symmetric lookahead smoothing, an 8 output
+pixels/frame comfort speed that grows to 1.15× nearby measured subject speed,
+and a 3 pixels/frame² acceleration target. Projection into the feasible subject
+coverage interval and source bounds takes priority over those comfort limits.
+Impossible fits preserve the head, cut feet if necessary and set `needs_review`.
+Missing subjects use a center target and are listed. Every crop and transformed
+bbox is recorded. Captions still intersect the 64–79% title band; tall subjects
+may overlap that band, so this does not claim the complete S-61 title/subject or
+fixed-speed acceptance gate. Real V-WALK and independent visual review remain open.
+
+## P1 proxy review and changed-shot rendering
+
+```sh
+python scripts/fx_render.py plan.json --review-html --experimental --out review-a
+# Open review-a/review.html locally, choose Keep/Replace, enter replacement JSON,
+# save decisions.json. Replacement paths resolve relative to the ORIGINAL plan.
+python scripts/fx_render.py plan.json --review-html --experimental --previous review-a --decisions decisions.json --out review-b
+# Encode the already rendered silent proxy pixels:
+python scripts/fx_render.py review-b/render-plan.json --formats mp4 --out review-movie
+```
+
+Alternatively use `review_shots.py`; `--full` builds/rebuilds full-resolution cached
+shots with the same decisions. New output directories are required. The page is
+fully offline, has one image per recorded shot-start/effect/caption event, and
+downloads `{"version":1,"shots":{"2":{"action":"replace","segment":{"image":"new.png"}},"5":{"action":"replace","effects":[{"move":"punch"}]}}}`.
+Indices are zero-based. Keep/replace controls for duplicate events in one shot stay
+synchronized. Replace without replacement data errors; it never silently reuses
+the same content as a pretend replacement.
+
+Cache keys include effective shot parameters, dependency content hashes, renderer
+and FX source hashes, and proxy/full mode. Cached PNGs are verified by SHA256 before
+reuse; unchanged shots retain identical PNG bytes. Immutable PNG cache files use
+hardlinks when supported, with a copy fallback. Do not edit rendered PNGs in place;
+replace the source and rebuild. Changed effects/assets and
+renderer code invalidate their dependencies. The report gives rerendered/reused
+counts. Proxy assets are resized before effects. Cross-shot transitions, history,
+previous-frame references and reframe are rejected because they need neighboring
+dependency invalidation; use normal rendering for those plans. Audio is not part
+of the preview cache; apply final soundtrack/audio delivery separately. Duration
+changes shift subsequent event times but do **not** automatically snap them back
+to beats; that optional acceptance item remains open. This is an independent-shot
+workflow, not a general NLE cache.

@@ -1,0 +1,759 @@
+{
+  "input": "wow\\fx\\p1-fix-demo.mp4",
+  "frames": 240,
+  "duration_seconds": 8.0,
+  "frame_times_seconds": [
+    0.0,
+    0.033333,
+    0.066667,
+    0.1,
+    0.133333,
+    0.166667,
+    0.2,
+    0.233333,
+    0.266667,
+    0.3,
+    0.333333,
+    0.366667,
+    0.4,
+    0.433333,
+    0.466667,
+    0.5,
+    0.533333,
+    0.566667,
+    0.6,
+    0.633333,
+    0.666667,
+    0.7,
+    0.733333,
+    0.766667,
+    0.8,
+    0.833333,
+    0.866667,
+    0.9,
+    0.933333,
+    0.966667,
+    1.0,
+    1.033333,
+    1.066667,
+    1.1,
+    1.133333,
+    1.166667,
+    1.2,
+    1.233333,
+    1.266667,
+    1.3,
+    1.333333,
+    1.366667,
+    1.4,
+    1.433333,
+    1.466667,
+    1.5,
+    1.533333,
+    1.566667,
+    1.6,
+    1.633333,
+    1.666667,
+    1.7,
+    1.733333,
+    1.766667,
+    1.8,
+    1.833333,
+    1.866667,
+    1.9,
+    1.933333,
+    1.966667,
+    2.0,
+    2.033333,
+    2.066667,
+    2.1,
+    2.133333,
+    2.166667,
+    2.2,
+    2.233333,
+    2.266667,
+    2.3,
+    2.333333,
+    2.366667,
+    2.4,
+    2.433333,
+    2.466667,
+    2.5,
+    2.533333,
+    2.566667,
+    2.6,
+    2.633333,
+    2.666667,
+    2.7,
+    2.733333,
+    2.766667,
+    2.8,
+    2.833333,
+    2.866667,
+    2.9,
+    2.933333,
+    2.966667,
+    3.0,
+    3.033333,
+    3.066667,
+    3.1,
+    3.133333,
+    3.166667,
+    3.2,
+    3.233333,
+    3.266667,
+    3.3,
+    3.333333,
+    3.366667,
+    3.4,
+    3.433333,
+    3.466667,
+    3.5,
+    3.533333,
+    3.566667,
+    3.6,
+    3.633333,
+    3.666667,
+    3.7,
+    3.733333,
+    3.766667,
+    3.8,
+    3.833333,
+    3.866667,
+    3.9,
+    3.933333,
+    3.966667,
+    4.0,
+    4.033333,
+    4.066667,
+    4.1,
+    4.133333,
+    4.166667,
+    4.2,
+    4.233333,
+    4.266667,
+    4.3,
+    4.333333,
+    4.366667,
+    4.4,
+    4.433333,
+    4.466667,
+    4.5,
+    4.533333,
+    4.566667,
+    4.6,
+    4.633333,
+    4.666667,
+    4.7,
+    4.733333,
+    4.766667,
+    4.8,
+    4.833333,
+    4.866667,
+    4.9,
+    4.933333,
+    4.966667,
+    5.0,
+    5.033333,
+    5.066667,
+    5.1,
+    5.133333,
+    5.166667,
+    5.2,
+    5.233333,
+    5.266667,
+    5.3,
+    5.333333,
+    5.366667,
+    5.4,
+    5.433333,
+    5.466667,
+    5.5,
+    5.533333,
+    5.566667,
+    5.6,
+    5.633333,
+    5.666667,
+    5.7,
+    5.733333,
+    5.766667,
+    5.8,
+    5.833333,
+    5.866667,
+    5.9,
+    5.933333,
+    5.966667,
+    6.0,
+    6.033333,
+    6.066667,
+    6.1,
+    6.133333,
+    6.166667,
+    6.2,
+    6.233333,
+    6.266667,
+    6.3,
+    6.333333,
+    6.366667,
+    6.4,
+    6.433333,
+    6.466667,
+    6.5,
+    6.533333,
+    6.566667,
+    6.6,
+    6.633333,
+    6.666667,
+    6.7,
+    6.733333,
+    6.766667,
+    6.8,
+    6.833333,
+    6.866667,
+    6.9,
+    6.933333,
+    6.966667,
+    7.0,
+    7.033333,
+    7.066667,
+    7.1,
+    7.133333,
+    7.166667,
+    7.2,
+    7.233333,
+    7.266667,
+    7.3,
+    7.333333,
+    7.366667,
+    7.4,
+    7.433333,
+    7.466667,
+    7.5,
+    7.533333,
+    7.566667,
+    7.6,
+    7.633333,
+    7.666667,
+    7.7,
+    7.733333,
+    7.766667,
+    7.8,
+    7.833333,
+    7.866667,
+    7.9,
+    7.933333,
+    7.966667
+  ],
+  "checks": [
+    {
+      "name": "frame0",
+      "level": "PASS",
+      "message": "Visible composition has exposure and contrast",
+      "events": [
+        {
+          "frame": 0,
+          "seconds": 0.0
+        }
+      ],
+      "mean": 115.58084869384766,
+      "contrast": 41.311580657958984
+    },
+    {
+      "name": "flashes",
+      "level": "PASS",
+      "message": "Single-frame flash scan",
+      "events": []
+    },
+    {
+      "name": "pops",
+      "level": "WARN",
+      "message": "Small transient pop scan; inspect in context",
+      "events": [
+        {
+          "frame": 90,
+          "seconds": 3.0
+        },
+        {
+          "frame": 91,
+          "seconds": 3.033333
+        },
+        {
+          "frame": 92,
+          "seconds": 3.066667
+        },
+        {
+          "frame": 93,
+          "seconds": 3.1
+        },
+        {
+          "frame": 94,
+          "seconds": 3.133333
+        }
+      ]
+    },
+    {
+      "name": "freeze",
+      "level": "PASS",
+      "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+      "events": [],
+      "designed_holds": []
+    },
+    {
+      "name": "cuts",
+      "level": "PASS",
+      "message": "Detected cut candidates (no hard cuts required)",
+      "events": [],
+      "detected": [
+        {
+          "frame": 30,
+          "seconds": 1.0
+        },
+        {
+          "frame": 31,
+          "seconds": 1.033333
+        },
+        {
+          "frame": 32,
+          "seconds": 1.066667
+        },
+        {
+          "frame": 33,
+          "seconds": 1.1
+        },
+        {
+          "frame": 34,
+          "seconds": 1.133333
+        },
+        {
+          "frame": 35,
+          "seconds": 1.166667
+        },
+        {
+          "frame": 55,
+          "seconds": 1.833333
+        },
+        {
+          "frame": 56,
+          "seconds": 1.866667
+        },
+        {
+          "frame": 58,
+          "seconds": 1.933333
+        },
+        {
+          "frame": 59,
+          "seconds": 1.966667
+        },
+        {
+          "frame": 60,
+          "seconds": 2.0
+        },
+        {
+          "frame": 90,
+          "seconds": 3.0
+        },
+        {
+          "frame": 91,
+          "seconds": 3.033333
+        },
+        {
+          "frame": 92,
+          "seconds": 3.066667
+        },
+        {
+          "frame": 93,
+          "seconds": 3.1
+        },
+        {
+          "frame": 94,
+          "seconds": 3.133333
+        },
+        {
+          "frame": 95,
+          "seconds": 3.166667
+        },
+        {
+          "frame": 120,
+          "seconds": 4.0
+        },
+        {
+          "frame": 150,
+          "seconds": 5.0
+        },
+        {
+          "frame": 151,
+          "seconds": 5.033333
+        },
+        {
+          "frame": 152,
+          "seconds": 5.066667
+        },
+        {
+          "frame": 153,
+          "seconds": 5.1
+        },
+        {
+          "frame": 154,
+          "seconds": 5.133333
+        },
+        {
+          "frame": 155,
+          "seconds": 5.166667
+        },
+        {
+          "frame": 180,
+          "seconds": 6.0
+        },
+        {
+          "frame": 210,
+          "seconds": 7.0
+        }
+      ],
+      "expected_seconds": []
+    },
+    {
+      "name": "timeline_joins",
+      "level": "PASS",
+      "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+      "events": [
+        {
+          "frame": 60,
+          "seconds": 2.0
+        },
+        {
+          "frame": 120,
+          "seconds": 4.0
+        },
+        {
+          "frame": 180,
+          "seconds": 6.0
+        }
+      ]
+    },
+    {
+      "name": "loop",
+      "level": "PASS",
+      "message": "N/A: no loop requested",
+      "events": []
+    },
+    {
+      "name": "loudness",
+      "level": "PASS",
+      "message": "Integrated loudness: target -14 LUFS +/-1",
+      "events": [
+        {
+          "frame": 0,
+          "seconds": 0,
+          "end_frame": 239,
+          "end_seconds": 8.0
+        }
+      ],
+      "lufs": -14.9
+    },
+    {
+      "name": "true_peak",
+      "level": "PASS",
+      "message": "True peak ceiling -1 dBTP",
+      "events": [
+        {
+          "frame": 0,
+          "seconds": 0,
+          "end_frame": 239,
+          "end_seconds": 8.0
+        }
+      ],
+      "dbtp": -1.0
+    },
+    {
+      "name": "loudest_100ms",
+      "level": "PASS",
+      "message": "Loudest 100 ms RMS window (50 ms hop)",
+      "events": [
+        {
+          "frame": 60,
+          "seconds": 2.0,
+          "end_frame": 63,
+          "end_seconds": 2.1
+        }
+      ],
+      "dbfs": -7.949652345824597
+    },
+    {
+      "name": "silence",
+      "level": "WARN",
+      "message": "Silence >=0.4 s; inspect whether intended",
+      "events": [
+        {
+          "frame": 3,
+          "seconds": 0.1,
+          "end_frame": 22,
+          "end_seconds": 0.75
+        },
+        {
+          "frame": 27,
+          "seconds": 0.9,
+          "end_frame": 39,
+          "end_seconds": 1.3
+        },
+        {
+          "frame": 43,
+          "seconds": 1.45,
+          "end_frame": 57,
+          "end_seconds": 1.9
+        },
+        {
+          "frame": 66,
+          "seconds": 2.2,
+          "end_frame": 105,
+          "end_seconds": 3.5
+        },
+        {
+          "frame": 135,
+          "seconds": 4.5,
+          "end_frame": 168,
+          "end_seconds": 5.6
+        },
+        {
+          "frame": 190,
+          "seconds": 6.35,
+          "end_frame": 204,
+          "end_seconds": 6.8
+        },
+        {
+          "frame": 208,
+          "seconds": 6.95,
+          "end_frame": 239,
+          "end_seconds": 8.0
+        }
+      ],
+      "threshold_dbfs": -40
+    }
+  ],
+  "sheets": {
+    "contact_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 21,
+        "seconds": 0.7
+      },
+      {
+        "frame": 43,
+        "seconds": 1.433333
+      },
+      {
+        "frame": 65,
+        "seconds": 2.166667
+      },
+      {
+        "frame": 87,
+        "seconds": 2.9
+      },
+      {
+        "frame": 109,
+        "seconds": 3.633333
+      },
+      {
+        "frame": 130,
+        "seconds": 4.333333
+      },
+      {
+        "frame": 152,
+        "seconds": 5.066667
+      },
+      {
+        "frame": 174,
+        "seconds": 5.8
+      },
+      {
+        "frame": 196,
+        "seconds": 6.533333
+      },
+      {
+        "frame": 218,
+        "seconds": 7.266667
+      },
+      {
+        "frame": 239,
+        "seconds": 7.966667
+      }
+    ],
+    "phone_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 30,
+        "seconds": 1.0
+      },
+      {
+        "frame": 60,
+        "seconds": 2.0
+      },
+      {
+        "frame": 90,
+        "seconds": 3.0
+      },
+      {
+        "frame": 120,
+        "seconds": 4.0
+      },
+      {
+        "frame": 150,
+        "seconds": 5.0
+      },
+      {
+        "frame": 180,
+        "seconds": 6.0
+      },
+      {
+        "frame": 210,
+        "seconds": 7.0
+      }
+    ],
+    "hook_sheet": [
+      {
+        "frame": 0,
+        "seconds": 0.0
+      },
+      {
+        "frame": 15,
+        "seconds": 0.5
+      },
+      {
+        "frame": 30,
+        "seconds": 1.0
+      },
+      {
+        "frame": 45,
+        "seconds": 1.5
+      },
+      {
+        "frame": 60,
+        "seconds": 2.0
+      },
+      {
+        "frame": 75,
+        "seconds": 2.5
+      }
+    ]
+  },
+  "limitations": "Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.",
+  "elapsed_seconds": 4.179473199998029,
+  "fps": 30.0,
+  "cfr": true,
+  "level": "WARN",
+  "cut_to_downbeat_median_ms": 0.0,
+  "rhythm_cuts": [
+    {
+      "frame": 59,
+      "seconds": 1.966667
+    },
+    {
+      "frame": 60,
+      "seconds": 2.0
+    },
+    {
+      "frame": 120,
+      "seconds": 4.0
+    },
+    {
+      "frame": 180,
+      "seconds": 6.0
+    }
+  ],
+  "rhythm_excluded_effect_events": [
+    {
+      "frame": 30,
+      "seconds": 1.0
+    },
+    {
+      "frame": 31,
+      "seconds": 1.033333
+    },
+    {
+      "frame": 32,
+      "seconds": 1.066667
+    },
+    {
+      "frame": 33,
+      "seconds": 1.1
+    },
+    {
+      "frame": 34,
+      "seconds": 1.133333
+    },
+    {
+      "frame": 35,
+      "seconds": 1.166667
+    },
+    {
+      "frame": 55,
+      "seconds": 1.833333
+    },
+    {
+      "frame": 56,
+      "seconds": 1.866667
+    },
+    {
+      "frame": 58,
+      "seconds": 1.933333
+    },
+    {
+      "frame": 90,
+      "seconds": 3.0
+    },
+    {
+      "frame": 91,
+      "seconds": 3.033333
+    },
+    {
+      "frame": 92,
+      "seconds": 3.066667
+    },
+    {
+      "frame": 93,
+      "seconds": 3.1
+    },
+    {
+      "frame": 94,
+      "seconds": 3.133333
+    },
+    {
+      "frame": 95,
+      "seconds": 3.166667
+    },
+    {
+      "frame": 150,
+      "seconds": 5.0
+    },
+    {
+      "frame": 151,
+      "seconds": 5.033333
+    },
+    {
+      "frame": 152,
+      "seconds": 5.066667
+    },
+    {
+      "frame": 153,
+      "seconds": 5.1
+    },
+    {
+      "frame": 154,
+      "seconds": 5.133333
+    },
+    {
+      "frame": 155,
+      "seconds": 5.166667
+    },
+    {
+      "frame": 210,
+      "seconds": 7.0
+    }
+  ],
+  "rhythm_measurement": "decoded cuts vs downbeats, excluding bounded planned effect impulses except at shot boundaries; null when no cuts detected"
+}

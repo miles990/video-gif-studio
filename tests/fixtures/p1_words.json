@@ -1,0 +1,14 @@
+{
+  "provenance": "Authored offline timing fixture; NOT a recorded Whisper model prediction",
+  "words": [
+    {"text":"我們", "start_ms":0, "end_ms":200},
+    {"text":"今天", "start_ms":200, "end_ms":400},
+    {"text":"要去", "start_ms":400, "end_ms":600},
+    {"text":"台北市政府", "start_ms":600, "end_ms":1000},
+    {"text":"參加", "start_ms":1000, "end_ms":1200},
+    {"text":"開放資料", "start_ms":1200, "end_ms":1600},
+    {"text":"活動，", "start_ms":1600, "end_ms":1900},
+    {"text":"真的嗎？", "start_ms":1900, "end_ms":2200},
+    {"text":"好！", "start_ms":2200, "end_ms":2500}
+  ]
+}

@@ -2,6 +2,8 @@
 from functools import lru_cache
 from pathlib import Path
 import os
+import struct
+import warnings
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -16,8 +18,52 @@ def resolve_font(font=''):
     raise ValueError(f'Font not found: {candidates}; use Microsoft JhengHei (Windows), PingFang (macOS), Noto CJK (Linux); provide font path')
 
 
+@lru_cache(maxsize=16)
+def font_codepoints(font):
+    """Read Unicode cmap 4/12 from TTF/OTF or first TTC face; no fontTools dependency."""
+    data = Path(font).read_bytes()
+    u16 = lambda at: struct.unpack_from('>H', data, at)[0]
+    u32 = lambda at: struct.unpack_from('>I', data, at)[0]
+    base = u32(12) if data[:4] == b'ttcf' else 0
+    cmap = None
+    for i in range(u16(base+4)):
+        at = base+12+16*i
+        if data[at:at+4] == b'cmap': cmap = u32(at+8); break
+    if cmap is None: raise ValueError('Font has no Unicode cmap: '+font)
+    found = set()
+    for i in range(u16(cmap+2)):
+        at = cmap+4+8*i; platform, encoding = u16(at), u16(at+2)
+        if platform != 0 and not (platform == 3 and encoding in (1,10)): continue
+        table = cmap+u32(at+4); fmt = u16(table)
+        if fmt == 12:
+            for j in range(u32(table+12)):
+                first, last, glyph = struct.unpack_from('>III', data, table+16+j*12)
+                found.update(range(first+(glyph == 0), last+1))
+        elif fmt == 4:
+            count = u16(table+6)//2; ends = table+14
+            starts = ends+2*count+2; deltas = starts+2*count; offsets = deltas+2*count
+            for j in range(count):
+                first, last = u16(starts+2*j), u16(ends+2*j)
+                delta, offset = u16(deltas+2*j), u16(offsets+2*j)
+                for code in range(first, min(last,65534)+1):
+                    glyph = u16(offsets+2*j+offset+2*(code-first)) if offset else code
+                    if glyph and (glyph+delta)&65535: found.add(code)
+    return frozenset(found)
+
+
+@lru_cache(maxsize=128)
+def check_glyphs(font, content, strict=False):
+    missing = sorted({ord(c) for c in content if not c.isspace()}-font_codepoints(font))
+    if missing:
+        message = 'Missing glyphs in '+font+': '+', '.join(f'U+{c:04X}' for c in missing)
+        warnings.warn(message, UserWarning, stacklevel=2)
+        if strict: raise ValueError(message+'; choose a font covering these code points')
+    return missing
+
+
 @lru_cache(maxsize=32)
 def lettering(width,height,content,font,size,color,stroke,stroke_color,shadow_px,shadow_color,x,y):
+    check_glyphs(font,content)
     face=ImageFont.truetype(font,max(1,round(size)));layer=Image.new('RGBA',(width,height));draw=ImageDraw.Draw(layer)
     box=draw.textbbox((0,0),content,font=face,stroke_width=round(stroke))
     pos=(x-(box[2]+box[0])/2,y-(box[3]+box[1])/2)

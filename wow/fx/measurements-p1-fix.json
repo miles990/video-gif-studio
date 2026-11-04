@@ -1,0 +1,210 @@
+{
+  "scope": "Builder offline and decoded render evidence; independent P1 acceptance remains pending",
+  "reframe": {
+    "small": {
+      "frames": 110,
+      "speed_source_px_s": 370,
+      "coverage": 1.0,
+      "max_black_fraction": 0.0,
+      "max_step_output_px": 21.92592592592746,
+      "max_acceleration_output_px": 2.178234428192006
+    },
+    "large": {
+      "frames": 110,
+      "speed_source_px_s": 370,
+      "coverage": 1.0,
+      "max_black_fraction": 0.0,
+      "max_step_output_px": 21.925925925927004,
+      "max_acceleration_output_px": 3.0000000000000036
+    },
+    "v_walk": {
+      "frames": 100,
+      "source_size": [
+        640,
+        360
+      ],
+      "measurement_size": [
+        270,
+        480
+      ],
+      "coverage": 1.0,
+      "min_rendered_subject_area_ratio": 0.9873542274052479,
+      "max_black_fraction": 0.0,
+      "headroom_fraction": 1.375739976839398
+    }
+  },
+  "captions": [
+    {
+      "preset": "pop",
+      "ink_boxes": [
+        [
+          373,
+          1409,
+          636,
+          1495
+        ],
+        [
+          170,
+          1408,
+          842,
+          1496
+        ]
+      ],
+      "font": "C:\\Windows\\Fonts\\msjhbd.ttc"
+    },
+    {
+      "preset": "typewriter",
+      "ink_boxes": [
+        [
+          337,
+          1390,
+          689,
+          1514
+        ],
+        [
+          168,
+          1390,
+          859,
+          1514
+        ]
+      ],
+      "font": "C:\\Windows\\Fonts\\msjhbd.ttc"
+    },
+    {
+      "preset": "clean",
+      "ink_boxes": [
+        [
+          376,
+          1422,
+          632,
+          1501
+        ],
+        [
+          170,
+          1421,
+          843,
+          1502
+        ]
+      ],
+      "font": "C:\\Windows\\Fonts\\msjhbd.ttc"
+    },
+    {
+      "preset": "bounce",
+      "ink_boxes": [
+        [
+          324,
+          1373,
+          702,
+          1497
+        ],
+        [
+          76,
+          1371,
+          950,
+          1495
+        ]
+      ],
+      "font": "C:\\Windows\\Fonts\\msjhbd.ttc"
+    }
+  ],
+  "whip": {
+    "end_frame_equal": true,
+    "whoosh_peak_ms": 133.33333333333334,
+    "max_shift_per_frame": 0.5130203820042828
+  },
+  "demo": {
+    "stream": {
+      "index": 0,
+      "codec_name": "h264",
+      "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+      "profile": "High",
+      "codec_type": "video",
+      "codec_tag_string": "avc1",
+      "codec_tag": "0x31637661",
+      "width": 1080,
+      "height": 1920,
+      "coded_width": 1080,
+      "coded_height": 1920,
+      "has_b_frames": 2,
+      "pix_fmt": "yuv420p",
+      "level": 40,
+      "color_range": "tv",
+      "color_space": "bt709",
+      "color_transfer": "bt709",
+      "color_primaries": "bt709",
+      "chroma_location": "left",
+      "field_order": "progressive",
+      "refs": 1,
+      "is_avc": "true",
+      "nal_length_size": "4",
+      "id": "0x1",
+      "r_frame_rate": "30/1",
+      "avg_frame_rate": "30/1",
+      "time_base": "1/15360",
+      "start_pts": 0,
+      "start_time": "0.000000",
+      "duration_ts": 122880,
+      "duration": "8.000000",
+      "bit_rate": "9876095",
+      "bits_per_raw_sample": "8",
+      "nb_frames": "240",
+      "extradata_size": 60,
+      "disposition": {
+        "default": 1,
+        "dub": 0,
+        "original": 0,
+        "comment": 0,
+        "lyrics": 0,
+        "karaoke": 0,
+        "forced": 0,
+        "hearing_impaired": 0,
+        "visual_impaired": 0,
+        "clean_effects": 0,
+        "attached_pic": 0,
+        "timed_thumbnails": 0,
+        "non_diegetic": 0,
+        "captions": 0,
+        "descriptions": 0,
+        "metadata": 0,
+        "dependent": 0,
+        "still_image": 0,
+        "multilayer": 0
+      },
+      "tags": {
+        "language": "und",
+        "handler_name": "VideoHandler",
+        "vendor_id": "[0][0][0][0]",
+        "encoder": "Lavc62.11.100 libx264"
+      }
+    },
+    "qa_flashes": {
+      "name": "flashes",
+      "level": "PASS",
+      "message": "Single-frame flash scan",
+      "events": []
+    },
+    "rhythm_ms": 0.0,
+    "rhythm_exclusions": 22
+  },
+  "density": {
+    "low": {
+      "cuts": 8,
+      "accents": 8
+    },
+    "mid": {
+      "cuts": 15,
+      "accents": 16
+    },
+    "high": {
+      "cuts": 31,
+      "accents": 32
+    }
+  },
+  "tests": {
+    "total": 310,
+    "failures": 0,
+    "baseline_environment_errors": 2,
+    "skipped": 5,
+    "p1_passed": 60
+  }
+}

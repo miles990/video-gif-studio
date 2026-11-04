@@ -382,6 +382,38 @@ def sheet(st, edges, name, out):
     return [event(edges,i) for i in indices]
 
 
+def rhythm_cuts(detected, timing, tolerance_ms):
+    """Exclude bounded, planned FX impulses, retaining observed real cut edges.
+
+    Never fabricate cuts from the plan or exempt a continuous effect interval.
+    Planned shot boundaries win when an accent coincides with a real cut.
+    """
+    boundaries=[float(c.get('quantized_ms',c.get('requested_ms',0))) for c in timing.get('cuts',[]) if isinstance(c,dict)]
+    boundaries+=timing.get('beat_layers',{}).get('cuts_ms',[])
+    boundaries += [float(s['start_ms']) for s in timing.get('segments',[])[1:] if 'start_ms' in s]
+    windows=[]
+    for effect in timing.get('effects',[]):
+        params=effect.get('params',{})
+        decay=max([float(v.get('decay_ms',160)) for v in params.values() if isinstance(v,dict)]+[0])
+        triggers=effect.get('trigger_times_ms',[])
+        if triggers:
+            windows.extend((t-tolerance_ms,t+decay+tolerance_ms) for t in triggers)
+        elif effect.get('name') in ('camera_move','flash_white','zoom_punch'):
+            start=effect.get('start_ms',0)
+            duration=params.get('duration_ms',0) or (160 if params.get('move')=='whip' else 200)
+            windows.append((start-tolerance_ms,start+duration+tolerance_ms))
+    # Caption entrances are known impulses too, but only in their short entry window.
+    for line in timing.get('captions',{}).get('lines',[]):
+        onsets={line['start_ms']}|{c.get('word_start_ms',c['start_ms']) for c in line.get('chars',[])}
+        windows.extend((t-tolerance_ms,t+180+tolerance_ms) for t in onsets)
+    kept=[];excluded=[]
+    for event in detected:
+        t=event['seconds']*1000
+        planned_cut=any(abs(t-b)<=tolerance_ms for b in boundaries)
+        (excluded if not planned_cut and any(a<=t<=b for a,b in windows) else kept).append(event)
+    return kept,excluded
+
+
 def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
     started = time.perf_counter()
     path, out = Path(path),Path(out)
@@ -416,6 +448,19 @@ def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
         report['cfr']=bool(np.max(np.abs(np.asarray(durations)-1/report['fps']))<=.0011)
         if report['fps']>60:report['warnings']=['Platform may resample video above 60 fps']
     report['level'] = 'FAIL' if any(c['level']=='FAIL' for c in checks) else ('WARN' if any(c['level']=='WARN' for c in checks) else 'PASS')
+    if timeline:
+        timeline_path=Path(timeline);timing=read_json(timeline_path)
+        down=timing.get('beat_layers',{}).get('downbeats_ms',timing.get('downbeats_ms',[]))
+        if not down and timing.get('beatmap'):
+            beatmap=read_json(timeline_path.parent/timing['beatmap'])
+            down=beatmap.get('downbeats_ms',beatmap.get('beats_ms',[])[::4])
+        if down:
+            detected=next((c.get('detected',[]) for c in checks if c['name']=='cuts'),[])
+            detected,excluded=rhythm_cuts(detected,timing,float(np.median(durations))*1000+1e-6)
+            distances=[min(abs(e['seconds']*1000-d) for d in down) for e in detected]
+            report['cut_to_downbeat_median_ms']=float(np.median(distances)) if distances else None
+            report['rhythm_cuts']=detected;report['rhythm_excluded_effect_events']=excluded
+            report['rhythm_measurement']='decoded cuts vs downbeats, excluding bounded planned effect impulses except at shot boundaries; null when no cuts detected'
     (out/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8',newline='\n')
     lines = [f'# Media QA: {report["level"]}', '', f'{path.name} | {len(durations)} frames | {edges[-1]:.3f} s', '', report['limitations'], '']
     for c in checks:

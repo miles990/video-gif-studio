@@ -93,6 +93,11 @@ The source is mixed back unchanged. This is level-based presence detection, not 
 speech classifier; varying non-speech sounds can still trigger it. A lone music
 track never ducks. `manifest.audio.ducking` records intervals and detector settings.
 
+Ducking does **not engage when speech SNR is below approximately 8 dB** relative
+to the estimated floor (threshold = noise-floor RMS × 2.5). This is an energy
+heuristic, not a measured clean-speech SNR estimator. A noisy recording may need
+manual automation or denoising; the tool does not silently lower the threshold.
+
 Every input is converted to stereo before mixing, preserving distinct music L/R
 content when the source is mono. Mixed float PCM is measured with loudnorm, then
 a single constant gain targets -14 LUFS. A 192 kHz oversampled lookahead limiter
@@ -116,7 +121,97 @@ AAC stereo 48 kHz / 256 kbps is used for MP4/MOV; WebM uses Opus. Tracks are pad
 or trimmed to the actual quantized video duration. QA establishes measured levels,
 not intelligibility or perceptual sync; listen to the final mix.
 
-Supported now: one continuous soundtrack, prepared-frame trim/reorder/split/uniform speed and duration fit, beat-aligned cuts, stills/loops and video output. Not bundled: multitrack audio mixing, subtitles, a graphical editor, automatic phrase-aware montage, music-conditioned Grok generation or an autonomous multi-generation chain runner. Future adapters should preserve explicit source/output clocks and per-event timing.
+Supported now: one continuous soundtrack, prepared-frame trim/reorder/split/uniform speed and duration fit, beat-aligned cuts, stills/loops and video output. P1 adds experimental captions, event SFX, layered beat editing and bar-based music candidates below. Not bundled: a general multitrack editor, music-conditioned Grok generation or an autonomous multi-generation chain runner.
+
+## P1 event sound design (experimental)
+
+Opt in with top-level `"experimental": true, "sfx": "auto"`, or:
+
+```json
+{"sfx":{"mode":"auto","user_folder":"my-sfx","kenney_folder":"kenney","gain_db":-3}}
+```
+
+| Visual event | Sound | Alignment |
+| --- | --- | --- |
+| whip_pan, push, slide, named whip | whoosh | onset |
+| flash_white, flash_cut, zoom_punch, punch, crash_in/out | hit | onset |
+| caption line, text, sticker, cutout_card | pop | onset |
+| ramp | riser | end at ramp's impact beat |
+| freeze / held previous frame, shutter | click | onset |
+| glitch, rgb_split | glitch | onset |
+
+SFX resolution is user folder → Kenney folder → deterministic NumPy synthesis,
+independently per category. Use canonical filenames (`whoosh.wav`, `hit.wav`, etc.)
+or `sfx-map.json`, e.g. `{"click":"Audio/click_001.ogg"}`. Nested pack folders are
+supported. Explicit folder typos error; an absent category falls through. The
+manifest lists category, source, file, SHA256, license, requested time and sample
+anchor. Identical category/time events deduplicate; different sounds may overlap.
+Alignment is at 48 kHz sample precision to the **delivered visual event frame**
+(CFR half-up quantization), not a second 10 ms grid. Riser preroll before time zero
+is clipped and recorded; provide sufficient lead-in for the full sound.
+The named `whip` move is a peak-aligned exception: the maximum absolute sample
+of the selected whoosh asset aligns to its maximum delivered frame displacement,
+with `alignment: peak` recorded. This applies to user/Kenney assets and synthesis.
+
+No `sfx` field means no new audio code path, preserving legacy plans. Opt-in SFX
+are mixed after speech ducking, through P0 stereo conversion, oversampled limiter,
+encoded -14 ±1 LUFS / ≤ -1 dBTP gate. Up to four measured gain corrections compensate
+limiter loss on sparse impacts; retries are recorded. Pathological material can
+still fail the gate. Automatic per-event music masking/relative-level riding is
+not implemented. No paid calls or network access occur while rendering.
+
+```sh
+python scripts/download_kenney_audio.py --pack interface-sounds --out /local/kenney
+# Or download the official archive manually and keep its license:
+python scripts/download_kenney_audio.py --zip kenney_interface-sounds.zip --out /local/kenney
+```
+
+Downloader is a live step for the coordinator. No pack or weights are bundled.
+See [attribution](../THIRD_PARTY.md).
+
+## P1 layered rhythm and music fit
+
+`cut_density: low|mid|high` in an experimental fx_render plan cycles its supplied
+source slots. Low cuts every four bars, mid every two, high every bar; section
+boundaries also cut. SONG64's 32 bars yield **8 / 15 / 31 cuts**, respectively,
+within the documented acceptance bands **6–9 / 13–17 / 28–40**. Other material's
+counts depend on its section boundaries. Accents use non-downbeat beats; successive
+sections alternate zoom_punch, rgb_split and beat_bounce (zero automatic white
+flashes). One non-downbeat accent is selected every four/two/one bars, producing
+8 / 16 / 32 accents on SONG64. Automatic hit SFX follow the selected downbeat
+cuts; zoom accents do not add a hit on every kick. `beat_layers.py` can
+export the design without rendering. Beat maps need `duration_ms`, `beats_ms`,
+optional `downbeats_ms`, and `sections:[{start_ms,end_ms,label}]`. Section boundaries
+must be downbeats (10 ms tolerance). Without downbeats, every fourth beat is inferred
+and marked. This is not automatic section detection. `music.in_ms` must be zero
+with cut_density; fit/remap first. `manifest.beat_layers` records the decisions.
+qa_media reports `cut_to_downbeat_median_ms` from **decoded cut candidates**, not
+the planner's self-reported zero; null means no cut was detected. Bounded planned
+effect/entrance impulses are excluded from rhythm scoring, except at known shot
+boundaries; the excluded decoded candidates are listed separately. Continuous
+effect spans are not blanket exemptions. Flash QA itself remains unchanged.
+
+```sh
+python scripts/music_fit.py song.wav --beats beats.json --target 30 --candidates 3 --out fits
+python scripts/music_fit.py delivered.mp4 --beats fits/candidate-1-beats.json --no-music --out silent
+```
+
+Music fit gives exactly three distinct prefix + ending candidates, preferring
+section boundaries, then duration closeness, then balanced lengths. All endpoints
+are bar boundaries; tolerance is one bar. If three candidates do not exist, it
+reports an error. Inspect candidates.txt, each preview WAV and candidate beat map.
+If music is shorter than the target, the error suggests shortening the target or
+using `--no-music`.
+Joins use stereo low-amplitude zero crossings within ±10 ms, a 40 ms raised-cosine
+blend on the unchanged sample grid and a 500 ms squared tail fade. Candidate
+manifests retain both musical boundaries and actual zero-crossing centers.
+This is deterministic phrase-aware slicing, not harmonic/key analysis or a promise
+that every arbitrary song joins naturally. Music fitting decodes the selected song
+into RAM; it is separate from the bounded video render loop.
+
+The no-music route stream-copies only video into `no-music.mp4` (no audio stream),
+and writes unchanged beat markers to JSON and CSV, including downbeat flags.
+Fit beat maps remap each retained source span, so layered cuts use the edited clock.
 
 ## Effects and optional downbeats
 

@@ -1,0 +1,119 @@
+{
+ "language": "en",
+ "words": [
+  {
+   "word": " Every",
+   "start": 0.0,
+   "end": 0.4,
+   "probability": 0.864
+  },
+  {
+   "word": " frame",
+   "start": 0.4,
+   "end": 0.78,
+   "probability": 0.978
+  },
+  {
+   "word": " here",
+   "start": 0.78,
+   "end": 1.08,
+   "probability": 0.996
+  },
+  {
+   "word": " was",
+   "start": 1.08,
+   "end": 1.34,
+   "probability": 0.995
+  },
+  {
+   "word": " written",
+   "start": 1.34,
+   "end": 1.76,
+   "probability": 0.647
+  },
+  {
+   "word": " by",
+   "start": 1.76,
+   "end": 2.06,
+   "probability": 0.996
+  },
+  {
+   "word": " code",
+   "start": 2.06,
+   "end": 2.36,
+   "probability": 0.957
+  },
+  {
+   "word": " the",
+   "start": 2.36,
+   "end": 3.3,
+   "probability": 0.065
+  },
+  {
+   "word": " beat",
+   "start": 3.3,
+   "end": 3.52,
+   "probability": 0.772
+  },
+  {
+   "word": " drops",
+   "start": 3.52,
+   "end": 3.92,
+   "probability": 0.982
+  },
+  {
+   "word": " the",
+   "start": 3.92,
+   "end": 4.4,
+   "probability": 0.672
+  },
+  {
+   "word": " card",
+   "start": 4.4,
+   "end": 4.74,
+   "probability": 0.924
+  },
+  {
+   "word": " pops",
+   "start": 4.74,
+   "end": 5.12,
+   "probability": 0.953
+  },
+  {
+   "word": " and",
+   "start": 5.12,
+   "end": 5.64,
+   "probability": 0.945
+  },
+  {
+   "word": " the",
+   "start": 5.64,
+   "end": 5.84,
+   "probability": 0.994
+  },
+  {
+   "word": " captions",
+   "start": 5.84,
+   "end": 6.24,
+   "probability": 0.966
+  },
+  {
+   "word": " follow",
+   "start": 6.24,
+   "end": 6.84,
+   "probability": 0.975
+  },
+  {
+   "word": " every",
+   "start": 6.84,
+   "end": 7.24,
+   "probability": 0.988
+  },
+  {
+   "word": " word",
+   "start": 7.24,
+   "end": 7.6,
+   "probability": 0.993
+  }
+ ]
+}

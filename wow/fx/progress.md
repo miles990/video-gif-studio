@@ -56,3 +56,7 @@
 - 03:46 P0 修正（p0-fix）跑 5.5 分、改 6 檔時被 Claude Code 因系統記憶體不足收掉；WIP commit 保存，等使用者同意再續跑。
 - 04:00 使用者：「繼續，重啟修正， 全部做完」→ 視為持續授權：依序完成 P0→P1→P2→spec-6→spec-7→spec-8→P3；被記憶體收掉時直接續跑並回報。保留樣本、brief、審查報告移到 repo 外 C:\Users\User\src\vgs-fx-private（舊 scratchpad 停用）。
 - 04:45 P0 複審：8 項中 7 項過；但固定增益正規化造成退步（MUS＋CLIP-A、只有說話被擋在 −17～−26 LUFS）、立體聲被收成單聲道、底音觸發語音偵測、長片 ducking 失敗、intake 未記跳躍。派修正二。
+- 05:30 P0 第三次獨立審查：可合回（所有響度情境 −14.0 LUFS 並發布、立體聲保留、無抽吸、長片 ducking、舊路徑位元相同）。合回 main 584987f 並 push；安裝目錄 doctor 通過、合成計畫實跑輸出 30/1 CFR。刪除 p0-delivery 分支，開 p1-edit。剩 2 個非阻擋文件項（低 SNR 不 duck、跳躍長度含前一丟格）併入 P1。
+- 06:20 P1 建造完成（292 tests／0 failures）commit d1f3d92；協調者實測發現 faster-whisper 路線 4 個缺陷、Kenney 403（wow/fx/live/p1-live.md），真實輸出存為 tests/fixtures/live。開 P1 獨立審查。
+- 06:45 P1 獨立審查：可以 experimental 身分合回，但 P1 驗收不過（重構圖黑邊 46–57%、主體在框 20%/94%；whip 停在鏡像；字幕像電視字幕；斷行不看句界；emoji 直接失敗；點綴不分檔、白閃過多；協調者實測 4 缺陷皆確認，根因 np.float64 型別比對）。派 P1 修正。
+- 07:35 P1 修正（Codex 21 分）完成 310 tests；誤提交 10 MB 審查影片已 untrack（P1 將 squash 合回避免 main 歷史膨脹；協調者 commit 指令改為 preflight 失敗即停）。實測 whisper：繁中可用，剩全形標點、英文前導空白。開 P1 複審。

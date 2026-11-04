@@ -50,6 +50,9 @@ def timestamp_repairs(stamps, step, origin, fps):
             first = int(np.floor((previous-origin)*fps+.5))
             last = int(np.floor((current-origin)*fps+.5))
             record = dict(start_seconds=previous+step-origin, length_seconds=missing,
+                          observed_pts_gap_seconds=current-previous,
+                          nominal_frame_seconds=step,
+                          length_interpretation='combined missing interval; a timestamp jump and adjacent dropped frame cannot be separated from PTS alone',
                           frozen_frame_count=max(0, last-first-1))
             (jumps if missing >= jump_threshold-1e-6 else drops).append(record)
         previous = current

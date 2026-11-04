@@ -207,10 +207,10 @@ def duck_envelope(args, speech_filter, root, seconds):
         detection='10 ms RMS; max(peak -26 dB, noise floor +8 dB); 40 ms minimum; 150 ms gap bridge')
 
 
-def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, normalize=True):
+def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, normalize=True, sfx=None):
     """Mix a timeline-aligned source track and music; normalize then gate encoded audio."""
     movie = Path(movie); seconds = duration_ms/1000
-    if not music and not source: return {'audio': False}
+    if not music and not source and not sfx: return {'audio': False}
     with tempfile.TemporaryDirectory(dir=movie.parent) as folder:
         root = Path(folder); mixed = root/'mixed.wav'
         args = ['-v', 'error']; graph = []; labels = []; duck_report = None
@@ -230,7 +230,17 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
                 graph += ['[music][2:a:0]amultiply[bed]',
                           '[speech][bed]amix=inputs=2:normalize=0[out]']
             else: graph += ['[speech][music]amix=inputs=2:normalize=0[out]']
-        else: graph += [f'[{labels[0]}]anull[out]']
+        elif labels: graph += [f'[{labels[0]}]anull[out]']
+        if sfx:
+            # Duck detection only sees speech; sound effects are mixed afterwards.
+            if labels:
+                graph[-1]=graph[-1].removesuffix('[out]')+'[bedout]'
+            else:
+                graph=[]
+            index=sum(1 for value in args if value=='-i')
+            args += ['-i',str(sfx['file'])]
+            graph += [f'[{index}:a:0]aresample=48000,aformat=channel_layouts=stereo,apad,atrim=duration={seconds}[sfx]']
+            graph += ['[bedout][sfx]amix=inputs=2:normalize=0[out]' if labels else '[sfx]anull[out]']
         run([*args, '-filter_complex', ';'.join(graph), '-map', '[out]', '-c:a', 'pcm_f32le', str(mixed)])
         measured = None; filt = 'anull'; second = None
         if normalize:
@@ -251,6 +261,21 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
              '-t', str(seconds), *([] if movie.suffix=='.webm' else ['-movflags','+faststart']), str(candidate)])
         from qa_media import analyse_audio
         checks = analyse_audio(candidate, {'audio': True}, [0, seconds])
+        # Sparse impacts lose integrated level at the limiter. Only the opt-in
+        # SFX path retries measured gain; legacy music/source-only bytes are unchanged.
+        retries=[]
+        if sfx and normalize:
+            for _ in range(4):
+                loud=next((c.get('lufs') for c in checks if c['name']=='loudness'),None)
+                if loud is None or -15<=loud<=-13: break
+                correction=-14-loud;gain+=correction;retries.append(dict(measured_lufs=loud,correction_db=correction))
+                filt=(f'volume={gain}dB,aresample=192000,'
+                      'alimiter=limit=0.8413951416:attack=5:release=50:level=false:latency=true,aresample=48000')
+                run(['-y','-i',str(movie),'-i',str(mixed),'-map','0:v:0','-map','1:a:0','-c:v','copy',
+                     '-af',filt,'-c:a','libopus' if movie.suffix=='.webm' else 'aac','-b:a','256k','-ar','48000','-ac','2',
+                     '-t',str(seconds),*([] if movie.suffix=='.webm' else ['-movflags','+faststart']),str(candidate)])
+                checks=analyse_audio(candidate,{'audio':True},[0,seconds])
+            second.update(gain_db=gain,sfx_gain_retries=retries)
         if any(c['level']=='FAIL' for c in checks):
             raise RuntimeError('Audio delivery QA failed: '+json.dumps(checks))
         candidate.replace(movie)

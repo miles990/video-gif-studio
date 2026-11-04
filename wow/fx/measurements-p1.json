@@ -1,0 +1,233 @@
+{
+  "python": "3.12.8 | packaged by conda-forge | (main, Dec  5 2024, 14:06:27) [MSC v.1942 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "numpy": "2.5.4",
+  "network_calls": 0,
+  "model_calls": 0,
+  "methodology": "Synthetic offline measurements, not independent acceptance or quality-gate review",
+  "S58": {
+    "low": 8,
+    "mid": 15,
+    "high": 31
+  },
+  "S59": {
+    "source_derivative_p999": 0.0037890979041507534,
+    "candidates": [
+      {
+        "duration_ms": 32000.0,
+        "spans": [
+          [
+            0,
+            8000
+          ],
+          [
+            40000,
+            64000
+          ]
+        ],
+        "joins": [
+          {
+            "output_ms": 8000.0,
+            "out_ms": 8000,
+            "in_ms": 40000,
+            "zero_out_ms": 7999.854166666667,
+            "zero_in_ms": 40001.520833333336,
+            "crossfade_ms": 40.0
+          }
+        ],
+        "max_join_derivative": 0.0027398690673428247,
+        "derivative_ratio": 0.7230927087794288,
+        "tail_50ms_dbfs": -64.82558973617957,
+        "join_hf_vs_neighbors_db": [
+          -5.913422170024861
+        ]
+      },
+      {
+        "duration_ms": 28000.0,
+        "spans": [
+          [
+            0,
+            24000
+          ],
+          [
+            60000,
+            64000
+          ]
+        ],
+        "joins": [
+          {
+            "output_ms": 24000.0,
+            "out_ms": 24000,
+            "in_ms": 60000,
+            "zero_out_ms": 23998.75,
+            "zero_in_ms": 60001.520833333336,
+            "crossfade_ms": 40.0
+          }
+        ],
+        "max_join_derivative": 0.0034000538765176017,
+        "derivative_ratio": 0.8973254221784623,
+        "tail_50ms_dbfs": -64.82558973617957,
+        "join_hf_vs_neighbors_db": [
+          -5.69731865119299
+        ]
+      },
+      {
+        "duration_ms": 30000.0,
+        "spans": [
+          [
+            0,
+            14000
+          ],
+          [
+            48000,
+            64000
+          ]
+        ],
+        "joins": [
+          {
+            "output_ms": 14000.0,
+            "out_ms": 14000,
+            "in_ms": 48000,
+            "zero_out_ms": 13999.166666666666,
+            "zero_in_ms": 48000.854166666664,
+            "crossfade_ms": 40.0
+          }
+        ],
+        "max_join_derivative": 0.0034787646244337465,
+        "derivative_ratio": 0.9180983739224439,
+        "tail_50ms_dbfs": -64.82558973617957,
+        "join_hf_vs_neighbors_db": [
+          2.156193586844013
+        ]
+      }
+    ]
+  },
+  "S61": {
+    "frames": 120,
+    "max_step_px": 2.8294736842109955,
+    "max_acceleration_px": 0.2735264944354583,
+    "needs_review": 0,
+    "min_headroom_ratio": 0.3571428571428573
+  },
+  "S62": {
+    "full_seconds": 2.8438626999850385,
+    "changed_seconds": 0.8875814999919385,
+    "wall_ratio": 0.3121042024977535,
+    "rerendered": 2,
+    "reused": 6,
+    "shots": [
+      {
+        "shot": 0,
+        "all_png_hashes_equal": true,
+        "pixel_mad": 0.0
+      },
+      {
+        "shot": 1,
+        "all_png_hashes_equal": true,
+        "pixel_mad": 0.0
+      },
+      {
+        "shot": 2,
+        "all_png_hashes_equal": false,
+        "pixel_mad": 0.17496942001099505
+      },
+      {
+        "shot": 3,
+        "all_png_hashes_equal": true,
+        "pixel_mad": 0.0
+      },
+      {
+        "shot": 4,
+        "all_png_hashes_equal": true,
+        "pixel_mad": 0.0
+      },
+      {
+        "shot": 5,
+        "all_png_hashes_equal": false,
+        "pixel_mad": 0.17945085822490991
+      },
+      {
+        "shot": 6,
+        "all_png_hashes_equal": true,
+        "pixel_mad": 0.0
+      },
+      {
+        "shot": 7,
+        "all_png_hashes_equal": true,
+        "pixel_mad": 0.0
+      }
+    ],
+    "thumbnail_count": 9,
+    "browser_console": "not executed; coordinator can open generated review HTML"
+  },
+  "S56": {
+    "preview_size": [
+      360,
+      640
+    ],
+    "presets": [
+      {
+        "preset": "pop",
+        "bbox_at_90ms": [
+          66,
+          453,
+          277,
+          504
+        ],
+        "safe_bounds": [
+          26,
+          72,
+          316,
+          504
+        ]
+      },
+      {
+        "preset": "typewriter",
+        "bbox_at_90ms": [
+          84,
+          462,
+          257,
+          504
+        ],
+        "safe_bounds": [
+          26,
+          72,
+          316,
+          504
+        ]
+      },
+      {
+        "preset": "bounce",
+        "bbox_at_90ms": [
+          84,
+          455,
+          257,
+          497
+        ],
+        "safe_bounds": [
+          26,
+          72,
+          316,
+          504
+        ]
+      },
+      {
+        "preset": "clean",
+        "bbox_at_90ms": [
+          84,
+          462,
+          257,
+          504
+        ],
+        "safe_bounds": [
+          26,
+          72,
+          316,
+          504
+        ]
+      }
+    ],
+    "contact_sheet": "p1-caption-contact.png",
+    "quality_gate": "pending independent reviewers"
+  }
+}

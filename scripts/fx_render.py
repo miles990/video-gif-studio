@@ -16,7 +16,7 @@ from compose_timeline import compose, resolve_plan, export_timeline, FORMATS
 from fx import Context, EFFECTS, TRANSITIONS, evaluate
 from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers, audio_peaks
 
-TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model','experimental','source_audio','keep_audio','duck','loudnorm'}
+TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model','experimental','source_audio','keep_audio','duck','loudnorm','captions','sfx','cut_density','reframe'}
 SEGMENT = {'type','manifest','image','previous','frame','duration_ms','in_ms','out_ms','speed','ramp','ending','end_beat','end_downbeat','transition','review'}
 META = {'name','start_ms','end_ms','start_beat','end_beat','review','stage'}
 
@@ -36,6 +36,8 @@ def beat_index(index, times, where):
     return times[index]
 
 def validate_entry(entry, registry, ctx, where, metadata, experimental=False, skip_models=False):
+    if isinstance(entry,dict) and 'move' in entry and 'name' not in entry:
+        entry=dict(entry,name='camera_move')
     if not isinstance(entry,dict): raise ValueError(f'{where}: expected object with name; available {sorted(registry)}')
     name = entry.get('name')
     if name not in registry: raise ValueError(f'{where}: unknown {name!r}; available {sorted(registry)}')
@@ -60,6 +62,12 @@ def validate_entry(entry, registry, ctx, where, metadata, experimental=False, sk
     if name=='text':
         from fx.effects.typography import resolve_font
         params['font']=resolve_font(params['font'])
+    if name=='camera_move':
+        from fx.effects.camera import MOVES
+        if params['move'] not in MOVES: raise ValueError('move: choose '+', '.join(MOVES))
+        if params['anchor'] not in ('center','subject'): raise ValueError('anchor: center|subject')
+        if params['duration_ms']<0 or params['target']<0 or min(params['stiffness'],params['mass'])<=0 or params['damping']<0:
+            raise ValueError('Invalid camera duration/target/spring physics')
     if name=='parallax':
         from fx.depth import check_model
         check_model(params['model'])
@@ -108,6 +116,12 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
         number(music.get('gain_db',0),'music.gain_db',-60,20)
     offset = music.get('in_ms',0)
     beats = json.loads((path.parent/plan['beatmap']).read_text()) if 'beatmap' in plan else {}
+    layer_design=None
+    if 'cut_density' in plan:
+        if offset: raise ValueError('cut_density requires a zero-origin beatmap; use music_fit first')
+        from beat_layers import apply_layers
+        plan,layer_design=apply_layers(plan,beats)
+        beats=dict(beats,downbeats_ms=layer_design['downbeats_ms'])
     for k in ('beats_ms','downbeats_ms'):
         values = beats.get(k,[])
         if not isinstance(values,list) or any(type(v) not in (int,float) or not math.isfinite(v) or v<0 for v in values) or any(b<=a for a,b in zip(values,values[1:])):
@@ -117,6 +131,24 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
             raise ValueError(f'beatmap.downbeats_ms: {t} is not in beats_ms (1ms rounding tolerance)')
     ctx = Context(0,0,fps,[v-offset for v in beats.get('beats_ms',[])],seed=plan.get('seed',0),downbeats_ms=[v-offset for v in beats.get('downbeats_ms',[])],sampling=plan.get('sampling','linear'))
     ctx.proxy_skipped=proxy_skipped
+    ctx.layer_design=layer_design
+    ctx.captions=None
+    if 'captions' in plan:
+        from captions import prepare
+        ctx.captions=prepare(plan['captions'],path.parent,experimental)
+    if 'sfx' in plan:
+        spec=plan['sfx']
+        if spec!='auto' and not isinstance(spec,dict): raise ValueError('sfx: use auto or an options object')
+        if isinstance(spec,dict):
+            keys(spec,{'mode','user_folder','kenney_folder','gain_db'},'sfx')
+            if spec.get('mode','auto')!='auto': raise ValueError('sfx.mode: auto')
+            number(spec.get('gain_db',0),'sfx.gain_db',-60,12)
+            for key in ('user_folder','kenney_folder'):
+                if key in spec and not (path.parent/spec[key]).is_dir(): raise ValueError('sfx.'+key+': folder does not exist')
+        if not set(formats)&{'mp4','mov','webm'} and not _silent_derivative: raise ValueError('sfx requires MP4, MOV or WebM')
+    if 'reframe' in plan:
+        keys(plan['reframe'],{'masks'},'reframe')
+        if not (path.parent/plan['reframe'].get('masks','')).is_file(): raise ValueError('reframe.masks: existing timeline-aligned mask manifest required')
     prepared = dict(plan); prepared['segments'] = []
     cursor = 0;extra_source_files=[]
     for i, original in enumerate(plan['segments']):
@@ -195,6 +227,11 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
             value = beat_index(entry[edge+'_beat'],ctx.beats_ms,where+'.'+edge+'_beat') if edge+'_beat' in entry else entry.get(edge+'_ms',default)
             effect[edge+'_ms'] = number(value,where+'.'+edge+'_ms',0,cursor)
         if effect['end_ms']<=effect['start_ms']: raise ValueError(f'{where}: end must follow start')
+        if effect['name']=='camera_move' and effect['params']['move']=='whip':
+            from fx.effects.camera import MOVES
+            duration=effect['params']['duration_ms'] or MOVES['whip'][0]
+            if effect['end_ms']-effect['start_ms']<duration:
+                raise ValueError(f'{where}: whip end_ms must include its full duration ({duration:g} ms) to return to original framing')
         if 'sampling' in effect['params'] and 'sampling' not in entry: effect['params']['sampling'] = ctx.sampling
         if effect['params'].get('background'):
             effect['params']['background'] = str((path.parent/effect['params']['background']).resolve())
@@ -240,7 +277,10 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
 def experimental_items(plan):
     """Sorted names of opted-in operations, including the legacy export path."""
     used = set()
+    for feature in ('captions','cut_density','reframe','sfx'):
+        if feature in plan: used.add(feature)
     for entry in plan.get('effects',[]):
+        if isinstance(entry,dict) and 'move' in entry: used.add('effect:camera_move')
         if isinstance(entry,dict) and EFFECTS.get(entry.get('name'),{}).get('status')=='experimental':
             used.add('effect:'+entry['name'])
     for segment in plan.get('segments',[]):
@@ -294,19 +334,38 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
     if retaining and not streaming and not _silent_derivative:
         raise ValueError('Source audio requires MP4, MOV or WebM')
     cfr=streaming and fps!=100
-    config=settings((ctx.width,ctx.height),fps,platform,proxy)
+    delivery_size=(ctx.width,ctx.height)
+    if plan.get('reframe') and not platform: delivery_size=(max(2,round(ctx.height*9/16/2)*2),ctx.height)
+    config=settings(delivery_size,fps,platform,proxy)
     config['proxy_skipped']=ctx.proxy_skipped
     config['legacy_100fps']=streaming and fps==100
+    original_size=(ctx.width,ctx.height)
     if streaming:
         ctx.width,ctx.height=config['size']
         if cfr: ctx.fps=fps
+    follower=None
+    if plan.get('reframe'):
+        from reframe import Reframer
+        target=config['size'] if streaming else delivery_size
+        ctx.width,ctx.height=target
+        if not streaming: config=settings(target,fps)
+        follower=Reframer(path.parent/plan['reframe']['masks'],original_size,target,sum(t for _,t in items),ctx.fps)
+    caption_renderer=None
+    if ctx.captions:
+        from captions import CaptionRenderer
+        caption_zone=dict(config['safe_zone'])
+        if follower:
+            caption_zone['y']=max(caption_zone['y'],math.ceil(ctx.height*.64))
+            caption_zone['bottom']=min(caption_zone['bottom'],math.floor(ctx.height*.79))
+        caption_renderer=CaptionRenderer(ctx.captions,(ctx.width,ctx.height),caption_zone)
+        ctx.captions['lines']=caption_renderer.lines
     origins={}
     for s in plan['segments']:
         if s.get('type') in ('animation','loop') and s.get('manifest'):
             manifest=path.parent/s['manifest'];data=json.loads(manifest.read_text());clock=0
             for file,duration in zip(sorted((manifest.parent/'frames').glob('*.png')),data['durations_ms']):
                 origins[str(file.resolve())]=clock;clock+=duration
-    if not streaming and not effects and not transitions and not any('end_downbeat' in s or 'ramp' in s or s.get('speed',1)!=1 for s in plan['segments']):
+    if not streaming and not effects and not transitions and not caption_renderer and not follower and not ctx.layer_design and not any('end_downbeat' in s or 'ramp' in s or s.get('speed',1)!=1 for s in plan['segments']):
         if ctx.source_trimmed or any('speed' in s for s in plan['segments']) or _silent_derivative:
             # Explicit unity shares the exact legacy frame/exposure path.
             images=[]
@@ -340,6 +399,7 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
         if frame_count<1: raise ValueError('Timeline rounds to zero video frames; choose a higher fps or longer duration')
         sample_edges=[k*1000/fps for k in range(frame_count+1)]
         for i,effect in enumerate(effects):
+            effect['requested_start_ms']=effect['start_ms']
             times=effect['trigger_times_ms'] or [effect['start_ms']]
             effect['quantization']=[dict(quantize(t,fps),effect_index=i) for t in times]
             groups={}
@@ -355,6 +415,7 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
         for segment in segments:
             segment['start_ms']=quantize(segment['start_ms'],fps)['quantized_ms']
         for tr in transitions:
+            tr['requested_cut_ms']=tr['cut_ms']
             delta=quantize(tr['cut_ms'],fps)['quantized_ms']-tr['cut_ms']
             for key in ('start_ms','end_ms','cut_ms'):tr[key]+=delta
     cache = {}
@@ -372,7 +433,7 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
             if len(cache)>=3:cache.pop(next(iter(cache)))
             with Image.open(file) as im:
                 rgba=im.convert('RGBA')
-                if streaming and rgba.size!=(ctx.width,ctx.height):
+                if streaming and not follower and rgba.size!=(ctx.width,ctx.height):
                     from PIL import ImageOps
                     rgba=ImageOps.pad(rgba,(ctx.width,ctx.height),method=Image.Resampling.NEAREST if ctx.sampling=='nearest' else Image.Resampling.LANCZOS,color=(0,0,0,0))
                 cache[file]=np.array(rgba)
@@ -421,6 +482,7 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
                 frame=interpolate(frame,other,phase,method,model=plan.get('rife_model',''),flows=flows)
         if t==ctx.t_ms and index==ctx.segment['index']:
             current_source.update(source_ms=round(float(source_ms),3),interpolation=method,extended_last_frame=extended)
+        if follower: frame=np.asarray(follower.apply(frame,t))
         frame=floating(frame)
         for effect in effects:
             if effect['stage']=='source' and not effect.get('proxy_skipped') and effect['start_ms']<=active_t<effect['end_ms']:
@@ -453,7 +515,9 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
                     ctx.effect_start_ms=effect['start_ms']
                     frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
             output_items.append((file,end-t))
-            yield Image.fromarray(restore(frame,np.uint8))
+            image=Image.fromarray(restore(frame,np.uint8))
+            if caption_renderer: image=caption_renderer.overlay(image,t)
+            yield image
             if history_size:history.append(floating(before_effects));history_times.append(t)
     if streaming:
         import tempfile
@@ -468,17 +532,30 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
             report=encode_frames(delivery_frames(),movie,config,background)
             source=plan.get('source_audio') if (keep_audio if keep_audio is not None else plan.get('keep_audio',False)) else None
             music=plan.get('music')
+            sfx_spec=None;sfx_events=[]
+            if 'sfx' in plan:
+                from sfx import events_from_plan,render_track
+                options={} if plan['sfx']=='auto' else plan['sfx']
+                for segment in segments:
+                    if 'ramp' in segment.get('edit',{}):
+                        segment['edit']['ramp']['hit_at_ms']=ctx.beats_ms[segment['edit']['ramp']['into_beat']]
+                requested=events_from_plan(plan,effects,transitions,segments,ctx.captions,fps if cfr else None)
+                sfx_file=Path(temporary)/'sfx.wav'
+                sfx_events=render_track(requested,report['container_duration_ms'],sfx_file,
+                    path.parent/options['user_folder'] if options.get('user_folder') else None,
+                    path.parent/options['kenney_folder'] if options.get('kenney_folder') else None,options.get('gain_db',0))
+                sfx_spec={'file':str(sfx_file)}
             def audio_spec(value):
                 if not value:return None
                 value=dict(file=value) if isinstance(value,str) else dict(value)
                 value['file']=str((path.parent/value['file']).resolve());return value
-            if not platform and not source and loudnorm is None and 'loudnorm' not in plan and music:
+            if not platform and not source and not sfx_spec and loudnorm is None and 'loudnorm' not in plan and music:
                 from music_sync import mux_music
                 spec=audio_spec(music)
                 audio=mux_music(movie,spec['file'],report['container_duration_ms'],spec.get('in_ms',0),spec.get('gain_db',0),spec.get('fade_in_ms',30),spec.get('fade_out_ms',30))
             else:
                 audio=audio_delivery(movie,report['container_duration_ms'],audio_spec(music),audio_spec(source),
-                    duck if duck is not None else plan.get('duck',True), loudnorm if loudnorm is not None else plan.get('loudnorm',True))
+                    duck if duck is not None else plan.get('duck',True), True if sfx_spec else (loudnorm if loudnorm is not None else plan.get('loudnorm',True)),sfx=sfx_spec)
             elapsed=time.perf_counter()-started
             report['audio']=audio
             movie.with_suffix(movie.suffix+'.json').write_text(json.dumps(report,indent=2))
@@ -488,6 +565,10 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
                 source_samples=source_records,experimental_items=experimental_items(plan),audio=audio,
                 collision_policy='same-frame events evaluated together; maximum envelope wins',
                 render=dict(seconds=elapsed,fps=len(output_items)/elapsed,requested_fps=fps,streaming=True))
+            if ctx.captions: manifest['captions']=ctx.captions
+            if sfx_spec: manifest['sfx']=sfx_events
+            if ctx.layer_design: manifest['beat_layers']=ctx.layer_design
+            if follower: manifest['reframe']=follower.report
             (root/'manifest.json').write_text(json.dumps(manifest,indent=2))
             (root/'qc.json').write_text(json.dumps(report,indent=2))
             root.rename(out)
@@ -498,6 +579,9 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
     extra['warnings'] = [tr['warning'] for tr in transitions if 'warning' in tr]
     extra['source_samples']=source_records
     extra['experimental_items']=experimental_items(plan)
+    if ctx.captions: extra['captions']=ctx.captions
+    if ctx.layer_design: extra['beat_layers']=ctx.layer_design
+    if follower: extra['reframe']=follower.report
     for segment in segments:
         segment['start_frame'] = bisect.bisect_left(sample_edges,segment['start_ms'])
         segment['end_frame_exclusive'] = bisect.bisect_left(sample_edges,segment['start_ms']+segment['duration_ms'])
@@ -545,6 +629,9 @@ def main(argv=None):
     ap.add_argument('--fps',type=int,default=30)
     ap.add_argument('--platform',choices=['tiktok','reels','shorts','youtube','square'])
     ap.add_argument('--proxy',action='store_true')
+    ap.add_argument('--review-html',action='store_true',help='Build independent-shot proxy review and incremental cache')
+    ap.add_argument('--previous',type=Path,help='Previous review directory')
+    ap.add_argument('--decisions',type=Path,help='Saved review decisions JSON')
     ap.add_argument('--keep-audio',choices=['on','off'],nargs='?',const='on')
     ap.add_argument('--duck',choices=['on','off'])
     ap.add_argument('--loudnorm',choices=['on','off'])
@@ -580,6 +667,10 @@ def main(argv=None):
                 print(f'Warning: beat spacing < 1 frame ({1000/a.fps:.3f} ms at {a.fps} fps)',file=sys.stderr)
             print('Plan valid'); return 0
         if not a.out: raise ValueError('--out required')
+        if a.review_html:
+            from review_shots import build
+            report=build(a.plan,a.out,a.previous,a.decisions,a.experimental,proxy=True)
+            print(json.dumps({k:report[k] for k in ('rerendered_shots','reused_shots','seconds')}));return 0
         print(json.dumps(render(a.plan,a.out,a.formats,a.background,a.experimental,a.interpolate,a.fps,a.platform,a.proxy, None if a.keep_audio is None else a.keep_audio=='on',None if a.duck is None else a.duck=='on',None if a.loudnorm is None else a.loudnorm=='on'))); return 0
     except (OSError,ValueError,KeyError,TypeError,IndexError,RuntimeError) as exc:
         print(f'fx_render: {exc}',file=sys.stderr); return 2
