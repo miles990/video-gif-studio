@@ -25,6 +25,14 @@ def parallax(frame,t,ctx,amount=1.0,depth='',model='.runtime/models/depth-anythi
     """Two depth layers; dilated foreground removal and inpaint prevent exposed holes."""
     check_model(model)
     if amount==0:return frame
+    if np.min(frame[...,3])<.999:
+        # A cutout has no background plate to reconstruct. Move its coverage once,
+        # constrained to canvas; integer translation preserves the alpha sum exactly.
+        yy,xx=np.nonzero(frame[...,3]>0)
+        if not len(xx): return np.zeros_like(frame)
+        dx=int(np.clip(round(distance*amount),-int(xx.min()),ctx.width-1-int(xx.max())))
+        dy=int(np.clip(round(-distance*.18*amount),-int(yy.min()),ctx.height-1-int(yy.max())))
+        return straight(cv2.warpAffine(premultiply(frame),np.float32([[1,0,dx],[0,1,dy]]),(ctx.width,ctx.height),flags=cv2.INTER_NEAREST))
     if not depth:
         import hashlib
         depth_map(frame,model,cache)

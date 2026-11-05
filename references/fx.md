@@ -373,6 +373,14 @@ missing history is omitted. No feedback or future samples. echo requests four fr
 The renderer keeps a bounded three-source-image cache and one flow pair. Video
 frames flow directly to FFmpeg; raster exports retain their film in memory.
 
+## Open defects (independent review P2a+P2b, 2026-11-05; fix scheduled in P2c — experimental items only)
+- `gl_polka_dots_curtain` lags on wide canvases (at p=0.99 16:9 still 1.5% A, 10:1 66%) — avoid on wide formats.
+- On transparent sources `gl_swirl`, `gl_rotate_scale_fade`, `gl_cross_warp`, `gl_dreamy_zoom` are clipped to fragments by the "both transparent → clear" rule; `spin` zoom-fills transparent subjects; `hex_shutter` mid-frames turn opaque dark blue on transparent backgrounds.
+- Caption `clean` can break an over-long word into a one-letter orphan line that overlaps the next line by 2 frames.
+- gl ports output NaN for non-finite `p` via the Python API; no "blends colours" warning for gl ports in nearest mode.
+- `gl_glitch_memories` faithfully reproduces an upstream shader whose block offset is always 0 (whole-image shift only).
+- Performance: gl ports 98–324 ms/frame at 720p (offline OK, not for live preview).
+
 ## Experimental (pending quality gate)
 
 The catalog below gives defaults; every numeric parameter accepts the existing
@@ -387,30 +395,30 @@ beat/keyframe/audio envelope syntax. `--list --experimental --json` provides typ
 |---|---|
 | shake | amount=1, distance=9px, seed=7; built-in 220ms beat decay, 2x on downbeats; reflected edge fill |
 | rgb_split | amount=1, distance=6px, direction=0 degrees; R +d / B -d, G and alpha unchanged |
-| radial_blur | amount=1, distance=.22 radius fraction, samples=12; radial zoom integration |
-| echo | amount=.65, decay=.55; lighten premultiplied historical trails, current image retained |
-| text | content='節奏 RHYTHM', font='', size=64px, color=FFF2CE, stroke=3px, stroke_color=142132, shadow_px=4 down/right, shadow_color=080F18, x=.5, y=.5, entrance=pop, amount=1, scale=1 |
-| film_grain | amount=.025 standard deviation, seed=17; zero mean monochrome noise per output frame |
+| radial_blur | amount=1, distance=.045 radius fraction, samples=12; restrained radial zoom integration; use .22 for a strong impact |
+| echo | amount=.65, decay=.55; softened trails weighted by amount × decay^(age+1), newest age=0; opaque plates use positive differences, RGBA ghosts composite behind the current cutout |
+| text | content='節奏\nRHYTHM', font='' prefers bold CJK, size=96px, color=FFF2CE, stroke=2px, stroke_color=142132, shadow_px=4 down/right, shadow_color=080F18, x=.5, y=.42, entrance=pop, amount=1, scale=1 |
+| film_grain | amount=.025 standard deviation at 720p, seed=17; monochrome noise attenuated by sqrt(clamp(short edge/720,.25,1)) on smaller canvases |
 | vignette | amount=.55; center retained, radial corner darkening |
 | light_leak | amount=.4, seed=3; warm drifting edge exposure |
-| dust_scratches | amount=.5, seed=29, density=.02; sparse animated flecks and one fine line |
+| dust_scratches | amount=.5, seed=29, density=.001; sparse dust and one short hairline, pattern held for three frames |
 | invert_flash / black_flash | amount=1; negative / dip to black, alpha unchanged |
 | split_screen | amount=1, panels=0 auto 1→2→4 on first three beats; explicit panels=1/2/4; whole frame resized into each cell |
 | mirror | amount=1, direction=horizontal or vertical; copy left/top half by reflection |
 | kaleidoscope | amount=1, sectors=6; polar wedge reflection |
-| posterize | amount=1, levels=4 per channel |
-| halftone | amount=1, size=8px; clustered monochrome screen |
-| multi_cutout | amount=1, distance=65px, border_px=6; three overlapping outline cards |
+| posterize | amount=1, levels=4 per channel; 3×3 median removes isolated specks inside opaque coverage before quantization |
+| halftone | amount=1, size=8px; clustered colour screen with independent RGB dot coverage; supports tiny inputs |
+| multi_cutout | amount=1, distance=65px, border_px=6; three overlapping outline cards; opaque input warns and returns unchanged |
 | parallax | amount=1 camera progress, distance=18px, depth='', model=.runtime/models/depth-anything-v2-small.onnx, cache=wow/fx/demo2/work/depth |
 
 | Transition | Parameters / defaults |
 |---|---|
 | shape_wipe | shape=circle (diamond/star/heart), softness=0px; p is revealed area; shared masks module with hex_shutter |
-| luma_wipe | mask=linear (radial/cloud or grayscale PNG path), invert=false, softness=0, seed=7 |
-| push / slide | direction=left (right/up/down); both shots move / only incoming moves |
-| spin | turns=.25; reflected edge fill, exact endpoints |
+| luma_wipe | mask=linear (radial/cloud or grayscale PNG path), invert=false, softness=12px, seed=7; PNG masks normalized by actual 8/16-bit depth |
+| push / slide | direction=left (right/up/down); both shots move / only incoming moves; push sums complementary edge coverage so fractional positions leave no alpha seam |
+| spin | turns=.25; analytic rotation-cover zoom prevents reflected corners, exact endpoints |
 | zoom_through | scale=1.8; centered zoom through the cut |
-| glitch | seed=7, amount=1; animated row blocks and scanlines |
+| glitch | seed=7, amount=1; animated row blocks and scanlines; nearest sampling omits colour-changing scanline darkening |
 
 Geometry respects sampling=nearest. Color blends, grain, halation and soft wipes
 intentionally create colors. Opaque camera moves extend reflected edges to avoid
@@ -418,15 +426,28 @@ black wedges; transparent geometry uses premultiplied alpha and constant transpa
 borders. The renderer converts to float32 once per sampled source and quantizes once
 at output; public function calls still return the input dtype and preserve inputs.
 
-Text searches an explicit font path, VIDEO_GIF_FONT, Windows msjh.ttc (Microsoft
-JhengHei), macOS PingFang.ttc, then Linux NotoSansCJK-Regular.ttc. Missing fonts error
+Text searches an explicit font path or VIDEO_GIF_FONT; otherwise bold Microsoft
+JhengHei / Noto CJK is preferred when installed, with Windows msjh.ttc, macOS
+PingFang.ttc and Linux NotoSansCJK-Regular.ttc as system fallbacks. Missing fonts error
 before output creation with these suggestions. No fallback to Hershey or tofu fonts.
 The manifest records the resolved font path. Pop/scale entrance lasts 180ms from the
 effect's start; a restrained 10% beat scale follows. System font files are not bundled.
+Empty titles raise a clear error. Missing glyph warnings list every missing U+ code point.
+Long titles shrink to fit 88% of the available width and the height around their anchor, with a warning;
+use explicit newlines or shorter titles for readability. If even a 1 px font cannot
+fit the width, or a multiline title at minimum size exceeds the available height around its anchor,
+rendering raises `text too long to fit canvas`. Text does not paginate or silently crop.
+Circle/radial masks use pixel distances, so their contours are circular in either aspect ratio.
+RIFE weights are loaded only for an actual fractional slow-motion sample, never for
+stills, unity speed or exact source samples. Missing, empty or invalid models name
+the path in a clean error; there is no automatic backend substitution.
 
 ## Small depth and 2.5D
 
 `parallax` accepts a retained 16-bit depth PNG (`depth`) or a Small ONNX model.
+For RGBA cutouts there is no opaque background to reconstruct: the cutout is translated
+once as a foreground layer, in whole pixels and constrained to the canvas. This preserves
+the alpha sum exactly and excludes hidden RGB; the cutout path needs no depth inference.
 Larger depth values mean nearer. RGB is resized to dimensions divisible by 14,
 ImageNet normalized, and passed as pixel_values [1,3,H,W]; predicted_depth is resized
 back. `depth_map(..., engine=...)` supports fake engines in offline tests.
@@ -494,6 +515,10 @@ Preview validation: python wow/fx/check_preview.py generated the original plus a
 
 ## P1 experimental captions
 
+P2a fixes the reviewed oversized-word, punctuation, numeric-keyword, spring cut,
+typing-caret, emoji-wrapping and busy-background defects. Regression and rendered
+evidence are recorded in [P2a build notes](../wow/fx/build-notes-p2a.md).
+
 > **Known limitations after P1b (2026-11-05):** ASR can still misrecognize words;
 > SRT/script timing remains approximate. Missing system glyphs still produce an
 > explicit drop warning; emoji fallback is monochrome and depends on installed
@@ -529,11 +554,10 @@ the manifest; these are not added to the stable effect table.
 nonnegative milliseconds with ordered starts and positive durations. Inline lists
 also work. Put spaces in the text where desired; English words usually include a
 leading space after the first word. Timings can be supplied per character for exact
-typewriter timing. For a multi-character word, typewriter distributes characters
-uniformly across that word's interval; other entrances expose the whole word at
-its onset. Words stay visible until the next line/end. Do not put a whole paragraph
-into one timed word: automatic line reflow cannot preserve simultaneous words on
-different single-line screens.
+typewriter timing. Typewriter reveals timed words at their onsets with a pulsing
+insertion caret; character timings produce character typing. Words stay visible until
+the next line/end. Oversized single words split into grapheme chunks with proportional
+display timing, while the exported original word timing stays unchanged.
 
 Alternate inputs: `"srt":"speech.srt"`, `"script":"Hello world","duration_ms":3000`,
 or `"audio":"speech.wav","model":"/cached/faster-whisper-model"`. SRT cue boundaries
@@ -571,20 +595,20 @@ Size/stroke/shadow are pixels at 1920 output height, scaled with the canvas.
 Position is top/center/bottom. `box:null` disables the box. `safe_zone` optionally
 supplies fractional x/y/right/bottom bounds; they intersect P0 platform bounds and
 its 2%-width text inset, never relax them. Animated maximum extents are included
-when laying out. Text reflows to fit the actual font; oversized unbreakable tokens
-error before rendering. Bold system fonts are preferred (Microsoft JhengHei Bold /
+when laying out. Text reflows to fit the actual font; oversized tokens first shrink
+to about 60%, then split at grapheme boundaries with a warning. Bold system fonts are preferred (Microsoft JhengHei Bold /
 Noto CJK Bold); the default is 112 px with 8 px dark stroke. `pop` has yellow
 keywords and a mint current word; its 1.22×/180 ms pulse scales only that word.
 Earlier words retain their positions and size. `typewriter` now reveals whole
-timed words at their onsets, with a yellow current word, mint keywords and dark
-box. `clean` is 88 px white text with a 10 px dark stroke and 4 px shadow;
+timed words at their onsets with a pulsing caret, yellow current word, mint keywords and dark
+box. `clean` is 88 px white text with a 10 px dark stroke, 4 px shadow and dark panel;
 `bounce` uses a navy growing box, mint current word, amber keywords and a damped
 400 ms entrance. `current_word_color` is separate from `keyword_color` and takes
 precedence while the word is current. Boxes grow with revealed text. `current_word:false`
 disables active-word emphasis independently of keyword selection. These numeric
 properties do not substitute for the pending visual-quality gate.
 
-Every input timed word is atomic in both logical and pixel reflow. Its glyphs
+Input timed words stay atomic when they fit after bounded shrinking. Their glyphs
 retain its word ID and onset; no merged-string character search reconstructs
 timings. Each line takes its start/end from its own words. A sub-frame word gets
 at least one delivered frame (the line's display end may extend to that frame's
@@ -598,16 +622,20 @@ punctuation. After closing punctuation, insert a space only before Latin/numbers
 For example: `今天 Ship 了 v2.0，共 1,234 位使用者`.
 `language:zh` / `zh-TW` or `traditional:true` also maps sentence punctuation
 `, . ! ? : ;` to `，。！？：；`; decimal/version dots and numeric grouping commas
-inside `v2.0`, `3.14`, `1,234` stay ASCII. JSON/SRT word text has no edge spaces.
+inside `v2.0`, `3.14`, `1,234` stay ASCII, as do punctuation inside `Node.js`,
+`e.g.`, URLs and `10:30`. JSON/SRT word text has no edge spaces.
 
 Line limits use fullwidth=1, halfwidth=0.5. A timed word may exceed that logical
-limit intact; oversized pixel widths must fit via bounded uniform reduction
-(at most 26%) or fail before rendering. Sentence endings and pauses ≥150 ms
+limit intact; oversized pixel widths first use uniform reduction down to about 60%,
+then grapheme splitting with a warning. Extremely narrow safe zones can require
+further shrinking, explicitly warned. Emoji stay attached to the preceding word.
+Sentence endings and pauses ≥150 ms
 start a new line; singleton tails are rebalanced using whole timed words when
 possible. SRT/script interpolation still uses the small `captions.LEXICON`
 dictionary and atomic English/number/emoji tokens; it is not a general Chinese
 segmenter or acoustic aligner. Automatic keywords are 台北市政府 / 開放資料 / 效果
-and complete numeric tokens, including `v2.0`, `1,234` and `3.14`. An explicit `keywords` list
+and complete numeric tokens, including `v2.0`, `1,234` and `3.14`; digits inside
+`iPhone15`, `H264` or `10:30` are not picked as numeric keywords. An explicit `keywords` list
 replaces the keyword selection; `[]` disables keyword highlights. Set
 `current_word:false` as well to disable active-word emphasis.
 
@@ -660,9 +688,32 @@ The default crash_out target/duration changes scale by at most 0.16 per frame
 at 24/25/30/60 fps (measured maximum 0.13737); explicit targets/durations alter
 that bound. QA uses the manifest's named move start, effect end, motion end and
 zoom/pan peaks, within one median frame, to exclude intentional camera events
-from rhythm and flash scoring. It does not exempt the entire motion interval;
+from rhythm and flash scoring. Spring's initial travel through its first physical
+peak is also excluded from cut detection; later settling is not broadly exempted.
+A white/exposure flash is never exempted just because it coincides with a camera event;
 planned shot cuts still win in rhythm scoring. Excluded flash events remain
 auditable under `flashes.excluded_camera_events`.
+
+## P2a default gate kit
+
+`python scripts/fx_gate_kit.py --out <outside-repo-directory> [--items light_leak spin]`
+renders every stable and experimental registry item with catalog visual defaults.
+Omitting `--out` selects a new OS temporary directory. Each item has four 2-second,
+24 fps MP4s: repo photographic-looking footage and an RGBA matte, at 480×270 and
+270×480, with the same 120 BPM accent; a contact sheet and HTML index link the clips.
+RGBA is checked before compositing onto a checkerboard for MP4 viewing.
+`gate-auto.json` records full-sequence repeated SHA256, alpha and hidden-RGB probes,
+border-gradient seam/stretch heuristics, decoded `qa_media` flicker, visible black
+frames, and ten warm 1280×720 float32 call timings. Errors and heuristic flags remain
+visible, including intentional black/white flashes. These are measurements, not an
+aesthetic score or a promotion decision. Two independent reviewers are still required.
+Alpha range/shape/finite checks cover all frames; colour-only effects additionally
+retain alpha exactly. Opaque coverage and hidden-RGB probes use frames 0, 24 and 47.
+The benchmark uses opaque footage except `multi_cutout`, whose active RGBA path is
+measured; the opaque path intentionally warns and returns unchanged.
+The tool runs serially and enforces a 300 MB output cap. Use the optional runtime and
+`--models <existing-model-directory>` for opaque parallax; the only parameter overrides
+are model/cache resource paths, recorded in JSON. No models are downloaded or copied.
 
 ## P1 subject-following portrait reframe (experimental)
 
@@ -729,3 +780,110 @@ of the preview cache; apply final soundtrack/audio delivery separately. Duration
 changes shift subsequent event times but do **not** automatically snap them back
 to beats; that optional acceptance item remains open. This is an independent-shot
 workflow, not a general NLE cache.
+
+
+## P2b gl-transitions (experimental)
+
+32 CPU ports are available only with `--experimental` or plan
+`"experimental": true`. Use the registry names below on the incoming segment,
+for example `{"name":"gl_curved_wipe","duration_ms":400}`. They remain
+experimental pending independent visual comparison and user spot checks. A
+technical test pass or a generated gate kit is not a promotion decision.
+
+Each port lives in its own `scripts/fx/transitions/gl_*.py`, exposing
+`transition(a,b,p,ctx,**params)` through the registry decorator. The prefix avoids
+collisions with existing transitions. Scalar/vector names and defaults match
+the supplied GLSL; vectors/colors are JSON arrays in plans (Python tuples in
+direct calls), bools are JSON true/false. Colors are float 0..1. GLSL integer
+parameters are integer-valued numbers; `steps<=0` disables stepping where the
+shader supports it. `--list --experimental --json` includes the original
+parameter explanations and `@range` annotations. No shader compiler, GPU,
+external texture, model, or network is needed at runtime.
+
+UVs are bottom-up, sampled at pixel centers through `cv2.remap`, using bilinear
+CLAMP_TO_EDGE or `ctx.sampling='nearest'`. Frames are never resized to square.
+Rotations and radial distances use frame-height units; square/dot/noise grids
+also use that metric so their cells remain square. Grid counts originally
+expressed per normalized width are consequently counts per frame height on
+non-square canvases, except `horizontalHexagons`, which retains upstream's
+width-based hex metric. Directional wipe coverage still spans the full frame.
+These aspect corrections intentionally differ from legacy square-UV shaders.
+Intentional nonlinear warps, pixelation and directional scaling remain visible;
+"no stretching" does not promise that a distortion effect preserves every shape.
+
+All sampling, blending, color thresholds and additive light use premultiplied
+RGBA. RGB is clamped to valid premultiplied coverage, then unpremultiplied once.
+S-63's original-union matte rule is enforced: if BOTH original inputs have zero
+alpha at an output pixel, it stays zero, even when a warp would transport a
+subject there. This can crop moved silhouettes; it deliberately differs from
+unrestricted GLSL coverage. Colored backgrounds and shadows do not create
+coverage outside that union. Exact p=0/1 guards preserve input hidden RGB as
+well as visible pixels; intermediate hidden RGB cannot influence output.
+Bounce composites the moving panel over the incoming shot so a transparent
+panel reveals the subject beneath it; selecting transparent panel pixels alone
+can erase a sparse portrait matte. Opaque Bounce output is unchanged.
+
+Random fields use `ctx.seed` in addition to original shader seed parameters;
+seed=0 preserves the original hash expression, evaluated in float64 before
+float32 conversion for deterministic CPU results. GLSL implementation-specific
+noise pixels can differ. GlitchMemories uses deterministic progress arithmetic,
+not random numbers. DreamyZoom retains the source's literal 0.039269908...
+rotation multiplier, despite its misleading DEG2RAD comment. Source defaults,
+authors and SHA256 are retained in `wow/fx/p2b-provenance.json`.
+
+Documented global MAD monotonicity exceptions: `gl_dreamy_zoom` (white flash),
+`gl_overexposure` (exposure peak), `gl_rotate_scale_fade` (full rotating zoom),
+`gl_swirl` (spatially varying rotation). These still end exactly at B and have
+lower final-quarter than initial-quarter MAD. All other ports meet Spearman
+<= -0.8 on the 21-point fixture; Bounce and Pinwheel can still reverse locally.
+
+BurnThrough and PerlinDissolve cache only immutable static noise fields (two
+dimension/parameter/seed keys each); the shared UV grid caches four sizes.
+LuminanceMelt evaluates its one-dimensional simplex noise on one row and
+broadcasts without changing its formula. Cache keys contain no image content;
+no random global state or source-frame cache is used. Timings include public
+conversion and alpha handling; cold-start timings are recorded separately.
+
+| Registry name | Original shader parameters / defaults |
+| --- | --- |
+| `gl_clock_wipe` | `startingAngle=90.0` |
+| `gl_cross_warp` | none |
+| `gl_directional_warp` | `smoothness=0.1`; `direction=[-1.0, 1.0]` |
+| `gl_dreamy` | none |
+| `gl_dreamy_zoom` | `rotation=6.0`; `scale=1.2` |
+| `gl_rotate_scale_fade` | `center=[0.5, 0.5]`; `rotations=1.0`; `scale=8.0`; `backColor=[0.15, 0.15, 0.15, 1.0]` |
+| `gl_swirl` | none |
+| `gl_water_drop` | `amplitude=30.0`; `speed=30.0` |
+| `gl_burn_through` | `burnColor=[1.0, 0.5, 0.0]` |
+| `gl_overexposure` | `strength=0.6` |
+| `gl_fade_grayscale` | `intensity=0.3` |
+| `gl_color_distance` | `power=5.0` |
+| `gl_luminance_melt` | `direction=true`; `l_threshold=0.8`; `above=false` |
+| `gl_pixelize` | `squaresMin=[20, 20]`; `steps=50` |
+| `gl_dither_dissolve` | `dotSize=0.02` |
+| `gl_random_squares` | `size=[10, 10]`; `smoothness=0.5` |
+| `gl_window_slices` | `count=10.0`; `smoothness=0.5` |
+| `gl_wind` | `size=0.2`; `reversed=false` |
+| `gl_pinwheel` | `speed=2.0` |
+| `gl_polka_dots_curtain` | `dots=20.0`; `center=[0.0, 0.0]` |
+| `gl_crosshatch` | `center=[0.5, 0.5]`; `threshold=3.0`; `fadeEdge=0.1` |
+| `gl_perlin_dissolve` | `scale=4.0`; `smoothness=0.01`; `seed=12.9898` |
+| `gl_glitch_memories` | none |
+| `gl_scale_in` | none |
+| `gl_bounce` | `shadow_colour=[0.0, 0.0, 0.0, 0.6]`; `shadow_height=0.075`; `bounces=3.0` |
+| `gl_multiply_blend` | none |
+| `gl_color_phase` | `fromStep=[0.0, 0.2, 0.4, 0.0]`; `toStep=[0.6, 0.8, 1.0, 1.0]` |
+| `gl_hexagonalize` | `steps=50`; `horizontalHexagons=20.0` |
+| `gl_squares_wipe` | `squares=[10, 10]`; `direction=[1.0, -0.5]`; `smoothness=1.6` |
+| `gl_bow_tie_horizontal` | none |
+| `gl_curved_wipe` | `direction=[0.0, 1.0]`; `curvature=0.6`; `smoothness=0.02`; `shadow=[0.0, 0.0, 0.0, 0.4]` |
+| `gl_arrow_wipe` | `direction=[1.0, 0.0]`; `notch=0.4`; `width=80.0`; `count=1`; `origin=false`; `smoothness=0.004` |
+
+Reproduce measurements with `python wow/fx/benchmark_p2b.py` and the complete
+new review kit with `python scripts/fx_gate_kit.py --gl-transitions --out
+<new-directory-outside-repo>` (put the command on one line). Omitting the filter
+still renders all registry items, including these ports. Gate artifacts are
+outside the repository; JSON measurements and exact commands are linked from
+[P2b build notes](../wow/fx/build-notes-p2b.md). Full selection/exclusion rationale,
+all 161 unselected authors, timing methodology and outstanding visual review
+are recorded there. No ffmpeg xfade fast path is introduced.

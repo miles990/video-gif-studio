@@ -1,0 +1,149 @@
+{
+  "created": "2026-11-05T02:14:57.605667+00:00",
+  "python": "C:\\Users\\User\\.codex\\skills\\video-gif-studio\\.venv\\Scripts\\python.exe",
+  "environment": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "cpu": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.5.4",
+    "opencv": "5.0.0",
+    "opencv_threads": 6
+  },
+  "methodology": {
+    "size": [
+      1280,
+      720
+    ],
+    "dtype": "float32",
+    "warmup": 1,
+    "progress": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "repeats_per_progress": 5,
+    "includes": "public registry call, float conversion, premultiply, remap, finish, restore; no I/O",
+    "monotonic": "21 points, seed-1/2 opaque random textures at 160x90; average tie ranks; Spearman",
+    "geometry": "p=.5 at 1920x1080 and 1080x1920; finite/range/opaque-alpha/shape checks"
+  },
+  "items": [
+    {
+      "name": "gl_bounce",
+      "cold_ms": 208.59530003508553,
+      "median_ms": 213.3950000279583,
+      "min_ms": 206.08550001634285,
+      "max_ms": 232.04319999786094,
+      "samples": [
+        {
+          "p": 0.25,
+          "ms": 208.6241000215523
+        },
+        {
+          "p": 0.25,
+          "ms": 223.967999976594
+        },
+        {
+          "p": 0.25,
+          "ms": 228.45270001562312
+        },
+        {
+          "p": 0.25,
+          "ms": 206.3765000202693
+        },
+        {
+          "p": 0.25,
+          "ms": 206.1795000336133
+        },
+        {
+          "p": 0.5,
+          "ms": 232.04319999786094
+        },
+        {
+          "p": 0.5,
+          "ms": 210.52610001061112
+        },
+        {
+          "p": 0.5,
+          "ms": 222.61140000773594
+        },
+        {
+          "p": 0.5,
+          "ms": 206.1968999914825
+        },
+        {
+          "p": 0.5,
+          "ms": 213.3950000279583
+        },
+        {
+          "p": 0.75,
+          "ms": 222.1064000041224
+        },
+        {
+          "p": 0.75,
+          "ms": 207.25480001419783
+        },
+        {
+          "p": 0.75,
+          "ms": 206.08550001634285
+        },
+        {
+          "p": 0.75,
+          "ms": 224.76010001264513
+        },
+        {
+          "p": 0.75,
+          "ms": 217.6405999925919
+        }
+      ],
+      "progress_mad": [
+        0.24978525936603546,
+        0.2051805853843689,
+        0.11787283420562744,
+        0.0361965149641037,
+        0.05703498050570488,
+        0.10695388168096542,
+        0.12525583803653717,
+        0.1112595647573471,
+        0.0910165086388588,
+        0.043426886200904846,
+        0.008412761613726616,
+        0.033924441784620285,
+        0.04510002210736275,
+        0.043498214334249496,
+        0.03167951479554176,
+        0.021319204941391945,
+        0.011707582511007786,
+        0.009420989081263542,
+        0.010275499895215034,
+        0.009053456597030163,
+        0.0
+      ],
+      "spearman": -0.8532467532467533,
+      "nonmonotonic_documented": false,
+      "sha256": "dddb527f462d1cfdf5cee812ebf3aaa162c4d22d604e86d42c752326827cb39f",
+      "large_canvases": [
+        {
+          "size": [
+            1920,
+            1080
+          ],
+          "shape_ok": true,
+          "finite": true,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "alpha_max_error": 0.0
+        },
+        {
+          "size": [
+            1080,
+            1920
+          ],
+          "shape_ok": true,
+          "finite": true,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "alpha_max_error": 0.0
+        }
+      ]
+    }
+  ]
+}

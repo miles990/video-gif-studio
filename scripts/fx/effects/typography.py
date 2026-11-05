@@ -63,19 +63,33 @@ def check_glyphs(font, content, strict=False):
 
 @lru_cache(maxsize=32)
 def lettering(width,height,content,font,size,color,stroke,stroke_color,shadow_px,shadow_color,x,y):
+    if not content.strip(): raise ValueError('text content must not be empty')
     check_glyphs(font,content)
     face=ImageFont.truetype(font,max(1,round(size)));layer=Image.new('RGBA',(width,height));draw=ImageDraw.Draw(layer)
     box=draw.textbbox((0,0),content,font=face,stroke_width=round(stroke))
+    # Long titles fit the canvas at the requested anchor; never silently crop.
+    available=max(1,2*min(x,width-x)*.88-2*shadow_px)
+    available_height=max(1,2*min(y,height-y)-2*shadow_px)
+    ratio=min(1,available/max(1,box[2]-box[0]),available_height/max(1,box[3]-box[1]))
+    if ratio<1:
+        warnings.warn('text title reduced to fit canvas; split long text into shorter titles for readability',UserWarning)
+        face=ImageFont.truetype(font,max(1,int(face.size*ratio)));stroke=round(stroke*ratio);shadow_px*=ratio
+        box=draw.textbbox((0,0),content,font=face,stroke_width=round(stroke))
+    if box[2]-box[0]>2*min(x,width-x)*.88-2*shadow_px or box[3]-box[1]+2*shadow_px>2*min(y,height-y):
+        raise ValueError('text too long to fit canvas; split into shorter titles or reduce size')
     pos=(x-(box[2]+box[0])/2,y-(box[3]+box[1])/2)
-    draw.text((pos[0]+shadow_px,pos[1]+shadow_px),content,font=face,fill='#'+shadow_color,stroke_width=round(stroke),stroke_fill='#'+shadow_color)
-    draw.text(pos,content,font=face,fill='#'+color,stroke_width=round(stroke),stroke_fill='#'+stroke_color)
+    draw.text((pos[0]+shadow_px,pos[1]+shadow_px),content,font=face,fill='#'+shadow_color,stroke_width=round(stroke),stroke_fill='#'+shadow_color,align='center')
+    draw.text(pos,content,font=face,fill='#'+color,stroke_width=round(stroke),stroke_fill='#'+stroke_color,align='center')
     return np.array(layer,dtype=np.float32)/255
 
 
 @effect(status='experimental',content='Unicode text',font='System font file path; empty searches CJK fonts',size='Font pixels',x='Center x fraction',y='Center y fraction',entrance='pop or scale',amount='Layer opacity',scale='Additional envelope scale')
-def text(frame,t,ctx,content='節奏 RHYTHM',font='',size=64.0,color='FFF2CE',stroke=3.0,stroke_color='142132',shadow_px=4.0,shadow_color='080F18',x=.5,y=.5,entrance='pop',amount=1.0,scale=1.0):
+def text(frame,t,ctx,content='節奏\nRHYTHM',font='',size=96.0,color='FFF2CE',stroke=2.0,stroke_color='142132',shadow_px=4.0,shadow_color='080F18',x=.5,y=.42,entrance='pop',amount=1.0,scale=1.0):
     """Centered CJK lettering with stroke, shadow, 180ms entrance and subtle beat pop."""
+    if not content.strip(): raise ValueError('text content must not be empty')
     if amount==0:return frame
+    if not font and not os.environ.get('VIDEO_GIF_FONT'):
+        font=next((p for p in ('C:/Windows/Fonts/msjhbd.ttc','/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc') if Path(p).is_file()),'')
     layer=lettering(ctx.width,ctx.height,content,resolve_font(font),size,color,stroke,stroke_color,shadow_px,shadow_color,ctx.width*x,ctx.height*y).copy()
     elapsed=max(0,t-ctx.effect_start_ms);progress=min(1,elapsed/180)
     entry=(.65+.35*(1-(1-progress)**3)) if entrance=='pop' else .65+.35*progress

@@ -1,0 +1,627 @@
+[
+  {
+    "name": "gl_clock_wipe",
+    "original": "ClockWipe",
+    "author": "Fernando Kuteken",
+    "license": "MIT",
+    "source": "transitions/ClockWipe.glsl",
+    "sha256": "bd7e6168eec558178685c6ea4ad4f7e0902c3feb904e39b7435f24971409dee3",
+    "rationale": "Angular clock reveal; no existing angular mask.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "startingAngle",
+        "default": "90"
+      }
+    ]
+  },
+  {
+    "name": "gl_cross_warp",
+    "original": "CrossWarp",
+    "author": "Eke Péter <peterekepeter@gmail.com>",
+    "license": "MIT",
+    "source": "transitions/CrossWarp.glsl",
+    "sha256": "a3a8a4800489f26f8ff3be6b63ccef2ab53279d97df16d469db3d4f57b7df381",
+    "rationale": "Spatially staggered zoom exchange, unlike a midpoint zoom cut.",
+    "uniforms": []
+  },
+  {
+    "name": "gl_directional_warp",
+    "original": "DirectionalWarp",
+    "author": "pschroen",
+    "license": "MIT",
+    "source": "transitions/DirectionalWarp.glsl",
+    "sha256": "9b4988a12affa2fc89a7a1d87ad2df8c8bfaf185fc83e958188e5c674dbf03ce",
+    "rationale": "Directional collapsing seam; adds configurable diagonal motion.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "smoothness",
+        "default": "0.1"
+      },
+      {
+        "type": "vec2",
+        "name": "direction",
+        "default": "vec2(-1.0, 1.0)"
+      }
+    ]
+  },
+  {
+    "name": "gl_dreamy",
+    "original": "Dreamy",
+    "author": "mikolalysenko",
+    "license": "MIT",
+    "source": "transitions/Dreamy.glsl",
+    "sha256": "ad95fba01344f89815da3deb1c023478800af04a25c4d56f2ff291448138ae4c",
+    "rationale": "Gentle vertical wave dissolve for restrained edits.",
+    "uniforms": []
+  },
+  {
+    "name": "gl_dreamy_zoom",
+    "original": "DreamyZoom",
+    "author": "Zeh Fernando",
+    "license": "MIT",
+    "source": "transitions/DreamyZoom.glsl",
+    "sha256": "8d3b21accab1dafe21e35c131aec87ce494977f43671ae3d318b3b4dde1ed259",
+    "rationale": "Combined flash/rotation/zoom, distinct from pure flash_cut or spin.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "rotation",
+        "default": "6"
+      },
+      {
+        "type": "float",
+        "name": "scale",
+        "default": "1.2"
+      }
+    ]
+  },
+  {
+    "name": "gl_rotate_scale_fade",
+    "original": "RotateScaleFade",
+    "author": "Fernando Kuteken",
+    "license": "MIT",
+    "source": "transitions/RotateScaleFade.glsl",
+    "sha256": "4484386f72f9d955851feea332d4c449c70e9e25de4cbcefda6e6764c6709144",
+    "rationale": "Full-turn spinning zoom dissolve with background; more graphic than spin cut.",
+    "uniforms": [
+      {
+        "type": "vec2",
+        "name": "center",
+        "default": "vec2(0.5, 0.5)"
+      },
+      {
+        "type": "float",
+        "name": "rotations",
+        "default": "1"
+      },
+      {
+        "type": "float",
+        "name": "scale",
+        "default": "8"
+      },
+      {
+        "type": "vec4",
+        "name": "backColor",
+        "default": "vec4(0.15, 0.15, 0.15, 1.0)"
+      }
+    ]
+  },
+  {
+    "name": "gl_swirl",
+    "original": "Swirl",
+    "author": "Sergey Kosarevsky",
+    "license": "MIT",
+    "source": "transitions/Swirl.glsl",
+    "sha256": "fbbea8a885ed8cdf913fe481ee09e8897a79fd4f7c9ec6a1f459f6010147301e",
+    "rationale": "Radially varying rotation; no existing vortex transition.",
+    "uniforms": []
+  },
+  {
+    "name": "gl_water_drop",
+    "original": "WaterDrop",
+    "author": "Paweł Płóciennik",
+    "license": "MIT",
+    "source": "transitions/WaterDrop.glsl",
+    "sha256": "35c80cdb1b528c3da5e5a993c4133dd0fef4d8c288909fb0d8daca4e4c74ef2b",
+    "rationale": "Bounded expanding ripple front; selected over the near-duplicate Ripple.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "amplitude",
+        "default": "30"
+      },
+      {
+        "type": "float",
+        "name": "speed",
+        "default": "30"
+      }
+    ]
+  },
+  {
+    "name": "gl_burn_through",
+    "original": "BurnThrough",
+    "author": "liubailin2020@gmail.com",
+    "license": "MIT",
+    "source": "transitions/BurnThrough.glsl",
+    "sha256": "d572b6d93c74292c14c1feb3cf55eccfc03ffb98a6bfa3b0900162295f6aa0e9",
+    "rationale": "Four-octave glowing burn contour; modest CPU cost versus FilmBurn.",
+    "uniforms": [
+      {
+        "type": "vec3",
+        "name": "burnColor",
+        "default": "vec3(1.0, 0.5, 0.0)"
+      }
+    ]
+  },
+  {
+    "name": "gl_overexposure",
+    "original": "Overexposure",
+    "author": "Ben Zhang",
+    "license": "MIT",
+    "source": "transitions/Overexposure.glsl",
+    "sha256": "fbae3411c39af59e0b0fa6536c9a9797c6be0702a7e69303c7db8bc087efe26c",
+    "rationale": "Exposure-weighted dissolve retains image structure through a flash.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "strength",
+        "default": "0.6"
+      }
+    ]
+  },
+  {
+    "name": "gl_fade_grayscale",
+    "original": "FadeGrayscale",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/FadeGrayscale.glsl",
+    "sha256": "54dc0a077c7949f87c6697d1a8dc8e0e167ca9a5ebddd4ccbc1022dfe9c283c0",
+    "rationale": "Desaturated bridge for tonal or time changes.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "intensity",
+        "default": "0.3; // if 0.0, the image directly turn grayscale, if 0.9, the grayscale transition phase is very important"
+      }
+    ]
+  },
+  {
+    "name": "gl_color_distance",
+    "original": "ColorDistance",
+    "author": "P-Seebauer",
+    "license": "MIT",
+    "source": "transitions/ColorDistance.glsl",
+    "sha256": "23fe510bb77ab400098ef7c50d032ed834add102b192e629ba0f966beb72ec58",
+    "rationale": "Image-dependent color-distance reveal; complements mask-based luma_wipe.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "power",
+        "default": "5.0"
+      }
+    ]
+  },
+  {
+    "name": "gl_luminance_melt",
+    "original": "LuminanceMelt",
+    "author": "0gust1",
+    "license": "MIT",
+    "source": "transitions/LuminanceMelt.glsl",
+    "sha256": "3980732a493577b250f8c5ff5fe38b3aad7af6fda8c2d67ef5abf974affa99a0",
+    "rationale": "Brightness-qualified melting streaks; uses source luminance, not an external mask.",
+    "uniforms": [
+      {
+        "type": "bool",
+        "name": "direction",
+        "default": "true"
+      },
+      {
+        "type": "float",
+        "name": "l_threshold",
+        "default": "0.8"
+      },
+      {
+        "type": "bool",
+        "name": "above",
+        "default": "false"
+      }
+    ]
+  },
+  {
+    "name": "gl_pixelize",
+    "original": "Pixelize",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/Pixelize.glsl",
+    "sha256": "f5c541b779364dcf92d71f4928efa07c414ffd83a5bfb5b8ca9280a1c73c8b32",
+    "rationale": "Stepped square pixelation bridge for retro and punch edits.",
+    "uniforms": [
+      {
+        "type": "ivec2",
+        "name": "squaresMin",
+        "default": "ivec2(20)"
+      },
+      {
+        "type": "int",
+        "name": "steps",
+        "default": "50"
+      }
+    ]
+  },
+  {
+    "name": "gl_dither_dissolve",
+    "original": "DitherDissolve",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/DitherDissolve.glsl",
+    "sha256": "7775dbc0feef21ccf8e0cd58760f1db53ec32fd78832c8de7bf8b2cd22d089d8",
+    "rationale": "Ordered Bayer dots, visibly distinct from random block dissolve.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "dotSize",
+        "default": "0.02"
+      }
+    ]
+  },
+  {
+    "name": "gl_random_squares",
+    "original": "RandomSquares",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/RandomSquares.glsl",
+    "sha256": "844211ca33ae9f126fddfa9f3987bc853933c7ee2f919ca2d09def7d8040cb6a",
+    "rationale": "Soft randomly timed grid reveal, suitable for beat-driven edits.",
+    "uniforms": [
+      {
+        "type": "ivec2",
+        "name": "size",
+        "default": "ivec2(10, 10)"
+      },
+      {
+        "type": "float",
+        "name": "smoothness",
+        "default": "0.5"
+      }
+    ]
+  },
+  {
+    "name": "gl_window_slices",
+    "original": "WindowSlices",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/WindowSlices.glsl",
+    "sha256": "128052b76eaa2802487cbc8940178daa54c2e91bfd0e157de69f2d6295e51449",
+    "rationale": "Sweeping vertical slats; stronger rhythm than a single wipe.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "count",
+        "default": "10.0"
+      },
+      {
+        "type": "float",
+        "name": "smoothness",
+        "default": "0.5"
+      }
+    ]
+  },
+  {
+    "name": "gl_wind",
+    "original": "Wind",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/Wind.glsl",
+    "sha256": "a6af68366cd1feb21da596e6503994da8bb052c616ec73d4346006837494a01f",
+    "rationale": "Ragged horizontal edge without spatial displacement of the shots.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "size",
+        "default": "0.2"
+      },
+      {
+        "type": "bool",
+        "name": "reversed",
+        "default": "false"
+      }
+    ]
+  },
+  {
+    "name": "gl_pinwheel",
+    "original": "Pinwheel",
+    "author": "Mr Speaker",
+    "license": "MIT",
+    "source": "transitions/Pinwheel.glsl",
+    "sha256": "fb8dea2ecd066a23d683726714add1f40885e68ac124532be1d774f169b08d8d",
+    "rationale": "Multiple rotating radial blades; intentionally locally reversing reveal.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "speed",
+        "default": "2.0"
+      }
+    ]
+  },
+  {
+    "name": "gl_polka_dots_curtain",
+    "original": "PolkaDotsCurtain",
+    "author": "bobylito",
+    "license": "MIT",
+    "source": "transitions/PolkaDotsCurtain.glsl",
+    "sha256": "1a11af446cf3c50bf58d1a2b1547092e386bdcf1b7dff71179661f6a4c71d29a",
+    "rationale": "Origin-driven expanding dot curtain; not a single circular iris.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "dots",
+        "default": "20.0"
+      },
+      {
+        "type": "vec2",
+        "name": "center",
+        "default": "vec2(0, 0)"
+      }
+    ]
+  },
+  {
+    "name": "gl_crosshatch",
+    "original": "Crosshatch",
+    "author": "pthrasher",
+    "license": "MIT",
+    "source": "transitions/Crosshatch.glsl",
+    "sha256": "8066e3d78c79a6be454bae058ff69d3fef87596d562826bddc638a461e1d032c",
+    "rationale": "Intersecting randomized line reveal; complements solid grids.",
+    "uniforms": [
+      {
+        "type": "vec2",
+        "name": "center",
+        "default": "vec2(0.5)"
+      },
+      {
+        "type": "float",
+        "name": "threshold",
+        "default": "3.0"
+      },
+      {
+        "type": "float",
+        "name": "fadeEdge",
+        "default": "0.1"
+      }
+    ]
+  },
+  {
+    "name": "gl_perlin_dissolve",
+    "original": "PerlinDissolve",
+    "author": "Rich Harris",
+    "license": "MIT",
+    "source": "transitions/PerlinDissolve.glsl",
+    "sha256": "14913f1110ab9fc2e0a8c08bf9cc566490e6399c1a0afb9300079dba4c0ca69a",
+    "rationale": "Smooth organic noise dissolve for unobtrusive texture transitions.",
+    "uniforms": [
+      {
+        "type": "float",
+        "name": "scale",
+        "default": "4.0"
+      },
+      {
+        "type": "float",
+        "name": "smoothness",
+        "default": "0.01"
+      },
+      {
+        "type": "float",
+        "name": "seed",
+        "default": "12.9898"
+      }
+    ]
+  },
+  {
+    "name": "gl_glitch_memories",
+    "original": "GlitchMemories",
+    "author": "Gunnar Roth",
+    "license": "MIT",
+    "source": "transitions/GlitchMemories.glsl",
+    "sha256": "95ac53da9e6db7efc350ea26cbfb71e9ee7ec2a23d68b044cb9fa41c1118b407",
+    "rationale": "Channel-offset dissolve; existing glitch is a hard block-displacement cut.",
+    "uniforms": []
+  },
+  {
+    "name": "gl_scale_in",
+    "original": "ScaleIn",
+    "author": "haiyoucuv",
+    "license": "MIT",
+    "source": "transitions/ScaleIn.glsl",
+    "sha256": "e450c0c8712dbe464dde15d5a89a8338d4df090523792beeb6d4c320928296d5",
+    "rationale": "Incoming image alone zooms into place over a stationary outgoing image.",
+    "uniforms": []
+  },
+  {
+    "name": "gl_bounce",
+    "original": "Bounce",
+    "author": "Adrian Purser",
+    "license": "MIT",
+    "source": "transitions/Bounce.glsl",
+    "sha256": "cd741e187f79e905e8221225d5350eff6c87004b94c111e039643d9dae497dcd",
+    "rationale": "Bouncing falling panel with contact shadow; deliberate nonmonotonic motion.",
+    "uniforms": [
+      {
+        "type": "vec4",
+        "name": "shadow_colour",
+        "default": "vec4(0.,0.,0.,.6)"
+      },
+      {
+        "type": "float",
+        "name": "shadow_height",
+        "default": "0.075"
+      },
+      {
+        "type": "float",
+        "name": "bounces",
+        "default": "3.0"
+      }
+    ]
+  },
+  {
+    "name": "gl_multiply_blend",
+    "original": "MultiplyBlend",
+    "author": "Fernando Kuteken",
+    "license": "MIT",
+    "source": "transitions/MultiplyBlend.glsl",
+    "sha256": "881452e2099c875d281dae71c85152318c769f02e9acf8ad52c247bb22f4b1b8",
+    "rationale": "Dark multiply bridge rather than a plain dissolve or black flash.",
+    "uniforms": []
+  },
+  {
+    "name": "gl_color_phase",
+    "original": "ColorPhase",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/ColorPhase.glsl",
+    "sha256": "464c552944723e9d62bcd0bdcaeca67523e4b7c85a3a5591bc062e0056a5fd34",
+    "rationale": "Staggered channel timing for stylized color shifts without motion.",
+    "uniforms": [
+      {
+        "type": "vec4",
+        "name": "fromStep",
+        "default": "vec4(0.0, 0.2, 0.4, 0.0)"
+      },
+      {
+        "type": "vec4",
+        "name": "toStep",
+        "default": "vec4(0.6, 0.8, 1.0, 1.0)"
+      }
+    ]
+  },
+  {
+    "name": "gl_hexagonalize",
+    "original": "Hexagonalize",
+    "author": "Fernando Kuteken",
+    "license": "MIT",
+    "source": "transitions/Hexagonalize.glsl",
+    "sha256": "abcac2efc147d397875a233ad010d72b03986237f0955ae2b18a214987d75c08",
+    "rationale": "Hexagonal sampling cells; unrelated to the existing six-sided shutter.",
+    "uniforms": [
+      {
+        "type": "int",
+        "name": "steps",
+        "default": "50"
+      },
+      {
+        "type": "float",
+        "name": "horizontalHexagons",
+        "default": "20"
+      }
+    ]
+  },
+  {
+    "name": "gl_squares_wipe",
+    "original": "SquaresWipe",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/SquaresWipe.glsl",
+    "sha256": "32f24c18612a2e5647eedad26b65a02605be7e69871403d911323a9f13cbe9e3",
+    "rationale": "Growing square apertures with a directional sweep, not random switch times.",
+    "uniforms": [
+      {
+        "type": "ivec2",
+        "name": "squares",
+        "default": "ivec2(10,10)"
+      },
+      {
+        "type": "vec2",
+        "name": "direction",
+        "default": "vec2(1.0, -0.5)"
+      },
+      {
+        "type": "float",
+        "name": "smoothness",
+        "default": "1.6"
+      }
+    ]
+  },
+  {
+    "name": "gl_bow_tie_horizontal",
+    "original": "BowTieHorizontal",
+    "author": "huynx",
+    "license": "MIT",
+    "source": "transitions/BowTieHorizontal.glsl",
+    "sha256": "fcd134626185864b9c9dd0eb7d713f367e63afc445ace442ace6849a4700ec59",
+    "rationale": "Two opposed triangular reveals, distinct from centered shape_wipe.",
+    "uniforms": []
+  },
+  {
+    "name": "gl_curved_wipe",
+    "original": "CurvedWipe",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/CurvedWipe.glsl",
+    "sha256": "cd20a2628f20c0e5b889146d4caa6315dbc99e903331f4edffc628bcd78678ff",
+    "rationale": "Bowed lifting edge with alpha-aware shadow; adds organic directional motion.",
+    "uniforms": [
+      {
+        "type": "vec2",
+        "name": "direction",
+        "default": "vec2(0.0, 1.0)"
+      },
+      {
+        "type": "float",
+        "name": "curvature",
+        "default": "0.6"
+      },
+      {
+        "type": "float",
+        "name": "smoothness",
+        "default": "0.02"
+      },
+      {
+        "type": "vec4",
+        "name": "shadow",
+        "default": "vec4(0.0, 0.0, 0.0, 0.4)"
+      }
+    ]
+  },
+  {
+    "name": "gl_arrow_wipe",
+    "original": "ArrowWipe",
+    "author": "gre",
+    "license": "MIT",
+    "source": "transitions/ArrowWipe.glsl",
+    "sha256": "6050006ea0ef726fffb05171a29f227bfb87dd662717a7e232217959ccfa4423",
+    "rationale": "Flying notched chevrons with an expanding reveal; graphic short-form accent.",
+    "uniforms": [
+      {
+        "type": "vec2",
+        "name": "direction",
+        "default": "vec2(1.0, 0.0)"
+      },
+      {
+        "type": "float",
+        "name": "notch",
+        "default": "0.4"
+      },
+      {
+        "type": "float",
+        "name": "width",
+        "default": "80.0"
+      },
+      {
+        "type": "int",
+        "name": "count",
+        "default": "1"
+      },
+      {
+        "type": "bool",
+        "name": "origin",
+        "default": "false"
+      },
+      {
+        "type": "float",
+        "name": "smoothness",
+        "default": "0.004"
+      }
+    ]
+  }
+]

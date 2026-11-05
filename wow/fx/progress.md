@@ -61,3 +61,8 @@
 - 06:45 P1 獨立審查：可以 experimental 身分合回，但 P1 驗收不過（重構圖黑邊 46–57%、主體在框 20%/94%；whip 停在鏡像；字幕像電視字幕；斷行不看句界；emoji 直接失敗；點綴不分檔、白閃過多；協調者實測 4 缺陷皆確認，根因 np.float64 型別比對）。派 P1 修正。
 - 07:35 P1 修正（Codex 21 分）完成 310 tests；誤提交 10 MB 審查影片已 untrack（P1 將 squash 合回避免 main 歷史膨脹；協調者 commit 指令改為 preflight 失敗即停）。實測 whisper：繁中可用，剩全形標點、英文前導空白。開 P1 複審。
 - 08:20 P1 複審：可 experimental 合回；驗收不過（字幕內容完整性、空白／標點、關鍵字、crash_out、qa 誤判運鏡、pop 單字）。fx.md 加已知問題後 squash 合回 main 7f392cf（main 不含 10 MB 審查影片）；安裝目錄全套 310 tests／2 env errors、doctor 通過；push。開 p1b-fix。
+- 10:05 P1b 獨立審查：可合回；字幕完整性 408 項 0 失敗、快語速過；新缺陷 2（長字中止、拉丁詞內標點誤轉全形）＋3 小項。squash 合回 main ca62445（安裝目錄 323 tests／2 env errors、doctor 通過）並 push。剩餘 5 項併入 P2 Part A；fx.md 補 Open defects。字幕預設閘門分：pop 4（修長字後過）、bounce 4 過、typewriter 3、clean 2。
+- 10:30 使用者 /wow「門檻是否合適?…」→ 依 wow 規則（數字是儀器、正負對照、錨點重定基線）派獨立門檻稽核員：盤點 acceptance-1～9 與品質閘門的所有門檻、分類來源、對 agent 自訂者用錨點與正負對照校準（能現在跑的就實跑），並重設計品質閘門（wow-judge 混合評審團 sonnet/opus/codex、雙順序、聯絡單、金標、檢定力＋使用者抽查）。輸出 wow/fx/thresholds.md。
+- 10:45 使用者 /wow「門檻是否可以動態自動調整?」→ spec-10.md：門檻登錄檔＋四類（F 固定／R 棘輪只收緊／C 好壞錨點分布校準／U 使用者品味）＋防作弊護欄（同輪改動延後生效、錨點重判、步幅上限、漂移偵測、審計）＋產品執行期同用＋錨點庫。已請門檻稽核員把每個門檻分類並提出 registry schema。
+- 11:20 門檻稽核完成（wow/fx/thresholds.md，約 230 個門檻、四類分法、registry schema）：實驗證實 spec-6 可見度單一門檻不可能同時過正負對照、舊品質閘門近擲硬幣、3 筆抽查 70% 規則會誤判、Kendall τ≥0.6 在 5–6 項太鬆、jerk 平滑 fixture 算錯（實為 690–1770°/s³）。process.md 品質閘門改為成對比較＋wow-judge 混合評審團＋正負對照＋預先登記判定。答案卷修正交由獨立出題者核實後寫 acceptance-amendments.md。
+- 12:10 答案卷修正（acceptance-amendments.md）：獨立出題者逐條驗算稽核旗標，約一半成立（品質閘門、Kendall、jerk 夾具、幾何必敗條目、量法錯誤、記憶體改棘輪）、一半推翻（±10 ms、follow 文字等維持原文），拒絕會放寬外部標準的建議；可見度等列待校準。process.md 補：每批 10–12 格、平手＝兩順序不一致。

@@ -61,7 +61,9 @@ def validate_entry(entry, registry, ctx, where, metadata, experimental=False, sk
     if name=='text' and params['entrance'] not in ('pop','scale'):raise ValueError(where+'.entrance: pop or scale')
     if name=='text':
         from fx.effects.typography import resolve_font
-        params['font']=resolve_font(params['font'])
+        if not params['content'].strip():raise ValueError(where+'.content: text must not be empty')
+        bold=next((p for p in ('C:/Windows/Fonts/msjhbd.ttc','/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc') if Path(p).is_file()),'')
+        params['font']=resolve_font(params['font'] or os.environ.get('VIDEO_GIF_FONT') or bold)
     if name=='camera_move':
         from fx.effects.camera import MOVES
         if params['move'] not in MOVES: raise ValueError('move: choose '+', '.join(MOVES))
@@ -94,9 +96,7 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
     proxy_skipped=[]
     if proxy and plan.get('interpolate')=='rife':
         proxy_skipped.append('interpolate:rife');plan['interpolate']='none'
-    if plan.get('interpolate')=='rife':
-        from fx.timewarp import session
-        session(plan.get('rife_model',os.environ.get('VIDEO_GIF_RIFE_MODEL','.runtime/models/rife_v4.25_lite.onnx')))
+    # RIFE is lazy: unity speed, stills and exact source samples need no model.
     if plan.get('sampling','linear') not in ('linear','nearest'): raise ValueError('sampling: valid options linear, nearest')
     if type(plan.get('seed',0)) is not int: raise ValueError('seed: expected integer')
     music = plan.get('music',{})

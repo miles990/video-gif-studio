@@ -1,6 +1,7 @@
 """Procedural texture and graphic treatments, with no external bitmap dependencies."""
 import cv2
 import numpy as np
+import warnings
 from ..core import effect, premultiply, straight, over, warp
 from .cutout_card import cutout_card
 
@@ -13,7 +14,7 @@ def grid(ctx):
 def film_grain(frame,t,ctx,amount=.025,seed=17.0):
     """Zero-mean moving monochrome film grain; exact original alpha."""
     rng=np.random.default_rng(int(seed)+ctx.seed+int(t*ctx.fps/1000))
-    noise=rng.standard_normal(frame.shape[:2],dtype=np.float32)*amount
+    noise=rng.standard_normal(frame.shape[:2],dtype=np.float32)*amount*min(1,max(.25,min(ctx.width,ctx.height)/720)**.5)
     frame[...,:3]+=noise[...,None]*(frame[...,3:4]>0)
     return frame
 
@@ -30,19 +31,20 @@ def vignette(frame,t,ctx,amount=.55):
 def light_leak(frame,t,ctx,amount=.4,seed=3.0):
     """A broad amber edge leak drifting on a seconds clock."""
     y,x=grid(ctx);phase=t/1000+seed*.3
-    center=.78+.2*np.sin(phase);light=np.exp(-((x/ctx.width-center)/.3)**2-((y/ctx.height-(.5+.3*np.cos(phase)))/.85)**2)
+    center=.60+.32*np.sin(phase*1.5);light=np.exp(-((x/ctx.width-center)/.42)**2-((y/ctx.height-(.5+.32*np.cos(phase*1.2)))/.85)**2)
     frame[...,:3]+=light[...,None]*np.float32([1,.32,.05])*amount
     return frame
 
 
 @effect(status='experimental',amount='Scratch opacity',seed='Moving pattern seed',density='Dust coverage fraction, capped below five percent')
-def dust_scratches(frame,t,ctx,amount=.5,seed=29.0,density=.02):
+def dust_scratches(frame,t,ctx,amount=.5,seed=29.0,density=.001):
     """Sparse dust flecks and fine scratches covering less than five percent."""
-    rng=np.random.default_rng(int(seed)+ctx.seed+int(t*ctx.fps/1000));mask=(rng.random(frame.shape[:2],dtype=np.float32)<min(.04,max(0,density))).astype(np.float32)
-    for _ in range(12):
+    rng=np.random.default_rng(int(seed)+ctx.seed+int(t*ctx.fps/1000)//3);mask=np.zeros(frame.shape[:2],np.float32)
+    for _ in range(max(1,round(ctx.width*ctx.height*min(.01,max(0,density))/5))):
         x,y=rng.integers(0,ctx.width),rng.integers(0,ctx.height)
-        cv2.circle(mask,(int(x),int(y)),1,1,-1)
-    x=int(rng.integers(ctx.width));mask[:,x]=.5
+        cv2.circle(mask,(int(x),int(y)),max(1,round(min(ctx.width,ctx.height)/720)),float(rng.uniform(.25,.7)),-1)
+    x=int(rng.integers(ctx.width));y=int(rng.integers(ctx.height));length=max(2,round(ctx.height*.25))
+    cv2.line(mask,(x,y),(min(ctx.width-1,x+1),min(ctx.height-1,y+length)),.6,1)
     frame[...,:3]+=(1-frame[...,:3])*mask[...,None]*amount
     return frame
 
@@ -94,18 +96,24 @@ def kaleidoscope(frame,t,ctx,amount=1.0,sectors=6.0):
 @effect(status='experimental',levels='Quantization levels per channel')
 def posterize(frame,t,ctx,amount=1.0,levels=4.0):
     """Discrete color platforms, blended by amount."""
-    n=max(2,round(levels))-1;frame[...,:3]+=(np.rint(frame[...,:3]*n)/n-frame[...,:3])*amount
+    if amount==0:return frame
+    n=max(2,round(levels))-1
+    # A small median removes isolated quantization specks without bleeding hidden RGB.
+    rgb=np.rint(frame[...,:3]*255).astype(np.uint8)
+    filtered=cv2.medianBlur(rgb,3).astype(np.float32)/255 if min(frame.shape[:2])>=3 else frame[...,:3]
+    filtered=np.where((cv2.erode(frame[...,3],np.ones((3,3),np.uint8))>=.999)[...,None],filtered,frame[...,:3])
+    frame[...,:3]+=(np.rint(filtered*n)/n-frame[...,:3])*amount
     return frame
 
 
 @effect(status='experimental',size='Ordered screen cell size in pixels')
 def halftone(frame,t,ctx,amount=1.0,size=8.0):
-    """Clustered-dot monochrome screen preserving local mean luminance."""
-    y,x=grid(ctx);s=max(2,round(size));r=((x%s+.5)/s-.5)**2+((y%s+.5)/s-.5)**2
-    order=np.argsort(np.argsort(r[:s,:s].ravel())).reshape(s,s)/(s*s)
+    """Clustered RGB colour dots; channel coverage retains local colour balance."""
+    s=max(2,round(size));y,x=np.indices((s,s),dtype=np.float32);r=((x+.5)/s-.5)**2+((y+.5)/s-.5)**2
+    order=(np.argsort(np.argsort(r.ravel())).reshape(s,s)+.5)/(s*s)
     threshold=np.tile(order,(int(np.ceil(ctx.height/s)),int(np.ceil(ctx.width/s))))[:ctx.height,:ctx.width]
-    gray=cv2.cvtColor(frame[...,:3],cv2.COLOR_RGB2GRAY);ink=(gray>threshold).astype(np.float32)
-    frame[...,:3]+=(ink[...,None]-frame[...,:3])*amount
+    ink=(frame[...,:3]>threshold[...,None]).astype(np.float32)
+    frame[...,:3]+=(ink-frame[...,:3])*amount
     return frame
 
 
@@ -113,6 +121,9 @@ def halftone(frame,t,ctx,amount=1.0,size=8.0):
 def multi_cutout(frame,t,ctx,amount=1.0,distance=65.0,border_px=6.0):
     """Three explicitly overlapping white-outline cards; the original is in front."""
     if amount==0:return frame
+    if np.min(frame[...,3])>=.999:
+        warnings.warn('multi_cutout requires a cutout with alpha; opaque input has no silhouette',UserWarning)
+        return frame
     card=premultiply(cutout_card(frame,t,ctx,border_px=border_px));result=np.zeros_like(frame)
     for dx,dy in ((-distance,8),(distance,-8),(0,0)):
         moved=cv2.warpAffine(card,np.float32([[1,0,dx*amount],[0,1,dy*amount]]),(ctx.width,ctx.height),flags=cv2.INTER_NEAREST if ctx.sampling=='nearest' else cv2.INTER_LINEAR)

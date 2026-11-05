@@ -248,13 +248,17 @@ def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=(), timi
     # Median of actual visual steps: duplicated encoder frames do not lower the baseline.
     active = d[1:][d[1:]>=.01]
     med = float(np.median(active)) if len(active) else 0.0
-    flashes = [i for i in range(1,n-1) if d[i]>max(2,4*med) and d[i+1]>max(2,4*med)
+    flashes = [i for i in range(1,n-1) if
+               ((d[i]>max(2,4*med) and d[i+1]>max(2,4*med)) or
+                (st['mean'][i]>245 and st['contrast'][i]<10 and max(st['mean'][i-1],st['mean'][i+1])<220))
                and skip[i]<.35*min(d[i],d[i+1])]
     excluded_flashes=[]
     if timing:
         marks=camera_event_times(timing)
         tolerance=float(np.median(np.diff(edges)))*1000+1e-6
-        excluded_flashes=[i for i in flashes if any(abs(edges[i]*1000-t)<=tolerance for t in marks)]
+        def exposure_flash(i):
+            return (st['mean'][i]>245 and st['contrast'][i]<10) or st['mean'][i]-max(st['mean'][i-1],st['mean'][i+1])>40
+        excluded_flashes=[i for i in flashes if not exposure_flash(i) and any(abs(edges[i]*1000-t)<=tolerance for t in marks)]
         flashes=[i for i in flashes if i not in excluded_flashes]
     flash_edges = set(flashes) | {i+1 for i in flashes}
     pop = [i for i in range(1,n-1) if i not in flash_edges and
@@ -296,6 +300,10 @@ def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=(), timi
         baseline = float(np.median(local)) if len(local) else 0
         if i not in flash_edges and d[i]>max(6,3.5*(baseline+.5)):
             cuts.append(i)
+    excluded_cuts=[]
+    if timing:
+        kept,excluded_cuts=rhythm_cuts([event(edges,i) for i in cuts],timing,float(np.median(np.diff(edges)))*1000)
+        cuts=[e['frame'] for e in kept]
     cut_events = []
     if expected:
         matched = set()
@@ -309,7 +317,7 @@ def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=(), timi
                 cut_events.append(event(edges,index,seconds=float(t),kind='missing planned cut'))
         cut_events += [event(edges,i,kind='unplanned cut') for i in cuts if i not in matched]
     add('cuts','FAIL' if cut_events else 'PASS','Hard cuts compared within one median frame (at most 0.1 s)' if expected else 'Detected cut candidates (no hard cuts required)',
-        cut_events, detected=[event(edges,i) for i in cuts], expected_seconds=list(expected))
+        cut_events, detected=[event(edges,i) for i in cuts], expected_seconds=list(expected),excluded_effect_events=excluded_cuts)
     add('timeline_joins','PASS','Continuation/edit boundaries are not required hard cuts; review continuity',
         [event(edges,sample_indices(edges,[t])[0],seconds=float(t)) for t in joins])
     if loop and n>1:
@@ -425,7 +433,16 @@ def rhythm_cuts(detected, timing, tolerance_ms):
     for effect in timing.get('effects',[]):
         params=effect.get('params',{})
         from fx.effects.camera import MOVES
-        if params.get('move',effect.get('move',effect.get('name'))) in MOVES: continue
+        name=params.get('move',effect.get('move',effect.get('name')))
+        if name=='spring_in':
+            # Only the initial physical spring travel, ending at its first peak.
+            from fx.effects.camera import motion
+            start=float(effect.get('start_ms',0));end=float(effect.get('end_ms',start+700))
+            times=np.arange(0,min(1000,end-start)+5,5)
+            values=[motion(name,t,0,params.get('target',0),params.get('stiffness',180),params.get('damping',18),params.get('mass',1))[0] for t in times]
+            stop=next((times[i] for i in range(1,len(values)-1) if (values[i]-values[i-1])*(values[i+1]-values[i])<=0),min(500,end-start))
+            windows.append((start-tolerance_ms,start+stop+tolerance_ms))
+        if name in MOVES: continue
         decay=max([float(v.get('decay_ms',160)) for v in params.values() if isinstance(v,dict)]+[0])
         triggers=effect.get('trigger_times_ms',[])
         if triggers:
@@ -490,6 +507,7 @@ def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
         if down:
             detected=next((c.get('detected',[]) for c in checks if c['name']=='cuts'),[])
             detected,excluded=rhythm_cuts(detected,timing,float(np.median(durations))*1000+1e-6)
+            excluded+=next((c.get('excluded_effect_events',[]) for c in checks if c['name']=='cuts'),[])
             distances=[min(abs(e['seconds']*1000-d) for d in down) for e in detected]
             report['cut_to_downbeat_median_ms']=float(np.median(distances)) if distances else None
             report['rhythm_cuts']=detected;report['rhythm_excluded_effect_events']=excluded

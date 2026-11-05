@@ -67,8 +67,10 @@ class CaptionTests(TempCase):
                 for token in ('台北市政府','開放資料','效果','Version','2.0','2026','3.14 GB','……','——'):
                     if token in sample:self.assertTrue(any(token in line for line in lines),token)
 
-    def test_unbreakable_long_token_rejected(self):
-        with self.assertRaisesRegex(ValueError,'Unbreakable'): captions.break_lines('Extraordinary',3)
+    def test_unbreakable_long_token_split_with_warning(self):
+        with self.assertWarnsRegex(UserWarning,'split'): lines=captions.break_lines('Extraordinary',3)
+        self.assertEqual(''.join(lines),'Extraordinary')
+        self.assertTrue(all(captions.width(line)<=3 for line in lines))
         for n in (0,-1,float('nan')):
             with self.assertRaises(ValueError): captions.break_lines('text',n)
 

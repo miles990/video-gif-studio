@@ -19,7 +19,7 @@ def shape_wipe(a,b,p,ctx,shape='circle',softness=0.0):
 
 
 @transition(status='experimental',mask='linear, radial, cloud, or grayscale image path',invert='Reverse reveal order')
-def luma_wipe(a,b,p,ctx,mask='linear',invert=False,softness=0.0,seed=7.0):
+def luma_wipe(a,b,p,ctx,mask='linear',invert=False,softness=12.0,seed=7.0):
     """Reveal in mask luminance order; procedural masks need no asset files."""
     if p<=0:return a
     if p>=1:return b
@@ -34,7 +34,9 @@ def moving(a,b,p,ctx,direction,slide=False):
     dx,dy=vectors[direction];mode=cv2.INTER_NEAREST if ctx.sampling=='nearest' else cv2.INTER_LINEAR
     left=premultiply(a) if slide else cv2.warpAffine(premultiply(a),np.float32([[1,0,dx*p],[0,1,dy*p]]),(ctx.width,ctx.height),flags=mode)
     right=cv2.warpAffine(premultiply(b),np.float32([[1,0,-dx*(1-p)],[0,1,-dy*(1-p)]]),(ctx.width,ctx.height),flags=mode)
-    return straight(right+left*(1-right[...,3:4]))
+    # Push tiles adjacent shots: their fractional edge coverages are complementary.
+    # Alpha-over would attenuate that shared edge twice and leave a transparent seam.
+    return straight(right+left*(1-right[...,3:4]) if slide else right+left)
 
 
 @transition(status='experimental',direction='left, right, up or down')
@@ -51,10 +53,12 @@ def slide(a,b,p,ctx,direction='left'):
 
 @transition(status='experimental',turns='Rotation turns at midpoint')
 def spin(a,b,p,ctx,turns=.25):
-    """Rotating outgoing/incoming shot, reflected edge fill avoids black wedges."""
+    """Rotate with analytic cover zoom, so corners never sample reflected content."""
     if p<=0:return a
     if p>=1:return b
-    return transform(a if p<.5 else b,ctx,angle=360*turns*np.sin(np.pi*p),scale=1+.15*np.sin(np.pi*p))
+    angle=360*turns*np.sin(np.pi*p);r=np.deg2rad(angle)
+    cover=max(abs(np.cos(r))+ctx.height/ctx.width*abs(np.sin(r)),abs(np.cos(r))+ctx.width/ctx.height*abs(np.sin(r)))
+    return transform(a if p<.5 else b,ctx,angle=angle,scale=max(1+.15*np.sin(np.pi*p),cover+1/min(ctx.width,ctx.height)))
 
 
 @transition(status='experimental',scale='Peak camera scale')
@@ -74,5 +78,5 @@ def glitch(a,b,p,ctx,seed=7.0,amount=1.0):
     y,x=np.indices(source.shape[:2],dtype=np.float32);blocks=rng.integers(-25,26,max(1,ctx.height//8+1))
     x+=blocks[(y//8).astype(int)]*amount*np.sin(np.pi*p)
     out=straight(cv2.remap(premultiply(source),x,y,cv2.INTER_NEAREST,borderMode=cv2.BORDER_WRAP))
-    out[::2,:,:3]*=1-.2*amount*np.sin(np.pi*p)
+    if ctx.sampling!='nearest': out[::2,:,:3]*=1-.2*amount*np.sin(np.pi*p)
     return out

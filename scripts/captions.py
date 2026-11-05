@@ -29,7 +29,7 @@ PRESETS = {
     'pop': dict(entrance='pop', keyword_color='FFE45E', box=None, current_word=True),
     'typewriter': dict(entrance='typewriter', keyword_color='78F5DD', current_word_color='FFE45E', box='111111', current_word=True),
     'bounce': dict(entrance='bounce', keyword_color='FFD166', box='183153', current_word=True),
-    'clean': dict(entrance='none', keyword_color='FFE45E', box=None, size=88, stroke=10, shadow=4),
+    'clean': dict(entrance='none', keyword_color='FFE45E', box='111111', size=88, stroke=10, shadow=4),
 }
 DEFAULTS = dict(font='', size=112, stroke=8, stroke_color='080808', shadow=4, current_word=False,
                 current_word_color='78F5DD', shadow_color='080808', color='FFFFFF', box='111111', keyword_color='FFE45E',
@@ -114,7 +114,7 @@ def sentence_end(text):
 def tokens(text):
     """Longest dictionary match; decimal/version/number+unit and paired marks atomic."""
     pattern = '|'.join(map(re.escape, sorted(LEXICON, key=len, reverse=True)))
-    raw = re.findall(r'[vV]?\d+(?:,\d{3})*(?:\.\d+)*(?:\s*(?:GB|MB|KB|TB|%))?|[A-Za-z]+(?:[\x27’_-][A-Za-z]+)*|……|——|'+pattern+r'|\s+|'+GRAPHEME, text)
+    raw = re.findall(r'https?://[^\s]+|[A-Za-z][A-Za-z0-9]*(?:[.\x27’_-][A-Za-z0-9]+)*|\d+(?::\d+)+(?:\.\d+)?|\d+(?:,\d{3})*(?:\.\d+)*(?:\s*(?:GB|MB|KB|TB|%))?|……|——|'+pattern+r'|\s+|'+GRAPHEME, text)
     grouped = []; pending = ''
     for token in raw:
         if token in OPENING:
@@ -134,7 +134,13 @@ def break_lines(text, limit=12):
         raise ValueError('words_per_line must be positive')
     lines = []; current = ''
     for token in tokens(text):
-        if width(token.strip()) > limit: raise ValueError('Unbreakable token exceeds words_per_line: '+token)
+        if width(token.strip()) > limit:
+            warnings.warn('Caption token split inside word: '+token, UserWarning)
+            for cluster in graphemes(token):
+                if current and width(current+cluster)>limit:
+                    lines.append(current.rstrip());current=''
+                current+=cluster
+            continue
         if current and width(current+token) > limit:
             lines.append(current.rstrip()); current = ''
         current += token if current else token.lstrip()
@@ -274,7 +280,9 @@ def prepare(spec, base, experimental=False):
     if not isinstance(keywords,list) or not all(isinstance(k,str) and k for k in keywords): raise ValueError('keywords must be a list of nonempty strings')
     highlights=set()
     for keyword in keywords:
-        for match in re.finditer(re.escape(keyword),content): highlights.update(range(match.start(),match.end()))
+        numeric=bool(re.fullmatch(NUMBER,keyword))
+        for match in re.finditer(NUMBER if numeric else re.escape(keyword),content):
+            if not numeric or match.group()==keyword:highlights.update(range(match.start(),match.end()))
     offset=0
     for i,word in enumerate(display):
         if i: offset+=len(separator(display[i-1]['text'],word['text']))
@@ -287,7 +295,7 @@ def prepare(spec, base, experimental=False):
                 warning=None if method in ('user_word_timing','faster_whisper','injected_alignment_engine') else 'Timing within cues/script is approximate; correct the exported words before final delivery')
 
 
-NUMBER = r'[vV]?\d+(?:,\d{3})*(?:\.\d+)*'
+NUMBER = r'(?<![A-Za-z0-9_:.])[vV]?\d+(?:,\d{3})*(?:\.\d+)*(?![A-Za-z0-9_:]|[.,]\d)'
 
 
 def normalize_words(words, chinese=False):
@@ -296,7 +304,10 @@ def normalize_words(words, chinese=False):
         text=word['text']
         if chinese:
             # Numeric commas/decimal points belong to the number, not punctuation.
-            protected={i for m in re.finditer(NUMBER,text) for i in range(m.start(),m.end())}
+            protected={i for m in re.finditer(r'https?://\S+|[A-Za-z0-9]+(?:[.:,][A-Za-z0-9]+)+\.?',text) for i in range(m.start(),m.end())}
+            # Only an abbreviation's terminal dot belongs to the token.
+            for m in re.finditer(r'[A-Za-z0-9]+(?:[.:,][A-Za-z0-9]+)+\.',text):
+                if not re.fullmatch(r'(?:[A-Za-z]\.){2,}',m.group()): protected.discard(m.end()-1)
             mapping=dict(zip(',.!?:;', '，。！？：；'))
             text=''.join(mapping.get(c,c) if i not in protected else c for i,c in enumerate(text))
         result.append(dict(word,text=text))
@@ -316,15 +327,23 @@ def join_words(words):
 
 def wrap_words(words, fits):
     groups=[];current=[]
-    for word in words:
-        if current and (word['start_ms']-current[-1]['end_ms']>=150 or sentence_end(current[-1]['text']) or not fits(current+[word])):
+    def emoji_start(text):
+        c=ord(text[0])
+        return c>=0x1F000 or 0x2600<=c<=0x27BF or 0x2300<=c<=0x23FF or 0x2B00<=c<=0x2BFF or '\ufe0f' in graphemes(text)[0]
+    for index,word in enumerate(words):
+        glued=emoji_start(word['text'])
+        candidate=[word]
+        if index+1<len(words) and emoji_start(words[index+1]['text']): candidate.append(words[index+1])
+        if current and not glued and (word['start_ms']-current[-1]['end_ms']>=150 or sentence_end(current[-1]['text']) or not fits(current+candidate)):
             groups.append(current);current=[]
         current.append(word)
     if current: groups.append(current)
     for i in range(1,len(groups)):
         prev,tail=groups[i-1],groups[i]
-        if len(tail)==1 and len(prev)>=3 and not sentence_end(prev[-1]['text']) and tail[0]['start_ms']-prev[-1]['end_ms']<150 and fits(prev[-1:]+tail):
-            groups[i]=[prev.pop()]+tail
+        count=1
+        while count<len(prev) and emoji_start(prev[-count]['text']):count+=1
+        if len(tail)==1 and len(prev)>=3 and count<len(prev) and not sentence_end(prev[-1]['text']) and tail[0]['start_ms']-prev[-1]['end_ms']<150 and fits(prev[-count:]+tail):
+            groups[i]=prev[-count:]+tail;del prev[-count:]
     return groups
 
 
@@ -375,7 +394,25 @@ class CaptionRenderer:
             return sum(self.advance(c) for c in make_line(group)['chars'])
         wrapped=[]
         for line in prepared['lines']:
-            groups=wrap_words(line['words'],lambda group:measure(group)<=available)
+            expanded=[]
+            for word in line['words']:
+                if measure([word])*.6<=available:
+                    expanded.append(word);continue
+                # Last resort: grapheme boundaries, with proportional display timing.
+                chunks=[];chunk=[]
+                for char in word['chars']:
+                    if chunk and sum(self.advance(c) for c in chunk+[char])*.6>available:
+                        chunks.append(chunk);chunk=[]
+                    chunk.append(char)
+                if chunk: chunks.append(chunk)
+                warnings.warn('Caption split inside oversized word: '+word['text'],UserWarning)
+                offset=0
+                for chunk in chunks:
+                    start=word['start_ms']+(word['end_ms']-word['start_ms'])*offset/len(word['chars'])
+                    offset+=len(chunk)
+                    end=word['start_ms']+(word['end_ms']-word['start_ms'])*offset/len(word['chars'])
+                    expanded.append(dict(word,text=''.join(c['char'] for c in chunk),chars=[dict(c,start_ms=start,end_ms=end) for c in chunk],start_ms=start,end_ms=end))
+            groups=wrap_words(expanded,lambda group:measure(group)<=available)
             # Keep a short phrase together via bounded uniform reduction.
             if len(groups)==2 and len(groups[1])==1 and len(groups[0])>=2 and measure(line['words'])<=available*1.35:
                 groups=[line['words']]
@@ -393,8 +430,9 @@ class CaptionRenderer:
             max_scale=1.22 if s['entrance']=='pop' else 1
             bounce=round(18*factor) if s['entrance']=='bounce' else 0
             fit_scale=min(1,(right-left)/(tw*max_scale),(bottom-top-2*bounce)/(th*max_scale))
-            if fit_scale<1/1.35 or th*max_scale*fit_scale+2*bounce>bottom-top:
-                raise ValueError('Caption exceeds safe zone; reduce words_per_line/size or enlarge safe zone')
+            if fit_scale<.6:
+                warnings.warn('Caption safe zone requires reduction below 0.6; enlarge safe zone for readability',UserWarning)
+            if fit_scale<=0: raise ValueError('Caption safe zone has no drawable area')
             y={'top':top+th*max_scale*fit_scale/2+bounce,'center':(top+bottom)/2,'bottom':bottom-th*max_scale*fit_scale/2-bounce}[s['position']]
             self.layouts.append((line,tw,th,pad,box[1],(left+right)/2,y,fit_scale))
 
@@ -443,6 +481,10 @@ class CaptionRenderer:
                         tile=tile.transform(tile.size,Image.Transform.AFFINE,(1/scale,0,pivot[0]*(1-1/scale),0,1/scale,pivot[1]*(1-1/scale)),Image.Resampling.BICUBIC)
                     layer.alpha_composite(tile)
                 x+=word_width
+            if s['entrance']=='typewriter':
+                caret=margin+pad+self.stroke+sum(self.advance(c) for c in visible)
+                caret_color=s['current_word_color'] if int(t_ms/350)%2==0 else s['color']
+                draw.line((caret,margin+pad,caret,margin+th-pad-self.shadow),fill='#'+caret_color,width=max(1,round(self.size[1]/480)))
             elapsed=t_ms-visible[-1]['word_start_ms']
             if s['entrance']=='bounce' and elapsed<400:
                 cy+=round(18*self.size[1]/1920*math.exp(-elapsed/95)*math.cos(elapsed/48))

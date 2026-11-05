@@ -23,15 +23,20 @@ def source_clock(segment, local_ms, ctx):
 
 @lru_cache(maxsize=2)
 def session(model):
+    if not Path(model).is_file() or Path(model).stat().st_size==0:
+        raise ValueError(f'Model missing or empty: {model}; place valid weights in .runtime/models; onnxruntime required')
     try: import onnxruntime as ort
     except ImportError: raise ValueError('onnxruntime required; use fx-optdeps or pip install -r requirements-fx-optional.txt') from None
     if not Path(model).is_file(): raise ValueError(f'Model missing: {model}; place weights in .runtime/models')
     options=ort.SessionOptions();options.intra_op_num_threads=2;options.inter_op_num_threads=1
-    return ort.InferenceSession(str(model),sess_options=options,providers=['CPUExecutionProvider'])
+    try: return ort.InferenceSession(str(model),sess_options=options,providers=['CPUExecutionProvider'])
+    except Exception as exc: raise ValueError(f'Cannot load ONNX model {model}: {exc}') from None
 
 
 def rife(a,b,p,model='',engine=None):
     """RIFE lite RGB+RGB+t, padded to 32; alpha is interpolated separately."""
+    if p<=1e-6:return a.copy()
+    if p>=1-1e-6:return b.copy()
     h,w=a.shape[:2];pad=((0,(-h)%32),(0,(-w)%32),(0,0))
     rgb=np.concatenate((premultiply(a)[...,:3],premultiply(b)[...,:3],np.full((h,w,1),p,np.float32)),axis=2)
     tensor=np.pad(rgb,pad,mode='edge').transpose(2,0,1)[None].astype(np.float32)

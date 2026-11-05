@@ -38,7 +38,7 @@ def rgb_split(frame,t,ctx,amount=1.0,distance=6.0,direction=0.0):
 
 
 @effect(status='experimental',distance='Radial integration length, fraction of radius',samples='Integration samples')
-def radial_blur(frame,t,ctx,amount=1.0,distance=.22,samples=12.0):
+def radial_blur(frame,t,ctx,amount=1.0,distance=.045,samples=12.0):
     """Zoom-direction blur preserves spokes and softens concentric rings."""
     if amount==0:return frame
     result=np.zeros_like(frame);source=premultiply(frame);count=max(2,round(samples))
@@ -55,7 +55,16 @@ def radial_blur(frame,t,ctx,amount=1.0,distance=.22,samples=12.0):
 def echo(frame,t,ctx,amount=.65,decay=.55):
     """Lighten premultiplied trails, newest first, without dimming current pixels."""
     result=premultiply(frame)
+    if np.min(frame[...,3])<.999:
+        trail=np.zeros_like(frame)
+        for age in reversed(range(min(4,len(ctx.history)))):
+            ghost=cv2.GaussianBlur(premultiply(ctx.history[age]),(0,0),.65+age*.45)*amount*decay**(age+1)
+            trail=ghost+trail*(1-ghost[...,3:4])
+        return straight(result+trail*(1-result[...,3:4]))
+    source=result.copy()
     for age,old in enumerate(ctx.history[:4]):
-        ghost=premultiply(old)*amount*decay**age
-        result=np.maximum(result,ghost)
+        # Difference-only exposure: the stationary plate never accumulates.
+        ghost=cv2.GaussianBlur(premultiply(old),(0,0),.65+age*.45)
+        weight=amount*decay**(age+1)
+        result[...,:3]+=np.maximum(ghost[...,:3]-source[...,:3],0)*weight
     return straight(result)
