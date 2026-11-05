@@ -6,7 +6,7 @@ from ..easing import EASINGS, spring
 
 MOVES = {
     'crash_in': (100, 'easeOutExpo', 1.35),
-    'crash_out': (100, 'easeOutExpo', 1.35),
+    'crash_out': (600, 'easeOutCubic', 1.35),
     'expo_in': (800, 'easeInExpo', 1.3),
     'smooth_in': (1000, 'easeInOutCubic', 1.2),
     'whip': (160, 'easeInOutCubic', 1.0),
@@ -21,12 +21,13 @@ def motion(move, elapsed_ms, duration_ms=0, target=0, stiffness=180, damping=18,
     duration, easing, default = MOVES[move]
     duration = duration_ms or duration; target = target or default
     if duration <= 0 or target <= 0: raise ValueError('camera duration and target must be positive')
+    if move=='crash_out' and duration<300: raise ValueError('crash_out duration must be at least 300 ms')
     p = min(1, max(0, elapsed_ms/duration))
     v = spring(max(0, elapsed_ms)/1000, stiffness, damping, mass) if easing == 'spring' else EASINGS[easing](p)
     if move == 'crash_out':
         # Prepare the zoom from the incoming framing, then reveal. No discontinuity
-        # on the first frame; the last 70% is the fast exponential zoom-out.
-        amount=EASINGS['easeInOutCubic'](p/.3) if p<.3 else 1-EASINGS['easeOutExpo']((p-.3)/.7)
+        # on the first frame; the last 60% is a cubic zoom-out, bounded at delivery frame rates.
+        amount=EASINGS['easeInOutCubic'](p/.4) if p<.4 else 1-EASINGS['easeOutCubic']((p-.4)/.6)
         return 1+(target-1)*amount, 0
     if move == 'punch': return 1+(target-1)*np.sin(np.pi*p)**2, 0
     if move == 'whip': return 1, 0.0 if p in (0,1) else .85*np.sin(np.pi*p)**2

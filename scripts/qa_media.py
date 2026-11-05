@@ -235,7 +235,7 @@ def event(edges, start, end=None, **extra):
     return item
 
 
-def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=()):
+def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=(), timing=None):
     n = len(edges)-1
     checks = []
     def add(name, level, message, events=(), **metrics):
@@ -250,11 +250,17 @@ def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=()):
     med = float(np.median(active)) if len(active) else 0.0
     flashes = [i for i in range(1,n-1) if d[i]>max(2,4*med) and d[i+1]>max(2,4*med)
                and skip[i]<.35*min(d[i],d[i+1])]
+    excluded_flashes=[]
+    if timing:
+        marks=camera_event_times(timing)
+        tolerance=float(np.median(np.diff(edges)))*1000+1e-6
+        excluded_flashes=[i for i in flashes if any(abs(edges[i]*1000-t)<=tolerance for t in marks)]
+        flashes=[i for i in flashes if i not in excluded_flashes]
     flash_edges = set(flashes) | {i+1 for i in flashes}
     pop = [i for i in range(1,n-1) if i not in flash_edges and
            ((st['patch'][i]>.01 and d[i]>.5 and d[i+1]>.5) or
             (d[i]>max(2,3*med) and d[i+1]>2 and skip[i]<.8*min(d[i],d[i+1])))]
-    add('flashes','FAIL' if flashes else 'PASS','Single-frame flash scan', [event(edges,i) for i in flashes])
+    add('flashes','FAIL' if flashes else 'PASS','Single-frame flash scan', [event(edges,i) for i in flashes], excluded_camera_events=[event(edges,i) for i in excluded_flashes])
     add('pops','WARN' if pop else 'PASS','Small transient pop scan; inspect in context', [event(edges,i) for i in pop])
     frozen, designed = [], []
     still = d<.25
@@ -382,6 +388,30 @@ def sheet(st, edges, name, out):
     return [event(edges,i) for i in indices]
 
 
+def camera_event_times(timing):
+    """Only named move edges/extrema, never the entire moving interval."""
+    from fx.effects.camera import MOVES, motion
+    marks=[]
+    for effect in timing.get('effects',[]):
+        params=effect.get('params',{})
+        name=params.get('move',effect.get('move',effect.get('name')))
+        if name not in MOVES: continue
+        start=float(effect.get('start_ms',0))
+        duration=float(params.get('duration_ms',effect.get('duration_ms',0)) or MOVES[name][0])
+        end=float(effect.get('end_ms',start+duration))
+        marks.extend((start,end))
+        if name!='spring_in' and start+duration<=end: marks.append(start+duration)
+        peak={'crash_out':.4,'punch':.5,'whip':.5}.get(name)
+        if peak is not None and start+duration*peak<=end: marks.append(start+duration*peak)
+        if name=='spring_in':
+            times=np.linspace(0,end-start,max(3,int((end-start)/5)+1))
+            scales=[motion(name,t,duration,params.get('target',0),params.get('stiffness',180),params.get('damping',18),params.get('mass',1))[0] for t in times]
+            for i in range(1,len(scales)-1):
+                if (scales[i]-scales[i-1])*(scales[i+1]-scales[i])<0 and abs(scales[i]-(params.get('target',0) or MOVES[name][2]))>1e-4:
+                    marks.append(start+float(times[i]))
+    return marks
+
+
 def rhythm_cuts(detected, timing, tolerance_ms):
     """Exclude bounded, planned FX impulses, retaining observed real cut edges.
 
@@ -391,14 +421,16 @@ def rhythm_cuts(detected, timing, tolerance_ms):
     boundaries=[float(c.get('quantized_ms',c.get('requested_ms',0))) for c in timing.get('cuts',[]) if isinstance(c,dict)]
     boundaries+=timing.get('beat_layers',{}).get('cuts_ms',[])
     boundaries += [float(s['start_ms']) for s in timing.get('segments',[])[1:] if 'start_ms' in s]
-    windows=[]
+    windows=[(t-tolerance_ms,t+tolerance_ms) for t in camera_event_times(timing)]
     for effect in timing.get('effects',[]):
         params=effect.get('params',{})
+        from fx.effects.camera import MOVES
+        if params.get('move',effect.get('move',effect.get('name'))) in MOVES: continue
         decay=max([float(v.get('decay_ms',160)) for v in params.values() if isinstance(v,dict)]+[0])
         triggers=effect.get('trigger_times_ms',[])
         if triggers:
             windows.extend((t-tolerance_ms,t+decay+tolerance_ms) for t in triggers)
-        elif effect.get('name') in ('camera_move','flash_white','zoom_punch'):
+        elif effect.get('name') in ('flash_white','zoom_punch'):
             start=effect.get('start_ms',0)
             duration=params.get('duration_ms',0) or (160 if params.get('move')=='whip' else 200)
             windows.append((start-tolerance_ms,start+duration+tolerance_ms))
@@ -434,7 +466,8 @@ def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
     if any(not math.isfinite(t) or t<0 or t>=edges[-1] for t in expected):
         raise ValueError('Expected cuts must fall within the media duration')
     st = picture(path,info,edges)
-    checks = analyse_picture(st,edges,loop or info['loop'],holds,expected,joins)
+    timing=read_json(Path(timeline)) if timeline else None
+    checks = analyse_picture(st,edges,loop or info['loop'],holds,expected,joins,timing)
     checks += analyse_audio(path,info,edges)
     out.mkdir(parents=True,exist_ok=True)
     sheets = {name:sheet(st,edges,name,out) for name in st['targets']}

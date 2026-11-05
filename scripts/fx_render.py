@@ -227,6 +227,11 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
             value = beat_index(entry[edge+'_beat'],ctx.beats_ms,where+'.'+edge+'_beat') if edge+'_beat' in entry else entry.get(edge+'_ms',default)
             effect[edge+'_ms'] = number(value,where+'.'+edge+'_ms',0,cursor)
         if effect['end_ms']<=effect['start_ms']: raise ValueError(f'{where}: end must follow start')
+        if effect['name']=='camera_move' and effect['params']['move']=='crash_out':
+            duration=effect['params']['duration_ms'] or min(600,effect['end_ms']-effect['start_ms'])
+            if duration<300 or duration>effect['end_ms']-effect['start_ms']:
+                raise ValueError(f'{where}: crash_out requires at least 300 ms and its full duration inside the effect interval')
+            effect['params']['duration_ms']=duration
         if effect['name']=='camera_move' and effect['params']['move']=='whip':
             from fx.effects.camera import MOVES
             duration=effect['params']['duration_ms'] or MOVES['whip'][0]
@@ -357,7 +362,7 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
         if follower:
             caption_zone['y']=max(caption_zone['y'],math.ceil(ctx.height*.64))
             caption_zone['bottom']=min(caption_zone['bottom'],math.floor(ctx.height*.79))
-        caption_renderer=CaptionRenderer(ctx.captions,(ctx.width,ctx.height),caption_zone)
+        caption_renderer=CaptionRenderer(ctx.captions,(ctx.width,ctx.height),caption_zone,fps=ctx.fps)
         ctx.captions['lines']=caption_renderer.lines
     origins={}
     for s in plan['segments']:

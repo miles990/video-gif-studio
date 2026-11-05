@@ -208,8 +208,8 @@ class MusicCameraFixTests(unittest.TestCase):
 
     def test_crash_out_eases_from_original_and_returns(self):
         self.assertEqual(motion('crash_out',0),(1,0))
-        self.assertAlmostEqual(motion('crash_out',100)[0],1)
-        samples=[motion('crash_out',t)[0] for t in np.linspace(0,100,301)]
+        self.assertAlmostEqual(motion('crash_out',600)[0],1)
+        samples=[motion('crash_out',t)[0] for t in np.linspace(0,600,301)]
         self.assertAlmostEqual(max(samples),1.35)
         self.assertLess(max(abs(np.diff(samples))),.02)
 

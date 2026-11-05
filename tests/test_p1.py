@@ -141,9 +141,10 @@ class CaptionTests(TempCase):
         cfg=settings((540,960));blank=Image.new('RGBA',cfg['size'])
         base=dict(preset='clean',words_per_line=20)
         def pixels(style):
-            return np.array(captions.CaptionRenderer(self.prepared(style),cfg['size'],cfg['safe_zone']).overlay(blank,500))
+            data=captions.prepare(dict(words=[dict(text=t,start_ms=i*150,end_ms=1000) for i,t in enumerate(('Make','it','pop','3.14'))],style=style),self.root,True)
+            return np.array(captions.CaptionRenderer(data,cfg['size'],cfg['safe_zone']).overlay(blank,500))
         reference=pixels(base)
-        for key,value in [('size',120),('stroke',12),('shadow',12),('box','333333'),('keyword_color','FF9900'),('entrance','typewriter'),('words_per_line',6),('position','top'),('safe_zone',dict(bottom=.65))]:
+        for key,value in [('size',120),('stroke',12),('shadow',12),('box','333333'),('keyword_color','FF9900'),('entrance','pop'),('words_per_line',6),('position','top'),('safe_zone',dict(bottom=.65))]:
             with self.subTest(field=key): self.assertFalse(np.array_equal(reference,pixels(dict(base,**{key:value}))))
         with self.assertRaises(ValueError):self.prepared(dict(font='no-font.ttf'))
 
@@ -171,7 +172,7 @@ class CameraTests(unittest.TestCase):
 
     def test_named_motion_contract(self):
         self.assertGreaterEqual((motion('crash_in',100)[0]-1)/.35,.9)
-        self.assertLessEqual(motion('crash_out',100)[0],1.035)
+        self.assertLessEqual(motion('crash_out',600)[0],1.035)
         samples=np.array([motion('smooth_in',t)[0] for t in np.linspace(0,1000,31)])
         velocity=np.diff(samples);self.assertTrue(np.all(velocity>=0));self.assertIn(int(np.argmax(velocity)),range(12,18))
         self.assertLess(velocity[0],velocity.max()*.15)

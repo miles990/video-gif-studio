@@ -60,3 +60,4 @@
 - 06:20 P1 建造完成（292 tests／0 failures）commit d1f3d92；協調者實測發現 faster-whisper 路線 4 個缺陷、Kenney 403（wow/fx/live/p1-live.md），真實輸出存為 tests/fixtures/live。開 P1 獨立審查。
 - 06:45 P1 獨立審查：可以 experimental 身分合回，但 P1 驗收不過（重構圖黑邊 46–57%、主體在框 20%/94%；whip 停在鏡像；字幕像電視字幕；斷行不看句界；emoji 直接失敗；點綴不分檔、白閃過多；協調者實測 4 缺陷皆確認，根因 np.float64 型別比對）。派 P1 修正。
 - 07:35 P1 修正（Codex 21 分）完成 310 tests；誤提交 10 MB 審查影片已 untrack（P1 將 squash 合回避免 main 歷史膨脹；協調者 commit 指令改為 preflight 失敗即停）。實測 whisper：繁中可用，剩全形標點、英文前導空白。開 P1 複審。
+- 08:20 P1 複審：可 experimental 合回；驗收不過（字幕內容完整性、空白／標點、關鍵字、crash_out、qa 誤判運鏡、pop 單字）。fx.md 加已知問題後 squash 合回 main 7f392cf（main 不含 10 MB 審查影片）；安裝目錄全套 310 tests／2 env errors、doctor 通過；push。開 p1b-fix。

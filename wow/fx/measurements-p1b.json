@@ -1,0 +1,662 @@
+{
+  "pop": {
+    "size": [
+      1080,
+      1920
+    ],
+    "words": 8,
+    "lines": 4,
+    "dropped": [],
+    "pop_events_ms": [
+      37.0
+    ],
+    "line_text": [
+      "「今天 Ship",
+      "了 v2.0，共",
+      "1,234",
+      "位使用者👍🏽」"
+    ]
+  },
+  "typewriter": {
+    "size": [
+      1080,
+      1920
+    ],
+    "words": 8,
+    "lines": 3,
+    "dropped": [],
+    "pop_events_ms": [
+      37.0
+    ],
+    "line_text": [
+      "「今天 Ship 了",
+      "v2.0，共",
+      "1,234 位使用者👍🏽」"
+    ]
+  },
+  "bounce": {
+    "size": [
+      1080,
+      1920
+    ],
+    "words": 8,
+    "lines": 3,
+    "dropped": [],
+    "pop_events_ms": [
+      37.0
+    ],
+    "line_text": [
+      "「今天 Ship 了",
+      "v2.0，共",
+      "1,234 位使用者👍🏽」"
+    ]
+  },
+  "clean": {
+    "size": [
+      1080,
+      1920
+    ],
+    "words": 8,
+    "lines": 3,
+    "dropped": [],
+    "pop_events_ms": [
+      37.0
+    ],
+    "line_text": [
+      "「今天 Ship 了",
+      "v2.0，共",
+      "1,234 位使用者👍🏽」"
+    ]
+  },
+  "camera_qa": {
+    "input": "C:\\Users\\User\\AppData\\Local\\Temp\\p1b-evidence-veugv0ec\\camera\\render\\animation.mp4",
+    "frames": 120,
+    "duration_seconds": 4.0,
+    "frame_times_seconds": [
+      0.0,
+      0.033333,
+      0.066667,
+      0.1,
+      0.133333,
+      0.166667,
+      0.2,
+      0.233333,
+      0.266667,
+      0.3,
+      0.333333,
+      0.366667,
+      0.4,
+      0.433333,
+      0.466667,
+      0.5,
+      0.533333,
+      0.566667,
+      0.6,
+      0.633333,
+      0.666667,
+      0.7,
+      0.733333,
+      0.766667,
+      0.8,
+      0.833333,
+      0.866667,
+      0.9,
+      0.933333,
+      0.966667,
+      1.0,
+      1.033333,
+      1.066667,
+      1.1,
+      1.133333,
+      1.166667,
+      1.2,
+      1.233333,
+      1.266667,
+      1.3,
+      1.333333,
+      1.366667,
+      1.4,
+      1.433333,
+      1.466667,
+      1.5,
+      1.533333,
+      1.566667,
+      1.6,
+      1.633333,
+      1.666667,
+      1.7,
+      1.733333,
+      1.766667,
+      1.8,
+      1.833333,
+      1.866667,
+      1.9,
+      1.933333,
+      1.966667,
+      2.0,
+      2.033333,
+      2.066667,
+      2.1,
+      2.133333,
+      2.166667,
+      2.2,
+      2.233333,
+      2.266667,
+      2.3,
+      2.333333,
+      2.366667,
+      2.4,
+      2.433333,
+      2.466667,
+      2.5,
+      2.533333,
+      2.566667,
+      2.6,
+      2.633333,
+      2.666667,
+      2.7,
+      2.733333,
+      2.766667,
+      2.8,
+      2.833333,
+      2.866667,
+      2.9,
+      2.933333,
+      2.966667,
+      3.0,
+      3.033333,
+      3.066667,
+      3.1,
+      3.133333,
+      3.166667,
+      3.2,
+      3.233333,
+      3.266667,
+      3.3,
+      3.333333,
+      3.366667,
+      3.4,
+      3.433333,
+      3.466667,
+      3.5,
+      3.533333,
+      3.566667,
+      3.6,
+      3.633333,
+      3.666667,
+      3.7,
+      3.733333,
+      3.766667,
+      3.8,
+      3.833333,
+      3.866667,
+      3.9,
+      3.933333,
+      3.966667
+    ],
+    "checks": [
+      {
+        "name": "frame0",
+        "level": "PASS",
+        "message": "Visible composition has exposure and contrast",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ],
+        "mean": 118.28348541259766,
+        "contrast": 42.89437484741211
+      },
+      {
+        "name": "flashes",
+        "level": "PASS",
+        "message": "Single-frame flash scan",
+        "events": [],
+        "excluded_camera_events": []
+      },
+      {
+        "name": "pops",
+        "level": "WARN",
+        "message": "Small transient pop scan; inspect in context",
+        "events": [
+          {
+            "frame": 31,
+            "seconds": 1.033333
+          },
+          {
+            "frame": 72,
+            "seconds": 2.4
+          },
+          {
+            "frame": 73,
+            "seconds": 2.433333
+          },
+          {
+            "frame": 78,
+            "seconds": 2.6
+          },
+          {
+            "frame": 100,
+            "seconds": 3.333333
+          },
+          {
+            "frame": 103,
+            "seconds": 3.433333
+          }
+        ]
+      },
+      {
+        "name": "freeze",
+        "level": "PASS",
+        "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+        "events": [],
+        "designed_holds": []
+      },
+      {
+        "name": "cuts",
+        "level": "PASS",
+        "message": "Detected cut candidates (no hard cuts required)",
+        "events": [],
+        "detected": [
+          {
+            "frame": 10,
+            "seconds": 0.333333
+          },
+          {
+            "frame": 60,
+            "seconds": 2.0
+          }
+        ],
+        "expected_seconds": []
+      },
+      {
+        "name": "timeline_joins",
+        "level": "PASS",
+        "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+        "events": [
+          {
+            "frame": 60,
+            "seconds": 2.0
+          }
+        ]
+      },
+      {
+        "name": "loop",
+        "level": "PASS",
+        "message": "N/A: no loop requested",
+        "events": []
+      },
+      {
+        "name": "loudness",
+        "level": "PASS",
+        "applicable": false,
+        "message": "N/A: no audio track",
+        "events": []
+      },
+      {
+        "name": "true_peak",
+        "level": "PASS",
+        "applicable": false,
+        "message": "N/A: no audio track",
+        "events": []
+      },
+      {
+        "name": "loudest_100ms",
+        "level": "PASS",
+        "applicable": false,
+        "message": "N/A: no audio track",
+        "events": []
+      },
+      {
+        "name": "silence",
+        "level": "PASS",
+        "applicable": false,
+        "message": "N/A: no audio track",
+        "events": []
+      }
+    ],
+    "sheets": {
+      "contact_sheet": [
+        {
+          "frame": 0,
+          "seconds": 0.0
+        },
+        {
+          "frame": 10,
+          "seconds": 0.333333
+        },
+        {
+          "frame": 21,
+          "seconds": 0.7
+        },
+        {
+          "frame": 32,
+          "seconds": 1.066667
+        },
+        {
+          "frame": 43,
+          "seconds": 1.433333
+        },
+        {
+          "frame": 54,
+          "seconds": 1.8
+        },
+        {
+          "frame": 65,
+          "seconds": 2.166667
+        },
+        {
+          "frame": 76,
+          "seconds": 2.533333
+        },
+        {
+          "frame": 87,
+          "seconds": 2.9
+        },
+        {
+          "frame": 98,
+          "seconds": 3.266667
+        },
+        {
+          "frame": 109,
+          "seconds": 3.633333
+        },
+        {
+          "frame": 119,
+          "seconds": 3.966667
+        }
+      ],
+      "phone_sheet": [
+        {
+          "frame": 0,
+          "seconds": 0.0
+        },
+        {
+          "frame": 30,
+          "seconds": 1.0
+        },
+        {
+          "frame": 60,
+          "seconds": 2.0
+        },
+        {
+          "frame": 90,
+          "seconds": 3.0
+        }
+      ],
+      "hook_sheet": [
+        {
+          "frame": 0,
+          "seconds": 0.0
+        },
+        {
+          "frame": 15,
+          "seconds": 0.5
+        },
+        {
+          "frame": 30,
+          "seconds": 1.0
+        },
+        {
+          "frame": 45,
+          "seconds": 1.5
+        },
+        {
+          "frame": 60,
+          "seconds": 2.0
+        },
+        {
+          "frame": 75,
+          "seconds": 2.5
+        }
+      ]
+    },
+    "limitations": "Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.",
+    "elapsed_seconds": 1.3575827000313438,
+    "fps": 30.0,
+    "cfr": true,
+    "level": "WARN",
+    "cut_to_downbeat_median_ms": 0.0,
+    "rhythm_cuts": [
+      {
+        "frame": 60,
+        "seconds": 2.0
+      }
+    ],
+    "rhythm_excluded_effect_events": [
+      {
+        "frame": 10,
+        "seconds": 0.333333
+      }
+    ],
+    "rhythm_measurement": "decoded cuts vs downbeats, excluding bounded planned effect impulses except at shot boundaries; null when no cuts detected"
+  },
+  "caption_qa": {
+    "pop": {
+      "frame0": {
+        "level": "PASS",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ]
+      },
+      "flashes": {
+        "level": "PASS",
+        "events": []
+      },
+      "pops": {
+        "level": "PASS",
+        "events": []
+      },
+      "freeze": {
+        "level": "PASS",
+        "events": []
+      },
+      "cuts": {
+        "level": "PASS",
+        "events": []
+      },
+      "timeline_joins": {
+        "level": "PASS",
+        "events": []
+      },
+      "loop": {
+        "level": "PASS",
+        "events": []
+      },
+      "loudness": {
+        "level": "PASS",
+        "events": []
+      },
+      "true_peak": {
+        "level": "PASS",
+        "events": []
+      },
+      "loudest_100ms": {
+        "level": "PASS",
+        "events": []
+      },
+      "silence": {
+        "level": "PASS",
+        "events": []
+      }
+    },
+    "typewriter": {
+      "frame0": {
+        "level": "PASS",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ]
+      },
+      "flashes": {
+        "level": "PASS",
+        "events": []
+      },
+      "pops": {
+        "level": "PASS",
+        "events": []
+      },
+      "freeze": {
+        "level": "PASS",
+        "events": []
+      },
+      "cuts": {
+        "level": "PASS",
+        "events": []
+      },
+      "timeline_joins": {
+        "level": "PASS",
+        "events": []
+      },
+      "loop": {
+        "level": "PASS",
+        "events": []
+      },
+      "loudness": {
+        "level": "PASS",
+        "events": []
+      },
+      "true_peak": {
+        "level": "PASS",
+        "events": []
+      },
+      "loudest_100ms": {
+        "level": "PASS",
+        "events": []
+      },
+      "silence": {
+        "level": "PASS",
+        "events": []
+      }
+    },
+    "bounce": {
+      "frame0": {
+        "level": "PASS",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ]
+      },
+      "flashes": {
+        "level": "PASS",
+        "events": []
+      },
+      "pops": {
+        "level": "PASS",
+        "events": []
+      },
+      "freeze": {
+        "level": "PASS",
+        "events": []
+      },
+      "cuts": {
+        "level": "PASS",
+        "events": []
+      },
+      "timeline_joins": {
+        "level": "PASS",
+        "events": []
+      },
+      "loop": {
+        "level": "PASS",
+        "events": []
+      },
+      "loudness": {
+        "level": "PASS",
+        "events": []
+      },
+      "true_peak": {
+        "level": "PASS",
+        "events": []
+      },
+      "loudest_100ms": {
+        "level": "PASS",
+        "events": []
+      },
+      "silence": {
+        "level": "PASS",
+        "events": []
+      }
+    },
+    "clean": {
+      "frame0": {
+        "level": "PASS",
+        "events": [
+          {
+            "frame": 0,
+            "seconds": 0.0
+          }
+        ]
+      },
+      "flashes": {
+        "level": "PASS",
+        "events": []
+      },
+      "pops": {
+        "level": "PASS",
+        "events": []
+      },
+      "freeze": {
+        "level": "PASS",
+        "events": []
+      },
+      "cuts": {
+        "level": "PASS",
+        "events": []
+      },
+      "timeline_joins": {
+        "level": "PASS",
+        "events": []
+      },
+      "loop": {
+        "level": "PASS",
+        "events": []
+      },
+      "loudness": {
+        "level": "PASS",
+        "events": []
+      },
+      "true_peak": {
+        "level": "PASS",
+        "events": []
+      },
+      "loudest_100ms": {
+        "level": "PASS",
+        "events": []
+      },
+      "silence": {
+        "level": "PASS",
+        "events": []
+      }
+    }
+  },
+  "crash_out": {
+    "24": 0.13736905489111817,
+    "25": 0.12314814814814823,
+    "30": 0.1258187585733883,
+    "60": 0.06627389831961605
+  },
+  "word_onsets": {
+    "words": 56,
+    "presets": 4,
+    "checks": 224,
+    "max_delay_ms": 29.666666666666742,
+    "fps": 30
+  },
+  "contact_bytes": 1772734,
+  "opencc_live": {
+    "words": 29,
+    "traditional_hua": true,
+    "fullwidth_commas": 2,
+    "leading_spaces": 0,
+    "model_inference": false
+  }
+}

@@ -494,11 +494,12 @@ Preview validation: python wow/fx/check_preview.py generated the original plus a
 
 ## P1 experimental captions
 
-> **Known issues (independent review 2026-11-05; do not use for delivery or demos until fixed):**
-> mixed Chinese/English captions can drop or mistime words (a timed word split across lines never shows; leading-space CJK tokens shift word indices);
-> zh-TW output keeps half-width commas; English words keep a leading space; keyword picking can split `v2.0` / `1,234`;
-> `crash_out` at its default duration jumps one frame; `qa_media` counts named camera moves as cuts/flashes.
-> All of these are experimental features; a follow-up slice (P1b) fixes them before any quality gate.
+> **Known limitations after P1b (2026-11-05):** ASR can still misrecognize words;
+> SRT/script timing remains approximate. Missing system glyphs still produce an
+> explicit drop warning; emoji fallback is monochrome and depends on installed
+> fonts/shaping support. Independent cross-vendor review and user spot checks
+> remain pending. Fixed integrity, punctuation, camera and preset findings are
+> recorded in [P1b evidence](../wow/fx/build-notes-p1b.md).
 
 All four caption presets (`pop`, `typewriter`, `bounce`, `clean`), named camera
 moves, layered edit styles, SFX and reframe require `--experimental` or plan
@@ -572,51 +573,74 @@ supplies fractional x/y/right/bottom bounds; they intersect P0 platform bounds a
 its 2%-width text inset, never relax them. Animated maximum extents are included
 when laying out. Text reflows to fit the actual font; oversized unbreakable tokens
 error before rendering. Bold system fonts are preferred (Microsoft JhengHei Bold /
-Noto CJK Bold); the default is 112 px with 8 px dark stroke. `pop` is bold yellow
-current-word emphasis with a 1.22×/180 ms pulse on each new word; `typewriter` reveals
-graphemes with a mint current-word highlight and dark box; `clean` is a smaller
-88 px outlined white style; `bounce` uses a navy growing box, amber current word
-and a damped 400 ms entrance. Boxes grow with revealed text. `current_word:false`
+Noto CJK Bold); the default is 112 px with 8 px dark stroke. `pop` has yellow
+keywords and a mint current word; its 1.22×/180 ms pulse scales only that word.
+Earlier words retain their positions and size. `typewriter` now reveals whole
+timed words at their onsets, with a yellow current word, mint keywords and dark
+box. `clean` is 88 px white text with a 10 px dark stroke and 4 px shadow;
+`bounce` uses a navy growing box, mint current word, amber keywords and a damped
+400 ms entrance. `current_word_color` is separate from `keyword_color` and takes
+precedence while the word is current. Boxes grow with revealed text. `current_word:false`
 disables active-word emphasis independently of keyword selection. These numeric
 properties do not substitute for the pending visual-quality gate.
 
-Line limits use fullwidth=1, halfwidth=0.5; actual pixel width can force shorter
-lines. Longest dictionary matching protects 台北市政府 / 開放資料 / 效果 and the
-additional words in `captions.LEXICON`; English words, decimal/version numbers,
-number+GB/MB/KB/TB units, comma-grouped numbers (1,234), v2.0, skin-tone/ZWJ emoji
-and paired …… and —— are atomic. Sentence-final punctuation and pauses of at least
-150 ms start a new line; width-wrapped singleton tails are rebalanced when possible.
-Pixel reflow repeats this check; a short phrase may be uniformly reduced by up to
-26% to keep its last word attached, while preserving the platform safe zone.
-An inherently one-word sentence or too-wide preceding token can still stand alone.
-Opening punctuation stays
-with following content, closing punctuation with preceding content. This is a
-documented small lexicon, not a general Chinese linguistic segmenter. Automatic
-keywords are 台北市政府 / 開放資料 / 效果 and numbers. An explicit `keywords` list
+Every input timed word is atomic in both logical and pixel reflow. Its glyphs
+retain its word ID and onset; no merged-string character search reconstructs
+timings. Each line takes its start/end from its own words. A sub-frame word gets
+at least one delivered frame (the line's display end may extend to that frame's
+end); exported word timings stay unchanged. Simultaneous lines are rendered,
+not silently clipped to the next line's onset.
+
+Word text is trimmed and internal whitespace collapsed. Between timed words,
+use one ASCII space at Latin/number boundaries (including CJK–Latin/number),
+none between CJK words, none before closing punctuation or after opening
+punctuation. After closing punctuation, insert a space only before Latin/numbers.
+For example: `今天 Ship 了 v2.0，共 1,234 位使用者`.
+`language:zh` / `zh-TW` or `traditional:true` also maps sentence punctuation
+`, . ! ? : ;` to `，。！？：；`; decimal/version dots and numeric grouping commas
+inside `v2.0`, `3.14`, `1,234` stay ASCII. JSON/SRT word text has no edge spaces.
+
+Line limits use fullwidth=1, halfwidth=0.5. A timed word may exceed that logical
+limit intact; oversized pixel widths must fit via bounded uniform reduction
+(at most 26%) or fail before rendering. Sentence endings and pauses ≥150 ms
+start a new line; singleton tails are rebalanced using whole timed words when
+possible. SRT/script interpolation still uses the small `captions.LEXICON`
+dictionary and atomic English/number/emoji tokens; it is not a general Chinese
+segmenter or acoustic aligner. Automatic keywords are 台北市政府 / 開放資料 / 效果
+and complete numeric tokens, including `v2.0`, `1,234` and `3.14`. An explicit `keywords` list
 replaces the keyword selection; `[]` disables keyword highlights. Set
 `current_word:false` as well to disable active-word emphasis.
 
-Unicode cmap 4/12 coverage is read without fontTools. Unsupported graphemes are
+Unicode cmap 4/12 coverage is read without fontTools. The renderer tries installed
+Segoe UI Emoji / Noto Emoji for missing primary-font graphemes. On Windows builds
+without Pillow libraqm, cached Uniscribe masks join skin-tone/ZWJ sequences into
+one monochrome glyph; modifiers are not painted as separate squares. Fonts and
+emoji artwork are not bundled. Unsupported graphemes are
 dropped as whole units, with a warning listing their `U+XXXX` code points and
 `dropped_codepoints` in the manifest. This includes unsupported emoji: no tofu or
 partial ZWJ/skin-tone sequence is drawn and the render continues, even if all
 text is dropped. Original text/timing remains in the word export. The resolved
 font path is recorded; fonts are not bundled.
 
+With SFX enabled, caption pops accent phrase starts: at least 1500 ms between
+selected line onsets and never on adjacent lines. This is independent of the
+per-word visual pop animation; it does not add audio to every line or word.
+
 ## P1 named camera vocabulary (experimental)
 
 Call a move in effects as `{"move":"crash_in","start_ms":500}`; equivalent to
 `{"name":"camera_move","move":"crash_in"}`. Unknown names list valid choices.
-`duration_ms:0` and `target:0` select table defaults. Optional direction is
+`duration_ms:0` and `target:0` select table defaults, except `crash_out` uses the
+shorter of 600 ms and its effect interval (minimum 300 ms). Optional direction is
 left/right/up/down; anchor is center or subject (alpha centroid, center fallback
 for fully opaque source). Keep `end_ms` long enough to include the movement.
-Truncated whip intervals are rejected before rendering, because they cannot land
+Truncated whip/crash_out intervals are rejected before rendering, because they cannot land
 back on the original framing.
 
 | Move | Target | Default duration | Easing | Use |
 | --- | --- | --- | --- | --- |
 | crash_in | 1 → 1.35 scale | 100 ms | easeOutExpo | fast emphasis |
-| crash_out | 1 → 1.35 → 1 scale | 100 ms | 30% easeInOutCubic preparation, 70% easeOutExpo reveal | reveal without a first-frame jump |
+| crash_out | 1 → 1.35 → 1 scale | 600 ms (minimum 300 ms) | 40% easeInOutCubic preparation, 60% easeOutCubic reveal | continuous preparation and return |
 | expo_in | 1 → 1.30 scale | 800 ms | easeInExpo | accelerating push |
 | smooth_in | 1 → 1.20 scale | 1000 ms | easeInOutCubic | restrained push |
 | whip | 0 → 0.85 → 0 frame widths/heights | 160 ms | sine-squared excursion | directional whip returning to original framing |
@@ -632,6 +656,13 @@ Opaque zoom borders reflect, transparent imagery uses premultiplied alpha. Whip
 uses edge extension and motion-axis blur during its excursion; its first and last
 frames are exact originals. To land on another shot use the `whip_pan` transition.
 Whip whoosh peak aligns to the maximum delivered frame displacement.
+The default crash_out target/duration changes scale by at most 0.16 per frame
+at 24/25/30/60 fps (measured maximum 0.13737); explicit targets/durations alter
+that bound. QA uses the manifest's named move start, effect end, motion end and
+zoom/pan peaks, within one median frame, to exclude intentional camera events
+from rhythm and flash scoring. It does not exempt the entire motion interval;
+planned shot cuts still win in rhythm scoring. Excluded flash events remain
+auditable under `flashes.excluded_camera_events`.
 
 ## P1 subject-following portrait reframe (experimental)
 

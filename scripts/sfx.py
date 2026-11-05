@@ -108,7 +108,11 @@ def events_from_plan(plan, effects, transitions, segments, captions=None, fps=No
             add('ramp',edit['ramp'].get('hit_at_ms',s['start_ms']+s['duration_ms']))
         if edit.get('previous')=='last' or edit.get('type')=='freeze': add('freeze',s['start_ms'])
     if captions:
-        for line in captions['lines']: add('caption',line['start_ms'])
+        # Accent phrase starts: at most one pop / 1.5 s and no adjacent lines.
+        last=-float('inf');last_index=-2
+        for index,line in enumerate(captions['lines']):
+            if index-last_index>=2 and line['start_ms']-last>=1500:
+                add('caption',line['start_ms']);last=line['start_ms'];last_index=index
     unique={ (e['kind'],round(e['at_ms'],6)):e for e in events }
     return sorted(unique.values(),key=lambda e:e['at_ms'])
 

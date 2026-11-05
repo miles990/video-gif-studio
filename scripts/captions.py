@@ -20,18 +20,19 @@ from typing import Protocol
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 from fx.effects.typography import resolve_font, check_glyphs, font_codepoints
+from caption_glyphs import emoji_mask, draw_grapheme
 
 LEXICON = ('台北市政府', '開放資料', '真的嗎', '我們', '今天', '參加', '活動', '效果', '太棒', '然後', '上線')
 CLOSING = '，。、！？；：」』）】》…—％,.!?;:%)]}'
 OPENING = '「『（【《([{'
 PRESETS = {
     'pop': dict(entrance='pop', keyword_color='FFE45E', box=None, current_word=True),
-    'typewriter': dict(entrance='typewriter', keyword_color='78F5DD', box='111111', current_word=True),
+    'typewriter': dict(entrance='typewriter', keyword_color='78F5DD', current_word_color='FFE45E', box='111111', current_word=True),
     'bounce': dict(entrance='bounce', keyword_color='FFD166', box='183153', current_word=True),
-    'clean': dict(entrance='none', keyword_color='FFE45E', box=None, size=88, stroke=6, shadow=0),
+    'clean': dict(entrance='none', keyword_color='FFE45E', box=None, size=88, stroke=10, shadow=4),
 }
 DEFAULTS = dict(font='', size=112, stroke=8, stroke_color='080808', shadow=4, current_word=False,
-                shadow_color='080808', color='FFFFFF', box='111111', keyword_color='FFE45E',
+                current_word_color='78F5DD', shadow_color='080808', color='FFFFFF', box='111111', keyword_color='FFE45E',
                 entrance='pop', words_per_line=12, position='bottom', safe_zone=None)
 
 
@@ -164,7 +165,7 @@ def validate_words(words):
         start,end=float(start),float(end)
         if 'start_ms' not in word: start*=1000;end*=1000
         if result and start < result[-1]['start_ms']: raise ValueError('word starts must be ordered')
-        result.append(dict(text=text, start_ms=start, end_ms=end))
+        result.append(dict(text=re.sub(r'\s+', ' ', text).strip(), start_ms=start, end_ms=end))
     if not result: raise ValueError('No caption words')
     return result
 
@@ -238,56 +239,107 @@ def prepare(spec, base, experimental=False):
             raise ValueError('Invalid caption '+field)
     if style['entrance'] not in ('pop','typewriter','bounce','none'): raise ValueError('caption entrance: pop|typewriter|bounce|none')
     if style['position'] not in ('top','center','bottom'): raise ValueError('caption position: top|center|bottom')
-    for key in ('color','stroke_color','shadow_color','keyword_color','box'):
+    for key in ('color','stroke_color','shadow_color','keyword_color','current_word_color','box'):
         if style[key] is None and key=='box': continue
         if not isinstance(style[key],str) or len(style[key].lstrip('#'))!=6: raise ValueError('caption '+key+' requires six-digit RGB hex')
         ImageColor.getrgb('#'+style[key].lstrip('#'))
     words, method = load_words(spec,base)
     if spec.get('traditional') and method!='faster_whisper': words=traditional_words(words)
-    # Drop an unsupported grapheme as a unit: never render tofu, half an emoji,
-    # detached skin tone or ZWJ pieces. Keep the original timing in the export.
-    supported=font_codepoints(style['font']);display=[];dropped=set()
-    for word in words:
-        kept=[]
+    words = normalize_words(words, spec.get('traditional') or str(spec.get('language','')).lower().startswith('zh'))
+    # A timed word remains the unit of layout, highlighting and animation.
+    fallback = next((p for p in ('C:/Windows/Fonts/seguiemj.ttf',
+        '/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf') if Path(p).is_file()), None)
+    supported=font_codepoints(style['font']); extra=font_codepoints(fallback) if fallback else set()
+    display=[];dropped=set()
+    for index,word in enumerate(words):
+        chars=[]
         for cluster in graphemes(word['text']):
-            missing={ord(c) for c in cluster if not c.isspace()}-supported
-            if missing: dropped.update(ord(c) for c in cluster)
-            else: kept.append(cluster)
-        if ''.join(kept).strip(): display.append(dict(word,text=''.join(kept)))
+            points={ord(c) for c in cluster if not c.isspace() and c not in '\ufe0f\ufe0e\u200d'}
+            font=style['font'] if points<=supported else fallback if points<=extra else None
+            if font:
+                chars.append(dict(char=cluster, font=font, word_id=index, start_ms=word['start_ms'],
+                                  word_start_ms=word['start_ms'],end_ms=word['end_ms'],highlight=False))
+            else: dropped.update(ord(c) for c in cluster)
+        # Dropping an unsupported edge cluster can expose a space; keep display
+        # text and its glyph records identical so keyword offsets cannot drift.
+        while chars and chars[0]['char'].isspace(): chars.pop(0)
+        while chars and chars[-1]['char'].isspace(): chars.pop()
+        if chars: display.append(dict(word,word_id=index,text=''.join(c['char'] for c in chars),chars=chars))
     if dropped: warnings.warn('Dropped unsupported caption graphemes: '+', '.join(f'U+{c:04X}' for c in sorted(dropped)),UserWarning)
-    content = ''.join(w['text'] for w in display)
-    keywords = spec.get('keywords')
-    if keywords is None: keywords = [s for s in LEXICON if s in content and s in ('台北市政府','開放資料','效果')]+re.findall(r'\d+(?:\.\d+)*',content)
+    content=join_words(display)
+    keywords=spec.get('keywords')
+    if keywords is None:
+        keywords=[s for s in LEXICON if s in content and s in ('台北市政府','開放資料','效果')]
+        keywords+=re.findall(NUMBER,content)
     if not isinstance(keywords,list) or not all(isinstance(k,str) and k for k in keywords): raise ValueError('keywords must be a list of nonempty strings')
-    # Re-tokenize the combined text so dictionary words survive upstream word boundaries.
-    # Every character retains its supplied word onset (typewriter spreads within that word).
-    char_times=[]
-    pause_offsets=[];char_offset=0
-    for index,word in enumerate(display):
-        if index and word['start_ms']-display[index-1]['end_ms']>=150: pause_offsets.append(char_offset)
-        for i,_ in enumerate(word['text']):
-            char_times.append((word['start_ms'],word['end_ms'],word['start_ms']+(word['end_ms']-word['start_ms'])*i/len(word['text'])))
-        char_offset+=len(word['text'])
-    highlights = set()
+    highlights=set()
     for keyword in keywords:
         for match in re.finditer(re.escape(keyword),content): highlights.update(range(match.start(),match.end()))
-    lines=[]; offset=0
-    edges=[0]+pause_offsets+[len(content)]
-    broken=[line for a,b in zip(edges,edges[1:]) for line in break_lines(content[a:b],style['words_per_line'])]
-    for line in broken:
-        offset=content.find(line,offset)
-        chars=[dict(char=c, start_ms=char_times[offset+i][2 if style['entrance']=='typewriter' else 0],
-                    word_start_ms=char_times[offset+i][0],end_ms=char_times[offset+i][1],highlight=offset+i in highlights) for i,c in enumerate(line)]
-        lines.append(dict(text=line, chars=chars, start_ms=min(c['start_ms'] for c in chars),end_ms=max(c['end_ms'] for c in chars)))
-        offset+=len(line)
-    for a,b in zip(lines,lines[1:]): a['end_ms']=min(a['end_ms'],b['start_ms'])
+    offset=0
+    for i,word in enumerate(display):
+        if i: offset+=len(separator(display[i-1]['text'],word['text']))
+        for char in word['chars']:
+            char['highlight']=any(k in highlights for k in range(offset,offset+len(char['char'])))
+            offset+=len(char['char'])
+    lines=[make_line(group) for group in wrap_words(display,lambda group:width(join_words(group))<=style['words_per_line'])]
     return dict(words=words,lines=lines,style=style,preset=name,status='experimental',method=method,keywords=keywords,
                 dropped_codepoints=[f'U+{c:04X}' for c in sorted(dropped)],
                 warning=None if method in ('user_word_timing','faster_whisper','injected_alignment_engine') else 'Timing within cues/script is approximate; correct the exported words before final delivery')
 
 
+NUMBER = r'[vV]?\d+(?:,\d{3})*(?:\.\d+)*'
+
+
+def normalize_words(words, chinese=False):
+    result=[]
+    for word in validate_words(words):
+        text=word['text']
+        if chinese:
+            # Numeric commas/decimal points belong to the number, not punctuation.
+            protected={i for m in re.finditer(NUMBER,text) for i in range(m.start(),m.end())}
+            mapping=dict(zip(',.!?:;', '，。！？：；'))
+            text=''.join(mapping.get(c,c) if i not in protected else c for i,c in enumerate(text))
+        result.append(dict(word,text=text))
+    return result
+
+
+def separator(left, right):
+    # No spaces beside punctuation, or between CJK; one beside Latin/numbers.
+    if not left or not right or right[0] in CLOSING or left[-1] in OPENING: return ''
+    if left[-1] in CLOSING: return ' ' if right[0].isascii() and right[0].isalnum() else ''
+    return ' ' if any(c.isascii() and c.isalnum() for c in (left[-1],right[0])) else ''
+
+
+def join_words(words):
+    return ''.join((separator(words[i-1]['text'],w['text']) if i else '')+w['text'] for i,w in enumerate(words))
+
+
+def wrap_words(words, fits):
+    groups=[];current=[]
+    for word in words:
+        if current and (word['start_ms']-current[-1]['end_ms']>=150 or sentence_end(current[-1]['text']) or not fits(current+[word])):
+            groups.append(current);current=[]
+        current.append(word)
+    if current: groups.append(current)
+    for i in range(1,len(groups)):
+        prev,tail=groups[i-1],groups[i]
+        if len(tail)==1 and len(prev)>=3 and not sentence_end(prev[-1]['text']) and tail[0]['start_ms']-prev[-1]['end_ms']<150 and fits(prev[-1:]+tail):
+            groups[i]=[prev.pop()]+tail
+    return groups
+
+
+def make_line(words):
+    chars=[]
+    for i,word in enumerate(words):
+        sep=separator(words[i-1]['text'],word['text']) if i else ''
+        if sep: chars.append(dict(word['chars'][0],char=sep,highlight=False))
+        chars.extend(dict(c) for c in word['chars'])
+    return dict(text=join_words(words),words=words,chars=chars,
+                start_ms=min(w['start_ms'] for w in words),end_ms=max(w['end_ms'] for w in words))
+
+
 class CaptionRenderer:
-    def __init__(self, prepared, size, safe_zone):
+    def __init__(self, prepared, size, safe_zone, fps=30):
         self.data=prepared; self.size=tuple(size); self.style=prepared['style']; self.layouts=[]
         w,h=size; s=self.style; factor=h/1920
         face=ImageFont.truetype(s['font'],max(8,round(s['size']*factor)))
@@ -309,84 +361,93 @@ class CaptionRenderer:
         # maximum animated extent, preserving the tokenizer's unbreakable units.
         max_scale=1.22 if s['entrance']=='pop' else 1
         available=(right-left)/max_scale-2*self.stroke-2*pad-self.shadow
+        self.fonts={s['font']:face}
+        for line in prepared['lines']:
+            for c in line['chars']:
+                if c['font'] not in self.fonts:
+                    self.fonts[c['font']]=ImageFont.truetype(c['font'],face.size)
+        self.glyphs={}
+        for line in prepared['lines']:
+            for c in line['chars']:
+                if c['font']!=s['font'] and not c['char'].isspace():
+                    self.glyphs[(c['font'],c['char'])]=emoji_mask(c['char'],self.fonts[c['font']].getname()[0],face.size)
+        def measure(group):
+            return sum(self.advance(c) for c in make_line(group)['chars'])
         wrapped=[]
         for line in prepared['lines']:
-            pieces=[];current=''
-            for token in tokens(line['text']):
-                if face.getlength(token.strip())>available: raise ValueError('Caption token exceeds safe zone; choose a wider safe zone or shorter token')
-                if current and face.getlength(current+token)>available:
-                    pieces.append(current.rstrip());current=''
-                current+=token if current else token.lstrip()
-            if current:pieces.append(current.rstrip())
-            # Pixel reflow must not undo the linguistic orphan prevention.
-            # Rebalance when possible; a short two-word + singleton phrase may
-            # stay together with bounded uniform reduction (not a stretched font).
-            i=1
-            while i<len(pieces):
-                previous=[t for t in tokens(pieces[i-1]) if t.strip()]
-                tail=[t for t in tokens(pieces[i]) if t.strip()]
-                if len(tail)==1 and len(previous)>=2:
-                    sep=' ' if previous[-1][-1:].isascii() and tail[0][:1].isascii() else ''
-                    moved=previous[-1]+sep+pieces[i]
-                    joined=pieces[i-1]+sep+pieces[i]
-                    if len(previous)>=3 and face.getlength(moved)<=available:
-                        pieces[i-1]=pieces[i-1][:pieces[i-1].rfind(previous[-1])].rstrip();pieces[i]=moved
-                    elif face.getlength(joined)<=available*1.35:
-                        pieces[i-1]=joined;pieces.pop(i);continue
-                i+=1
-            offset=0
-            for piece in pieces:
-                offset=line['text'].find(piece,offset);chars=line['chars'][offset:offset+len(piece)];offset+=len(piece)
-                wrapped.append(dict(text=piece,chars=chars,start_ms=min(c['start_ms'] for c in chars),end_ms=max(c['end_ms'] for c in chars)))
-        # Shape and reveal whole graphemes (including emoji) in one draw call.
+            groups=wrap_words(line['words'],lambda group:measure(group)<=available)
+            # Keep a short phrase together via bounded uniform reduction.
+            if len(groups)==2 and len(groups[1])==1 and len(groups[0])>=2 and measure(line['words'])<=available*1.35:
+                groups=[line['words']]
+            wrapped.extend(make_line(group) for group in groups)
+        if not math.isfinite(fps) or fps<=0: raise ValueError('Caption fps must be positive')
         for line in wrapped:
-            merged=[];at=0
-            for cluster in graphemes(line['text']):
-                group=line['chars'][at:at+len(cluster)];at+=len(cluster)
-                merged.append(dict(group[0],char=cluster,end_ms=max(c['end_ms'] for c in group)))
-            line['chars']=merged
-        for a,b in zip(wrapped,wrapped[1:]): a['end_ms']=min(a['end_ms'],b['start_ms'])
+            # Even sub-frame words get one delivered frame, without changing exports.
+            line['end_ms']=max(line['end_ms'],max((math.ceil(w['start_ms']*fps/1000-1e-9)+1)*1000/fps for w in line['words']))
         self.lines=wrapped
         for line in wrapped:
-            box=face.getbbox(line['text'],stroke_width=self.stroke)
-            tw=math.ceil(face.getlength(line['text']))+2*self.stroke+2*pad+self.shadow
+            boxes=[self.glyph_box(c) for c in line['chars']]
+            box=(0,min(b[1] for b in boxes),0,max(b[3] for b in boxes))
+            tw=math.ceil(sum(self.advance(c) for c in line['chars']))+2*self.stroke+2*pad+self.shadow
             th=box[3]-box[1]+2*pad+self.shadow
             max_scale=1.22 if s['entrance']=='pop' else 1
             bounce=round(18*factor) if s['entrance']=='bounce' else 0
-            fit_scale=min(1,(right-left)/(tw*max_scale))
+            fit_scale=min(1,(right-left)/(tw*max_scale),(bottom-top-2*bounce)/(th*max_scale))
             if fit_scale<1/1.35 or th*max_scale*fit_scale+2*bounce>bottom-top:
                 raise ValueError('Caption exceeds safe zone; reduce words_per_line/size or enlarge safe zone')
             y={'top':top+th*max_scale*fit_scale/2+bounce,'center':(top+bottom)/2,'bottom':bottom-th*max_scale*fit_scale/2-bounce}[s['position']]
             self.layouts.append((line,tw,th,pad,box[1],(left+right)/2,y,fit_scale))
 
+    def advance(self, char):
+        mask=self.glyphs.get((char['font'],char['char']))
+        return mask.width if mask is not None else self.fonts[char['font']].getlength(char['char'])
+
+    def glyph_box(self, char):
+        mask=self.glyphs.get((char['font'],char['char']));font=self.fonts[char['font']]
+        if mask is not None:
+            y=round(font.size*.15)
+            return (-self.stroke,y-self.stroke,mask.width+self.stroke,y+mask.height+self.stroke)
+        return font.getbbox(char['char'],stroke_width=self.stroke)
+
     def overlay(self, frame, t_ms):
         image=frame.copy() if isinstance(frame,Image.Image) else Image.fromarray(frame)
         s=self.style
-        for line,tw,th,pad,by,cx,cy,fit_scale in self.layouts:
-            if not line['start_ms']<=t_ms<line['end_ms']: continue
+        active=[layout for layout in self.layouts if layout[0]['start_ms']<=t_ms+1e-7<layout[0]['end_ms']]
+        for row,(line,tw,th,pad,by,cx,cy,fit_scale) in enumerate(active):
             visible=[c for c in line['chars'] if c['start_ms']<=t_ms+1e-7]
             if not visible: continue
-            tw=min(tw,math.ceil(sum(self.font.getlength(c['char']) for c in visible))+2*self.stroke+2*pad+self.shadow)
-            layer=Image.new('RGBA',(tw,th));draw=ImageDraw.Draw(layer)
-            if s['box']: draw.rounded_rectangle((0,0,tw-1,th-1),radius=pad,fill='#'+s['box'].lstrip('#'))
-            x=pad+self.stroke
-            current=max(c.get('word_start_ms',c['start_ms']) for c in visible)
-            for char in line['chars']:
-                if char['start_ms']<=t_ms+1e-7:
-                    pos=(x,pad-by)
-                    color=s['keyword_color'] if char['highlight'] or (s['current_word'] and char.get('word_start_ms',char['start_ms'])==current) else s['color']
-                    draw.text((pos[0]+self.shadow,pos[1]+self.shadow),char['char'],font=self.font,fill='#'+s['shadow_color'].lstrip('#'),stroke_width=self.stroke,stroke_fill='#'+s['shadow_color'].lstrip('#'))
-                    draw.text(pos,char['char'],font=self.font,fill='#'+color.lstrip('#'),stroke_width=self.stroke,stroke_fill='#'+s['stroke_color'].lstrip('#'))
-                x+=self.font.getlength(char['char'])
-            elapsed=t_ms-current
-            if s['entrance']=='pop' and elapsed<180:
-                scale=1+.22*math.sin(math.pi*elapsed/180)
-                layer=layer.resize((round(tw*scale),round(th*scale)),Image.Resampling.LANCZOS)
+            # Fixed line origin: a new word never moves or scales earlier words.
+            margin=math.ceil(max(tw,th)*.12) if s['entrance']=='pop' else 0
+            layer=Image.new('RGBA',(tw+2*margin,th+2*margin));draw=ImageDraw.Draw(layer)
+            shown=math.ceil(sum(self.advance(c) for c in visible))+2*self.stroke+2*pad+self.shadow
+            if s['box']: draw.rounded_rectangle((margin,margin,margin+shown-1,margin+th-1),radius=pad,fill='#'+s['box'].lstrip('#'))
+            x=margin+pad+self.stroke
+            current=visible[-1]['word_id']
+            for word in line['words']:
+                chars=[c for c in line['chars'] if c['word_id']==word['word_id']]
+                word_width=sum(self.advance(c) for c in chars)
+                if word['start_ms']<=t_ms+1e-7:
+                    tile=Image.new('RGBA',layer.size);ink=ImageDraw.Draw(tile);at=x
+                    for char in chars:
+                        font=self.fonts[char['font']]
+                        color=s['current_word_color'] if s['current_word'] and word['word_id']==current else s['keyword_color'] if char['highlight'] else s['color']
+                        pos=(at,margin+pad-by)
+                        mask=self.glyphs.get((char['font'],char['char']))
+                        draw_grapheme(ink,(pos[0]+self.shadow,pos[1]+self.shadow),char['char'],font=font,fill='#'+s['shadow_color'].lstrip('#'),stroke_width=self.stroke,stroke_fill='#'+s['shadow_color'].lstrip('#'),mask=mask)
+                        draw_grapheme(ink,pos,char['char'],font=font,fill='#'+color.lstrip('#'),stroke_width=self.stroke,stroke_fill='#'+s['stroke_color'].lstrip('#'),mask=mask)
+                        at+=self.advance(char)
+                    elapsed=t_ms-word['start_ms']
+                    if s['entrance']=='pop' and word['word_id']==current and 0<=elapsed<180:
+                        scale=1+.22*math.sin(math.pi*elapsed/180)
+                        pivot=(x+word_width/2,margin+th/2)
+                        tile=tile.transform(tile.size,Image.Transform.AFFINE,(1/scale,0,pivot[0]*(1-1/scale),0,1/scale,pivot[1]*(1-1/scale)),Image.Resampling.BICUBIC)
+                    layer.alpha_composite(tile)
+                x+=word_width
+            elapsed=t_ms-visible[-1]['word_start_ms']
             if s['entrance']=='bounce' and elapsed<400:
                 cy+=round(18*self.size[1]/1920*math.exp(-elapsed/95)*math.cos(elapsed/48))
             if fit_scale<1: layer=layer.resize((max(1,round(layer.width*fit_scale)),max(1,round(layer.height*fit_scale))),Image.Resampling.LANCZOS)
-            image.alpha_composite(layer,(round(cx-layer.width/2),round(cy-layer.height/2)))
-            break
+            image.alpha_composite(layer,(round(cx-layer.width/2),round(cy-layer.height/2-row*(th+2*pad))))
         return image
 
 
@@ -394,7 +455,7 @@ def export_srt(words, path):
     def stamp(t):
         ms=round(t); seconds,ms=divmod(ms,1000); minutes,seconds=divmod(seconds,60); hours,minutes=divmod(minutes,60)
         return f'{hours:02}:{minutes:02}:{seconds:02},{ms:03}'
-    Path(path).write_text('\n\n'.join(f'{i+1}\n{stamp(w["start_ms"])} --> {stamp(w["end_ms"])}\n{w["text"]}' for i,w in enumerate(words))+'\n',encoding='utf-8')
+    Path(path).write_text('\n\n'.join(f'{i+1}\n{stamp(w["start_ms"])} --> {stamp(w["end_ms"])}\n{w["text"]}' for i,w in enumerate(validate_words(words)))+'\n',encoding='utf-8')
 
 
 def main(argv=None):
