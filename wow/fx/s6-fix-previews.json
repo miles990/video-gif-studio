@@ -1,0 +1,1150 @@
+{
+  "catalog_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog",
+  "reports": [
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 2,
+        "general_max": 2,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "breathe",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "texture",
+            "kind": "recipe",
+            "family": "tonal"
+          },
+          "peak_ms": 1766.6666666666667,
+          "visibility": {
+            "perceived_measured": 0.024378366768360138,
+            "status": "unknown",
+            "onset_contrast": 0.07813752442598343,
+            "visibility_family": "tonal",
+            "visibility_exemption": "declared texture intent",
+            "wcag_flashes_max_per_s": 2,
+            "measurements": {
+              "dY": 1.5602154731750488,
+              "area8": 0.0006095679012345679,
+              "ssim_loss": 0.005808413028717041,
+              "disp": 0.05312944948673248,
+              "flash_area": 0.0,
+              "red_flash": 0.0,
+              "center_sharp": 1.0034526655127254,
+              "sharp4": 1.0050437820690539,
+              "deltaE76": 5.2495551109313965,
+              "chroma_delta": 5.184178352355957,
+              "perceived": 0.024378366768360138
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-breathe-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "breathe",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-breathe.mp4",
+        "thumbnail": "recipe-breathe.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.108079400029965,
+      "sfx": [],
+      "source": "STD-MOV",
+      "default_override": {}
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 3,
+        "general_max": 3,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "bright_hit",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "hit",
+            "kind": "recipe",
+            "family": "tonal"
+          },
+          "peak_ms": 500.0,
+          "visibility": {
+            "perceived_measured": 0.9347762345679013,
+            "status": "unknown",
+            "onset_contrast": 0.5173588991165161,
+            "visibility_family": "tonal",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 3,
+            "measurements": {
+              "dY": 34.14443588256836,
+              "area8": 0.9764351851851852,
+              "ssim_loss": 0.07931137084960938,
+              "disp": 0.2110837697982788,
+              "flash_area": 0.9347762345679013,
+              "red_flash": 0.0,
+              "center_sharp": 0.5218105833265267,
+              "sharp4": 0.5458009051874368,
+              "deltaE76": 13.829005241394043,
+              "chroma_delta": 2.3715837001800537,
+              "perceived": 0.9347762345679013
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-bright_hit-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "bright_hit",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-bright_hit.mp4",
+        "thumbnail": "recipe-bright_hit.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.230904099997133,
+      "sfx": [
+        {
+          "kind": "hit",
+          "event": "bright_hit",
+          "at_ms": 500.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 24000,
+          "anchor_sample": 24000,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 2,
+        "general_max": 2,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "build",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "build",
+            "kind": "recipe",
+            "family": "tonal"
+          },
+          "peak_ms": 2000.0,
+          "visibility": {
+            "perceived_measured": 0.09577160493827161,
+            "status": "unknown",
+            "onset_contrast": 0.07738789170980453,
+            "visibility_family": "tonal",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 2,
+            "measurements": {
+              "dY": 4.677314758300781,
+              "area8": 0.20804783950617284,
+              "ssim_loss": 0.007474184036254883,
+              "disp": 0.05601303279399872,
+              "flash_area": 0.09577160493827161,
+              "red_flash": 0.0012037037037037038,
+              "center_sharp": 0.9572741744825698,
+              "sharp4": 0.9895841416690604,
+              "deltaE76": 3.858414649963379,
+              "chroma_delta": 3.300905704498291,
+              "perceived": 0.09577160493827161
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-build-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "build",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-build.mp4",
+        "thumbnail": "recipe-build.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.315324800030794,
+      "sfx": [
+        {
+          "kind": "riser",
+          "event": "build",
+          "at_ms": 2000.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 64800,
+          "anchor_sample": 96000,
+          "alignment": "end",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 3,
+        "general_max": 3,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "drop",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "drop",
+            "kind": "recipe",
+            "family": "tonal"
+          },
+          "peak_ms": 500.0,
+          "visibility": {
+            "perceived_measured": 0.9762114197530865,
+            "status": "unknown",
+            "onset_contrast": 0.9349903464317322,
+            "visibility_family": "tonal",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 3,
+            "measurements": {
+              "dY": 55.789306640625,
+              "area8": 0.9778317901234568,
+              "ssim_loss": 0.20127159357070923,
+              "disp": 0.3784255584081014,
+              "flash_area": 0.9762114197530865,
+              "red_flash": 0.0,
+              "center_sharp": 0.2232092965503163,
+              "sharp4": 0.3057847680763024,
+              "deltaE76": 22.222665786743164,
+              "chroma_delta": 3.9833548069000244,
+              "perceived": 0.9762114197530865
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-drop-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "drop",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-drop.mp4",
+        "thumbnail": "recipe-drop.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.024630200001411,
+      "sfx": [
+        {
+          "kind": "hit",
+          "event": "drop",
+          "at_ms": 500.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 24000,
+          "anchor_sample": 24000,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 0,
+        "general_max": 0,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "freeze_card",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "texture",
+            "kind": "recipe",
+            "family": "motion"
+          },
+          "peak_ms": 1033.3333333333333,
+          "visibility": {
+            "perceived_measured": 0.0839124255710178,
+            "status": "unknown",
+            "onset_contrast": 0.17158352854732914,
+            "visibility_family": "motion",
+            "visibility_exemption": "declared texture intent",
+            "wcag_flashes_max_per_s": 0,
+            "measurements": {
+              "dY": 1.8085790872573853,
+              "area8": 0.04006172839506173,
+              "ssim_loss": 0.031622350215911865,
+              "disp": 2.0138982137044272,
+              "flash_area": 0.023919753086419752,
+              "red_flash": 0.0,
+              "center_sharp": 2.353591874945663,
+              "sharp4": 1.1613732974947597,
+              "deltaE76": 0.9645687341690063,
+              "chroma_delta": 0.4451061487197876,
+              "perceived": 0.0839124255710178
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-freeze_card-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "freeze_card",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-freeze_card.mp4",
+        "thumbnail": "recipe-freeze_card.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.974172100017313,
+      "sfx": [
+        {
+          "kind": "click",
+          "event": "freeze_card",
+          "at_ms": 1033.3333333333333,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 49600,
+          "anchor_sample": 49600,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 2,
+        "general_max": 2,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "hero_glow",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "reveal",
+            "kind": "recipe",
+            "family": "tonal"
+          },
+          "peak_ms": 600.0,
+          "visibility": {
+            "perceived_measured": 0.5020120143890381,
+            "status": "unknown",
+            "onset_contrast": 0.2396603524684906,
+            "visibility_family": "tonal",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 2,
+            "measurements": {
+              "dY": 15.071334838867188,
+              "area8": 0.4671219135802469,
+              "ssim_loss": 0.5020120143890381,
+              "disp": 6.709618250528972,
+              "flash_area": 0.2688425925925926,
+              "red_flash": 0.0010570987654320988,
+              "center_sharp": 0.4536550925037191,
+              "sharp4": 0.9840156228746755,
+              "deltaE76": 8.08648681640625,
+              "chroma_delta": 4.195052146911621,
+              "perceived": 0.5020120143890381
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-hero_glow-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "hero_glow",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-hero_glow.mp4",
+        "thumbnail": "recipe-hero_glow.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.4215890999767,
+      "sfx": [
+        {
+          "kind": "whoosh",
+          "event": "hero_glow",
+          "at_ms": 600.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 28800,
+          "anchor_sample": 28800,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 3,
+        "general_max": 3,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "hook_snap",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "hit",
+            "kind": "recipe",
+            "family": "motion"
+          },
+          "peak_ms": 500.0,
+          "visibility": {
+            "perceived_measured": 0.9785594940185547,
+            "status": "unknown",
+            "onset_contrast": 0.3468626741641935,
+            "visibility_family": "motion",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 3,
+            "measurements": {
+              "dY": 23.3765811920166,
+              "area8": 0.6050154320987654,
+              "ssim_loss": 0.7783127427101135,
+              "disp": 23.485427856445312,
+              "flash_area": 0.37875,
+              "red_flash": 0.0,
+              "center_sharp": 0.4209028236214,
+              "sharp4": 1.0080839703351754,
+              "deltaE76": 9.687749862670898,
+              "chroma_delta": 1.5314933061599731,
+              "perceived": 0.9785594940185547
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-hook_snap-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "hook_snap",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-hook_snap.mp4",
+        "thumbnail": "recipe-hook_snap.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 9.801780999987386,
+      "sfx": [
+        {
+          "kind": "click",
+          "event": "hook_snap",
+          "at_ms": 500.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 24000,
+          "anchor_sample": 24000,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 3,
+        "general_max": 3,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "impact",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "hit",
+            "kind": "recipe",
+            "family": "motion"
+          },
+          "peak_ms": 500.0,
+          "visibility": {
+            "perceived_measured": 0.851449171702067,
+            "status": "unknown",
+            "onset_contrast": 0.3316500488225956,
+            "visibility_family": "motion",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 3,
+            "measurements": {
+              "dY": 22.018726348876953,
+              "area8": 0.5811574074074074,
+              "ssim_loss": 0.75307297706604,
+              "disp": 20.43478012084961,
+              "flash_area": 0.3547608024691358,
+              "red_flash": 0.0,
+              "center_sharp": 0.43127060311093496,
+              "sharp4": 1.164459442177189,
+              "deltaE76": 9.164637565612793,
+              "chroma_delta": 1.452396035194397,
+              "perceived": 0.851449171702067
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-impact-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "impact",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-impact.mp4",
+        "thumbnail": "recipe-impact.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 9.988314500020351,
+      "sfx": [
+        {
+          "kind": "hit",
+          "event": "impact",
+          "at_ms": 500.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 24000,
+          "anchor_sample": 24000,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 2,
+        "general_max": 2,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "outro_settle",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "texture",
+            "kind": "recipe",
+            "family": "tonal"
+          },
+          "peak_ms": 1500.0,
+          "visibility": {
+            "perceived_measured": 0.03354145586490631,
+            "status": "unknown",
+            "onset_contrast": 0.45311790704727173,
+            "visibility_family": "tonal",
+            "visibility_exemption": "declared texture intent",
+            "wcag_flashes_max_per_s": 2,
+            "measurements": {
+              "dY": 2.146653175354004,
+              "area8": 0.004251543209876543,
+              "ssim_loss": 0.0053465962409973145,
+              "disp": 0.12109903494517009,
+              "flash_area": 2.3148148148148147e-05,
+              "red_flash": 0.0,
+              "center_sharp": 1.0044904638598617,
+              "sharp4": 0.9817297578532704,
+              "deltaE76": 6.893765926361084,
+              "chroma_delta": 6.8085784912109375,
+              "perceived": 0.03354145586490631
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-outro_settle-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "outro_settle",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-outro_settle.mp4",
+        "thumbnail": "recipe-outro_settle.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 9.488444599963259,
+      "sfx": [],
+      "source": "STD-MOV",
+      "default_override": {}
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 3,
+        "general_max": 3,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "playful_hit",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "hit",
+            "kind": "recipe",
+            "family": "motion"
+          },
+          "peak_ms": 500.0,
+          "visibility": {
+            "perceived_measured": 0.8031514485677084,
+            "status": "unknown",
+            "onset_contrast": 0.3560959337294694,
+            "visibility_family": "motion",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 3,
+            "measurements": {
+              "dY": 23.113996505737305,
+              "area8": 0.5798070987654321,
+              "ssim_loss": 0.7431193590164185,
+              "disp": 19.275634765625,
+              "flash_area": 0.38935185185185184,
+              "red_flash": 0.0,
+              "center_sharp": 0.5094565251597067,
+              "sharp4": 1.1258166802307663,
+              "deltaE76": 9.578080177307129,
+              "chroma_delta": 1.7728040218353271,
+              "perceived": 0.8031514485677084
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-playful_hit-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "playful_hit",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-playful_hit.mp4",
+        "thumbnail": "recipe-playful_hit.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.231192899984308,
+      "sfx": [
+        {
+          "kind": "pop",
+          "event": "playful_hit",
+          "at_ms": 500.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 24000,
+          "anchor_sample": 24000,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 1,
+        "general_max": 1,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "reveal_subject",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "reveal",
+            "kind": "recipe",
+            "family": "motion"
+          },
+          "peak_ms": 600.0,
+          "visibility": {
+            "perceived_measured": 0.11411265432098766,
+            "status": "unknown",
+            "onset_contrast": 0.17156407104946098,
+            "visibility_family": "motion",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 1,
+            "measurements": {
+              "dY": 4.843815803527832,
+              "area8": 0.1292361111111111,
+              "ssim_loss": 0.05271899700164795,
+              "disp": 1.8557847340901692,
+              "flash_area": 0.11411265432098766,
+              "red_flash": 0.0,
+              "center_sharp": 5.411369935529314,
+              "sharp4": 2.554004375769645,
+              "deltaE76": 2.286093235015869,
+              "chroma_delta": 1.034541368484497,
+              "perceived": 0.11411265432098766
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-reveal_subject-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "reveal_subject",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-reveal_subject.mp4",
+        "thumbnail": "recipe-reveal_subject.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 11.539641800045501,
+      "sfx": [
+        {
+          "kind": "whoosh",
+          "event": "reveal_subject",
+          "at_ms": 600.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 28800,
+          "anchor_sample": 28800,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 2,
+        "general_max": 2,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "soft_hit",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "hit",
+            "kind": "recipe",
+            "family": "motion"
+          },
+          "peak_ms": 500.0,
+          "visibility": {
+            "perceived_measured": 0.5936858654022217,
+            "status": "unknown",
+            "onset_contrast": 0.25726451443952303,
+            "visibility_family": "motion",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 2,
+            "measurements": {
+              "dY": 14.14903736114502,
+              "area8": 0.3826003086419753,
+              "ssim_loss": 0.5936858654022217,
+              "disp": 9.312548955281576,
+              "flash_area": 0.20358796296296297,
+              "red_flash": 0.0,
+              "center_sharp": 0.5489180276550337,
+              "sharp4": 1.1809123768129268,
+              "deltaE76": 6.023461818695068,
+              "chroma_delta": 1.0158950090408325,
+              "perceived": 0.5936858654022217
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-soft_hit-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "soft_hit",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-soft_hit.mp4",
+        "thumbnail": "recipe-soft_hit.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.036533600010443,
+      "sfx": [
+        {
+          "kind": "pop",
+          "event": "soft_hit",
+          "at_ms": 500.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 24000,
+          "anchor_sample": 24000,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 3,
+        "general_max": 3,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "title_pop",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "title",
+            "kind": "recipe",
+            "family": "motion"
+          },
+          "peak_ms": 500.0,
+          "visibility": {
+            "perceived_measured": 0.6234536170959473,
+            "status": "unknown",
+            "onset_contrast": 0.28588627700466435,
+            "visibility_family": "motion",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 3,
+            "measurements": {
+              "dY": 17.276195526123047,
+              "area8": 0.4507098765432099,
+              "ssim_loss": 0.6234536170959473,
+              "disp": 12.204588572184244,
+              "flash_area": 0.2879783950617284,
+              "red_flash": 0.0,
+              "center_sharp": 0.5128456039448125,
+              "sharp4": 1.2219926437501047,
+              "deltaE76": 7.224034309387207,
+              "chroma_delta": 1.292134165763855,
+              "perceived": 0.6234536170959473
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-title_pop-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "title_pop",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-title_pop.mp4",
+        "thumbnail": "recipe-title_pop.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 10.074653300049249,
+      "sfx": [
+        {
+          "kind": "pop",
+          "event": "title_pop",
+          "at_ms": 500.0,
+          "source": "procedural",
+          "path": null,
+          "license": "original project synthesis",
+          "start_sample": 24000,
+          "anchor_sample": 24000,
+          "alignment": "onset",
+          "sample_rate": 48000
+        }
+      ],
+      "source": "STD-MOV",
+      "default_override": {},
+      "soundtrack": "quiet procedural 220/330 Hz bed plus paired SFX; programme loudness and true peak gated"
+    },
+    {
+      "frames": 90,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 2,
+        "general_max": 2,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "warm_memory",
+            "start_ms": 500,
+            "end_ms": 3000,
+            "intent": "texture",
+            "kind": "recipe",
+            "family": "tonal"
+          },
+          "peak_ms": 833.3333333333334,
+          "visibility": {
+            "perceived_measured": 0.08428411185741425,
+            "status": "unknown",
+            "onset_contrast": 0.13519656658172607,
+            "visibility_family": "tonal",
+            "visibility_exemption": "declared texture intent",
+            "wcag_flashes_max_per_s": 2,
+            "measurements": {
+              "dY": 5.394183158874512,
+              "area8": 0.18670524691358026,
+              "ssim_loss": 0.009596049785614014,
+              "disp": 0.1320678691069285,
+              "flash_area": 0.001257716049382716,
+              "red_flash": 0.0012962962962962963,
+              "center_sharp": 1.0012615673693155,
+              "sharp4": 0.9900799807503429,
+              "deltaE76": 23.38231658935547,
+              "chroma_delta": 23.180667877197266,
+              "perceived": 0.08428411185741425
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\recipe-warm_memory-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "warm_memory",
+      "kind": "recipe",
+      "preview": {
+        "video": "recipe-warm_memory.mp4",
+        "thumbnail": "recipe-warm_memory.jpg",
+        "duration_ms": 3000
+      },
+      "render_seconds": 9.756870899989735,
+      "sfx": [],
+      "source": "STD-MOV",
+      "default_override": {}
+    },
+    {
+      "frames": 60,
+      "wcag": {
+        "standard": "WCAG 2.3.1",
+        "instrument": "per-pixel repetitions v2",
+        "window": "[t, t+1 s)",
+        "timing": "rational integer frame clock",
+        "max_flashes_per_s": 0,
+        "general_max": 0,
+        "red_max": 0,
+        "status": "ok",
+        "windows": []
+      },
+      "events": [
+        {
+          "event": {
+            "name": "gl_glitch_memories",
+            "start_ms": 0,
+            "end_ms": 2000,
+            "intent": "hit",
+            "kind": "transition"
+          },
+          "peak_ms": 1933.3333333333333,
+          "visibility": {
+            "perceived_measured": 0.2879830002784729,
+            "status": "unknown",
+            "onset_contrast": 0.0,
+            "visibility_family": "motion",
+            "visibility_exemption": null,
+            "wcag_flashes_max_per_s": 0,
+            "measurements": {
+              "dY": 18.430912017822266,
+              "area8": 0.831604938271605,
+              "ssim_loss": 0.026466727256774902,
+              "disp": 0.003085696448882421,
+              "flash_area": 0.15516203703703704,
+              "red_flash": 0.0,
+              "center_sharp": 1.1052692724981894,
+              "sharp4": 1.1054952732973529,
+              "deltaE76": 10.612377166748047,
+              "chroma_delta": 7.107656478881836,
+              "perceived": 0.2879830002784729
+            },
+            "instrument_status": {
+              "visibility": "unknown",
+              "harshness": "unknown"
+            },
+            "advice": "Visibility unknown: independent family anchors and 2AFC calibration pending."
+          }
+        }
+      ],
+      "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog\\transition-gl_glitch_memories-reference.mp4",
+      "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass.",
+      "name": "gl_glitch_memories",
+      "kind": "transition",
+      "preview": {
+        "video": "transition-gl_glitch_memories.mp4",
+        "thumbnail": "transition-gl_glitch_memories.jpg",
+        "duration_ms": 2000
+      },
+      "render_seconds": 7.645586200000253,
+      "sfx": [],
+      "source": "low-frequency demonstration plate",
+      "default_override": {
+        "context_seed": "6 - floor(24 * progress)"
+      }
+    }
+  ]
+}

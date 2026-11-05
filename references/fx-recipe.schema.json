@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "status",
+    "intent",
+    "layers",
+    "sfx",
+    "perceived_target",
+    "gate",
+    "needs",
+    "notes"
+  ],
+  "properties": {
+    "sfx_anchor": {"enum": ["onset", "measured_peak"]},
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "stable",
+        "experimental"
+      ]
+    },
+    "intent": {
+      "type": "string"
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "ref",
+          "kind",
+          "params",
+          "offset_ms",
+          "duration_ms",
+          "envelope"
+        ],
+        "properties": {
+          "ref": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "effect",
+              "transition"
+            ]
+          },
+          "params": {
+            "type": "object"
+          },
+          "offset_ms": {
+            "type": "number",
+            "minimum": 0
+          },
+          "duration_ms": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "control": {
+            "type": "string"
+          },
+          "envelope": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "sfx": {
+      "enum": [
+        null,
+        "hit",
+        "whoosh",
+        "pop",
+        "riser",
+        "click",
+        "glitch"
+      ]
+    },
+    "perceived_target": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1
+    },
+    "gate": {
+      "type": "object"
+    },
+    "needs": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "subject",
+          "alpha",
+          "motion",
+          "text"
+        ]
+      }
+    },
+    "notes": {
+      "type": "string",
+      "minLength": 1
+    },
+    "good_for": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "avoid_for": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "peak_ms": {
+      "type": "number"
+    }
+  }
+}

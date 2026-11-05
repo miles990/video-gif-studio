@@ -16,9 +16,9 @@ from compose_timeline import compose, resolve_plan, export_timeline, FORMATS
 from fx import Context, EFFECTS, TRANSITIONS, evaluate
 from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers, audio_peaks
 
-TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model','experimental','source_audio','keep_audio','duck','loudnorm','captions','sfx','cut_density','reframe'}
+TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model','experimental','source_audio','keep_audio','duck','loudnorm','captions','sfx','cut_density','reframe','sections','fx_checks','recipe_events','director_choices'}
 SEGMENT = {'type','manifest','image','previous','frame','duration_ms','in_ms','out_ms','speed','ramp','ending','end_beat','end_downbeat','transition','review'}
-META = {'name','start_ms','end_ms','start_beat','end_beat','review','stage'}
+META = {'name','start_ms','end_ms','start_beat','end_beat','review','stage','director_mix','recipe_name','recipe_event_id'}
 
 def keys(value, allowed, where):
     if not isinstance(value,dict): raise ValueError(f'{where}: expected JSON object; valid keys {sorted(allowed)}')
@@ -86,6 +86,7 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
     if interpolate is not None: plan['interpolate']=interpolate
     keys(plan,TOP,'plan')
     if type(plan.get('experimental',False)) is not bool: raise ValueError('experimental: expected boolean')
+    if type(plan.get('fx_checks',False)) is not bool: raise ValueError('fx_checks: expected boolean')
     experimental = experimental or plan.get('experimental',False)
     if not isinstance(plan.get('segments'),list) or not plan['segments']: raise ValueError('segments: expected nonempty list')
     fps = number(plan.get('fps',25),'fps',1,50)
@@ -116,6 +117,10 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
         number(music.get('gain_db',0),'music.gain_db',-60,20)
     offset = music.get('in_ms',0)
     beats = json.loads((path.parent/plan['beatmap']).read_text()) if 'beatmap' in plan else {}
+    perceived_requested=any('perceived' in e for e in plan.get('effects',[]))
+    if any('recipe' in e or 'perceived' in e for e in plan.get('effects',[])):
+        from fx_recipes import expand
+        plan=expand(plan,[t-offset for t in beats.get('beats_ms',[])],experimental)
     layer_design=None
     if 'cut_density' in plan:
         if offset: raise ValueError('cut_density requires a zero-origin beatmap; use music_fit first')
@@ -211,6 +216,8 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
             if size is not None and im.size!=size: raise ValueError(f'segments: {file}: all images must share one canvas {size}')
             size = im.size
     ctx.width,ctx.height = size
+    if perceived_requested and min(size)<32:
+        raise ValueError('Perceived calibration unsupported below 32 pixels on either axis; use native controls')
     for k in ('fade_in_ms','fade_out_ms'):
         if music.get(k,0)>cursor: raise ValueError(f'music.{k}: valid range 0..{cursor}')
     effects, transitions = [], []
@@ -218,6 +225,11 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
     for i, entry in enumerate(plan.get('effects',[])):
         where = f'effects[{i}]'
         effect = validate_entry(entry,EFFECTS,ctx,where,META,experimental,skip_models=proxy)
+        if 'recipe_name' in entry:effect['recipe_name']=entry['recipe_name']
+        if 'recipe_event_id' in entry:effect['recipe_event_id']=entry['recipe_event_id']
+        if 'director_mix' in entry:
+            validate_envelope(entry['director_mix'],ctx,where+'.director_mix')
+            effect['director_mix']=entry['director_mix']
         if proxy and effect['name']=='parallax' and not effect['params']['depth']:
             proxy_skipped.append('effect:parallax');effect['proxy_skipped']=True
         effect['stage'] = entry.get('stage','post')
@@ -285,6 +297,10 @@ def experimental_items(plan):
     for feature in ('captions','cut_density','reframe','sfx'):
         if feature in plan: used.add(feature)
     for entry in plan.get('effects',[]):
+        if isinstance(entry,dict) and ('recipe' in entry or 'recipe_name' in entry):
+            from fx_recipes import load_recipes
+            name=entry.get('recipe',entry.get('recipe_name'))
+            if load_recipes(experimental=True).get(name,{}).get('status')=='experimental':used.add('recipe:'+name)
         if isinstance(entry,dict) and 'move' in entry: used.add('effect:camera_move')
         if isinstance(entry,dict) and EFFECTS.get(entry.get('name'),{}).get('status')=='experimental':
             used.add('effect:'+entry['name'])
@@ -515,10 +531,28 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
                     p = (t-tr['start_ms'])/(tr['end_ms']-tr['start_ms'])
                     frame = TRANSITIONS[tr['name']]['owned'](a,b,p,ctx,**parameters(tr,t,end))
             before_effects=frame.copy() if history_size else None
+            recipe_reference=frame.copy() if plan.get('recipe_events') else None
             for effect in effects:
                 if effect['stage']=='post' and not effect.get('proxy_skipped') and effect['start_ms']<=t<effect['end_ms']:
                     ctx.effect_start_ms=effect['start_ms']
-                    frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
+                    if 'director_mix' in effect:
+                        from fx.core import premultiply,straight
+                        original=frame.copy()
+                        mixed=EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
+                        weight=evaluate(effect['director_mix'],t,ctx)
+                        frame=straight(premultiply(original)*(1-weight)+premultiply(mixed)*weight)
+                    else:
+                        frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
+            if recipe_reference is not None:
+                active=[r for r in plan['recipe_events'] if any(e.get('recipe_event_id')==r['event_id'] and e['start_ms']<=t<e['end_ms'] for e in effects)]
+                if active:
+                    from fx_measure import measures
+                    measured=measures(restore(recipe_reference,np.uint8),restore(frame,np.uint8))
+                    for event in active:
+                        if measured['perceived'] is not None and measured['perceived']>event.get('measured_peak_perceived',-1):
+                            event['measured_peak_perceived']=measured['perceived']
+                            if event.get('sfx_anchor')!='onset':event['sfx_at_ms']=t
+                            event['peak_measurement']='pre-encode paired MEAS; decoded validation remains required'
             output_items.append((file,end-t))
             image=Image.fromarray(restore(frame,np.uint8))
             if caption_renderer: image=caption_renderer.overlay(image,t)
@@ -576,6 +610,12 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
             if sfx_spec: manifest['sfx']=sfx_events
             if ctx.layer_design: manifest['beat_layers']=ctx.layer_design
             if follower: manifest['reframe']=follower.report
+            if plan.get('recipe_events'):manifest['recipe_events']=plan['recipe_events']
+            if plan.get('fx_checks'):
+                from fx_check import check_render
+                report['fx_checks']=check_render(movie,plan,path,fps,root,experimental)
+                manifest['fx_checks']=report['fx_checks']
+                for effect,event in zip(manifest['effects'],report['fx_checks']['events']):effect['visibility']=event['visibility']
             (root/'manifest.json').write_text(json.dumps(manifest,indent=2))
             (root/'qc.json').write_text(json.dumps(report,indent=2))
             root.rename(out)
@@ -635,6 +675,9 @@ def main(argv=None):
     ap.add_argument('--background',default='000000'); ap.add_argument('--fx-dir',action='append',default=[])
     ap.add_argument('--no-user-fx',action='store_true'); ap.add_argument('--list',action='store_true'); ap.add_argument('--json',action='store_true')
     ap.add_argument('--preview',type=Path); ap.add_argument('--image',type=Path); ap.add_argument('--validate',action='store_true')
+    from fx_catalog import output_root
+    ap.add_argument('--cards',type=Path,nargs='?',const=output_root()/'catalog.html')
+    ap.add_argument('--coverage',action='store_true',help='Report missing/incomplete cards and complete stable count')
     ap.add_argument('--fps',type=int,default=30)
     ap.add_argument('--platform',choices=['tiktok','reels','shorts','youtube','square'])
     ap.add_argument('--proxy',action='store_true')
@@ -650,8 +693,14 @@ def main(argv=None):
     try:
         if not a.no_user_fx: load_directory(os.environ.get('VIDEO_GIF_FX_HOME',str(Path.home()/'.video-gif-studio/fx')))
         for directory in a.fx_dir: load_directory(directory)
+        if a.cards:
+            from fx_previews import build_catalog
+            print(build_catalog(a.cards,a.experimental));return 0
         if a.list:
-            if a.json: print(json.dumps(catalog(a.experimental),indent=2))
+            if a.coverage:
+                from fx_catalog import coverage
+                print(json.dumps(coverage(catalog(a.experimental)),indent=2))
+            elif a.json: print(json.dumps(catalog(a.experimental),indent=2))
             else:
                 for kind,entries in catalog(a.experimental).items():
                     print(kind.upper())

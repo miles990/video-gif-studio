@@ -13,6 +13,11 @@ from media_runtime import executable
 
 
 def family(kind,name):
+    if kind=='recipe':
+        from fx_recipes import load_recipes
+        recipe=load_recipes(experimental=True)[name]
+        layer=recipe['layers'][0]
+        return family(layer['kind'],layer['ref'])
     if kind=='transition':
         # "grayscale" contains "scale" but is a color blend, not geometry.
         if name=='gl_fade_grayscale': return 'transition-blend'

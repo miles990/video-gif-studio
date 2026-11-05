@@ -5,7 +5,9 @@ import functools
 import hashlib
 import importlib.util
 import inspect
+import json
 import math
+import re
 import sys
 import warnings
 import numpy as np
@@ -64,14 +66,16 @@ def over(a, b):
     return straight(premultiply(a)+premultiply(b)*(1-a[..., 3:4]))
 
 def warp(a, matrix, ctx, sampling=None):
-    mode = cv2.INTER_NEAREST if (sampling or ctx.sampling)=='nearest' else cv2.INTER_LINEAR
+    # Pixel-art context is authoritative, including callers that pass a
+    # function's legacy default sampling='linear'.
+    mode = cv2.INTER_NEAREST if ctx.sampling=='nearest' or sampling=='nearest' else cv2.INTER_LINEAR
     if np.min(a[...,3])>=1:
         # Opaque camera moves extend the edge, avoiding transparent wedges and
         # unnecessary premultiply/divide passes. Transparent assets keep coverage.
         return cv2.warpAffine(a,matrix,(ctx.width,ctx.height),flags=mode,borderMode=cv2.BORDER_REFLECT_101)
     return straight(cv2.warpAffine(premultiply(a), matrix, (ctx.width, ctx.height), flags=mode, borderMode=cv2.BORDER_CONSTANT))
 
-def register(registry, name=None, status='stable', style_tags=None, **docs):
+def register(registry, name=None, status='stable', style_tags=None, card=None, **docs):
     if status not in ('stable', 'experimental'):
         raise ValueError('FX status must be stable or experimental')
     if style_tags is not None and (not isinstance(style_tags,(list,tuple)) or
@@ -79,6 +83,7 @@ def register(registry, name=None, status='stable', style_tags=None, **docs):
         raise ValueError('style_tags must be a list of nonempty strings')
     def decorate(fn):
         key = name or fn.__name__
+        if not isinstance(key,str) or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',key):raise ValueError('Invalid FX name: '+repr(key))
         params = {}
         for k, p in inspect.signature(fn).parameters.items():
             if p.default is not inspect.Parameter.empty:
@@ -110,6 +115,9 @@ def register(registry, name=None, status='stable', style_tags=None, **docs):
             result=fn(*args,**kwargs)
             return np.clip(result,0,1,out=result)
         registry[key] = {'function':wrapped,'owned':owned,'status':status,'params':params,'doc':inspect.getdoc(fn) or key,'source':source,'history':int(docs.get('history',0))}
+        if card is not None:
+            if not isinstance(card,dict): raise ValueError('card must be an object')
+            registry[key]['card'] = dict(card)
         if registry is TRANSITIONS or style_tags is not None:
             registry[key]['style_tags'] = list(style_tags or [])
         return wrapped
@@ -188,13 +196,34 @@ def load_directory(directory):
         try:
             spec = importlib.util.spec_from_file_location('vgs_fx_'+hashlib.sha256(str(file).encode()).hexdigest(),file)
             module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+            # Validate supplied metadata within the file transaction. A late
+            # failure must also roll back registrations made earlier in it.
+            from fx_catalog import validate_plugin_card
+            for registry in (EFFECTS, TRANSITIONS):
+                for name,item in registry.items():
+                    if Path(item['source'])==file.resolve():
+                        json.dumps({k:v for k,v in item.items() if k not in ('function','owned')},allow_nan=False)
+                        if 'card' in item:validate_plugin_card(item['card'])
         except Exception as exc:
+            from fx_diagnostics import excluded
+            changed=[(name,item) for reg,old in ((EFFECTS,saved_effects),(TRANSITIONS,saved_transitions))
+                     for name,item in reg.items() if name not in old or item is not old[name]]
             EFFECTS.clear(); EFFECTS.update(saved_effects)
             TRANSITIONS.clear(); TRANSITIONS.update(saved_transitions)
             OVERRIDES[:] = saved_overrides
-            print(f'Warning: skipped FX library {file}:{getattr(exc,"lineno", "?")}: {exc}',file=sys.stderr)
+            refs=[n for n,_ in changed]
+            for _,item in changed:
+                card=item.get('card',{})
+                if isinstance(card,dict):
+                    intents=card.get('intent',[])
+                    refs.extend(intents if isinstance(intents,(list,tuple)) else [intents])
+            excluded(f'{file}:{getattr(exc,"lineno","?")}',','.join(n for n,_ in changed) or file.stem,
+                     'experimental' if any(i['status']=='experimental' for _,i in changed) else 'unknown',exc,
+                     refs+[str(exc)])
 
 def catalog(experimental=False):
-    return {kind:{name:{k:v for k,v in item.items() if k not in ('function','owned')}
+    result = {kind:{name:{k:v for k,v in item.items() if k not in ('function','owned','card')}
                   for name,item in reg.items() if experimental or item['status']=='stable'}
             for kind,reg in [('effects',EFFECTS),('transitions',TRANSITIONS)]}
+    from fx_catalog import enrich
+    return enrich(result)

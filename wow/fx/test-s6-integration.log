@@ -1,0 +1,3 @@
+recipe plan + decoded QA + audio passed
+legacy frame hashes equal: 25
+{"recipes_validated": 14, "legacy_sha_frames": 25, "candidates": 3, "differences": [{"a": 0, "b": 1, "dY": 21.27484893798828}, {"a": 0, "b": 2, "dY": 18.002059936523438}, {"a": 1, "b": 2, "dY": 23.11823272705078}]}

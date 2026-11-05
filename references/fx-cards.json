@@ -1,0 +1,1685 @@
+{
+  "effect:flash_white": {
+    "intent": [
+      "hit"
+    ],
+    "energy": 0.9,
+    "needs": [],
+    "good_for": [
+      "Emphasize a single impact"
+    ],
+    "avoid_for": [
+      "Dense consecutive beats"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "hit"
+    ],
+    "conflicts": [
+      "flash_cut",
+      "gl_overexposure"
+    ],
+    "style_tags": [
+      "hit"
+    ]
+  },
+  "effect:grade": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.0,
+    "needs": [],
+    "good_for": [
+      "Unify the colour of a quiet scene"
+    ],
+    "avoid_for": [
+      "Large shifts on skin tones"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "riser"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:halation": {
+    "intent": [
+      "reveal"
+    ],
+    "energy": 0.3,
+    "needs": [],
+    "good_for": [
+      "Soften highlights around a reveal"
+    ],
+    "avoid_for": [
+      "Already clipped highlights"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "reveal"
+    ]
+  },
+  "effect:beat_bounce": {
+    "intent": [
+      "play"
+    ],
+    "energy": 0.5,
+    "needs": [],
+    "good_for": [
+      "Give an isolated beat a playful lift"
+    ],
+    "avoid_for": [
+      "Long readable text"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "pop"
+    ],
+    "conflicts": [
+      "zoom_punch"
+    ],
+    "style_tags": [
+      "play"
+    ]
+  },
+  "effect:zoom_punch": {
+    "intent": [
+      "hit"
+    ],
+    "energy": 0.6,
+    "needs": [],
+    "good_for": [
+      "Pull attention toward a central impact"
+    ],
+    "avoid_for": [
+      "Subjects cropped at frame edges"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "hit"
+    ],
+    "conflicts": [
+      "beat_bounce"
+    ],
+    "style_tags": [
+      "hit"
+    ]
+  },
+  "effect:cutout_card": {
+    "intent": [
+      "title"
+    ],
+    "energy": 0.25,
+    "needs": [
+      "subject",
+      "alpha"
+    ],
+    "good_for": [
+      "Present a prepared transparent subject card"
+    ],
+    "avoid_for": [
+      "Opaque source without a subject matte"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "pop"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "title"
+    ]
+  },
+  "effect:shake": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "shake accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:rgb_split": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "rgb split accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:radial_blur": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "radial blur accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:echo": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "echo accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:film_grain": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "film grain accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:vignette": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "vignette accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:light_leak": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "light leak accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:dust_scratches": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "dust scratches accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:invert_flash": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "invert flash accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:black_flash": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "black flash accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:split_screen": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "split screen accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:mirror": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "mirror accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:kaleidoscope": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "kaleidoscope accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:posterize": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "posterize accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:halftone": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "halftone accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:multi_cutout": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "multi cutout accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:text": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "text accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:parallax": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "parallax accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "effect:camera_move": {
+    "intent": [
+      "texture"
+    ],
+    "energy": 0.4,
+    "needs": [],
+    "good_for": [
+      "camera move accent on a prepared shot"
+    ],
+    "avoid_for": [
+      "Unreviewed final delivery"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "texture"
+    ]
+  },
+  "transition:crossfade": {
+    "intent": [
+      "transition-match"
+    ],
+    "energy": 0.35,
+    "needs": [],
+    "good_for": [
+      "crossfade: joining related compositions"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "transition-match"
+    ]
+  },
+  "transition:whip_pan": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "whip pan: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "transition-energy"
+    ]
+  },
+  "transition:hex_shutter": {
+    "intent": [
+      "conceal"
+    ],
+    "energy": 0.55,
+    "needs": [],
+    "good_for": [
+      "hex shutter: covering a hard scene change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "搶眼/衝擊"
+    ]
+  },
+  "transition:flash_cut": {
+    "intent": [
+      "drop"
+    ],
+    "energy": 0.95,
+    "needs": [],
+    "good_for": [
+      "flash cut: marking a major musical drop"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [
+      "flash_white"
+    ],
+    "style_tags": [
+      "drop"
+    ]
+  },
+  "transition:shape_wipe": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "shape wipe: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "transition-energy"
+    ]
+  },
+  "transition:luma_wipe": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "luma wipe: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "transition-energy"
+    ]
+  },
+  "transition:push": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "push: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "transition-energy"
+    ]
+  },
+  "transition:slide": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "slide: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "transition-energy"
+    ]
+  },
+  "transition:spin": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "spin: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "旋轉",
+      "衝擊"
+    ]
+  },
+  "transition:zoom_through": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "zoom through: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "transition-energy"
+    ]
+  },
+  "transition:glitch": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "glitch: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "transition-energy"
+    ]
+  },
+  "transition:gl_clock_wipe": {
+    "intent": [
+      "reveal"
+    ],
+    "energy": 0.5,
+    "needs": [],
+    "good_for": [
+      "gl clock wipe: unveiling the next shot"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "含蓄/柔和"
+    ]
+  },
+  "transition:gl_cross_warp": {
+    "intent": [
+      "transition-match"
+    ],
+    "energy": 0.35,
+    "needs": [],
+    "good_for": [
+      "gl cross warp: joining related compositions"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "流動",
+      "含蓄/柔和"
+    ]
+  },
+  "transition:gl_directional_warp": {
+    "intent": [
+      "transition-match"
+    ],
+    "energy": 0.35,
+    "needs": [],
+    "good_for": [
+      "gl directional warp: joining related compositions"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "流動",
+      "動感"
+    ]
+  },
+  "transition:gl_dreamy": {
+    "intent": [
+      "breathe"
+    ],
+    "energy": 0.2,
+    "needs": [],
+    "good_for": [
+      "gl dreamy: a quiet scene handoff"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "夢幻",
+      "含蓄/柔和"
+    ]
+  },
+  "transition:gl_dreamy_zoom": {
+    "intent": [
+      "drop"
+    ],
+    "energy": 0.95,
+    "needs": [],
+    "good_for": [
+      "gl dreamy zoom: marking a major musical drop"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "夢幻",
+      "搶眼/衝擊",
+      "閃白"
+    ]
+  },
+  "transition:gl_rotate_scale_fade": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "gl rotate scale fade: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "旋轉",
+      "衝擊"
+    ]
+  },
+  "transition:gl_swirl": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "gl swirl: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "迷幻",
+      "搶眼"
+    ]
+  },
+  "transition:gl_water_drop": {
+    "intent": [
+      "breathe"
+    ],
+    "energy": 0.2,
+    "needs": [],
+    "good_for": [
+      "gl water drop: a quiet scene handoff"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "有機",
+      "含蓄/柔和"
+    ]
+  },
+  "transition:gl_burn_through": {
+    "intent": [
+      "drop"
+    ],
+    "energy": 0.95,
+    "needs": [],
+    "good_for": [
+      "gl burn through: marking a major musical drop"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "搶眼/衝擊",
+      "有機",
+      "火焰"
+    ]
+  },
+  "transition:gl_overexposure": {
+    "intent": [
+      "drop"
+    ],
+    "energy": 0.95,
+    "needs": [],
+    "good_for": [
+      "gl overexposure: marking a major musical drop"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [
+      "flash_white"
+    ],
+    "style_tags": [
+      "閃光",
+      "搶眼"
+    ]
+  },
+  "transition:gl_fade_grayscale": {
+    "intent": [
+      "breathe"
+    ],
+    "energy": 0.2,
+    "needs": [],
+    "good_for": [
+      "gl fade grayscale: a quiet scene handoff"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "含蓄/柔和",
+      "復古"
+    ]
+  },
+  "transition:gl_color_distance": {
+    "intent": [
+      "transition-match"
+    ],
+    "energy": 0.35,
+    "needs": [],
+    "good_for": [
+      "gl color distance: joining related compositions"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "含蓄/柔和",
+      "有機"
+    ]
+  },
+  "transition:gl_luminance_melt": {
+    "intent": [
+      "reveal"
+    ],
+    "energy": 0.5,
+    "needs": [],
+    "good_for": [
+      "gl luminance melt: unveiling the next shot"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "故障",
+      "有機"
+    ]
+  },
+  "transition:gl_pixelize": {
+    "intent": [
+      "play"
+    ],
+    "energy": 0.65,
+    "needs": [],
+    "good_for": [
+      "gl pixelize: a playful rhythmic chapter change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "復古",
+      "像素"
+    ]
+  },
+  "transition:gl_dither_dissolve": {
+    "intent": [
+      "play"
+    ],
+    "energy": 0.65,
+    "needs": [],
+    "good_for": [
+      "gl dither dissolve: a playful rhythmic chapter change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "復古",
+      "像素"
+    ]
+  },
+  "transition:gl_random_squares": {
+    "intent": [
+      "conceal"
+    ],
+    "energy": 0.55,
+    "needs": [],
+    "good_for": [
+      "gl random squares: covering a hard scene change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "數位"
+    ]
+  },
+  "transition:gl_window_slices": {
+    "intent": [
+      "reveal"
+    ],
+    "energy": 0.5,
+    "needs": [],
+    "good_for": [
+      "gl window slices: unveiling the next shot"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "俐落"
+    ]
+  },
+  "transition:gl_wind": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "gl wind: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "動感",
+      "有機"
+    ]
+  },
+  "transition:gl_pinwheel": {
+    "intent": [
+      "play"
+    ],
+    "energy": 0.65,
+    "needs": [],
+    "good_for": [
+      "gl pinwheel: a playful rhythmic chapter change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "俏皮"
+    ]
+  },
+  "transition:gl_polka_dots_curtain": {
+    "intent": [
+      "reveal"
+    ],
+    "energy": 0.5,
+    "needs": [],
+    "good_for": [
+      "gl polka dots curtain: unveiling the next shot"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "俏皮"
+    ]
+  },
+  "transition:gl_crosshatch": {
+    "intent": [
+      "transition-match"
+    ],
+    "energy": 0.35,
+    "needs": [],
+    "good_for": [
+      "gl crosshatch: joining related compositions"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "有機",
+      "含蓄/柔和"
+    ]
+  },
+  "transition:gl_perlin_dissolve": {
+    "intent": [
+      "breathe"
+    ],
+    "energy": 0.2,
+    "needs": [],
+    "good_for": [
+      "gl perlin dissolve: a quiet scene handoff"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "有機",
+      "含蓄/柔和"
+    ]
+  },
+  "transition:gl_glitch_memories": {
+    "intent": [
+      "transition-energy"
+    ],
+    "energy": 0.8,
+    "needs": [],
+    "good_for": [
+      "gl glitch memories: carrying momentum across a cut"
+    ],
+    "avoid_for": [
+      "breathe"
+    ],
+    "duration_ms": [
+      80,
+      600
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "故障",
+      "搶眼/衝擊"
+    ]
+  },
+  "transition:gl_scale_in": {
+    "intent": [
+      "transition-match"
+    ],
+    "energy": 0.35,
+    "needs": [],
+    "good_for": [
+      "gl scale in: joining related compositions"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "含蓄/柔和",
+      "動感"
+    ]
+  },
+  "transition:gl_bounce": {
+    "intent": [
+      "play"
+    ],
+    "energy": 0.65,
+    "needs": [],
+    "good_for": [
+      "gl bounce: a playful rhythmic chapter change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "俏皮",
+      "衝擊"
+    ]
+  },
+  "transition:gl_multiply_blend": {
+    "intent": [
+      "breathe"
+    ],
+    "energy": 0.2,
+    "needs": [],
+    "good_for": [
+      "gl multiply blend: a quiet scene handoff"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "含蓄/柔和",
+      "暗調"
+    ]
+  },
+  "transition:gl_color_phase": {
+    "intent": [
+      "play"
+    ],
+    "energy": 0.65,
+    "needs": [],
+    "good_for": [
+      "gl color phase: a playful rhythmic chapter change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "迷幻",
+      "色彩",
+      "復古"
+    ]
+  },
+  "transition:gl_hexagonalize": {
+    "intent": [
+      "play"
+    ],
+    "energy": 0.65,
+    "needs": [],
+    "good_for": [
+      "gl hexagonalize: a playful rhythmic chapter change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "數位"
+    ]
+  },
+  "transition:gl_squares_wipe": {
+    "intent": [
+      "conceal"
+    ],
+    "energy": 0.55,
+    "needs": [],
+    "good_for": [
+      "gl squares wipe: covering a hard scene change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "數位"
+    ]
+  },
+  "transition:gl_bow_tie_horizontal": {
+    "intent": [
+      "conceal"
+    ],
+    "energy": 0.55,
+    "needs": [],
+    "good_for": [
+      "gl bow tie horizontal: covering a hard scene change"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "俐落"
+    ]
+  },
+  "transition:gl_curved_wipe": {
+    "intent": [
+      "reveal"
+    ],
+    "energy": 0.5,
+    "needs": [],
+    "good_for": [
+      "gl curved wipe: unveiling the next shot"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "含蓄/柔和"
+    ]
+  },
+  "transition:gl_arrow_wipe": {
+    "intent": [
+      "reveal"
+    ],
+    "energy": 0.5,
+    "needs": [],
+    "good_for": [
+      "gl arrow wipe: unveiling the next shot"
+    ],
+    "avoid_for": [
+      "Rapid alternating scene changes"
+    ],
+    "duration_ms": [
+      200,
+      2000
+    ],
+    "pairs_with_sfx": [
+      "whoosh"
+    ],
+    "conflicts": [],
+    "style_tags": [
+      "幾何",
+      "搶眼"
+    ]
+  }
+}

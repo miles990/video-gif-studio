@@ -1,0 +1,77 @@
+{
+  "name": "reveal_subject",
+  "status": "stable",
+  "intent": "reveal",
+  "layers": [
+    {
+      "ref": "cutout_card",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 0,
+      "duration_ms": 900,
+      "control": "mix",
+      "envelope": [
+        [
+          0,
+          1
+        ],
+        [
+          900,
+          0
+        ]
+      ]
+    },
+    {
+      "ref": "halation",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 100,
+      "duration_ms": 700,
+      "control": "amount",
+      "envelope": [
+        [
+          0,
+          0.45
+        ],
+        [
+          700,
+          0
+        ]
+      ]
+    }
+  ],
+  "sfx": "whoosh",
+  "perceived_target": 0.11411265432098766,
+  "needs": [
+    "subject",
+    "alpha"
+  ],
+  "good_for": [
+    "reveal subject at a selected key moment"
+  ],
+  "avoid_for": [
+    "Repeated full-strength accents"
+  ],
+  "notes": "vignette replaced with stable halation; requires prepared transparent subject.",
+  "peak_ms": 100.0,
+  "gate": {
+    "axis": "technical",
+    "status": "stable",
+    "date": "2026-11-05",
+    "record_path": "wow/fx/gate/s6-round2-promotions.json",
+    "basis": "Independent technical review plus round-2 decoded regression closure; see linked promotion record. No appeal score.",
+    "measurement": {
+      "perceived": 0.11411265432098766,
+      "source": "STD-MOV; STD-A for alpha recipes",
+      "resolution": [
+        480,
+        270
+      ],
+      "fps": 30,
+      "duration_ms": 3000,
+      "at_ms": 500,
+      "decoded": true,
+      "report": "recipe-reveal_subject.json"
+    }
+  }
+}

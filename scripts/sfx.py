@@ -91,6 +91,9 @@ def events_from_plan(plan, effects, transitions, segments, captions=None, fps=No
             delivered=quantize(at,fps)['quantized_ms'] if fps else at
             events.append(dict(kind=RULES[name],event=name,requested_ms=at,at_ms=delivered))
     for e in effects:
+        if e.get('recipe_name'):
+            # Recipe sounds are explicitly aligned to measured visual peaks below.
+            continue
         name=e['params'].get('move',e['name'])
         if plan.get('cut_density') and RULES.get(name)=='hit' and e.get('trigger_times_ms'): continue
         for at in e.get('trigger_times_ms') or [e.get('requested_start_ms',e['start_ms'])]:
@@ -113,6 +116,11 @@ def events_from_plan(plan, effects, transitions, segments, captions=None, fps=No
         for index,line in enumerate(captions['lines']):
             if index-last_index>=2 and line['start_ms']-last>=1500:
                 add('caption',line['start_ms']);last=line['start_ms'];last_index=index
+    for recipe in plan.get('recipe_events',[]):
+        if recipe['sfx']:
+            at=recipe['sfx_at_ms']
+            delivered=quantize(at,fps)['quantized_ms'] if fps else at
+            events.append(dict(kind=recipe['sfx'],event=recipe['recipe'],requested_ms=at,at_ms=delivered,alignment='onset'))
     unique={ (e['kind'],round(e['at_ms'],6)):e for e in events }
     return sorted(unique.values(),key=lambda e:e['at_ms'])
 

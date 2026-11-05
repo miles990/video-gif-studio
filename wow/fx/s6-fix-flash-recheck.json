@@ -1,0 +1,901 @@
+{
+  "checks": [
+    {
+      "item": "effect-flash_white",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "effect-grade",
+      "before": 1,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "effect-halation",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "effect-beat_bounce",
+      "before": 0,
+      "after": 3,
+      "scope": "catalog"
+    },
+    {
+      "item": "effect-zoom_punch",
+      "before": 1,
+      "after": 3,
+      "scope": "catalog"
+    },
+    {
+      "item": "effect-cutout_card",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-crossfade",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-whip_pan",
+      "before": 0,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-hex_shutter",
+      "before": 0,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-flash_cut",
+      "before": 1,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-spin",
+      "before": 0,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_clock_wipe",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_cross_warp",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_directional_warp",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_dreamy",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_dreamy_zoom",
+      "before": 3,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_rotate_scale_fade",
+      "before": 0,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_swirl",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_water_drop",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_burn_through",
+      "before": 0,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_overexposure",
+      "before": 4,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_fade_grayscale",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_color_distance",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_luminance_melt",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_pixelize",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_dither_dissolve",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_random_squares",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_window_slices",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_wind",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_pinwheel",
+      "before": 0,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_polka_dots_curtain",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_crosshatch",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_perlin_dissolve",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_glitch_memories",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_scale_in",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_bounce",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_multiply_blend",
+      "before": 3,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_color_phase",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_hexagonalize",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_squares_wipe",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_bow_tie_horizontal",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_curved_wipe",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "transition-gl_arrow_wipe",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-breathe",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-bright_hit",
+      "before": 1,
+      "after": 3,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-build",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-drop",
+      "before": 3,
+      "after": 3,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-freeze_card",
+      "before": 0,
+      "after": 0,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-hero_glow",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-hook_snap",
+      "before": 2,
+      "after": 3,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-impact",
+      "before": 0,
+      "after": 3,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-outro_settle",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-playful_hit",
+      "before": 0,
+      "after": 3,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-reveal_subject",
+      "before": 0,
+      "after": 1,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-soft_hit",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-title_pop",
+      "before": 0,
+      "after": 3,
+      "scope": "catalog"
+    },
+    {
+      "item": "recipe-warm_memory",
+      "before": 0,
+      "after": 2,
+      "scope": "catalog"
+    },
+    {
+      "item": "effect:flash_white/opaque-480x270.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:flash_white/rgba-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:flash_white/opaque-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:flash_white/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:grade/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:grade/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:grade/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:grade/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:halation/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:halation/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:halation/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:halation/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:beat_bounce/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:beat_bounce/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:beat_bounce/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:beat_bounce/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:zoom_punch/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:zoom_punch/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:zoom_punch/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:zoom_punch/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:cutout_card/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:cutout_card/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:cutout_card/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "effect:cutout_card/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:crossfade/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:crossfade/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:crossfade/opaque-270x480.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:crossfade/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:whip_pan/opaque-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:whip_pan/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:whip_pan/opaque-270x480.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:whip_pan/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:flash_cut/opaque-480x270.mp4",
+      "before": 1,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:flash_cut/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:flash_cut/opaque-270x480.mp4",
+      "before": 1,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "transition:flash_cut/rgba-270x480.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-legacy"
+    },
+    {
+      "item": "recipe:breathe/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:breathe/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:breathe/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:breathe/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:bright_hit/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:bright_hit/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:bright_hit/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:bright_hit/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:build/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:build/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:build/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:build/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:drop/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:drop/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:drop/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:drop/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:freeze_card/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:freeze_card/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:freeze_card/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:freeze_card/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:hero_glow/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:hero_glow/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:hero_glow/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:hero_glow/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:hook_snap/opaque-480x270.mp4",
+      "before": 3,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:hook_snap/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:hook_snap/opaque-270x480.mp4",
+      "before": 2,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:hook_snap/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:impact/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:impact/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:impact/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:impact/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:outro_settle/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:outro_settle/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:outro_settle/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:outro_settle/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:playful_hit/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:playful_hit/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:playful_hit/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:playful_hit/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:reveal_subject/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:reveal_subject/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:reveal_subject/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:reveal_subject/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:soft_hit/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:soft_hit/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:soft_hit/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:soft_hit/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:title_pop/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:title_pop/rgba-480x270.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:title_pop/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:title_pop/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:warm_memory/opaque-480x270.mp4",
+      "before": 0,
+      "after": 1,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:warm_memory/rgba-480x270.mp4",
+      "before": 0,
+      "after": 3,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:warm_memory/opaque-270x480.mp4",
+      "before": 0,
+      "after": 2,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    },
+    {
+      "item": "recipe:warm_memory/rgba-270x480.mp4",
+      "before": 0,
+      "after": 0,
+      "scope": "vgs-fx-s6-fix-recipe-gates"
+    }
+  ],
+  "clips": 149,
+  "violations": 0,
+  "note": "Spatially staggered completion of one flash is counted once per pixel, then the fixed area threshold is applied. No flash thresholds changed."
+}

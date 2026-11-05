@@ -1,0 +1,76 @@
+{
+  "name": "title_pop",
+  "status": "stable",
+  "intent": "title",
+  "layers": [
+    {
+      "ref": "beat_bounce",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 0,
+      "duration_ms": 350,
+      "control": "amount",
+      "envelope": [
+        [
+          0,
+          0.55
+        ],
+        [
+          350,
+          0
+        ]
+      ]
+    },
+    {
+      "ref": "halation",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 80,
+      "duration_ms": 450,
+      "control": "amount",
+      "envelope": [
+        [
+          0,
+          0.3
+        ],
+        [
+          450,
+          0
+        ]
+      ]
+    }
+  ],
+  "sfx": "pop",
+  "perceived_target": 0.6234536170959473,
+  "needs": [
+    "text"
+  ],
+  "good_for": [
+    "title pop at a selected key moment"
+  ],
+  "avoid_for": [
+    "Repeated full-strength accents"
+  ],
+  "notes": "Experimental text replaced by motion of a precomposed title; this recipe does not generate text.",
+  "peak_ms": 0.0,
+  "gate": {
+    "axis": "technical",
+    "status": "stable",
+    "date": "2026-11-05",
+    "record_path": "wow/fx/gate/s6-round2-promotions.json",
+    "basis": "Independent technical review plus round-2 decoded regression closure; see linked promotion record. No appeal score.",
+    "measurement": {
+      "perceived": 0.6234536170959473,
+      "source": "STD-MOV; STD-A for alpha recipes",
+      "resolution": [
+        480,
+        270
+      ],
+      "fps": 30,
+      "duration_ms": 3000,
+      "at_ms": 500,
+      "decoded": true,
+      "report": "recipe-title_pop.json"
+    }
+  }
+}

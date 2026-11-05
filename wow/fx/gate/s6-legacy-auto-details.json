@@ -1,0 +1,5341 @@
+{
+  "schema": 2,
+  "created": "2026-11-05T16:18:38.833702",
+  "command": [
+    "scripts/fx_gate_kit.py",
+    "--auto-only",
+    "--items",
+    "flash_white",
+    "grade",
+    "halation",
+    "beat_bounce",
+    "zoom_punch",
+    "cutout_card",
+    "crossfade",
+    "whip_pan",
+    "flash_cut",
+    "--out",
+    "C:\\Users\\User\\AppData\\Local\\Temp/vgs-fx-s6-fix-legacy"
+  ],
+  "python": "C:\\Users\\User\\.codex\\skills\\video-gif-studio\\.venv\\Scripts\\python.exe",
+  "threshold_registry": {
+    "version": 1,
+    "round": 0,
+    "sha256": "720f2a63d0b1c803c76b1e9994263d0093021b939bb3fbcb48607a4745596bb1",
+    "values": {
+      "audio.loudness.target": -14,
+      "audio.loudness.tolerance": 1,
+      "audio.true_peak.max": -1,
+      "audio.limiter.ceiling": -1.5,
+      "caption.contrast.min": 4.5,
+      "memory.peak.max": 649950412.8,
+      "visibility.onset_contrast.min": {
+        "default": 0.5,
+        "tonal": 0.5,
+        "motion": 0.25
+      },
+      "harshness.sharp4.min": 0.5,
+      "motion.jerk.rotation.max": 90.0,
+      "motion.jerk.position.max": 1800.0,
+      "budget.perceived.max": 2.0,
+      "budget.events.max": 4.0,
+      "wcag.general.delta.min": 0.1,
+      "wcag.general.dark.max": 0.8,
+      "wcag.red.saturation.min": 0.8,
+      "wcag.red.delta.min": 20,
+      "wcag.area.min": 0.111,
+      "wcag.flashes.max": 3,
+      "measure.area8.min": 8,
+      "perceived.luma.scale": 64,
+      "perceived.displacement.scale": 24,
+      "visibility.luma.weight": 0.1,
+      "visibility.noise.floor": 1,
+      "harshness.ssim_loss.max": 0.35,
+      "harshness.frames.min": 4,
+      "director.energy.low": 0.4,
+      "director.energy.high": 0.8,
+      "director.budget.base": 0.4,
+      "director.budget.gain": 5.5,
+      "director.density.base": 1,
+      "director.density.gain": 4,
+      "director.breathe.max": 0.25,
+      "director.flash.run.max": 8,
+      "query.history.window": 3,
+      "query.intent.weight": 4,
+      "query.gate.weight": 1,
+      "query.cost.weight": 0.01,
+      "query.diversity.weight": 10,
+      "audio.sfx.codec_headroom": 0.2,
+      "query.related.match": 0.5,
+      "calibration.monotonic.tolerance": 0.01,
+      "calibration.grid.points": 11
+    }
+  },
+  "environment": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "numpy": "2.5.4",
+    "opencv": "5.0.0",
+    "cpu": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel"
+  },
+  "source": {
+    "opaque": "examples\\neon-zen-pv\\segment-01\\generation\\source.mp4",
+    "opaque_sha256": "7f2fdcda783b4bf4a5221602b7ede3cb61369e0c4c5e8c284b82c7bd7fca4361",
+    "rgba": "wow\\fx\\demo\\assets\\matte-b.png",
+    "rgba_sha256": "272422b7a224c4a137449d9b966602647a8b10d430f3e43339334023344315e1",
+    "b_shot": "Independent generated animated diamond/diagonal-gradient shot; fx_gate_kit.distinct_shot v1"
+  },
+  "methodology": {
+    "defaults": "All catalog visual defaults, including experimental; only parallax model/cache resources relocated",
+    "alpha": "Range/finite/shape every frame; exact alpha for colour-only items; opaque coverage and hidden-RGB probes at frames 0,24,47",
+    "edges": "Advisory border-gradient ratios; warnings require dense replicated texture >=4 px in local edge windows (v2)",
+    "endpoints": "Exact A/B identity, swapped endpoints, and p=1e-5 / 1-1e-5 limits; mean associated RGBA error <=1/255",
+    "flicker": "qa_media on decoded MP4, no effect exemptions",
+    "determinism": "Two complete raw RGBA render hashes",
+    "black": "Visible mean luminance <5/255 or no coverage",
+    "aesthetics": "No score; independent review required"
+  },
+  "items": [
+    {
+      "id": "effect:flash_white",
+      "status": "stable",
+      "defaults": {
+        "amount": 1.0
+      },
+      "source": "scripts\\fx\\effects\\flash_white.py",
+      "source_sha256": "886066b687c108037c2f91999ce23ebbeb1ba6a1bfe9be128635f319d1e6e841",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "fb44dc35de273dc10d966aaf3d101133bb6a5fea19ae003c5d3ca599305c7aaa",
+            "repeat_sha256": "fb44dc35de273dc10d966aaf3d101133bb6a5fea19ae003c5d3ca599305c7aaa"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "FAIL",
+              "message": "Flat frame",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 252.99996948242188,
+              "contrast": 1.52587890625e-05
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "WARN",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0,
+                  "end_frame": 47,
+                  "end_seconds": 2.0
+                }
+              ],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0063712861179885e-13,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "bdabea375cb7e07d5bfc47bc0eb2dd46e1bd414fd6a99366e8597a9600c37cc9",
+            "repeat_sha256": "bdabea375cb7e07d5bfc47bc0eb2dd46e1bd414fd6a99366e8597a9600c37cc9"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 79.8433609008789,
+              "contrast": 77.16498565673828
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.2921414780763951,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "fb44dc35de273dc10d966aaf3d101133bb6a5fea19ae003c5d3ca599305c7aaa",
+            "repeat_sha256": "fb44dc35de273dc10d966aaf3d101133bb6a5fea19ae003c5d3ca599305c7aaa"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "FAIL",
+              "message": "Flat frame",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 252.99998474121094,
+              "contrast": 0.0
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "WARN",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0,
+                  "end_frame": 47,
+                  "end_seconds": 2.0
+                }
+              ],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 7.241721065584091e-14,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "3436c300d33a1b52e71afd25c5a00c1b87d3ac1896112da1c5dd8ff2854b9237",
+            "repeat_sha256": "3436c300d33a1b52e71afd25c5a00c1b87d3ac1896112da1c5dd8ff2854b9237"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 55.31764602661133,
+              "contrast": 46.80887985229492
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.7325818775273611,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          22.4387000198476,
+          22.100000001955777,
+          22.429400007240474,
+          22.708099975716323,
+          22.094900021329522,
+          21.872600016649812,
+          22.133100021164864,
+          22.019300027750432,
+          21.960999991279095,
+          22.119599976576865
+        ],
+        "median_ms": 22.10979998926632,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    },
+    {
+      "id": "effect:grade",
+      "status": "stable",
+      "defaults": {
+        "lift": 0.0,
+        "gamma": 1.0,
+        "gain": 1.0,
+        "sat": 1.0,
+        "temp": 0.0
+      },
+      "source": "scripts\\fx\\effects\\grade.py",
+      "source_sha256": "de70bc3be36e52fafeca06573625516ef5ec79eeb0f726997b06ffca32e33623",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              40,
+              41,
+              42,
+              47
+            ],
+            "max_seam_ratio": 1.606722015370676,
+            "max_stretch_ratio": 3.1182427997641433,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "2b8c506bb862f5757d5d24f8b3d07d865a866ea2a74d5d62b9b44a6881aaa494",
+            "repeat_sha256": "2b8c506bb862f5757d5d24f8b3d07d865a866ea2a74d5d62b9b44a6881aaa494"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 51.70206832885742,
+              "contrast": 47.12501525878906
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "458f33605bd1babecc52a5534a6185262ddeda5d9adb9ee3d477c274aeed25b0",
+            "repeat_sha256": "458f33605bd1babecc52a5534a6185262ddeda5d9adb9ee3d477c274aeed25b0"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 59.86937713623047,
+              "contrast": 39.747676849365234
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              13,
+              14,
+              21,
+              22,
+              23,
+              24,
+              29,
+              30,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38
+            ],
+            "max_seam_ratio": 2.5831553154700537,
+            "max_stretch_ratio": 2.111269603914134,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "c0d0605174aa96c075d48b36800c2ce4b193196f03a0e0372f65d37e1d1c1b01",
+            "repeat_sha256": "c0d0605174aa96c075d48b36800c2ce4b193196f03a0e0372f65d37e1d1c1b01"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 58.7609977722168,
+              "contrast": 54.785316467285156
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "fd5cadc8c0c5c4d7f27a29eed557fde25a8332433e788eafaddd1924f302a3dc",
+            "repeat_sha256": "fd5cadc8c0c5c4d7f27a29eed557fde25a8332433e788eafaddd1924f302a3dc"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 48.985511779785156,
+              "contrast": 24.36331558227539
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          5.028899991884828,
+          4.847899952437729,
+          4.8251000116579235,
+          4.879700019955635,
+          4.892600001767278,
+          4.7562000108882785,
+          4.735400027129799,
+          4.858699976466596,
+          5.306700011715293,
+          4.897199978586286
+        ],
+        "median_ms": 4.869199998211116,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    },
+    {
+      "id": "effect:halation",
+      "status": "stable",
+      "defaults": {
+        "amount": 0.8,
+        "radius": 6.0,
+        "warm": true,
+        "threshold": 0.65
+      },
+      "source": "scripts\\fx\\effects\\halation.py",
+      "source_sha256": "a9d44b982932308930d7970cc92287447a29a220f10447c9938ac461b2b78c50",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              47
+            ],
+            "max_seam_ratio": 1.4718830957464955,
+            "max_stretch_ratio": 3.1182443757986062,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "8012b1ad6e5c62fc042d650a53c5519e3edef1b2fd2d567bb116d5816379d332",
+            "repeat_sha256": "8012b1ad6e5c62fc042d650a53c5519e3edef1b2fd2d567bb116d5816379d332"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 53.87250900268555,
+              "contrast": 49.87950897216797
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.9851916492401621,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 3,
+              "general_max": 3,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "a00d3b0b595dd0508eebc988f389b29af1fcd3bb11795ec322bad89c4f99087a",
+            "repeat_sha256": "a00d3b0b595dd0508eebc988f389b29af1fcd3bb11795ec322bad89c4f99087a"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 61.73716735839844,
+              "contrast": 44.27049255371094
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0389821888932937,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              13,
+              14,
+              21,
+              22,
+              23,
+              24,
+              29,
+              30,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38
+            ],
+            "max_seam_ratio": 2.551628415750239,
+            "max_stretch_ratio": 2.0819024692469084,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "76179be30a3b04ce638873a38cc6ed8c1ca0bb3f4252856eadd0acb9d6fd2737",
+            "repeat_sha256": "76179be30a3b04ce638873a38cc6ed8c1ca0bb3f4252856eadd0acb9d6fd2737"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 62.57263946533203,
+              "contrast": 59.813438415527344
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.9458241979839432,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "dff39cc4ded16ba66a3698689b0b81513f91dae7b07924e34179da9c0cc5d290",
+            "repeat_sha256": "dff39cc4ded16ba66a3698689b0b81513f91dae7b07924e34179da9c0cc5d290"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 49.50514602661133,
+              "contrast": 26.480661392211914
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0598880680186855,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          62.62650003191084,
+          62.34579998999834,
+          62.74210003903136,
+          62.254599994048476,
+          65.05289999768138,
+          60.5883999960497,
+          59.07489999663085,
+          59.69379999442026,
+          59.28940000012517,
+          59.28980000317097
+        ],
+        "median_ms": 61.42149999504909,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    },
+    {
+      "id": "effect:beat_bounce",
+      "status": "stable",
+      "defaults": {
+        "amount": 1.0,
+        "translate_px": 8.0,
+        "rotation_deg": 2.0,
+        "scale": 1.01,
+        "sampling": "linear"
+      },
+      "source": "scripts\\fx\\effects\\beat_bounce.py",
+      "source_sha256": "9cba55eddb9da993a97eec03a7af0ba88aaba56b0392c28833566812c58c3678",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              1,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              37,
+              39
+            ],
+            "max_seam_ratio": 2.748608955504301,
+            "max_stretch_ratio": 3.4465178644759105,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "1e62a0bfea16f088bdbf681727d831839c7198e0c03bd75982d9072efb97ad95",
+            "repeat_sha256": "1e62a0bfea16f088bdbf681727d831839c7198e0c03bd75982d9072efb97ad95"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 52.3306884765625,
+              "contrast": 46.90047836303711
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.9367582576245586,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "c5ae55a178e803c7461d380ecef13c464a0e9530c61014e3e7c3b931ec90421f",
+            "repeat_sha256": "c5ae55a178e803c7461d380ecef13c464a0e9530c61014e3e7c3b931ec90421f"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 60.12305450439453,
+              "contrast": 39.79673385620117
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.9240003092001976,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              6,
+              9,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38
+            ],
+            "max_seam_ratio": 1.787127532409539,
+            "max_stretch_ratio": 2.1773495579534874,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "5975f3c9c484765b4ee7a102a0073a7f554de87ec524319ef49cccdc25ddde66",
+            "repeat_sha256": "5975f3c9c484765b4ee7a102a0073a7f554de87ec524319ef49cccdc25ddde66"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 58.852718353271484,
+              "contrast": 54.22538757324219
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0081934371473997,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "d30ab6f2c7624b8c3c4a19b19fe1c4b7007e4fe315460a2ccccd29e18ec76673",
+            "repeat_sha256": "d30ab6f2c7624b8c3c4a19b19fe1c4b7007e4fe315460a2ccccd29e18ec76673"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 49.11640167236328,
+              "contrast": 24.395938873291016
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.9553876309487795,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          12.908099975902587,
+          14.26060002995655,
+          14.71830002265051,
+          14.0739000053145,
+          13.289900030940771,
+          13.45139998011291,
+          13.45589995617047,
+          13.747500022873282,
+          13.962999975774437,
+          14.116199978161603
+        ],
+        "median_ms": 13.85524999932386,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    },
+    {
+      "id": "effect:zoom_punch",
+      "status": "stable",
+      "defaults": {
+        "amount": 1.0,
+        "scale": 1.07,
+        "sampling": "linear"
+      },
+      "source": "scripts\\fx\\effects\\zoom_punch.py",
+      "source_sha256": "4b76e34f14d999acfc69e274c717418c18efbea270cf92ecd0054cbf197825a8",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              0,
+              1,
+              4,
+              5,
+              8,
+              22,
+              23,
+              25,
+              26,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47
+            ],
+            "max_seam_ratio": 1.9468014174266541,
+            "max_stretch_ratio": 2.2957063510788114,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "363708a047847e318d0c20392378ecbfb4f8c72b7c7c8cc38f36f1e33486fe79",
+            "repeat_sha256": "363708a047847e318d0c20392378ecbfb4f8c72b7c7c8cc38f36f1e33486fe79"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 55.293209075927734,
+              "contrast": 48.12326431274414
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.9521149482916736,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "fc92f93ca4cf249fde882118b20dfad8a6a1ec960c69f9653e6e781587f84a85",
+            "repeat_sha256": "fc92f93ca4cf249fde882118b20dfad8a6a1ec960c69f9653e6e781587f84a85"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 62.0341682434082,
+              "contrast": 41.639827728271484
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.9896932363360862,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              23,
+              24,
+              25,
+              26,
+              27,
+              29,
+              33,
+              34,
+              41,
+              45,
+              47
+            ],
+            "max_seam_ratio": 2.374771408848565,
+            "max_stretch_ratio": 2.3745228899615225,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "d2579fda39bd1e8ca8195d954b6c4fe1ac54b5ea010d57e9d969cf5f67a67f29",
+            "repeat_sha256": "d2579fda39bd1e8ca8195d954b6c4fe1ac54b5ea010d57e9d969cf5f67a67f29"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 60.233665466308594,
+              "contrast": 56.05750274658203
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.9236625280372925,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "263527c23336f37576120a81297e440fdf8418fed76de4a8fe43285bd8dfaae9",
+            "repeat_sha256": "263527c23336f37576120a81297e440fdf8418fed76de4a8fe43285bd8dfaae9"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 49.715816497802734,
+              "contrast": 25.515830993652344
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0333586460388906,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          10.902800015173852,
+          10.924199945293367,
+          10.99949999479577,
+          11.172200029250234,
+          11.185299954377115,
+          11.790400021709502,
+          11.498500010930002,
+          11.40850002411753,
+          11.413600004743785,
+          11.481599998660386
+        ],
+        "median_ms": 11.296899989247322,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    },
+    {
+      "id": "effect:cutout_card",
+      "status": "stable",
+      "defaults": {
+        "border_px": 6.0,
+        "shadow_px": 7.0,
+        "shadow_blur": 4.0,
+        "bg": "",
+        "background": "",
+        "darken": 0.4,
+        "blur": 8.0,
+        "amount": 1.0
+      },
+      "source": "scripts\\fx\\effects\\cutout_card.py",
+      "source_sha256": "b0ca566abd1d8257621eb7af48c6a6fc96bbf5d8151dff4cab95f2c881c6aacd",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              40,
+              41,
+              42,
+              47
+            ],
+            "max_seam_ratio": 1.606722015370676,
+            "max_stretch_ratio": 3.1182427997641433,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "2b8c506bb862f5757d5d24f8b3d07d865a866ea2a74d5d62b9b44a6881aaa494",
+            "repeat_sha256": "2b8c506bb862f5757d5d24f8b3d07d865a866ea2a74d5d62b9b44a6881aaa494"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 51.70206832885742,
+              "contrast": 47.12501525878906
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 3,
+              "general_max": 3,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "27a9c12068b2fb4a28d3b8ee928e3819b140f0a099e234d16655868c6d56f332",
+            "repeat_sha256": "27a9c12068b2fb4a28d3b8ee928e3819b140f0a099e234d16655868c6d56f332"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 74.20932006835938,
+              "contrast": 61.975582122802734
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 2.196491301032159,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              13,
+              14,
+              21,
+              22,
+              23,
+              24,
+              29,
+              30,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38
+            ],
+            "max_seam_ratio": 2.5831553154700537,
+            "max_stretch_ratio": 2.111269603914134,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "c0d0605174aa96c075d48b36800c2ce4b193196f03a0e0372f65d37e1d1c1b01",
+            "repeat_sha256": "c0d0605174aa96c075d48b36800c2ce4b193196f03a0e0372f65d37e1d1c1b01"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 58.7609977722168,
+              "contrast": 54.785316467285156
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 1.0,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "06301acbb11728963f4b13f5631ffa88aea2a781d61f06d5e9cf4cc0ea1c7539",
+            "repeat_sha256": "06301acbb11728963f4b13f5631ffa88aea2a781d61f06d5e9cf4cc0ea1c7539"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 56.40595626831055,
+              "contrast": 44.78812026977539
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 2.6431412890432937,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          244.6326999925077,
+          233.34939999040216,
+          237.0299999602139,
+          242.2255999990739,
+          243.73849999392405,
+          239.3403999740258,
+          233.6535999784246,
+          242.70860000979155,
+          241.69000005349517,
+          245.72469998383895
+        ],
+        "median_ms": 241.95780002628453,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    },
+    {
+      "id": "transition:crossfade",
+      "status": "stable",
+      "defaults": {},
+      "source": "scripts\\fx\\transitions\\crossfade.py",
+      "source_sha256": "c6658a06e9d0278b0a0823af653c69e2bdd165d093c567bfe033b88174b13e8f",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 1.5511403142533493,
+            "max_stretch_ratio": 3.1182427997641433,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "00a223b6a5bb16ac65a911efa5145fde70ee5b5ea28d6ab7422c9575d70b08d3",
+            "repeat_sha256": "00a223b6a5bb16ac65a911efa5145fde70ee5b5ea28d6ab7422c9575d70b08d3"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 51.71913146972656,
+              "contrast": 47.09867477416992
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 2.1846585696039256e-06,
+            "last_discontinuity": 2.1869634565518936e-06,
+            "first_frame_jump": 0.004648086614906788,
+            "last_frame_jump": 0.004648085683584213,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.03652768434280129,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "a40108f23ec4c4195b8bab93eda9df590dba569691a43a8096399f32aaeded19",
+            "repeat_sha256": "a40108f23ec4c4195b8bab93eda9df590dba569691a43a8096399f32aaeded19"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 59.86827087402344,
+              "contrast": 39.75507736206055
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 1.1671297670545755e-06,
+            "last_discontinuity": 1.1665478041322785e-06,
+            "first_frame_jump": 0.002481067320331931,
+            "last_frame_jump": 0.0024810677859932184,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.28775293728886575,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              37
+            ],
+            "max_seam_ratio": 2.105218139856676,
+            "max_stretch_ratio": 1.7814775863559136,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "3756b4e4a59f441901a369205c747077a1f542576096847b98650ed17ff17f48",
+            "repeat_sha256": "3756b4e4a59f441901a369205c747077a1f542576096847b98650ed17ff17f48"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 58.716060638427734,
+              "contrast": 54.7553825378418
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 2.1471544187079417e-06,
+            "last_discontinuity": 2.148605290130945e-06,
+            "first_frame_jump": 0.004566771909594536,
+            "last_frame_jump": 0.004566770978271961,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.032161298086331044,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "6a4604e6493eac92821e4cf1da3ed8cdcc4e57cec74b39699b8fa3214325391c",
+            "repeat_sha256": "6a4604e6493eac92821e4cf1da3ed8cdcc4e57cec74b39699b8fa3214325391c"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 48.981910705566406,
+              "contrast": 24.348724365234375
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 6.907072247486212e-07,
+            "last_discontinuity": 6.908275622663496e-07,
+            "first_frame_jump": 0.001468932954594493,
+            "last_frame_jump": 0.001468932954594493,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.6666252139928752,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          71.410900040064,
+          71.30780001170933,
+          71.50489999912679,
+          71.43359998008236,
+          72.46279995888472,
+          80.5763999815099,
+          68.90100002055988,
+          63.80240002181381,
+          64.00690000737086,
+          72.43850000668317
+        ],
+        "median_ms": 71.42225001007318,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    },
+    {
+      "id": "transition:whip_pan",
+      "status": "stable",
+      "defaults": {
+        "blur_px": 49.0,
+        "direction": "left"
+      },
+      "source": "scripts\\fx\\transitions\\whip_pan.py",
+      "source_sha256": "7a64cae8c30b21de4e70d348f18bee52d3ec8e8d881e7103178b613ae74cc43d",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              16,
+              17,
+              20,
+              21,
+              37,
+              38,
+              41,
+              42,
+              43,
+              44,
+              45
+            ],
+            "max_seam_ratio": 1.7115264950049276,
+            "max_stretch_ratio": 9.315506933477344,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "84387ccd35e4fb4e4e73c11e270901f732d0d03a7a536a3df9d3a7b51f832e1f",
+            "repeat_sha256": "84387ccd35e4fb4e4e73c11e270901f732d0d03a7a536a3df9d3a7b51f832e1f"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 51.71308517456055,
+              "contrast": 47.00807571411133
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 0.00014249292144086212,
+            "last_discontinuity": 1.6259737094515003e-05,
+            "first_frame_jump": 0.09948986768722534,
+            "last_frame_jump": 0.033229272812604904,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.03652768434280129,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.8202253406523289,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "42fd2a3706e161bd4250cb793ee0338bb537f9d47c1d1c35e36ff2dfc310a7b3",
+            "repeat_sha256": "42fd2a3706e161bd4250cb793ee0338bb537f9d47c1d1c35e36ff2dfc310a7b3"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 59.92111587524414,
+              "contrast": 39.731014251708984
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 5.878356387256645e-05,
+            "last_discontinuity": 6.539408786920831e-06,
+            "first_frame_jump": 0.0529344342648983,
+            "last_frame_jump": 0.013523000292479992,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.28775293728886575,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              0,
+              2,
+              8,
+              9,
+              10,
+              11,
+              13,
+              14,
+              15,
+              16,
+              23,
+              24,
+              25,
+              26,
+              30,
+              33,
+              34,
+              35,
+              36,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45
+            ],
+            "max_seam_ratio": 3.2840019867180623,
+            "max_stretch_ratio": 7.638529682066463,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "0d7f2a78cf8b382681997840acb69a948b879b4391974c74054ccd62fd005ba0",
+            "repeat_sha256": "0d7f2a78cf8b382681997840acb69a948b879b4391974c74054ccd62fd005ba0"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 58.76970672607422,
+              "contrast": 54.654659271240234
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 7.648012979188934e-05,
+            "last_discontinuity": 9.698294888949022e-06,
+            "first_frame_jump": 0.08673878759145737,
+            "last_frame_jump": 0.02022305689752102,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.032161298086331044,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.6646652595437558,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 0,
+              "general_max": 0,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "e311cfc9406d16627affbb5c56ea192164bb01027aa1b8303a19be5e9df79e12",
+            "repeat_sha256": "e311cfc9406d16627affbb5c56ea192164bb01027aa1b8303a19be5e9df79e12"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 48.99311828613281,
+              "contrast": 24.336746215820312
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 1.360966962238308e-05,
+            "last_discontinuity": 3.688896185849444e-06,
+            "first_frame_jump": 0.015873020514845848,
+            "last_frame_jump": 0.007741291541606188,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.6666252139928752,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          100.75340000912547,
+          101.26849997323006,
+          100.51610000664368,
+          99.25819997442886,
+          104.76050002034754,
+          97.39070001523942,
+          94.29799998179078,
+          92.61849999893457,
+          100.07490002317354,
+          102.01659996528178
+        ],
+        "median_ms": 100.29550001490861,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    },
+    {
+      "id": "transition:flash_cut",
+      "status": "stable",
+      "defaults": {},
+      "source": "scripts\\fx\\transitions\\flash_cut.py",
+      "source_sha256": "5291446050d6cfbb8a593e9a42b0f85d87969bbd7473e3d180da57656fbeef41",
+      "seed": 19,
+      "beats_ms": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "cases": [
+        {
+          "material": "opaque",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "opaque-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 1.4028785756631061,
+            "max_stretch_ratio": 3.1182427997641433,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "b3a4be8c7395983466a9ab1f6c8cec2a383aada7a746cb85a6d68cf1e616e100",
+            "repeat_sha256": "b3a4be8c7395983466a9ab1f6c8cec2a383aada7a746cb85a6d68cf1e616e100"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 51.687103271484375,
+              "contrast": 47.11316680908203
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 6.278717129548639e-12,
+            "last_discontinuity": 0.0,
+            "first_frame_jump": 0.001008731545880437,
+            "last_frame_jump": 0.0007466381648555398,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.03652768434280129,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            480,
+            270
+          ],
+          "clip": "rgba-480x270.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "2630c504004cf885d1ea064a94ed220637196428207d98968015ca33ce497572",
+            "repeat_sha256": "2630c504004cf885d1ea064a94ed220637196428207d98968015ca33ce497572"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 59.89261245727539,
+              "contrast": 39.76402282714844
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [
+                {
+                  "frame": 24,
+                  "seconds": 1.0
+                }
+              ],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 2.745049738732408e-13,
+            "last_discontinuity": 0.0,
+            "first_frame_jump": 0.00010405039211036637,
+            "last_frame_jump": 3.631864456110634e-05,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.28775293728886575,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "opaque",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "opaque-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "WARN",
+            "seam_frames": [],
+            "stretch_frames": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              17,
+              18,
+              19,
+              20
+            ],
+            "max_seam_ratio": 1.7921458814743565,
+            "max_stretch_ratio": 1.8062589571037662,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 2,
+              "general_max": 2,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "8867e79374eb647870829bf0c9f902fd8378c60624f4934777558cc0a033f6b5",
+            "repeat_sha256": "8867e79374eb647870829bf0c9f902fd8378c60624f4934777558cc0a033f6b5"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 58.75638198852539,
+              "contrast": 54.788448333740234
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 8.582959104726229e-13,
+            "last_discontinuity": 0.0,
+            "first_frame_jump": 0.0009198757470585406,
+            "last_frame_jump": 0.0007467159302905202,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.032161298086331044,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        },
+        {
+          "material": "rgba",
+          "size": [
+            270,
+            480
+          ],
+          "clip": "rgba-270x480.mp4",
+          "frames": 48,
+          "duration_seconds": 2,
+          "alpha": {
+            "level": "PASS",
+            "events": [],
+            "max_preserved_delta": 0.0,
+            "hidden_rgb_delta": 0.0
+          },
+          "edges": {
+            "level": "PASS",
+            "seam_frames": [],
+            "stretch_frames": [],
+            "max_seam_ratio": 0.0,
+            "max_stretch_ratio": 0.0,
+            "ratio_note": "Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture."
+          },
+          "black": {
+            "level": "PASS",
+            "frames": []
+          },
+          "flicker": {
+            "name": "flashes",
+            "level": "PASS",
+            "message": "Single-frame flash scan",
+            "events": [],
+            "excluded_camera_events": []
+          },
+          "wcag": {
+            "level": "PASS",
+            "measurement": {
+              "standard": "WCAG 2.3.1",
+              "instrument": "per-pixel repetitions v2",
+              "window": "[t, t+1 s)",
+              "timing": "rational integer frame clock",
+              "max_flashes_per_s": 1,
+              "general_max": 1,
+              "red_max": 0,
+              "status": "ok",
+              "windows": []
+            }
+          },
+          "determinism": {
+            "level": "PASS",
+            "sha256": "2dab2fbf70d0f371507b948234217c087cd69181ca3b9fb42829a514977d2fb1",
+            "repeat_sha256": "2dab2fbf70d0f371507b948234217c087cd69181ca3b9fb42829a514977d2fb1"
+          },
+          "qa_media": [
+            {
+              "name": "frame0",
+              "level": "PASS",
+              "message": "Visible composition has exposure and contrast",
+              "events": [
+                {
+                  "frame": 0,
+                  "seconds": 0.0
+                }
+              ],
+              "mean": 48.981727600097656,
+              "contrast": 24.355632781982422
+            },
+            {
+              "name": "flashes",
+              "level": "PASS",
+              "message": "Single-frame flash scan",
+              "events": [],
+              "excluded_camera_events": []
+            },
+            {
+              "name": "pops",
+              "level": "PASS",
+              "message": "Small transient pop scan; inspect in context",
+              "events": []
+            },
+            {
+              "name": "freeze",
+              "level": "PASS",
+              "message": "Frozen stretches; mark intended pauses with --holds START-END or timeline still segments",
+              "events": [],
+              "designed_holds": []
+            },
+            {
+              "name": "cuts",
+              "level": "PASS",
+              "message": "Detected cut candidates (no hard cuts required)",
+              "events": [],
+              "detected": [
+                {
+                  "frame": 24,
+                  "seconds": 1.0
+                }
+              ],
+              "expected_seconds": [],
+              "excluded_effect_events": []
+            },
+            {
+              "name": "timeline_joins",
+              "level": "PASS",
+              "message": "Continuation/edit boundaries are not required hard cuts; review continuity",
+              "events": []
+            },
+            {
+              "name": "loop",
+              "level": "PASS",
+              "message": "N/A: no loop requested",
+              "events": []
+            }
+          ],
+          "warnings": [],
+          "endpoints": {
+            "level": "PASS",
+            "swapped": false,
+            "first_error": 0.0,
+            "last_error": 0.0,
+            "first_discontinuity": 3.022231851715004e-14,
+            "last_discontinuity": 0.0,
+            "first_frame_jump": 3.285637649241835e-05,
+            "last_frame_jump": 3.6318648199085146e-05,
+            "frame_discontinuities": []
+          },
+          "threshold_checks": [
+            {
+              "id": "harshness.sharp4.min",
+              "value": 0.5,
+              "measurement": 0.6666252139928752,
+              "unit": "ratio",
+              "status": "calibrate_first",
+              "context": "default",
+              "decision": "unknown",
+              "reason": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5"
+            }
+          ]
+        }
+      ],
+      "resource_overrides": {},
+      "benchmark": {
+        "size": [
+          1280,
+          720
+        ],
+        "dtype": "float32",
+        "samples_ms": [
+          31.019899994134903,
+          30.707300000358373,
+          31.157699995674193,
+          32.14490000391379,
+          33.507299958728254,
+          33.496699994429946,
+          33.27369998442009,
+          34.18459999375045,
+          37.581600015982985,
+          48.404800007119775
+        ],
+        "median_ms": 33.38519998942502,
+        "warmup": 1,
+        "includes": "public effect call; warm resource/cache; excludes decode/encode",
+        "material": "opaque"
+      }
+    }
+  ],
+  "total_bytes": 3971416,
+  "wcag_recheck": {
+    "date": "2026-11-05",
+    "instrument": "per-pixel repetitions v2",
+    "window": "[t,t+1 s)",
+    "media_unchanged": true
+  }
+}

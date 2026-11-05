@@ -1,0 +1,20 @@
+{
+  "decoded_sha256": "016e2a4d75b68d9b155c380de92760f2c3f96d7f2cda93a4f5d192f23e0bf316",
+  "new_decoded_sha256": "016e2a4d75b68d9b155c380de92760f2c3f96d7f2cda93a4f5d192f23e0bf316",
+  "pixels_equal": true,
+  "wcag": {
+    "standard": "WCAG 2.3.1",
+    "instrument": "per-pixel repetitions v2",
+    "window": "[t, t+1 s)",
+    "timing": "rational integer frame clock",
+    "max_flashes_per_s": 0,
+    "general_max": 0,
+    "red_max": 0,
+    "status": "ok",
+    "windows": []
+  },
+  "override": {
+    "context_seed": "6 - floor(24 * progress)"
+  },
+  "native_params": {}
+}

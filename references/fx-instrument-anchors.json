@@ -1,0 +1,349 @@
+{
+  "version": 1,
+  "commit": "4447bc077437f02f96083b5c981125d7ea7f620b",
+  "date": "2026-11-05",
+  "candidate_ids": [],
+  "measurements": [
+    {
+      "id": "leak-weak-cut-STD-P",
+      "ref": "light_leak",
+      "params": {
+        "amount": 0.13,
+        "seed": 3
+      },
+      "material": "STD-P",
+      "held_out": true,
+      "expected": "invisible",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.0879305146651733,
+      "dY": 7.770694255828857,
+      "area8": 0.522548828125,
+      "ssim_loss": 0.003071129322052002,
+      "disp": 0.005332715809345245,
+      "flash_area": 0.005792100694444444,
+      "red_flash": 0.0,
+      "center_sharp": 0.9867008109336376,
+      "sharp4": 0.990678835222917,
+      "perceived": 0.1214170977473259
+    },
+    {
+      "id": "leak-strong-STD-P",
+      "ref": "light_leak",
+      "params": {
+        "amount": 0.8,
+        "seed": 3
+      },
+      "material": "STD-P",
+      "held_out": true,
+      "expected": "visible",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.5042780814423614,
+      "dY": 41.464683532714844,
+      "area8": 0.9336968315972223,
+      "ssim_loss": 0.063271164894104,
+      "disp": 0.05993138253688812,
+      "flash_area": 0.7107172309027778,
+      "red_flash": 0.001875,
+      "center_sharp": 0.7875847732564402,
+      "sharp4": 0.7879216684309316,
+      "perceived": 0.7107172309027778
+    },
+    {
+      "id": "halation-default-STD-P",
+      "ref": "halation",
+      "params": {},
+      "material": "STD-P",
+      "held_out": true,
+      "expected": "visible",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.08394614459286417,
+      "dY": 5.476463794708252,
+      "area8": 0.23581922743055556,
+      "ssim_loss": 0.010783612728118896,
+      "disp": 0.038389381021261215,
+      "flash_area": 0.13260850694444445,
+      "red_flash": 0.00014973958333333332,
+      "center_sharp": 0.9242073454248054,
+      "sharp4": 0.9122042539974812,
+      "perceived": 0.13260850694444445
+    },
+    {
+      "id": "zoom-default-STD-P",
+      "ref": "zoom_punch",
+      "params": {},
+      "material": "STD-P",
+      "held_out": true,
+      "expected": "visible",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.8141843186702531,
+      "dY": 24.27351951599121,
+      "area8": 0.5927918836805556,
+      "ssim_loss": 0.5963230133056641,
+      "disp": 24.254592895507812,
+      "flash_area": 0.391103515625,
+      "red_flash": 0.0,
+      "center_sharp": 0.308348233870424,
+      "sharp4": 0.5352710569037752,
+      "perceived": 1.0
+    },
+    {
+      "id": "radial-old-STD-P",
+      "ref": "radial_blur",
+      "params": {
+        "amount": 1,
+        "distance": 0.22,
+        "samples": 12
+      },
+      "material": "STD-P",
+      "held_out": true,
+      "expected": "destructive",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.6137629940581453,
+      "dY": 17.88688087463379,
+      "area8": 0.7964615885416667,
+      "ssim_loss": 0.46397799253463745,
+      "disp": 6.513041973114014,
+      "flash_area": 0.1637348090277778,
+      "red_flash": 0.0,
+      "center_sharp": 0.023670263883987717,
+      "sharp4": 0.04279332824526863,
+      "perceived": 0.46397799253463745
+    },
+    {
+      "id": "radial-current-STD-P",
+      "ref": "radial_blur",
+      "params": {},
+      "material": "STD-P",
+      "held_out": true,
+      "expected": "pending-panel",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.4827643021619905,
+      "dY": 9.192154884338379,
+      "area8": 0.39933919270833335,
+      "ssim_loss": 0.35976099967956543,
+      "disp": 0.6275119185447693,
+      "flash_area": 0.049264322916666665,
+      "red_flash": 0.0,
+      "center_sharp": 0.0943578335523902,
+      "sharp4": 0.1203218885351592,
+      "perceived": 0.35976099967956543
+    },
+    {
+      "id": "grain-STD-P",
+      "ref": "film_grain",
+      "params": {},
+      "material": "STD-P",
+      "held_out": true,
+      "expected": "not-destructive",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.42396681391333,
+      "dY": 5.0591535568237305,
+      "area8": 0.193349609375,
+      "ssim_loss": 0.21232908964157104,
+      "disp": 0.09974807500839233,
+      "flash_area": 0.0022222222222222222,
+      "red_flash": 0.0,
+      "center_sharp": 2.182192559305159,
+      "sharp4": 1.0291170958436093,
+      "perceived": 0.21232908964157104
+    },
+    {
+      "id": "leak-weak-cut-STD-HK",
+      "ref": "light_leak",
+      "params": {
+        "amount": 0.13,
+        "seed": 3
+      },
+      "material": "STD-HK",
+      "held_out": true,
+      "expected": "invisible",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.5301297041121151,
+      "dY": 6.860910415649414,
+      "area8": 0.4153830295138889,
+      "ssim_loss": 0.0016068816184997559,
+      "disp": 0.01057590451091528,
+      "flash_area": 0.015125868055555556,
+      "red_flash": 0.0,
+      "center_sharp": 0.8128646470752444,
+      "sharp4": 0.8306948699603725,
+      "perceived": 0.1072017252445221
+    },
+    {
+      "id": "leak-strong-STD-HK",
+      "ref": "light_leak",
+      "params": {
+        "amount": 0.8,
+        "seed": 3
+      },
+      "material": "STD-HK",
+      "held_out": true,
+      "expected": "visible",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 1.8518458744749773,
+      "dY": 23.05099868774414,
+      "area8": 0.9385481770833334,
+      "ssim_loss": 0.023356080055236816,
+      "disp": 0.03279337286949158,
+      "flash_area": 0.7925640190972222,
+      "red_flash": 0.0,
+      "center_sharp": 0.018356087850009178,
+      "sharp4": 0.3971088708703478,
+      "perceived": 0.7925640190972222
+    },
+    {
+      "id": "halation-default-STD-HK",
+      "ref": "halation",
+      "params": {},
+      "material": "STD-HK",
+      "held_out": true,
+      "expected": "visible",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 2.5034536145893216,
+      "dY": 30.529930114746094,
+      "area8": 1.0,
+      "ssim_loss": 0.04727417230606079,
+      "disp": 0.0892719179391861,
+      "flash_area": 0.9440060763888889,
+      "red_flash": 0.0,
+      "center_sharp": 0.00707278765508682,
+      "sharp4": 0.005022304451645223,
+      "perceived": 0.9440060763888889
+    },
+    {
+      "id": "zoom-default-STD-HK",
+      "ref": "zoom_punch",
+      "params": {},
+      "material": "STD-HK",
+      "held_out": true,
+      "expected": "visible",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.8093611085242252,
+      "dY": 3.6710591316223145,
+      "area8": 0.035389539930555554,
+      "ssim_loss": 0.07235485315322876,
+      "disp": 0.42544928193092346,
+      "flash_area": 0.021116536458333335,
+      "red_flash": 0.0,
+      "center_sharp": 0.37935184471781724,
+      "sharp4": 0.5398419656941886,
+      "perceived": 0.07235485315322876
+    },
+    {
+      "id": "radial-old-STD-HK",
+      "ref": "radial_blur",
+      "params": {
+        "amount": 1,
+        "distance": 0.22,
+        "samples": 12
+      },
+      "material": "STD-HK",
+      "held_out": true,
+      "expected": "destructive",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.6137319922266652,
+      "dY": 2.6955809593200684,
+      "area8": 0.01505642361111111,
+      "ssim_loss": 0.04632681608200073,
+      "disp": 0.09508801251649857,
+      "flash_area": 0.0069401041666666665,
+      "red_flash": 0.0,
+      "center_sharp": 0.09136871985113586,
+      "sharp4": 0.04543485139702353,
+      "perceived": 0.04632681608200073
+    },
+    {
+      "id": "radial-current-STD-HK",
+      "ref": "radial_blur",
+      "params": {},
+      "material": "STD-HK",
+      "held_out": true,
+      "expected": "pending-panel",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 0.4865556153112658,
+      "dY": 1.4066988229751587,
+      "area8": 0.008046875,
+      "ssim_loss": 0.03626507520675659,
+      "disp": 0.06410884112119675,
+      "flash_area": 0.006164279513888889,
+      "red_flash": 0.0,
+      "center_sharp": 0.1576685284210666,
+      "sharp4": 0.12164759279077801,
+      "perceived": 0.03626507520675659
+    },
+    {
+      "id": "grain-STD-HK",
+      "ref": "film_grain",
+      "params": {},
+      "material": "STD-HK",
+      "held_out": true,
+      "expected": "not-destructive",
+      "label_source": "acceptance fixture; independent panel pending",
+      "onset_contrast": 2.7541330987745636,
+      "dY": 5.057408332824707,
+      "area8": 0.1917339409722222,
+      "ssim_loss": 0.3728911876678467,
+      "disp": 0.16123758256435394,
+      "flash_area": 0.031118706597222223,
+      "red_flash": 0.0,
+      "center_sharp": 47.955935189501595,
+      "sharp4": 2.61540378141884,
+      "perceived": 0.3728911876678467
+    }
+  ],
+  "proposals": {
+    "visibility.onset_contrast.min": {
+      "value": 0.30703792435248967,
+      "good_range": [
+        0.08394614459286417,
+        2.5034536145893216
+      ],
+      "bad_range": [
+        0.0879305146651733,
+        0.5301297041121151
+      ],
+      "pooled_sigma": 0.8352599594219208,
+      "margin": 0.2088149898554802,
+      "separable": false,
+      "status": "pending-independent-panel-and-next-round"
+    },
+    "harshness.sharp4.min": {
+      "value": 0.2890321925745219,
+      "good_range": [
+        0.5352710569037752,
+        1.0291170958436093
+      ],
+      "bad_range": [
+        0.04279332824526863,
+        0.04279332824526863
+      ],
+      "pooled_sigma": 0.2580798189954627,
+      "margin": 0.06451995474886567,
+      "separable": true,
+      "status": "pending-independent-panel-and-next-round"
+    }
+  },
+  "positive_control": {
+    "ids": [
+      "leak-strong-STD-P",
+      "halation-default-STD-P",
+      "zoom-default-STD-P",
+      "leak-strong-STD-HK",
+      "halation-default-STD-HK",
+      "zoom-default-STD-HK"
+    ]
+  },
+  "negative_control": {
+    "ids": [
+      "leak-weak-cut-STD-P",
+      "radial-old-STD-P",
+      "leak-weak-cut-STD-HK",
+      "radial-old-STD-HK"
+    ]
+  },
+  "limitations": [
+    "Weak light leak uses a synthetic cut, not the unavailable independently labelled demo2 clip.",
+    "No independent 2AFC votes. No C threshold activated. Candidate recipes excluded from calibration.",
+    "Numerical separation alone cannot certify human visibility; scene cuts can mask effects."
+  ]
+}

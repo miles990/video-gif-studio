@@ -1,0 +1,22 @@
+{
+  "hash_seeds": [
+    0,
+    123
+  ],
+  "fresh_caches": true,
+  "per_effect_max_absolute_difference": {
+    "beat_bounce": 0.0,
+    "cutout_card": 0.0,
+    "flash_white": 0.0,
+    "grade": 0.0,
+    "halation": 0.0,
+    "zoom_punch": 0.0
+  },
+  "plugin": {
+    "name": "s6_dim",
+    "monotonic": true,
+    "max_perceived": 1.0,
+    "rows": 11
+  },
+  "artifacts": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-s6-calibration-5j_9c_c5"
+}

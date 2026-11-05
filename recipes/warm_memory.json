@@ -1,0 +1,82 @@
+{
+  "name": "warm_memory",
+  "status": "stable",
+  "intent": "texture",
+  "layers": [
+    {
+      "ref": "grade",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 0,
+      "duration_ms": 1600,
+      "control": "temp",
+      "envelope": [
+        [
+          0,
+          0
+        ],
+        [
+          400,
+          0.14
+        ],
+        [
+          1200,
+          0.14
+        ],
+        [
+          1600,
+          0
+        ]
+      ]
+    },
+    {
+      "ref": "halation",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 200,
+      "duration_ms": 1200,
+      "control": "amount",
+      "envelope": [
+        [
+          0,
+          0.25
+        ],
+        [
+          1200,
+          0
+        ]
+      ]
+    }
+  ],
+  "sfx": null,
+  "perceived_target": 0.08428411185741425,
+  "needs": [],
+  "good_for": [
+    "warm memory at a selected key moment"
+  ],
+  "avoid_for": [
+    "Repeated full-strength accents"
+  ],
+  "notes": "Quiet colour treatment; no SFX so dialogue remains clear.",
+  "peak_ms": 333.33333333333337,
+  "gate": {
+    "axis": "technical",
+    "status": "stable",
+    "date": "2026-11-05",
+    "record_path": "wow/fx/gate/s6-round2-promotions.json",
+    "basis": "Independent technical review plus round-2 decoded regression closure; see linked promotion record. No appeal score.",
+    "measurement": {
+      "perceived": 0.08428411185741425,
+      "source": "STD-MOV; STD-A for alpha recipes",
+      "resolution": [
+        480,
+        270
+      ],
+      "fps": 30,
+      "duration_ms": 3000,
+      "at_ms": 500,
+      "decoded": true,
+      "report": "recipe-warm_memory.json"
+    }
+  }
+}

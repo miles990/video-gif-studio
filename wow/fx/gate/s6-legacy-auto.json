@@ -1,0 +1,138 @@
+{
+  "axis": "technical",
+  "date": "2026-11-05",
+  "generator": "fx_gate_kit --auto-only",
+  "auto_sha256": "d2d34dc9b6defbf24a769ff68a50fb6c5ec8a2a67c2239ccdaff9b41bff87eb8",
+  "items": {
+    "effect:flash_white": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    },
+    "effect:grade": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [
+        "opaque/[480, 270]/edges",
+        "opaque/[270, 480]/edges"
+      ],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    },
+    "effect:halation": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [
+        "opaque/[480, 270]/edges",
+        "opaque/[270, 480]/edges"
+      ],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    },
+    "effect:beat_bounce": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [
+        "opaque/[480, 270]/edges",
+        "opaque/[270, 480]/edges"
+      ],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    },
+    "effect:zoom_punch": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [
+        "opaque/[480, 270]/edges",
+        "opaque/[270, 480]/edges"
+      ],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    },
+    "effect:cutout_card": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [
+        "opaque/[480, 270]/edges",
+        "opaque/[270, 480]/edges"
+      ],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    },
+    "transition:crossfade": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [
+        "opaque/[270, 480]/edges"
+      ],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    },
+    "transition:whip_pan": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [
+        "opaque/[480, 270]/edges",
+        "opaque/[270, 480]/edges"
+      ],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    },
+    "transition:flash_cut": {
+      "status": "stable",
+      "auto_checks": "PASS",
+      "record_commit": "uncommitted fix-round record",
+      "source_revision": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+      "independent_review": "pending",
+      "failures": [],
+      "advisories": [
+        "opaque/[270, 480]/edges"
+      ],
+      "evidence_path": "wow/fx/gate/s6-legacy-auto-details.json",
+      "media_root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-legacy",
+      "basis": "Inherited status retained only if all mandatory auto checks pass; border WARN is advisory, not a pass/fail check. Independent technical review pending."
+    }
+  }
+}

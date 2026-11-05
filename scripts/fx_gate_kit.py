@@ -226,12 +226,15 @@ def render_case(kind,name,spec,source,size,material,out,audio,resources,second_s
     info=media_info(target,FPS);edges=np.r_[0,np.cumsum(info['durations'])]
     stats=picture(target,info,edges);qa=analyse_picture(stats,edges)
     flicker=next(c for c in qa if c['name']=='flashes')
+    from fx_check import check_video
+    wcag=check_video(target,fps=FPS)['wcag']
     if hidden_delta>1/255:alpha_errors.append('hidden RGB leak')
     result=dict(material=material,size=list(size),clip=target.name,frames=COUNT,duration_seconds=2,
         alpha=dict(level='FAIL' if alpha_errors else 'PASS',events=alpha_errors,max_preserved_delta=alpha_delta,hidden_rgb_delta=hidden_delta),
         edges=dict(level='WARN' if streaks else 'PASS',seam_frames=seams,stretch_frames=streaks,max_seam_ratio=max_seam,max_stretch_ratio=max_stretch,
                    ratio_note='Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture.'),
         black=dict(level='FAIL' if black else 'PASS',frames=black),flicker=flicker,
+        wcag=dict(level='FAIL' if wcag['status']=='harsh' else 'PASS',measurement=wcag),
         determinism=dict(level='PASS' if hashes[0].digest()==hashes[1].digest() else 'FAIL',sha256=hashes[0].hexdigest(),repeat_sha256=hashes[1].hexdigest()),
         qa_media=qa,warnings=sorted(messages))
     if kind=='transition': result['endpoints']=endpoint_checks(spec,a,b,ctx)
@@ -290,11 +293,19 @@ def write_index(out,report):
     (out/'index.html').write_text(page,encoding='utf-8')
 
 
-def run(out,items=None,models=None,references=None):
+def run(out,items=None,models=None,references=None,auto_only=False,recipes=False):
+    cv2.setNumThreads(1)
     out=Path(out).resolve()
     if out==ROOT or ROOT in out.parents:raise ValueError('Gate output must be outside the repository')
     if out.exists() and any(out.iterdir()):raise ValueError('Use a new or empty output directory')
     selected=[(kind,name,spec) for kind,registry in (('effect',EFFECTS),('transition',TRANSITIONS)) for name,spec in registry.items() if not items or name in items or f'{kind}:{name}' in items]
+    if recipes:
+        from fx_recipes import load_recipes,apply_recipe
+        selected=[]
+        for name,recipe in load_recipes(experimental=True).items():
+            if items and name not in items and 'recipe:'+name not in items:continue
+            def apply(a,t,ctx,_recipe=recipe):return apply_recipe(_recipe,a,t,ctx)
+            selected.append(('recipe',name,dict(function=apply,history=0,status='experimental',params={},source=str(ROOT/'recipes'/f'{name}.json'))))
     if items:
         known={name for _,name,_ in selected}|{f'{kind}:{name}' for kind,name,_ in selected}
         if set(items)-known:raise ValueError('Unknown items: '+', '.join(sorted(set(items)-known)))
@@ -316,7 +327,7 @@ def run(out,items=None,models=None,references=None):
     from fx_gate_pairs import build_item_pairs, resolve_reference, write_pair_files
     pairs=[];controls=[]
     # Resolve all mappings before rendering; never silently compare an item to itself.
-    mapping={f'{kind}:{name}':resolve_reference(kind,name,references or {}) for kind,name,_ in selected}
+    mapping={} if auto_only else {f'{kind}:{name}':resolve_reference(kind,name,references or {}) for kind,name,_ in selected}
     for kind,name,spec in selected:
         print(f'{kind}:{name}',flush=True);folder=out/f'{kind}-{name}';folder.mkdir()
         item=dict(id=f'{kind}:{name}',status=spec['status'],defaults={k:v['default'] for k,v in spec['params'].items()},
@@ -334,9 +345,10 @@ def run(out,items=None,models=None,references=None):
             benchmark_material='rgba' if name=='multi_cutout' else 'opaque'
             item['benchmark']=benchmark(kind,spec,materials[(benchmark_material,(480,270))][24],resources)
             item['benchmark']['material']=benchmark_material
-            item_pairs,item_controls=build_item_pairs(kind,name,spec,mapping[item['id']],materials,folder,audio,resources)
-            pairs.extend(item_pairs);controls.extend(item_controls)
-            item['pairs']=len(item_pairs);item['reference']=mapping[item['id']]
+            if not auto_only:
+                item_pairs,item_controls=build_item_pairs(kind,name,spec,mapping[item['id']],materials,folder,audio,resources)
+                pairs.extend(item_pairs);controls.extend(item_controls)
+                item['pairs']=len(item_pairs);item['reference']=mapping[item['id']]
         except (ValueError,RuntimeError,OSError,cv2.error) as exc:
             item['error']=str(exc);print('  ERROR: '+str(exc),flush=True)
         report['items'].append(item)
@@ -358,10 +370,12 @@ def main(argv=None):
     selection.add_argument('--gl-transitions',action='store_true',help='Render all 32 experimental P2b gl-transitions ports')
     parser.add_argument('--models',type=Path,default=os.environ.get('VIDEO_GIF_MODELS'),help='Existing Small model directory; no downloads')
     parser.add_argument('--references',type=Path,help='JSON mapping item IDs to same-family stable item IDs')
+    parser.add_argument('--auto-only',action='store_true',help='Generate technical checks without panel pairs')
+    parser.add_argument('--recipes',action='store_true',help='Prepare experimental recipe technical-axis triplets; never promote')
     args=parser.parse_args(argv)
     try:
         mapping=json.loads(args.references.read_text(encoding='utf-8')) if args.references else None
-        result=run(args.out,list(PORT_NAMES) if args.gl_transitions else args.items,args.models,mapping)
+        result=run(args.out,list(PORT_NAMES) if args.gl_transitions else args.items,args.models,mapping,args.auto_only,args.recipes)
         print(str(args.out.resolve()/'index.html'),flush=True)
         return 2 if any('error' in item for item in result['items']) else 0
     except (ValueError,RuntimeError,OSError) as exc:

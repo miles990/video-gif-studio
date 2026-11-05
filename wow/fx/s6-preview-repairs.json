@@ -1,0 +1,62 @@
+[
+  {
+    "name": "gl_bounce",
+    "wcag": {
+      "standard": "WCAG 2.3.1",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "source": "low-frequency demonstration plate"
+  },
+  {
+    "name": "gl_hexagonalize",
+    "wcag": {
+      "standard": "WCAG 2.3.1",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "source": "low-frequency demonstration plate"
+  },
+  {
+    "name": "gl_pixelize",
+    "wcag": {
+      "standard": "WCAG 2.3.1",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "source": "low-frequency demonstration plate"
+  },
+  {
+    "name": "gl_swirl",
+    "wcag": {
+      "standard": "WCAG 2.3.1",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "source": "low-frequency demonstration plate"
+  },
+  {
+    "name": "spin",
+    "wcag": {
+      "standard": "WCAG 2.3.1",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "source": "low-frequency demonstration plate"
+  }
+]

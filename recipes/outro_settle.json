@@ -1,0 +1,60 @@
+{
+  "name": "outro_settle",
+  "status": "stable",
+  "intent": "texture",
+  "layers": [
+    {
+      "ref": "grade",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 0,
+      "duration_ms": 1400,
+      "control": "temp",
+      "envelope": [
+        [
+          0,
+          0.08
+        ],
+        [
+          1000,
+          0.04
+        ],
+        [
+          1400,
+          0
+        ]
+      ]
+    }
+  ],
+  "sfx": null,
+  "perceived_target": 0.03354145586490631,
+  "needs": [],
+  "good_for": [
+    "outro settle at a selected key moment"
+  ],
+  "avoid_for": [
+    "Repeated full-strength accents"
+  ],
+  "notes": "Return warmth to neutral; no SFX for a clean audio tail. Texture exemption: intentionally subtle sustained treatment; no hit/reveal visibility claim. Technical review and round-2 regression closure are linked in gate.record_path.",
+  "peak_ms": 1000.0,
+  "gate": {
+    "axis": "technical",
+    "status": "stable",
+    "date": "2026-11-05",
+    "record_path": "wow/fx/gate/s6-round2-promotions.json",
+    "basis": "Independent technical review plus round-2 decoded regression closure; see linked promotion record. No appeal score.",
+    "measurement": {
+      "perceived": 0.03354145586490631,
+      "source": "STD-MOV; STD-A for alpha recipes",
+      "resolution": [
+        480,
+        270
+      ],
+      "fps": 30,
+      "duration_ms": 3000,
+      "at_ms": 500,
+      "decoded": true,
+      "report": "recipe-outro_settle.json"
+    }
+  }
+}

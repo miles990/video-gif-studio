@@ -1,0 +1,22 @@
+{
+  "root": "C:\\Users\\User\\src\\vgs-fx",
+  "branch": "s6-director-fx",
+  "head": "21dd3913d7a826b277cdec7f64c49e15ca7649e8",
+  "changed_files": 61,
+  "largest_changed_file": [
+    "wow/fx/gate/s6-recipe-auto-details.json",
+    263091
+  ],
+  "files_over_2mb": [],
+  "protected_changes": [],
+  "legacy_source_hashes_match": true,
+  "recipe_source_hashes_match": true,
+  "no_commit_or_push_performed": true,
+  "full_suite": {
+    "tests": 634,
+    "failures": 0,
+    "baseline_environment_errors": 2,
+    "skipped": 5,
+    "seconds": 343.909
+  }
+}

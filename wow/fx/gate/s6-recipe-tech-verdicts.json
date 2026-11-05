@@ -1,0 +1,1023 @@
+{
+ "reviewer": "independent technical-axis review (review-s6-2)",
+ "head": "ab967f3",
+ "axis": "technical",
+ "appeal": "not judged",
+ "date": "2026-11-05",
+ "method": [
+  "Builder auto checks wow/fx/gate/s6-recipe-auto-details.json (alpha/edges/black/single-frame flicker/determinism per 4 cells) read per recipe",
+  "Reviewer render A: real user path fx_render plan {\"recipe\":NAME,\"at_ms\":1000} --experimental on STD-P still (STD-A for alpha recipes) + no-effect reference, decoded; reviewer MEAS per-frame combo, audio onset vs MEAS peak",
+  "Reviewer render B: fx_previews.render_preview (STD-MOV) into reviewer folder (builder Temp previews with audio are Permission-denied)",
+  "Lossless PNG renders of expanded recipes for time shape and return-to-identity",
+  "Contact sheets of gate-kit candidates (real footage, opaque/rgba) and native edge crops",
+  "WCAG judged with reviewer MEAS; builder v2 per-pixel counter not used as evidence (it inflates moving texture, see review.md)"
+ ],
+ "recipes": {
+  "breathe": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "558a2a83f4e072d91c67cab6b118e217b5e0667f36b01225be5c14376d9b4289",
+    "layers": [
+     "grade"
+    ],
+    "intent": "texture",
+    "sfx": null,
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1800.0,
+     "sfx_audio_onset_ms": null,
+     "sfx_audio_last_ms": null,
+     "sfx_manifest": [],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.0225
+    },
+    "preview_path": {
+     "meas_peak_ms": 1433.3333333333333,
+     "sfx_audio_onset_ms": null,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 2
+    }
+   },
+   "notes": "texture; lossless dY triangle 0 -> 2.06 at 1800 ms -> 0 at 2600 ms as declared; sfx null."
+  },
+  "bright_hit": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "3fb383b5d191589300418a8711b126341946bf20327814e66fef81d56b26e26b",
+    "layers": [
+     "flash_white",
+     "halation"
+    ],
+    "intent": "hit",
+    "sfx": "hit",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1000.0,
+     "sfx_audio_onset_ms": 1000.0,
+     "sfx_audio_last_ms": 1110.0,
+     "sfx_manifest": [
+      {
+       "kind": "hit",
+       "requested_ms": 1000.0,
+       "at_ms": 1000.0,
+       "alignment": "onset",
+       "start_sample": 48000,
+       "anchor_sample": 48000
+      }
+     ],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.9501
+    },
+    "preview_path": {
+     "meas_peak_ms": 500.0,
+     "sfx_audio_onset_ms": 501.0,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 3
+    }
+   },
+   "notes": ""
+  },
+  "build": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "8d22ca1981b393a3b825ae92bef35a5cf6cc27256feb07ca968097d30a3a928a",
+    "layers": [
+     "halation"
+    ],
+    "intent": "build",
+    "sfx": "riser",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 2500.0,
+     "sfx_audio_onset_ms": 2060.0,
+     "sfx_audio_last_ms": 2499.0,
+     "sfx_manifest": [
+      {
+       "kind": "riser",
+       "requested_ms": 2500.0,
+       "at_ms": 2500.0,
+       "alignment": "end",
+       "start_sample": 88800,
+       "anchor_sample": 120000
+      }
+     ],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.1564
+    },
+    "preview_path": {
+     "meas_peak_ms": 2000.0,
+     "sfx_audio_onset_ms": 1628.0,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 2
+    }
+   },
+   "notes": "4 pulse MEAS peaks 0.014<0.027<0.070<0.156 (user path); riser ends 2499 ms vs MEAS peak 2500 ms."
+  },
+  "drop": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "4a88ca239be7292619239e6e9a56b8ed4f75aab056ec24666d9f784b5214eb4b",
+    "layers": [
+     "flash_white",
+     "zoom_punch"
+    ],
+    "intent": "drop",
+    "sfx": "hit",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1000.0,
+     "sfx_audio_onset_ms": 1000.0,
+     "sfx_audio_last_ms": 1110.0,
+     "sfx_manifest": [
+      {
+       "kind": "hit",
+       "requested_ms": 1000.0,
+       "at_ms": 1000.0,
+       "alignment": "onset",
+       "start_sample": 48000,
+       "anchor_sample": 48000
+      }
+     ],
+     "meas_wcag": {
+      "general": 1,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.9715
+    },
+    "preview_path": {
+     "meas_peak_ms": 500.0,
+     "sfx_audio_onset_ms": 501.0,
+     "meas_wcag": {
+      "general": 1,
+      "red": 0
+     },
+     "builder_v2_wcag": 3
+    }
+   },
+   "notes": ""
+  },
+  "freeze_card": {
+   "verdict": "NEEDS-FIX",
+   "defects": [
+    "Default user-path render fails: fx_render plan {recipe:freeze_card, at_ms:1000} exits 2 'Audio delivery QA failed: loudness -16.4 LUFS (target -14 +/-1)'; also with --loudnorm off (S-72.6 rc!=0).",
+    "SFX misplaced: click is placed at the argmax of a flat perceived plateau (disp-dominated 0.077-0.090 from 533 to 1133 ms); catalog-preview render puts the click at 1033 ms while the card appears at 500 ms and reviewer MEAS peak is 600 ms (13 frames late; S-72.5 <=1 frame)."
+   ],
+   "evidence": {
+    "sha256": "b8b6f5f4af14d5b04a0219d612ef6d878518924889b94eaf7b86407a15cbdf43",
+    "layers": [
+     "cutout_card",
+     "halation"
+    ],
+    "intent": "texture",
+    "sfx": "click",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 2,
+     "error": "Audio delivery QA failed: loudness FAIL (click-only soundtrack)"
+    },
+    "preview_path": {
+     "peak_ms": 600.0,
+     "audio_onset": 1034.0,
+     "sfx": 1033.3333333333333,
+     "wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_wcag": 0
+    }
+   },
+   "notes": ""
+  },
+  "hero_glow": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "01e07c80bd5ee0422533089fe2b8f251fe94b31faa905faf67f5a38a6ea2c425",
+    "layers": [
+     "halation",
+     "zoom_punch"
+    ],
+    "intent": "reveal",
+    "sfx": "whoosh",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1100.0,
+     "sfx_audio_onset_ms": 1098.0,
+     "sfx_audio_last_ms": 1249.0,
+     "sfx_manifest": [
+      {
+       "kind": "whoosh",
+       "requested_ms": 1100.0,
+       "at_ms": 1100.0,
+       "alignment": "onset",
+       "start_sample": 52800,
+       "anchor_sample": 52800
+      }
+     ],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.4942
+    },
+    "preview_path": {
+     "meas_peak_ms": 600.0,
+     "sfx_audio_onset_ms": 601.0,
+     "meas_wcag": {
+      "general": 1,
+      "red": 0
+     },
+     "builder_v2_wcag": 2
+    }
+   },
+   "notes": ""
+  },
+  "hook_snap": {
+   "verdict": "NEEDS-FIX",
+   "defects": [
+    "Default user-path render fails: fx_render plan {recipe:hook_snap, at_ms:1000} exits 2 'Audio delivery QA failed: loudness -16.3 LUFS'; also with --loudnorm off. Visual/SFX timing itself is fine in the catalog-preview path (click 501 ms vs MEAS peak 500 ms)."
+   ],
+   "evidence": {
+    "sha256": "c5e48c5e1f657ace7c4fe08d01278f93149139910c08020c67aa27ceb800fe09",
+    "layers": [
+     "zoom_punch",
+     "flash_white"
+    ],
+    "intent": "hit",
+    "sfx": "click",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 2,
+     "error": "Audio delivery QA failed: loudness FAIL (click-only soundtrack)"
+    },
+    "preview_path": {
+     "peak_ms": 500.0,
+     "audio_onset": 501.0,
+     "sfx": 500.0,
+     "wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_wcag": 3
+    }
+   },
+   "notes": ""
+  },
+  "impact": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "8e971ef6a74b36174dd74fa323b19b3897cdee335d5ee6f7d1240b1afe51f127",
+    "layers": [
+     "zoom_punch",
+     "flash_white"
+    ],
+    "intent": "hit",
+    "sfx": "hit",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1000.0,
+     "sfx_audio_onset_ms": 1000.0,
+     "sfx_audio_last_ms": 1110.0,
+     "sfx_manifest": [
+      {
+       "kind": "hit",
+       "requested_ms": 1000.0,
+       "at_ms": 1000.0,
+       "alignment": "onset",
+       "start_sample": 48000,
+       "anchor_sample": 48000
+      }
+     ],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.7724
+    }
+   },
+   "notes": ""
+  },
+  "outro_settle": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "e95d94d7ca5894465826d10c06efb2ee1de1a947536b7bafdd0815495e088e9d",
+    "layers": [
+     "grade"
+    ],
+    "intent": "texture",
+    "sfx": null,
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1066.6666666666667,
+     "sfx_audio_onset_ms": null,
+     "sfx_audio_last_ms": null,
+     "sfx_manifest": [],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.039
+    },
+    "preview_path": {
+     "meas_peak_ms": 566.6666666666666,
+     "sfx_audio_onset_ms": null,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 2
+    }
+   },
+   "notes": "texture; lossless dY 2.76 -> 1.37 at +1000 ms (half, as declared) -> 0 at +1400 ms."
+  },
+  "playful_hit": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "b3446cd9bc52c4e4eaa6f9b3d70bd3e9533d95a2c4acc86d727c52ffc971f1c7",
+    "layers": [
+     "beat_bounce",
+     "grade"
+    ],
+    "intent": "hit",
+    "sfx": "pop",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1000.0,
+     "sfx_audio_onset_ms": 1000.0,
+     "sfx_audio_last_ms": 1068.0,
+     "sfx_manifest": [
+      {
+       "kind": "pop",
+       "requested_ms": 1000.0,
+       "at_ms": 1000.0,
+       "alignment": "onset",
+       "start_sample": 48000,
+       "anchor_sample": 48000
+      }
+     ],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.7473
+    },
+    "preview_path": {
+     "meas_peak_ms": 500.0,
+     "sfx_audio_onset_ms": 500.0,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 3
+    }
+   },
+   "notes": "bounce edge fill reflect-101, no black seam in native crops."
+  },
+  "reveal_subject": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "25bf0725acaa5f1205044411269fe833a96944de96f95f1709a40c4f2f6a3ba7",
+    "layers": [
+     "cutout_card",
+     "halation"
+    ],
+    "intent": "reveal",
+    "sfx": "whoosh",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1100.0,
+     "sfx_audio_onset_ms": 1098.0,
+     "sfx_audio_last_ms": 1249.0,
+     "sfx_manifest": [
+      {
+       "kind": "whoosh",
+       "requested_ms": 1100.0,
+       "at_ms": 1100.0,
+       "alignment": "onset",
+       "start_sample": 52800,
+       "anchor_sample": 52800
+      }
+     ],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.1092
+    },
+    "preview_path": {
+     "meas_peak_ms": 633.3333333333334,
+     "sfx_audio_onset_ms": 601.0,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 1
+    }
+   },
+   "notes": "needs alpha; whoosh 1098 ms vs MEAS peak 1100 ms (user path); preview 600 vs 633 ms (1 frame). Visible sticker outline on real RGBA footage."
+  },
+  "soft_hit": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "9a3038d6724a7126224e9df12de8b46c2782595a2e59a7e4ec6c8992c1b8c445",
+    "layers": [
+     "zoom_punch",
+     "grade"
+    ],
+    "intent": "hit",
+    "sfx": "pop",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1000.0,
+     "sfx_audio_onset_ms": 1000.0,
+     "sfx_audio_last_ms": 1068.0,
+     "sfx_manifest": [
+      {
+       "kind": "pop",
+       "requested_ms": 1000.0,
+       "at_ms": 1000.0,
+       "alignment": "onset",
+       "start_sample": 48000,
+       "anchor_sample": 48000
+      }
+     ],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.5962
+    },
+    "preview_path": {
+     "meas_peak_ms": 500.0,
+     "sfx_audio_onset_ms": 500.0,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 2
+    }
+   },
+   "notes": ""
+  },
+  "title_pop": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "be106e0df355f4424db67904929328f9826af84de9ee0e101046e40f8b51db8b",
+    "layers": [
+     "beat_bounce",
+     "halation"
+    ],
+    "intent": "title",
+    "sfx": "pop",
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1000.0,
+     "sfx_audio_onset_ms": 1000.0,
+     "sfx_audio_last_ms": 1068.0,
+     "sfx_manifest": [
+      {
+       "kind": "pop",
+       "requested_ms": 1000.0,
+       "at_ms": 1000.0,
+       "alignment": "onset",
+       "start_sample": 48000,
+       "anchor_sample": 48000
+      }
+     ],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.6363
+    },
+    "preview_path": {
+     "meas_peak_ms": 500.0,
+     "sfx_audio_onset_ms": 500.0,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 3
+    }
+   },
+   "notes": "needs text; tested on plain material, bounce edge fill is reflect-101 (no black seam)."
+  },
+  "warm_memory": {
+   "verdict": "SOUND",
+   "defects": [],
+   "evidence": {
+    "sha256": "8a0d4256ed5786008af996922696fa1be9ddebd7facc7da8019edf77b8cd20f6",
+    "layers": [
+     "grade",
+     "halation"
+    ],
+    "intent": "texture",
+    "sfx": null,
+    "auto_levels": {
+     "opaque-480x270": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-480x270": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "opaque-270x480": {
+      "alpha": "PASS",
+      "edges": "WARN",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     },
+     "rgba-270x480": {
+      "alpha": "PASS",
+      "edges": "PASS",
+      "black": "PASS",
+      "flicker": "PASS",
+      "determinism": "PASS"
+     }
+    },
+    "auto_mandatory_fail": [],
+    "user_path": {
+     "rc": 0,
+     "meas_peak_ms": 1400.0,
+     "sfx_audio_onset_ms": null,
+     "sfx_audio_last_ms": null,
+     "sfx_manifest": [],
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "single_frame_spikes": [],
+     "peak_combo": 0.1301
+    },
+    "preview_path": {
+     "meas_peak_ms": 900.0,
+     "sfx_audio_onset_ms": null,
+     "meas_wcag": {
+      "general": 0,
+      "red": 0
+     },
+     "builder_v2_wcag": 2
+    }
+   },
+   "notes": "texture; lossless plateau as declared; returns to identity."
+  }
+ },
+ "counts": {
+  "SOUND": 12,
+  "NEEDS_FIX": 2
+ },
+ "caveats": [
+  "Post-effect constant residual (dY~1.2) in decoded MP4 is an encoder artefact: lossless PNG renders return exactly to identity.",
+  "Perceived labels are material-specific: user-path still-material peaks differ (build 0.156 vs label 0.096, warm_memory 0.122 vs 0.084).",
+  "Ingredients are registry-stable; the 6 legacy effects have auto-only technical records (independent review pending).",
+  "No pairwise AI-panel triplet verdicts were run; this is the reviewer technical verdict from measurements and frames."
+ ]
+}

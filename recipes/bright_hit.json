@@ -1,0 +1,74 @@
+{
+  "name": "bright_hit",
+  "status": "stable",
+  "intent": "hit",
+  "layers": [
+    {
+      "ref": "flash_white",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 0,
+      "duration_ms": 240,
+      "control": "amount",
+      "envelope": [
+        [
+          0,
+          0.28
+        ],
+        [
+          240,
+          0
+        ]
+      ]
+    },
+    {
+      "ref": "halation",
+      "kind": "effect",
+      "params": {},
+      "offset_ms": 80,
+      "duration_ms": 450,
+      "control": "amount",
+      "envelope": [
+        [
+          0,
+          0.5
+        ],
+        [
+          450,
+          0
+        ]
+      ]
+    }
+  ],
+  "sfx": "hit",
+  "perceived_target": 0.9347762345679013,
+  "needs": [],
+  "good_for": [
+    "bright hit at a selected key moment"
+  ],
+  "avoid_for": [
+    "breathe"
+  ],
+  "notes": "White accent followed by stable warm spill.",
+  "peak_ms": 0.0,
+  "gate": {
+    "axis": "technical",
+    "status": "stable",
+    "date": "2026-11-05",
+    "record_path": "wow/fx/gate/s6-round2-promotions.json",
+    "basis": "Independent technical review plus round-2 decoded regression closure; see linked promotion record. No appeal score.",
+    "measurement": {
+      "perceived": 0.9347762345679013,
+      "source": "STD-MOV; STD-A for alpha recipes",
+      "resolution": [
+        480,
+        270
+      ],
+      "fps": 30,
+      "duration_ms": 3000,
+      "at_ms": 500,
+      "decoded": true,
+      "report": "recipe-bright_hit.json"
+    }
+  }
+}

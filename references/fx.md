@@ -440,6 +440,10 @@ also retain their flags rather than treating intentional graphics as automatic p
 - `gl_dreamy_zoom` and `hex_shutter` RGBA midpoint crossfades span 10% / 6% of progress; on very short transitions (≈12 frames) the swap still lands in one frame — consider frame-count-aware widths.
 - fx_gate_kit `edge_streaks` (new detector) false-flags a vertical neon tube in the untouched source (27/48 frames portrait); advisory only — fix in a later slice.
 
+## Open notes (spec-6 verification, 2026-11-05; non-blocking)
+- WCAG flash counter compensates pure translation only: a high-contrast checkerboard panned 9 px/frame while rotating 0.10–0.15°/frame (no effect) is false-flagged (15/5 flashes/s); real footage with the same motion measures 0. Extend compensation to rotation.
+- Click-only recipes land at −14.97 LUFS, 0.03 LU inside the −15 lower bound; make the loudness retry converge within ±0.8 LU of target or fail loudly.
+
 ## Experimental (pending quality gate)
 
 The catalog below gives defaults; every numeric parameter accepts the existing
@@ -1023,3 +1027,13 @@ outside the repository; JSON measurements and exact commands are linked from
 [P2b build notes](../wow/fx/build-notes-p2b.md). Full selection/exclusion rationale,
 all 161 unselected authors, timing methodology and outstanding visual review
 are recorded there. No ffmpeg xfade fast path is introduced.
+
+## S6 director layer
+
+See [director FX commands, measurement methods, and limitations](director-fx.md).
+`fx_render --list --json` now adds full cards without changing legacy keys.
+`fx_render --cards [OUT.html]` builds a moving offline catalog (OS temporary
+directory by default). The other entry points are `scripts/fx_calibrate.py`,
+`scripts/fx_query.py`, `scripts/fx_lint.py`, `scripts/fx_candidates.py`, and
+`scripts/fx_check.py`. Recipes live in `recipes/`; their independent technical
+review remains explicit. Appeal is never scored or used to delete an effect.

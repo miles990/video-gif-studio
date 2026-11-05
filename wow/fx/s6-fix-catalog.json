@@ -1,0 +1,299 @@
+{
+  "root": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6-fix-catalog",
+  "cards": 57,
+  "checks": [
+    {
+      "name": "flash_white",
+      "kind": "effect",
+      "flashes": 2
+    },
+    {
+      "name": "grade",
+      "kind": "effect",
+      "flashes": 2
+    },
+    {
+      "name": "halation",
+      "kind": "effect",
+      "flashes": 2
+    },
+    {
+      "name": "beat_bounce",
+      "kind": "effect",
+      "flashes": 3
+    },
+    {
+      "name": "zoom_punch",
+      "kind": "effect",
+      "flashes": 3
+    },
+    {
+      "name": "cutout_card",
+      "kind": "effect",
+      "flashes": 0
+    },
+    {
+      "name": "crossfade",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "whip_pan",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "hex_shutter",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "flash_cut",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "spin",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "gl_clock_wipe",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_cross_warp",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_directional_warp",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_dreamy",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_dreamy_zoom",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "gl_rotate_scale_fade",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "gl_swirl",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_water_drop",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_burn_through",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "gl_overexposure",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "gl_fade_grayscale",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_color_distance",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_luminance_melt",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_pixelize",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_dither_dissolve",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_random_squares",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_window_slices",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_wind",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_pinwheel",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "gl_polka_dots_curtain",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_crosshatch",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_perlin_dissolve",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_glitch_memories",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_scale_in",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_bounce",
+      "kind": "transition",
+      "flashes": 2
+    },
+    {
+      "name": "gl_multiply_blend",
+      "kind": "transition",
+      "flashes": 1
+    },
+    {
+      "name": "gl_color_phase",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_hexagonalize",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_squares_wipe",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_bow_tie_horizontal",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_curved_wipe",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "gl_arrow_wipe",
+      "kind": "transition",
+      "flashes": 0
+    },
+    {
+      "name": "breathe",
+      "kind": "recipe",
+      "flashes": 2
+    },
+    {
+      "name": "bright_hit",
+      "kind": "recipe",
+      "flashes": 3
+    },
+    {
+      "name": "build",
+      "kind": "recipe",
+      "flashes": 2
+    },
+    {
+      "name": "drop",
+      "kind": "recipe",
+      "flashes": 3
+    },
+    {
+      "name": "freeze_card",
+      "kind": "recipe",
+      "flashes": 0
+    },
+    {
+      "name": "hero_glow",
+      "kind": "recipe",
+      "flashes": 2
+    },
+    {
+      "name": "hook_snap",
+      "kind": "recipe",
+      "flashes": 3
+    },
+    {
+      "name": "impact",
+      "kind": "recipe",
+      "flashes": 3
+    },
+    {
+      "name": "outro_settle",
+      "kind": "recipe",
+      "flashes": 2
+    },
+    {
+      "name": "playful_hit",
+      "kind": "recipe",
+      "flashes": 3
+    },
+    {
+      "name": "reveal_subject",
+      "kind": "recipe",
+      "flashes": 1
+    },
+    {
+      "name": "soft_hit",
+      "kind": "recipe",
+      "flashes": 2
+    },
+    {
+      "name": "title_pop",
+      "kind": "recipe",
+      "flashes": 3
+    },
+    {
+      "name": "warm_memory",
+      "kind": "recipe",
+      "flashes": 2
+    }
+  ],
+  "wcag_violations": 0,
+  "total_bytes": 6650299,
+  "coverage": {
+    "total": 43,
+    "complete_stable": 43,
+    "missing": [],
+    "incomplete": []
+  }
+}

@@ -7,6 +7,20 @@ except ImportError:
     psutil = None
 
 
+def descendants(pid, parents, created):
+    """Reject stale parent IDs after Windows recycles a process ID.
+
+    Toolhelp keeps the original parent PID even after that parent exits. An
+    older orphan is not a child of a newly launched benchmark with that PID.
+    """
+    wanted={pid}
+    while True:
+        more={child for child,parent in parents.items() if parent in wanted
+              and child in created and parent in created and created[child]>=created[parent]}-wanted
+        if not more:return wanted
+        wanted.update(more)
+
+
 def tree_memory(pid):
     """Return (RSS sum, peak working-set sum) for a parent and live descendants.
 
@@ -43,6 +57,7 @@ def tree_memory(pid):
     kernel.Process32NextW.argtypes=[w.HANDLE,c.POINTER(Process)]
     kernel.OpenProcess.argtypes=[w.DWORD,w.BOOL,w.DWORD];kernel.OpenProcess.restype=w.HANDLE
     kernel.CloseHandle.argtypes=[w.HANDLE]
+    kernel.GetProcessTimes.argtypes=[w.HANDLE,c.POINTER(w.FILETIME),c.POINTER(w.FILETIME),c.POINTER(w.FILETIME),c.POINTER(w.FILETIME)]
     api.GetProcessMemoryInfo.argtypes=[w.HANDLE,c.POINTER(Memory),w.DWORD]
     snapshot=kernel.CreateToolhelp32Snapshot(2,0);entry=Process();entry.size=c.sizeof(entry)
     parents={}
@@ -52,11 +67,22 @@ def tree_memory(pid):
             parents[entry.pid]=entry.parent
             valid=kernel.Process32NextW(snapshot,c.byref(entry))
     finally:kernel.CloseHandle(snapshot)
-    wanted={pid}
+    # Inspect birth times only for potential descendants, before reading RSS.
+    candidates={pid}
     while True:
-        more={child for child,parent in parents.items() if parent in wanted}-wanted
+        more={child for child,parent in parents.items() if parent in candidates}-candidates
         if not more:break
-        wanted.update(more)
+        candidates.update(more)
+    created={}
+    for child in candidates:
+        handle=kernel.OpenProcess(0x1000,False,child)
+        if not handle:continue
+        try:
+            times=[w.FILETIME() for _ in range(4)]
+            if kernel.GetProcessTimes(handle,*(c.byref(t) for t in times)):
+                created[child]=(times[0].dwHighDateTime<<32)|times[0].dwLowDateTime
+        finally:kernel.CloseHandle(handle)
+    wanted=descendants(pid,parents,created)
     rss=peak=0
     for child in wanted:
         handle=kernel.OpenProcess(0x0400|0x0010,False,child)

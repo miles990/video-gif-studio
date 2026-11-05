@@ -1,0 +1,173 @@
+{
+  "axis": "technical",
+  "date": "2026-11-05",
+  "source_revision": "ec509b4a049f2eea908c4c7ea0d10169fb8fa3ab",
+  "uncommitted": true,
+  "independent_review": "wow/fx/gate/s6-recipe-tech-verdicts.json",
+  "regressions": "wow/fx/s6-round2-regressions.json",
+  "basis": "User-authorized promotion after independent SOUND verdicts and decoded follow-up regressions; no appeal verdict or C activation.",
+  "recipes": {
+    "breathe": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "558a2a83f4e072d91c67cab6b118e217b5e0667f36b01225be5c14376d9b4289",
+      "promoted_sha256": "98dab07cd75e9f58644c2842b3b3cf33ec747ad42ee70d9a5a5211aeba1cac8a",
+      "source_path": "recipes/breathe.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "bright_hit": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "3fb383b5d191589300418a8711b126341946bf20327814e66fef81d56b26e26b",
+      "promoted_sha256": "9b38660047b4b303d25bad8cfb8c42409836af0a46dc064e73b0f4cbc013f5e5",
+      "source_path": "recipes/bright_hit.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "build": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "8d22ca1981b393a3b825ae92bef35a5cf6cc27256feb07ca968097d30a3a928a",
+      "promoted_sha256": "5a82d88190229e0dfbdb92c495dee76e66766ce777c082f2785ec5a0291b068c",
+      "source_path": "recipes/build.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "drop": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "4a88ca239be7292619239e6e9a56b8ed4f75aab056ec24666d9f784b5214eb4b",
+      "promoted_sha256": "77186d0a555eefb957f3ed592b358e0876ca4a96bc8639f36743c45b2f381795",
+      "source_path": "recipes/drop.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "freeze_card": {
+      "status": "stable",
+      "independent_verdict": "NEEDS-FIX",
+      "reviewed_sha256": "b8b6f5f4af14d5b04a0219d612ef6d878518924889b94eaf7b86407a15cbdf43",
+      "promoted_sha256": "f367210abc69b1cbb60121d9e86ef4e5e7fb774da0fc3b05c0d3fcad00785b55",
+      "source_path": "recipes/freeze_card.json",
+      "regression": "wow/fx/s6-round2-regressions.json#recipes/freeze_card",
+      "changes_since_review": [
+        "status and gate provenance",
+        "explicit visible-onset SFX anchor"
+      ]
+    },
+    "hero_glow": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "01e07c80bd5ee0422533089fe2b8f251fe94b31faa905faf67f5a38a6ea2c425",
+      "promoted_sha256": "8233e872a21da3ddbc85899eee0b01b435cb7185b3104ccc8e26242c6e1c82a8",
+      "source_path": "recipes/hero_glow.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "hook_snap": {
+      "status": "stable",
+      "independent_verdict": "NEEDS-FIX",
+      "reviewed_sha256": "c5e48c5e1f657ace7c4fe08d01278f93149139910c08020c67aa27ceb800fe09",
+      "promoted_sha256": "561fd970e76201efc3bb396148e29235fdd17b7a31d363ed69cabcfeac41363f",
+      "source_path": "recipes/hook_snap.json",
+      "regression": "wow/fx/s6-round2-regressions.json#recipes/hook_snap",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "impact": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "8e971ef6a74b36174dd74fa323b19b3897cdee335d5ee6f7d1240b1afe51f127",
+      "promoted_sha256": "97cfef323dd27286c3437498d6ef029ed2a8bd0ef3300fef08a432df51e30d5c",
+      "source_path": "recipes/impact.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "outro_settle": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "e95d94d7ca5894465826d10c06efb2ee1de1a947536b7bafdd0815495e088e9d",
+      "promoted_sha256": "e809cd88f2ec8f6825a9f70b989591180ffbd89c860535637475465aff3a51f3",
+      "source_path": "recipes/outro_settle.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "playful_hit": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "b3446cd9bc52c4e4eaa6f9b3d70bd3e9533d95a2c4acc86d727c52ffc971f1c7",
+      "promoted_sha256": "db4468f8fa21341ac6207c94f4f7ee2046d7ac277cb3f28b56ccf2a8c01f8c51",
+      "source_path": "recipes/playful_hit.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "reveal_subject": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "25bf0725acaa5f1205044411269fe833a96944de96f95f1709a40c4f2f6a3ba7",
+      "promoted_sha256": "7282a9f19479f07197f42ab7b4020efa0f8163c1ce6dcf41fe2dbb7a3c593c7c",
+      "source_path": "recipes/reveal_subject.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "soft_hit": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "9a3038d6724a7126224e9df12de8b46c2782595a2e59a7e4ec6c8992c1b8c445",
+      "promoted_sha256": "112516717435ca2ce33c107f186d125ba51f177fcdad08c7b00fbdc35ee54cfb",
+      "source_path": "recipes/soft_hit.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "title_pop": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "be106e0df355f4424db67904929328f9826af84de9ee0e101046e40f8b51db8b",
+      "promoted_sha256": "d9d2cb193a8afad857a2d8524e437c2747291dcd9f55272463024af43ef705eb",
+      "source_path": "recipes/title_pop.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    },
+    "warm_memory": {
+      "status": "stable",
+      "independent_verdict": "SOUND",
+      "reviewed_sha256": "8a0d4256ed5786008af996922696fa1be9ddebd7facc7da8019edf77b8cd20f6",
+      "promoted_sha256": "99174cf772e6058588d60e35f867448750bad593c742ef24012ffbb86c7303c0",
+      "source_path": "recipes/warm_memory.json",
+      "regression": "wow/fx/s6-round2-regressions.json#flash",
+      "changes_since_review": [
+        "status and gate provenance"
+      ]
+    }
+  },
+  "validation": {
+    "full_suite": "wow/fx/test-s6-round2-full.log",
+    "targeted": "wow/fx/test-s6-round2-targeted.log",
+    "tests": 646,
+    "failures": 0,
+    "baseline_environment_errors": 2
+  }
+}

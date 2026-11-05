@@ -246,6 +246,9 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
         from threshold_registry import value, default_value
         target=value('audio.loudness.target');tolerance=value('audio.loudness.tolerance')
         limiter=default_value('audio.limiter.ceiling');limit=10**(limiter/20)
+        # Sparse SFX need a short recovery: a 50 ms limiter release suppresses
+        # most of a 35 ms click, so adding gain cannot restore its loudness.
+        release_ms = 5 if sfx and not music and not source else 50
         if normalize:
             log = run(['-i', str(mixed), '-af', f'loudnorm=I={target}:TP={limiter}:LRA=11:print_format=json', '-f', 'null', '-'])
             measured = json.loads(log[log.rfind('{'):log.rfind('}')+1])
@@ -254,9 +257,9 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
             # Oversample so the lookahead limiter catches intersample peaks.
             # Disable its default makeup gain and compensate its 5 ms latency.
             filt = (f'volume={gain}dB,aresample=192000,'
-                    f'alimiter=limit={limit:.10f}:attack=5:release=50:level=false:latency=true,aresample=48000')
+                    f'alimiter=limit={limit:.10f}:attack=5:release={release_ms}:level=false:latency=true,aresample=48000')
             second = dict(normalization_type='linear', gain_db=gain,
-                          limiter=dict(ceiling_dbtp=limiter, sample_rate=192000, attack_ms=5, release_ms=50,
+                          limiter=dict(ceiling_dbtp=limiter, sample_rate=192000, attack_ms=5, release_ms=release_ms,
                                        auto_level=False, latency_compensated=True))
         candidate = root/movie.name
         log = run(['-i', str(movie), '-i', str(mixed), '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy',
@@ -268,17 +271,31 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
         # SFX path retries measured gain; legacy music/source-only bytes are unchanged.
         retries=[]
         if sfx and normalize:
-            for _ in range(4):
+            for _ in range(24):
                 loud=next((c.get('lufs') for c in checks if c['name']=='loudness'),None)
-                if loud is None or abs(loud-target)<=tolerance: break
-                correction=target-loud;gain+=correction;retries.append(dict(measured_lufs=loud,correction_db=correction))
+                peak=next((c.get('dbtp') for c in checks if c['name']=='true_peak'),None)
+                peak_limit=value('audio.true_peak.max')
+                # Keep a small margin from the rounded external QA boundary.
+                loud_ok=loud is None or abs(loud-target)<=tolerance*.8
+                peak_ok=peak is None or peak<=peak_limit
+                if loud_ok and peak_ok: break
+                correction=0 if loud_ok else target-loud
+                gain+=correction
+                if not peak_ok:
+                    # AAC reconstruction can overshoot a sparse transient even
+                    # after oversampled limiting. Tighten headroom, never the
+                    # fixed decoded -1 dBTP delivery gate.
+                    limiter-=peak-peak_limit+default_value('audio.sfx.codec_headroom')
+                    limit=10**(limiter/20)
+                retries.append(dict(measured_lufs=loud,correction_db=correction,measured_dbtp=peak,limiter_dbtp=limiter))
                 filt=(f'volume={gain}dB,aresample=192000,'
-                      f'alimiter=limit={limit:.10f}:attack=5:release=50:level=false:latency=true,aresample=48000')
+                      f'alimiter=limit={limit:.10f}:attack=5:release={release_ms}:level=false:latency=true,aresample=48000')
                 run(['-y','-i',str(movie),'-i',str(mixed),'-map','0:v:0','-map','1:a:0','-c:v','copy',
                      '-af',filt,'-c:a','libopus' if movie.suffix=='.webm' else 'aac','-b:a','256k','-ar','48000','-ac','2',
                      '-t',str(seconds),*([] if movie.suffix=='.webm' else ['-movflags','+faststart']),str(candidate)])
                 checks=analyse_audio(candidate,{'audio':True},[0,seconds])
             second.update(gain_db=gain,sfx_gain_retries=retries)
+            second['limiter']['ceiling_dbtp']=limiter
         if any(c['level']=='FAIL' for c in checks):
             raise RuntimeError('Audio delivery QA failed: '+json.dumps(checks))
         candidate.replace(movie)

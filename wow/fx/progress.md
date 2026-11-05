@@ -69,3 +69,9 @@
 - 13:40 品質閘門試跑（使用者選「先試跑再全跑」）：發現兩個儀器問題並修好——(1) wow-judge 在 Windows 用 pair id 當檔名，id 含 : / → 改成 _；(2) wow-judge 以 spawn('codex') 呼叫，Windows 找不到 npm .cmd 墊片 → codex 全部 0 秒失敗、評審團實際只有 Claude 兩位；以 WOW_CODEX 指向真正的 codex.exe 修好，codex 對照組判對（相同→平手、破壞版→輸）。Claude 兩位在試跑中：破壞版全擋、換風格版全判平手。以完整三家評審團重跑試跑中。這兩個 wow-judge Windows 問題之後回報給 wow 技能修正。
 - 13:15 轉場品質閘門全跑：866 呼叫 0 失敗；34 個轉場 → 25 stable、4 experimental（bounce、crosshatch、multiply_blend、polka_dots_curtain）、5 刪除（burn_through 0:12、luminance_melt 0:11、perlin_dissolve、dreamy_zoom、color_phase）。對照：破壞版 9/10 被擋（漏的 dreamy_zoom 本身被刪）、換風格版 10/10 平手。決策檔 wow/fx/gate/p2-transitions-decision.json。使用者抽查頁 8 對（含 3 個隱藏對照）在 vgs-fx-private/spotcheck/。
 - 13:40 使用者抽查（自述非專業、憑直覺）：隱藏平手對照 2/2 一致；分出高下的 3 對全部與評審團相反；破壞版 1 對看不出差異。依規則本輪評審判決不作數，不刪任何轉場。閘門拆兩軸（技術健全→決定去留；好看／風格→使用者品味 U 類＋風格標籤，不定生死），抽查改用動態短片。已寫入 process.md。
+- 15:20 P2 完成：6 個修正經獨立技術複查全部修好（前後數字見 vgs-fx-private/reviews/tech-p2-recheck）；squash 合回 main 95a039a 並 push；安裝目錄 561 tests／2 env errors、doctor 通過、37 個轉場 stable（0 刪除）並帶風格標籤。剩 2 個非阻擋註記寫入 fx.md。下一片：spec-6 導演用的效果層（分支 s6-director-fx）。
+- 19:10 spec-6 修正二完成（646 tests）：面積式 WCAG（平移不再誤判）、稀疏音效配方可交付、極小輸入 unsupported、依取樣分開校準、14 個配方 stable。wow-agent 包裝在收尾雜湊時對建造者留在 repo 內、權限鎖住的 mp4 EPERM 崩潰（Codex 本身已完成）；且 `wow-agent --list` 也因同一檔案崩潰。已把該資料夾移出 repo。獨立驗證中。
+## 待回報給 wow 技能的工具問題（Windows）
+1. wow-judge 用 pair id 當檔名，id 含 `:`/`/` 時 Windows 失敗（ENOENT）。
+2. wow-judge 以 spawn('codex') 呼叫，Windows 找不到 npm .cmd 墊片 → codex 每次 0 秒失敗、靜默變成只有 Claude 的評審團；需偵測或改用 codex.exe（WOW_CODEX 可繞過）。
+3. wow-agent 收尾雜湊改檔時遇到 EPERM（沙盒建立的受鎖檔）整個崩潰；`--list` 同樣崩潰。應略過無法讀取的檔並警告。

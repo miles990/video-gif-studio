@@ -193,10 +193,14 @@
     },
     {
       "id": "visibility.onset_contrast.min",
-      "value": 1.0,
+      "value": {
+        "default": 0.22,
+        "tonal": 0.19,
+        "motion": 0.25
+      },
       "class": "C",
       "unit": "ratio",
-      "measures": "High-pass onset delta / no-effect temporal median, k=3; v1",
+      "measures": "Lab onset with chroma, motion-family texture normalization and bounded temporal masking; v2",
       "direction": "min",
       "anchors": [
         {
@@ -240,7 +244,36 @@
           "held_out": true
         }
       ],
-      "history": [],
+      "history": [
+        {
+          "date": "2026-11-05",
+          "from": 1.0,
+          "to": {
+            "default": 0.5,
+            "tonal": 0.5,
+            "motion": 0.25
+          },
+          "trigger": "Lab chroma, bounded masking and texture normalization; independent family 2AFC pending",
+          "approved_by": "builder: candidate instrument only, not active",
+          "anchor_decisions": []
+        },
+        {
+          "date": "2026-11-05",
+          "from": {
+            "default": 0.5,
+            "tonal": 0.5,
+            "motion": 0.25
+          },
+          "to": {
+            "default": 0.22,
+            "tonal": 0.19,
+            "motion": 0.25
+          },
+          "trigger": "Independent review-s6-2: 17 anchors, tonal 13/13 at ~.19, motion 4/4 at .25; combined separation ~.22. Candidate only; human 2AFC still required.",
+          "approved_by": "builder: records reviewer candidate, no activation",
+          "anchor_decisions": []
+        }
+      ],
       "provenance": {
         "source_class": "GUESS",
         "ref": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5",
@@ -252,7 +285,7 @@
         100
       ],
       "margin": 0.01,
-      "instrument": "scripts/threshold_runtime.py#v1:visibility.onset_contrast.min"
+      "instrument": "scripts/fx_measure.py#Lab-texture-v2"
     },
     {
       "id": "harshness.sharp4.min",
@@ -568,8 +601,610 @@
       ],
       "max_step": 0.15,
       "instrument": "scripts/threshold_runtime.py#v1:budget.events.max"
+    },
+    {
+      "id": "wcag.general.delta.min",
+      "value": 0.1,
+      "class": "F",
+      "unit": "linear L",
+      "direction": "min",
+      "measures": "S6 wcag.general.delta.min",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "WCAG 2.3.1 / acceptance-6 fixed MEAS",
+        "agent_invented": false
+      }
+    },
+    {
+      "id": "wcag.general.dark.max",
+      "value": 0.8,
+      "class": "F",
+      "unit": "linear L",
+      "direction": "max",
+      "measures": "S6 wcag.general.dark.max",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "WCAG 2.3.1 / acceptance-6 fixed MEAS",
+        "agent_invented": false
+      }
+    },
+    {
+      "id": "wcag.red.saturation.min",
+      "value": 0.8,
+      "class": "F",
+      "unit": "R/(R+G+B)",
+      "direction": "min",
+      "measures": "S6 wcag.red.saturation.min",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "WCAG 2.3.1 / acceptance-6 fixed MEAS",
+        "agent_invented": false
+      }
+    },
+    {
+      "id": "wcag.red.delta.min",
+      "value": 20,
+      "class": "F",
+      "unit": "red contrast x320",
+      "direction": "min",
+      "measures": "S6 wcag.red.delta.min",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "WCAG 2.3.1 / acceptance-6 fixed MEAS",
+        "agent_invented": false
+      }
+    },
+    {
+      "id": "wcag.area.min",
+      "value": 0.111,
+      "class": "F",
+      "unit": "fraction",
+      "direction": "min",
+      "measures": "S6 wcag.area.min",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "WCAG 2.3.1 / acceptance-6 fixed MEAS",
+        "agent_invented": false
+      }
+    },
+    {
+      "id": "wcag.flashes.max",
+      "value": 3,
+      "class": "F",
+      "unit": "flashes/s",
+      "direction": "max",
+      "measures": "S6 wcag.flashes.max",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "WCAG 2.3.1 / acceptance-6 fixed MEAS",
+        "agent_invented": false
+      }
+    },
+    {
+      "id": "measure.area8.min",
+      "value": 8,
+      "class": "C",
+      "unit": "sRGB Y",
+      "direction": "min",
+      "measures": "S6 measure.area8.min",
+      "anchors": [
+        {
+          "id": "measure.area8.min.positive_control",
+          "path": "references/fx-instrument-anchors.json#positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "measure.area8.min.negative_control",
+          "path": "references/fx-instrument-anchors.json#negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "status": "calibrate_first",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "perceived.luma.scale",
+      "value": 64,
+      "class": "C",
+      "unit": "sRGB Y",
+      "direction": "equal",
+      "measures": "S6 perceived.luma.scale",
+      "anchors": [
+        {
+          "id": "perceived.luma.scale.positive_control",
+          "path": "references/fx-instrument-anchors.json#positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "perceived.luma.scale.negative_control",
+          "path": "references/fx-instrument-anchors.json#negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "status": "calibrate_first",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "perceived.displacement.scale",
+      "value": 24,
+      "class": "C",
+      "unit": "720p px",
+      "direction": "equal",
+      "measures": "S6 perceived.displacement.scale",
+      "anchors": [
+        {
+          "id": "perceived.displacement.scale.positive_control",
+          "path": "references/fx-instrument-anchors.json#positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "perceived.displacement.scale.negative_control",
+          "path": "references/fx-instrument-anchors.json#negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "status": "calibrate_first",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "visibility.luma.weight",
+      "value": 0.1,
+      "class": "C",
+      "unit": "weight",
+      "direction": "equal",
+      "measures": "S6 visibility.luma.weight",
+      "anchors": [
+        {
+          "id": "visibility.luma.weight.positive_control",
+          "path": "references/fx-instrument-anchors.json#positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "visibility.luma.weight.negative_control",
+          "path": "references/fx-instrument-anchors.json#negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "status": "calibrate_first",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "visibility.noise.floor",
+      "value": 1,
+      "class": "C",
+      "unit": "sRGB Y",
+      "direction": "min",
+      "measures": "S6 visibility.noise.floor",
+      "anchors": [
+        {
+          "id": "visibility.noise.floor.positive_control",
+          "path": "references/fx-instrument-anchors.json#positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "visibility.noise.floor.negative_control",
+          "path": "references/fx-instrument-anchors.json#negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "status": "calibrate_first",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "harshness.ssim_loss.max",
+      "value": 0.35,
+      "class": "C",
+      "unit": "loss",
+      "direction": "max",
+      "measures": "S6 harshness.ssim_loss.max",
+      "anchors": [
+        {
+          "id": "harshness.ssim_loss.max.positive_control",
+          "path": "references/fx-instrument-anchors.json#positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "harshness.ssim_loss.max.negative_control",
+          "path": "references/fx-instrument-anchors.json#negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "status": "calibrate_first",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "harshness.frames.min",
+      "value": 4,
+      "class": "C",
+      "unit": "frames",
+      "direction": "min",
+      "measures": "S6 harshness.frames.min",
+      "anchors": [
+        {
+          "id": "harshness.frames.min.positive_control",
+          "path": "references/fx-instrument-anchors.json#positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "harshness.frames.min.negative_control",
+          "path": "references/fx-instrument-anchors.json#negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "status": "calibrate_first",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "director.energy.low",
+      "value": 0.4,
+      "class": "U",
+      "unit": "energy",
+      "direction": "max",
+      "measures": "S6 director.energy.low",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "director.energy.high",
+      "value": 0.8,
+      "class": "U",
+      "unit": "energy",
+      "direction": "min",
+      "measures": "S6 director.energy.high",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "director.budget.base",
+      "value": 0.4,
+      "class": "U",
+      "unit": "perceived/4s",
+      "direction": "equal",
+      "measures": "S6 director.budget.base",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "director.budget.gain",
+      "value": 5.5,
+      "class": "U",
+      "unit": "perceived/4s/energy",
+      "direction": "equal",
+      "measures": "S6 director.budget.gain",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "director.density.base",
+      "value": 1,
+      "class": "U",
+      "unit": "events/bar",
+      "direction": "equal",
+      "measures": "S6 director.density.base",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "director.density.gain",
+      "value": 4,
+      "class": "U",
+      "unit": "events/bar/energy",
+      "direction": "equal",
+      "measures": "S6 director.density.gain",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "director.breathe.max",
+      "value": 0.25,
+      "class": "U",
+      "unit": "perceived",
+      "direction": "max",
+      "measures": "S6 director.breathe.max",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "director.flash.run.max",
+      "value": 8,
+      "class": "U",
+      "unit": "events",
+      "direction": "max",
+      "measures": "S6 director.flash.run.max",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "query.history.window",
+      "value": 3,
+      "class": "U",
+      "unit": "choices",
+      "direction": "equal",
+      "measures": "S6 query.history.window",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "query.intent.weight",
+      "value": 4,
+      "class": "U",
+      "unit": "score",
+      "direction": "equal",
+      "measures": "S6 query.intent.weight",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "query.gate.weight",
+      "value": 1,
+      "class": "U",
+      "unit": "score",
+      "direction": "equal",
+      "measures": "S6 query.gate.weight",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "query.cost.weight",
+      "value": 0.01,
+      "class": "U",
+      "unit": "score/ms",
+      "direction": "equal",
+      "measures": "S6 query.cost.weight",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "query.diversity.weight",
+      "value": 10,
+      "class": "U",
+      "unit": "score/occurrence",
+      "direction": "equal",
+      "measures": "S6 query.diversity.weight",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "audio.sfx.codec_headroom",
+      "value": 0.2,
+      "class": "U",
+      "unit": "dB",
+      "direction": "min",
+      "measures": "S6 audio.sfx.codec_headroom",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "query.related.match",
+      "value": 0.5,
+      "class": "U",
+      "unit": "intent match",
+      "direction": "equal",
+      "measures": "S6 query.related.match",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "references/fx.md S6 method; independent panel calibration pending",
+        "agent_invented": true
+      }
+    },
+    {
+      "id": "calibration.monotonic.tolerance",
+      "value": 0.01,
+      "class": "F",
+      "unit": "perceived",
+      "direction": "max",
+      "measures": "S6 calibration.monotonic.tolerance",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "acceptance-6 S-71 fixed reproducibility contract",
+        "agent_invented": false
+      }
+    },
+    {
+      "id": "calibration.grid.points",
+      "value": 11,
+      "class": "F",
+      "unit": "samples",
+      "direction": "equal",
+      "measures": "S6 calibration.grid.points",
+      "anchors": [],
+      "history": [],
+      "status": "active",
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "acceptance-6 S-71 fixed reproducibility contract",
+        "agent_invented": false
+      }
     }
   ],
   "pending": [],
-  "audit": []
+  "audit": [],
+  "calibration_tables": {
+    "fx_perceived": "references/fx-calibration.json"
+  }
 }

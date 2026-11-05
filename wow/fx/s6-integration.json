@@ -1,0 +1,181 @@
+{
+  "recipe_validations": [
+    {
+      "name": "breathe",
+      "layers": 1
+    },
+    {
+      "name": "bright_hit",
+      "layers": 2
+    },
+    {
+      "name": "build",
+      "layers": 1
+    },
+    {
+      "name": "drop",
+      "layers": 2
+    },
+    {
+      "name": "freeze_card",
+      "layers": 2
+    },
+    {
+      "name": "hero_glow",
+      "layers": 2
+    },
+    {
+      "name": "hook_snap",
+      "layers": 2
+    },
+    {
+      "name": "impact",
+      "layers": 2
+    },
+    {
+      "name": "outro_settle",
+      "layers": 1
+    },
+    {
+      "name": "playful_hit",
+      "layers": 2
+    },
+    {
+      "name": "reveal_subject",
+      "layers": 2
+    },
+    {
+      "name": "soft_hit",
+      "layers": 2
+    },
+    {
+      "name": "title_pop",
+      "layers": 2
+    },
+    {
+      "name": "warm_memory",
+      "layers": 2
+    }
+  ],
+  "render": {
+    "out": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6\\integration-if9etued\\impact-render",
+    "frames": 90,
+    "duration_ms": 3000.0,
+    "formats": [
+      "mp4"
+    ]
+  },
+  "legacy_hash_frames": 25,
+  "legacy_sha_equal": true,
+  "candidates": 3,
+  "candidate_pair_differences": [
+    {
+      "a": 0,
+      "b": 1,
+      "dY": 21.27484893798828
+    },
+    {
+      "a": 0,
+      "b": 2,
+      "dY": 18.002059936523438
+    },
+    {
+      "a": 1,
+      "b": 2,
+      "dY": 23.11823272705078
+    }
+  ],
+  "selected_plan": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6\\integration-if9etued\\candidates\\selected-plan.json",
+  "fx_checks": {
+    "frames": 90,
+    "wcag": {
+      "standard": "WCAG 2.3.1",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "events": [
+      {
+        "event": {
+          "name": "zoom_punch",
+          "start_ms": 1000,
+          "end_ms": 1400,
+          "intent": "hit"
+        },
+        "peak_ms": 1000.0,
+        "visibility": {
+          "perceived_measured": 0.9172949194908142,
+          "status": "ok",
+          "onset_contrast": 21.1286563873291,
+          "wcag_flashes_max_per_s": 0,
+          "measurements": {
+            "dY": 22.10173225402832,
+            "area8": 0.6218055555555555,
+            "ssim_loss": 0.9172949194908142,
+            "disp": 21.585060119628906,
+            "flash_area": 0.3622916666666667,
+            "red_flash": 0.0,
+            "center_sharp": 0.5085290400222278,
+            "sharp4": 0.49678595272656656,
+            "perceived": 0.9172949194908142
+          },
+          "instrument_status": {
+            "visibility": "unknown",
+            "harshness": "unknown"
+          },
+          "advice": "Review playback in context."
+        }
+      },
+      {
+        "event": {
+          "name": "flash_white",
+          "start_ms": 1040,
+          "end_ms": 1200,
+          "intent": "hit"
+        },
+        "peak_ms": 1066.6666666666667,
+        "visibility": {
+          "perceived_measured": 0.8171557188034058,
+          "status": "ok",
+          "onset_contrast": 7.396636009216309,
+          "wcag_flashes_max_per_s": 0,
+          "measurements": {
+            "dY": 25.505802154541016,
+            "area8": 0.8214583333333333,
+            "ssim_loss": 0.8171557188034058,
+            "disp": 17.91919708251953,
+            "flash_area": 0.35368055555555555,
+            "red_flash": 0.0,
+            "center_sharp": 0.29558984509130815,
+            "sharp4": 0.28835852248359994,
+            "perceived": 0.8171557188034058
+          },
+          "instrument_status": {
+            "visibility": "unknown",
+            "harshness": "unknown"
+          },
+          "advice": "Review playback in context."
+        }
+      }
+    ],
+    "reference": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-s6\\integration-if9etued\\tmpbkczteke\\vgs-fx-reference-uaa__zdc\\render\\animation.mp4",
+    "limitations": "Visibility and destructive-blur decisions require active C anchor calibration; unknown is not a pass."
+  },
+  "sfx": [
+    {
+      "kind": "hit",
+      "event": "impact",
+      "requested_ms": 1000.0,
+      "at_ms": 1000.0,
+      "alignment": "onset",
+      "source": "procedural",
+      "path": null,
+      "license": "original project synthesis",
+      "start_sample": 48000,
+      "anchor_sample": 48000,
+      "sample_rate": 48000
+    }
+  ]
+}

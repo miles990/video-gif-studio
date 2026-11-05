@@ -1,0 +1,8 @@
+test_bad_library_skipped_and_override_preserved (test_fx_fixes.FixTests.test_bad_library_skipped_and_override_preserved) ... ok
+test_catalog_exact_stable_set_and_cli (test_fx_flags.FeatureFlagTests.test_catalog_exact_stable_set_and_cli) ... ok
+test_inventory_defaults_attribution_and_stable_visibility (test_gl_transitions.PortContract.test_inventory_defaults_attribution_and_stable_visibility) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.443s
+
+OK

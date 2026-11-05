@@ -1,0 +1,478 @@
+{
+  "FL1.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6\\work\\flash\\FL1.mp4",
+    "sha256": "ebe76dd1444d0e10901a7ad9e4147b86058a642434f31307ffe65c6ab3949e3e",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 1,
+      "general_max": 1,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  },
+  "FL4.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6\\work\\flash\\FL4.mp4",
+    "sha256": "3c36e9480a9d5ce22c4310e5ccb4b2242b1ca9475faf5790bf96567c02b8dcd2",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 4,
+      "general_max": 4,
+      "red_max": 0,
+      "status": "harsh",
+      "windows": [
+        {
+          "kind": "general",
+          "start_seconds": 0.26666666666666666,
+          "end_seconds": 1.2666666666666666,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.3,
+          "end_seconds": 1.3,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.5,
+          "end_seconds": 1.5,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.5333333333333333,
+          "end_seconds": 1.5333333333333334,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.7333333333333333,
+          "end_seconds": 1.7333333333333334,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.7666666666666667,
+          "end_seconds": 1.7666666666666666,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.0,
+          "end_seconds": 2.0,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.0333333333333334,
+          "end_seconds": 2.033333333333333,
+          "flashes": 4
+        }
+      ]
+    },
+    "qa_level": "FAIL"
+  },
+  "FLDB_0.5ps.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6\\work\\flash\\FLDB_0.5ps.mp4",
+    "sha256": "3567060d16fed8513e72c6bbcbdb59d4846521eec989e917a650d57abf509411",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 1,
+      "general_max": 1,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  },
+  "H8_alt78_4ps.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6\\work\\flash\\H8_alt78_4ps.mp4",
+    "sha256": "bee48c74c2699ea7da26b47867040ce13e3cb4803171ada99f32184424fa4437",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 4,
+      "general_max": 4,
+      "red_max": 0,
+      "status": "harsh",
+      "windows": [
+        {
+          "kind": "general",
+          "start_seconds": 0.23333333333333334,
+          "end_seconds": 1.2333333333333334,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.26666666666666666,
+          "end_seconds": 1.2666666666666666,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.5,
+          "end_seconds": 1.5,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.5333333333333333,
+          "end_seconds": 1.5333333333333334,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.7333333333333333,
+          "end_seconds": 1.7333333333333334,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.7666666666666667,
+          "end_seconds": 1.7666666666666666,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.0,
+          "end_seconds": 2.0,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.0333333333333334,
+          "end_seconds": 2.033333333333333,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.2333333333333334,
+          "end_seconds": 2.2333333333333334,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.2666666666666666,
+          "end_seconds": 2.2666666666666666,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.5,
+          "end_seconds": 2.5,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.5333333333333334,
+          "end_seconds": 2.533333333333333,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.7333333333333334,
+          "end_seconds": 2.7333333333333334,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.7666666666666666,
+          "end_seconds": 2.7666666666666666,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 2.0,
+          "end_seconds": 3.0,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 2.033333333333333,
+          "end_seconds": 3.033333333333333,
+          "flashes": 4
+        }
+      ]
+    },
+    "qa_level": "FAIL"
+  },
+  "H8_every10_3ps.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6\\work\\flash\\H8_every10_3ps.mp4",
+    "sha256": "47619fa2e4139aaab1629168225c8096447f4d89f6ae3491397a28e5fc2e1ddf",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 3,
+      "general_max": 3,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  },
+  "H8_every9_3.33ps.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6\\work\\flash\\H8_every9_3.33ps.mp4",
+    "sha256": "23d323c9f71ab9b8bc430b487a7ba7912d3f4032bb7855d40fd5ccf04256f4e3",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 4,
+      "general_max": 4,
+      "red_max": 0,
+      "status": "harsh",
+      "windows": [
+        {
+          "kind": "general",
+          "start_seconds": 0.3,
+          "end_seconds": 1.3,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.3333333333333333,
+          "end_seconds": 1.3333333333333333,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.6,
+          "end_seconds": 1.6,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.6333333333333333,
+          "end_seconds": 1.6333333333333333,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.9,
+          "end_seconds": 1.9,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 0.9333333333333333,
+          "end_seconds": 1.9333333333333333,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.2,
+          "end_seconds": 2.2,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.2333333333333334,
+          "end_seconds": 2.2333333333333334,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.5,
+          "end_seconds": 2.5,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.5333333333333334,
+          "end_seconds": 2.533333333333333,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.8,
+          "end_seconds": 2.8,
+          "flashes": 4
+        },
+        {
+          "kind": "general",
+          "start_seconds": 1.8333333333333333,
+          "end_seconds": 2.8333333333333335,
+          "flashes": 4
+        }
+      ]
+    },
+    "qa_level": "FAIL"
+  },
+  "H9_red_125ms.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6\\work\\flash\\H9_red_125ms.mp4",
+    "sha256": "23fe114d0f4bf87ccd59d4f21b381720c3a05b1ec10103d2e16d38cfb97059a4",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 4,
+      "general_max": 0,
+      "red_max": 4,
+      "status": "harsh",
+      "windows": [
+        {
+          "kind": "red",
+          "start_seconds": 0.26666666666666666,
+          "end_seconds": 1.2666666666666666,
+          "flashes": 4
+        },
+        {
+          "kind": "red",
+          "start_seconds": 0.4,
+          "end_seconds": 1.4,
+          "flashes": 4
+        },
+        {
+          "kind": "red",
+          "start_seconds": 0.5,
+          "end_seconds": 1.5,
+          "flashes": 4
+        },
+        {
+          "kind": "red",
+          "start_seconds": 0.6333333333333333,
+          "end_seconds": 1.6333333333333333,
+          "flashes": 4
+        },
+        {
+          "kind": "red",
+          "start_seconds": 0.7666666666666667,
+          "end_seconds": 1.7666666666666666,
+          "flashes": 4
+        },
+        {
+          "kind": "red",
+          "start_seconds": 0.9,
+          "end_seconds": 1.9,
+          "flashes": 4
+        },
+        {
+          "kind": "red",
+          "start_seconds": 1.0,
+          "end_seconds": 2.0,
+          "flashes": 4
+        },
+        {
+          "kind": "red",
+          "start_seconds": 1.1333333333333333,
+          "end_seconds": 2.1333333333333333,
+          "flashes": 4
+        }
+      ]
+    },
+    "qa_level": "FAIL"
+  },
+  "H9_red_500ms.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6\\work\\flash\\H9_red_500ms.mp4",
+    "sha256": "473ecda3df1c6734fdd0e3ec9721a61bee147977fc7195c36966e08a33a36c21",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 1,
+      "general_max": 0,
+      "red_max": 1,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  },
+  "P_pan_1.5px.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6-2\\work\\flash\\P_pan_1.5px.mp4",
+    "sha256": "73f0d55844080c480838fab17aa52cdd3573b6855f6551793f55d5b1bcba94bd",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  },
+  "P_pan_3px.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6-2\\work\\flash\\P_pan_3px.mp4",
+    "sha256": "31669ebe670de10f38f46c763e736b1052e5dd79d2575b4edbde8dbc42e28b48",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  },
+  "P_pan_6px.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6-2\\work\\flash\\P_pan_6px.mp4",
+    "sha256": "fb80fa78d710f92ee9448cef598651c855897b538a6094a46c62d92c8e56d935",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  },
+  "P_pan_9px.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s6-2\\work\\flash\\P_pan_9px.mp4",
+    "sha256": "9302d8dfdba11bc235f558e614d68447c5341edac9a920bb20a7e3f4b264b64b",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 1,
+      "general_max": 1,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  },
+  "source.mp4": {
+    "path": "C:\\Users\\User\\src\\vgs-fx\\examples\\neon-zen-pv\\segment-01\\generation\\source.mp4",
+    "sha256": "7f2fdcda783b4bf4a5221602b7ede3cb61369e0c4c5e8c284b82c7bd7fca4361",
+    "counter": {
+      "standard": "WCAG 2.3.1",
+      "instrument": "simultaneous area pairs v3",
+      "window": "[t, t+1 s)",
+      "timing": "rational integer frame clock",
+      "max_flashes_per_s": 0,
+      "general_max": 0,
+      "red_max": 0,
+      "status": "ok",
+      "windows": []
+    },
+    "qa_level": "PASS"
+  }
+}

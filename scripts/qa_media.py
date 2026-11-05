@@ -7,6 +7,7 @@ Alpha-aware timing, hold subtraction and repeated-frame handling are local adapt
 """
 import argparse
 import json
+from fractions import Fraction
 import math
 from pathlib import Path
 import re
@@ -56,7 +57,7 @@ def media_info(path, fps):
     if video is None:
         raise ValueError('No video stream')
     frame_data = json.loads(command([ffprobe, '-v', 'error', '-select_streams', 'v:0', '-show_frames',
-        '-show_entries', 'frame=best_effort_timestamp_time,pkt_duration_time,duration_time', '-of', 'json', str(path)]))['frames']
+        '-show_entries', 'frame=best_effort_timestamp,best_effort_timestamp_time,pkt_duration_time,duration_time', '-of', 'json', str(path)]))['frames']
     timestamps = [float(f['best_effort_timestamp_time']) for f in frame_data]
     if not timestamps:
         raise ValueError('No decoded frames')
@@ -64,6 +65,7 @@ def media_info(path, fps):
     last_duration = float(frame_data[-1].get('duration_time', frame_data[-1].get('pkt_duration_time', den/num)))
     durations = list(np.diff(timestamps)) + [last_duration]
     return dict(kind='video', size=(video['width'], video['height']), durations=durations,
+                frame_ticks=[int(f['best_effort_timestamp']) for f in frame_data],time_base=video['time_base'],
                 audio=any(s['codec_type']=='audio' for s in data['streams']), loop=False)
 
 
@@ -78,9 +80,12 @@ def ffmpeg_info(path):
     log = result.stderr.decode(errors='replace')
     if result.returncode:
         raise RuntimeError(log[-1200:])
-    stamps, durations = [], []
+    stamps, durations, ticks = [], [], []
+    time_base=None
     size = None
     for line in log.splitlines():
+        clock=re.search(r'config in time_base:\s*(\d+/\d+)',line)
+        if clock:time_base=clock[1]
         if 'showinfo' not in line or 'pts_time:' not in line:
             continue
         stamp = re.search(r'\bpts_time:([\d.eE+-]+)',line)
@@ -88,11 +93,15 @@ def ffmpeg_info(path):
         dimensions = re.search(r'\bs:(\d+)x(\d+)',line)
         if stamp and duration and dimensions:
             stamps.append(float(stamp[1]));durations.append(float(duration[1]))
+            tick=re.search(r'\bpts:\s*(-?\d+)',line)
+            if tick:ticks.append(int(tick[1]))
             size = tuple(map(int,dimensions.groups()))
     if not stamps or durations[-1]<=0:
         raise RuntimeError('Frame timing unavailable; for ffprobe run: python scripts/media_runtime.py --install')
-    return dict(kind='video',size=size,durations=list(np.diff(stamps))+[durations[-1]],
+    info=dict(kind='video',size=size,durations=list(np.diff(stamps))+[durations[-1]],
                 audio=bool(re.search(r'Stream #.*Audio:',log)),loop=False)
+    if time_base and len(ticks)==len(stamps):info.update(frame_ticks=ticks,time_base=time_base)
+    return info
 
 
 def frames(path, info):
@@ -488,6 +497,29 @@ def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None, thre
     timing=read_json(Path(timeline)) if timeline else None
     checks = analyse_picture(st,edges,loop or info['loop'],holds,expected,joins,timing)
     checks += analyse_audio(path,info,edges)
+    from fx_measure import FlashCounter
+    flash_counter=FlashCounter()
+    if info['kind']=='video':
+        from fx_check import decoded
+        flash_frames=decoded(path)
+    else:
+        flash_frames=(np.asarray(im) for im in frames(path,info))
+    for index,frame in enumerate(flash_frames):
+        if 'frame_ticks' in info:
+            stamp=(info['frame_ticks'][index]-info['frame_ticks'][0])*Fraction(info['time_base'])
+        elif info['kind']=='png':stamp=Fraction(index)/Fraction(str(fps))
+        else:stamp=Fraction(str(float(edges[index]))).limit_denominator(1_000_000)
+        flash_counter.push(frame,stamp)
+    flash_report=flash_counter.report()
+    checks.append(dict(name='WCAG 2.3.1',level='FAIL' if flash_report['status']=='harsh' else 'PASS',
+                       message='Decoded general and saturated-red opposing flashes; more than three per second blocks delivery.',
+                       events=[],measurement=flash_report))
+    if timing and timing.get('fx_checks'):
+        for measured in timing['fx_checks'].get('events',[]):
+            v=measured['visibility']
+            if v['status']!='ok' or 'unknown' in v.get('instrument_status',{}).values():
+                checks.append(dict(name='effect visibility',level='FAIL' if v['status'] in ('harsh','destructive') else 'WARN',
+                    message=v['advice'],events=[],measurement=measured))
     from threshold_registry import snapshot, check_metrics
     runtime_checks=check_metrics(threshold_metrics or {})
     for c in runtime_checks:
