@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_luminance_melt', status='experimental', direction='@param Direction of the melt (false: up, true: down); GLSL bool, default true', l_threshold='@range(0, 1) Luminance threshold; GLSL float, default 0.8', above='@param Melt the parts above the threshold instead of below; GLSL bool, default false')
+@register_transition(name='gl_luminance_melt', status='stable', style_tags=['故障', '有機'], direction='@param Direction of the melt (false: up, true: down); GLSL bool, default true', l_threshold='@range(0, 1) Luminance threshold; GLSL float, default 0.8', above='@param Melt the parts above the threshold instead of below; GLSL bool, default false')
 def transition(a, b, p, ctx, direction=True, l_threshold=0.8, above=False):
     """The outgoing image melts away in noisy vertical streaks, depending on its brightness."""
     if p <= 0:
@@ -45,4 +45,4 @@ def transition(a, b, p, ctx, direction=True, l_threshold=0.8, above=False):
     luma = s.a[..., :3]@np.array([.299,.587,.114],np.float32)
     eligible = luma>l_threshold if above else luma<l_threshold
     out = s.blend(np.where((dist<=r)&eligible, 1, p**3))
-    return finish(out, a, b)
+    return s.finish(out)

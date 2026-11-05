@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_clock_wipe', status='experimental', startingAngle='@range(0, 360) Angle where the wipe starts, in degrees; GLSL float, default 90')
+@register_transition(name='gl_clock_wipe', status='stable', style_tags=['幾何', '含蓄/柔和'], startingAngle='@range(0, 360) Angle where the wipe starts, in degrees; GLSL float, default 90')
 def transition(a, b, p, ctx, startingAngle=90.0):
     """A wipe that sweeps around the center from a starting angle."""
     if p <= 0:
@@ -23,4 +23,4 @@ def transition(a, b, p, ctx, startingAngle=90.0):
     x, y = s.x, s.y
     angle = np.arctan2(y - .5, (x - .5) * s.ratio) + np.deg2rad(startingAngle)
     out = s.blend(p >= fract((angle + np.pi) / (2 * np.pi)))
-    return finish(out, a, b)
+    return s.finish(out)

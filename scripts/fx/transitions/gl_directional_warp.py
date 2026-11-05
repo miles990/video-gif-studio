@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_directional_warp', status='experimental', smoothness='@param Softness of the edge; GLSL float, default 0.1', direction='@param Direction of the wipe; GLSL vec2, default vec2(-1.0, 1.0)')
+@register_transition(name='gl_directional_warp', status='stable', style_tags=['流動', '動感'], smoothness='@param Softness of the edge; GLSL float, default 0.1', direction='@param Direction of the wipe; GLSL vec2, default vec2(-1.0, 1.0)')
 def transition(a, b, p, ctx, smoothness=0.1, direction=(-1.0, 1.0)):
     """A diagonal wipe with a warped, smeared edge."""
     if p <= 0:
@@ -25,4 +25,4 @@ def transition(a, b, p, ctx, smoothness=0.1, direction=(-1.0, 1.0)):
     m = 1 - smooth(-smoothness, 0, v[0]*x + v[1]*y - (v.sum()*.5-.5+p*(1+smoothness)))
     out = s.warped((x-.5)*(1-m)+.5, (y-.5)*(1-m)+.5,
                    (x-.5)*m+.5, (y-.5)*m+.5, m)
-    return finish(out, a, b)
+    return s.finish(out, displacement=True)

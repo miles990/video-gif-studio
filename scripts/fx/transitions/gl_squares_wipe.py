@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_squares_wipe', status='experimental', squares='@param Number of squares (columns, rows); GLSL ivec2, default ivec2(10,10)', direction='@param Direction of the sweep; GLSL vec2, default vec2(1.0, -0.5)', smoothness='@param Softness of the sweep; GLSL float, default 1.6')
+@register_transition(name='gl_squares_wipe', status='stable', style_tags=['幾何', '數位'], squares='@param Number of squares (columns, rows); GLSL ivec2, default ivec2(10,10)', direction='@param Direction of the sweep; GLSL vec2, default vec2(1.0, -0.5)', smoothness='@param Softness of the sweep; GLSL float, default 1.6')
 def transition(a, b, p, ctx, squares=(10, 10), direction=(1.0, -0.5), smoothness=1.6):
     """Squares grow along a diagonal sweep to reveal the incoming image."""
     if p <= 0:
@@ -26,5 +26,8 @@ def transition(a, b, p, ctx, squares=(10, 10), direction=(1.0, -0.5), smoothness
     pr = smooth(-smoothness,0,v[0]*x+v[1]*y-(v.sum()*.5-.5+p*(1+smoothness)))
     qx,qy = fract(x*s.ratio*sx),fract(y*sy)
     m = (qx>=pr/2)&(qy>=pr/2)&(qx<=1-pr/2)&(qy<=1-pr/2)
+    # Collapsed cells can land exactly on pixel centres on extreme aspect ratios.
+    # Their area starts at zero, not one full pixel per cell at p -> 0.
+    m = m*np.clip((1-pr)*min(ctx.height/sy,ctx.height/sx),0,1)
     out = s.blend(m)
-    return finish(out, a, b)
+    return s.finish(out)

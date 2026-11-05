@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_wind', status='experimental', size='@range(0, 1) Width of the ragged edge; GLSL float, default 0.2', reversed='@param Wipe from right to left instead; GLSL bool, default false')
+@register_transition(name='gl_wind', status='stable', style_tags=['動感', '有機'], size='@range(0, 1) Width of the ragged edge; GLSL float, default 0.2', reversed='@param Wipe from right to left instead; GLSL bool, default false')
 def transition(a, b, p, ctx, size=0.2, reversed=False):
     """A ragged left-to-right wipe, as if the image was blown away by the wind."""
     if p <= 0:
@@ -25,4 +25,4 @@ def transition(a, b, p, ctx, size=0.2, reversed=False):
     r = random_field(0,y,ctx.seed)
     m = smooth(0,-size,u*(1-size)+size*r-p*(1+size))
     out = s.blend(m)
-    return finish(out, a, b)
+    return s.finish(out)

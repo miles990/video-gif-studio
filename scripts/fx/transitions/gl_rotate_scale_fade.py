@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_rotate_scale_fade', status='experimental', center='@param Center of the rotation; GLSL vec2, default vec2(0.5, 0.5)', rotations='@param Number of turns; GLSL float, default 1', scale='@param Maximum zoom; GLSL float, default 8', backColor='@color Background color; GLSL vec4, default vec4(0.15, 0.15, 0.15, 1.0)')
+@register_transition(name='gl_rotate_scale_fade', status='stable', style_tags=['旋轉', '衝擊'], center='@param Center of the rotation; GLSL vec2, default vec2(0.5, 0.5)', rotations='@param Number of turns; GLSL float, default 1', scale='@param Maximum zoom; GLSL float, default 8', backColor='@color Background color; GLSL vec4, default vec4(0.15, 0.15, 0.15, 1.0)')
 def transition(a, b, p, ctx, center=(0.5, 0.5), rotations=1.0, scale=8.0, backColor=(0.15, 0.15, 0.15, 1.0)):
     """The outgoing image spins and zooms while fading to the incoming one, over a background color."""
     if p <= 0:
@@ -30,4 +30,4 @@ def transition(a, b, p, ctx, center=(0.5, 0.5), rotations=1.0, scale=8.0, backCo
     v = cy+(dx*np.sin(angle)+dy*np.cos(angle))/zoom
     out = s.warped(u, v, u, v, p)
     out = np.where(((u<0)|(u>1)|(v<0)|(v>1))[...,None], bg, out)
-    return finish(out, a, b)
+    return s.finish(out, displacement=True)

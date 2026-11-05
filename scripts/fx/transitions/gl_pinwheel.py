@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_pinwheel', status='experimental', speed='@param Rotation speed; GLSL float, default 2.0')
+@register_transition(name='gl_pinwheel', status='stable', style_tags=['幾何', '俏皮'], speed='@param Rotation speed; GLSL float, default 2.0')
 def transition(a, b, p, ctx, speed=2.0):
     """A spinning pinwheel reveals the incoming image."""
     if p <= 0:
@@ -23,4 +23,4 @@ def transition(a, b, p, ctx, speed=2.0):
     x, y = s.x, s.y
     angle = np.arctan2(y-.5,(x-.5)*s.ratio)+p*speed
     out = s.blend(p > np.mod(angle,3.1415/4))
-    return finish(out, a, b)
+    return s.finish(out)

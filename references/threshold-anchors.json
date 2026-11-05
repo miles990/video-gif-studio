@@ -1,0 +1,186 @@
+{
+  "visibility.onset_contrast.min": {
+    "note": "Synthetic instrumentation controls ONLY; no human quality labels. calibrate_first prevents quality decisions.",
+    "best": {
+      "value": 1.5,
+      "expected": "pass"
+    },
+    "benchmark": {
+      "value": 1.2,
+      "expected": "pass"
+    },
+    "known_worse": {
+      "value": 0.4,
+      "expected": "fail"
+    },
+    "positive_control": {
+      "value": 1.1,
+      "expected": "pass"
+    },
+    "negative_control": {
+      "value": 0.5,
+      "expected": "fail"
+    }
+  },
+  "harshness.sharp4.min": {
+    "note": "Synthetic instrumentation controls ONLY; no human quality labels. calibrate_first prevents quality decisions.",
+    "best": {
+      "value": 0.75,
+      "expected": "pass"
+    },
+    "benchmark": {
+      "value": 0.6,
+      "expected": "pass"
+    },
+    "known_worse": {
+      "value": 0.2,
+      "expected": "fail"
+    },
+    "positive_control": {
+      "value": 0.55,
+      "expected": "pass"
+    },
+    "negative_control": {
+      "value": 0.25,
+      "expected": "fail"
+    }
+  },
+  "motion.jerk.rotation.max": {
+    "note": "Synthetic instrumentation controls ONLY; no human quality labels. calibrate_first prevents quality decisions.",
+    "best": {
+      "value": 36.0,
+      "expected": "pass"
+    },
+    "benchmark": {
+      "value": 62.99999999999999,
+      "expected": "pass"
+    },
+    "known_worse": {
+      "value": 144.0,
+      "expected": "fail"
+    },
+    "positive_control": {
+      "value": 72.0,
+      "expected": "pass"
+    },
+    "negative_control": {
+      "value": 135.0,
+      "expected": "fail"
+    }
+  },
+  "motion.jerk.position.max": {
+    "note": "Synthetic instrumentation controls ONLY; no human quality labels. calibrate_first prevents quality decisions.",
+    "best": {
+      "value": 720.0,
+      "expected": "pass"
+    },
+    "benchmark": {
+      "value": 1260.0,
+      "expected": "pass"
+    },
+    "known_worse": {
+      "value": 2880.0,
+      "expected": "fail"
+    },
+    "positive_control": {
+      "value": 1440.0,
+      "expected": "pass"
+    },
+    "negative_control": {
+      "value": 2700.0,
+      "expected": "fail"
+    }
+  },
+  "audio.limiter.ceiling": {
+    "note": "Synthetic calibration guard fixtures, not production measurements or user preferences. Replace with independently retained measured anchors before real calibration.",
+    "best": {
+      "value": -2.4,
+      "expected": "pass"
+    },
+    "benchmark": {
+      "value": -1.95,
+      "expected": "pass"
+    },
+    "known_worse": {
+      "value": -0.6000000000000001,
+      "expected": "fail"
+    },
+    "positive_control": {
+      "value": -1.8,
+      "expected": "pass"
+    },
+    "negative_control": {
+      "value": -0.75,
+      "expected": "fail"
+    }
+  },
+  "memory.peak.max": {
+    "note": "Synthetic calibration guard fixtures, not production measurements or user preferences. Replace with independently retained measured anchors before real calibration.",
+    "best": {
+      "value": 259980165.12,
+      "expected": "pass"
+    },
+    "benchmark": {
+      "value": 454965288.96,
+      "expected": "pass"
+    },
+    "known_worse": {
+      "value": 1039920660.4799999,
+      "expected": "fail"
+    },
+    "positive_control": {
+      "value": 519960330.23999995,
+      "expected": "pass"
+    },
+    "negative_control": {
+      "value": 974925619.1999999,
+      "expected": "fail"
+    }
+  },
+  "budget.perceived.max": {
+    "note": "Synthetic calibration guard fixtures, not production measurements or user preferences. Replace with independently retained measured anchors before real calibration.",
+    "best": {
+      "value": 0.8,
+      "expected": "pass"
+    },
+    "benchmark": {
+      "value": 1.4,
+      "expected": "pass"
+    },
+    "known_worse": {
+      "value": 3.2,
+      "expected": "fail"
+    },
+    "positive_control": {
+      "value": 1.6,
+      "expected": "pass"
+    },
+    "negative_control": {
+      "value": 3.0,
+      "expected": "fail"
+    }
+  },
+  "budget.events.max": {
+    "note": "Synthetic calibration guard fixtures, not production measurements or user preferences. Replace with independently retained measured anchors before real calibration.",
+    "best": {
+      "value": 1.6,
+      "expected": "pass"
+    },
+    "benchmark": {
+      "value": 2.8,
+      "expected": "pass"
+    },
+    "known_worse": {
+      "value": 6.4,
+      "expected": "fail"
+    },
+    "positive_control": {
+      "value": 3.2,
+      "expected": "pass"
+    },
+    "negative_control": {
+      "value": 6.0,
+      "expected": "fail"
+    }
+  }
+}

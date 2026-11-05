@@ -13,6 +13,7 @@ from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from fx import EFFECTS,TRANSITIONS
 from fx.core import catalog,load_directory
+from fx.transitions.gl_ports import PORT_NAMES
 from fx_render import main,preview,render,validate_plan
 
 
@@ -30,10 +31,10 @@ class FeatureFlagTests(unittest.TestCase):
     def test_catalog_exact_stable_set_and_cli(self):
         stable=catalog()
         self.assertEqual(set(stable['effects']),{'flash_white','beat_bounce','halation','grade','zoom_punch','cutout_card'})
-        self.assertEqual(set(stable['transitions']),{'crossfade','whip_pan','hex_shutter','flash_cut'})
+        self.assertEqual(set(stable['transitions']),{'crossfade','whip_pan','hex_shutter','flash_cut','spin'} | set(PORT_NAMES))
         for reg in catalog(True).values():
             for spec in reg.values():self.assertIn(spec['status'],('stable','experimental'))
-        for args,expected in (([],10),(['--experimental'],len(EFFECTS)+len(TRANSITIONS))):
+        for args,expected in (([],43),(['--experimental'],len(EFFECTS)+len(TRANSITIONS))):
             stream=io.StringIO()
             with contextlib.redirect_stdout(stream):self.assertEqual(main(['--list','--json','--no-user-fx']+args),0)
             self.assertEqual(sum(map(len,json.loads(stream.getvalue()).values())),expected)
@@ -101,7 +102,7 @@ class FeatureFlagTests(unittest.TestCase):
                 for name,spec in registry.items():stack.enter_context(patch.dict(spec,{'function':fake(name)}))
             preview(self.root/'stable.png')
             self.assertEqual(set(calls),set(catalog()['effects'])|set(catalog()['transitions']))
-            self.assertEqual(len(calls),18)
+            self.assertEqual(len(calls),len(catalog()['effects'])+3*len(catalog()['transitions']))
             calls.clear();preview(self.root/'all.png',experimental=True)
             self.assertEqual(set(calls),set(EFFECTS)|set(TRANSITIONS))
 

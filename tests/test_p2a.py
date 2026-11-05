@@ -28,7 +28,7 @@ class Captions(unittest.TestCase):
                 with warnings.catch_warnings(record=True) as caught:
                     r=captions.CaptionRenderer(data,cfg['size'],cfg['safe_zone'])
                 self.assertTrue(any('split' in str(w.message) for w in caught))
-                self.assertEqual(''.join(line['text'] for line in r.lines),text)
+                self.assertEqual(''.join(word.get('source_text',word['text']) for line in r.lines for word in line['words']),text)
                 self.assertTrue(all(x[-1]>=.58 for x in r.layouts))
                 for line in r.lines:
                     image=r.overlay(Image.new('RGBA',cfg['size']),(line['start_ms']+line['end_ms'])/2)

@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_cross_warp', status='experimental')
+@register_transition(name='gl_cross_warp', status='stable', style_tags=['流動', '含蓄/柔和'])
 def transition(a, b, p, ctx):
     """The outgoing image zooms in while the incoming one zooms out into place, sweeping from right to left."""
     if p <= 0:
@@ -24,4 +24,4 @@ def transition(a, b, p, ctx):
     m = smooth(0, 1, p * 2 + x - 1)
     out = s.warped((x-.5)*(1-m)+.5, (y-.5)*(1-m)+.5,
                    (x-.5)*m+.5, (y-.5)*m+.5, m)
-    return finish(out, a, b)
+    return s.finish(out, displacement=True)

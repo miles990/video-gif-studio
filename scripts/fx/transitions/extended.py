@@ -1,7 +1,7 @@
 """Transitions are output-clock operations; p=0 and p=1 are exact endpoints."""
 import cv2
 import numpy as np
-from ..core import transition, premultiply, straight
+from ..core import transition, premultiply, straight, warp
 from ..masks import field, reveal
 from ..effects.accents import transform
 
@@ -51,14 +51,17 @@ def slide(a,b,p,ctx,direction='left'):
     return moving(a,b,p,ctx,direction,True)
 
 
-@transition(status='experimental',turns='Rotation turns at midpoint')
+@transition(status='stable', style_tags=['旋轉', '衝擊'], turns='Rotation turns at midpoint')
 def spin(a,b,p,ctx,turns=.25):
     """Rotate with analytic cover zoom, so corners never sample reflected content."""
     if p<=0:return a
     if p>=1:return b
     angle=360*turns*np.sin(np.pi*p);r=np.deg2rad(angle)
     cover=max(abs(np.cos(r))+ctx.height/ctx.width*abs(np.sin(r)),abs(np.cos(r))+ctx.width/ctx.height*abs(np.sin(r)))
-    return transform(a if p<.5 else b,ctx,angle=angle,scale=max(1+.15*np.sin(np.pi*p),cover+1/min(ctx.width,ctx.height)))
+    source=a if p<.5 else b
+    scale=max(1+.15*np.sin(np.pi*p),cover+np.sin(np.pi*p)/min(ctx.width,ctx.height)) if np.all(source[...,3]==1) else 1
+    matrix=cv2.getRotationMatrix2D(((ctx.width-1)/2,(ctx.height-1)/2),angle,scale)
+    return warp(source,matrix,ctx)
 
 
 @transition(status='experimental',scale='Peak camera scale')

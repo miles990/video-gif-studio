@@ -1,0 +1,457 @@
+{
+  "items": 34,
+  "pairs": 1224,
+  "broken_controls": 408,
+  "style_controls": 408,
+  "pair_directories": 1632,
+  "sheets": 578,
+  "sheet_quality_floor": 85,
+  "all_paths_valid": true,
+  "all_broken_controls_detected": true,
+  "output": "C:\\Users\\User\\AppData\\Local\\Temp\\vgs-fx-p2c-gate-20261105",
+  "verified_at": "2026-11-05T04:18:20.908756+00:00",
+  "per_item": [
+    {
+      "id": "transition:hex_shutter",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 2,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:spin",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_clock_wipe",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_cross_warp",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_directional_warp",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_dreamy",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_dreamy_zoom",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_rotate_scale_fade",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_swirl",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 1,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_water_drop",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 1,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_burn_through",
+      "reference": "transition:crossfade",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_overexposure",
+      "reference": "transition:flash_cut",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_fade_grayscale",
+      "reference": "transition:crossfade",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_color_distance",
+      "reference": "transition:crossfade",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_luminance_melt",
+      "reference": "transition:crossfade",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_pixelize",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 2,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_dither_dissolve",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 2,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_random_squares",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_window_slices",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 2,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_wind",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_pinwheel",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_polka_dots_curtain",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 1,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_crosshatch",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 1,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_perlin_dissolve",
+      "reference": "transition:crossfade",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_glitch_memories",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 1,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_scale_in",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_bounce",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 1,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 2
+      }
+    },
+    {
+      "id": "transition:gl_multiply_blend",
+      "reference": "transition:crossfade",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_color_phase",
+      "reference": "transition:crossfade",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_hexagonalize",
+      "reference": "transition:whip_pan",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 2,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_squares_wipe",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 2,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_bow_tie_horizontal",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_curved_wipe",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    },
+    {
+      "id": "transition:gl_arrow_wipe",
+      "reference": "transition:hex_shutter",
+      "pairs": 36,
+      "flags": {
+        "alpha": 0,
+        "edges": 0,
+        "black": 0,
+        "flicker": 0,
+        "determinism": 0,
+        "endpoints": 0
+      }
+    }
+  ]
+}

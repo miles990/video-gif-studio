@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_hexagonalize', status='experimental', steps='steps; GLSL int, default 50', horizontalHexagons='@param Number of hexagons across; GLSL float, default 20')
+@register_transition(name='gl_hexagonalize', status='stable', style_tags=['幾何', '數位'], steps='steps; GLSL int, default 50', horizontalHexagons='@param Number of hexagons across; GLSL float, default 20')
 def transition(a, b, p, ctx, steps=50, horizontalHexagons=20.0):
     """Both images turn into hexagons, crossfade, then sharpen again."""
     if p <= 0:
@@ -35,4 +35,6 @@ def transition(a, b, p, ctx, steps=50, horizontalHexagons=20.0):
     u = (np.sqrt(3)*rq+np.sqrt(3)/2*rr)*size+.5
     v = (1.5*rr*size+.5)*s.ratio
     out = s.warped(u,v,u,v,p)
-    return finish(out, a, b)
+    if steps>0 and 2*min(p,1-p)*steps<1:
+        out=mix(s.blend(p),out,2*min(p,1-p)*steps)
+    return s.finish(out, displacement=True)

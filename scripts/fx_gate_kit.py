@@ -29,11 +29,12 @@ from fx.core import premultiply, straight
 from fx.transitions.gl_ports import PORT_NAMES
 from media_runtime import executable
 from qa_media import media_info, picture, analyse_picture
+from threshold_registry import snapshot
 
 ROOT=Path(__file__).resolve().parents[1]
 FPS=24
 COUNT=48
-LIMIT=300_000_000
+LIMIT=4_000_000_000  # 10-second pair evidence and native-resolution stills, outside repo
 PRESERVE_ALPHA={'flash_white','grade','halation','rgb_split','film_grain','vignette',
                 'light_leak','dust_scratches','invert_flash','black_flash','posterize','halftone'}
 
@@ -90,8 +91,8 @@ def checker(frame):
 def edge_metrics(frame):
     """Border gradient ratios detect abrupt seams and replicated stretch streaks.
 
-    Heuristics only: intentional graphic boundaries can trigger a flag. Report
-    raw ratios and frame indices; never suppress flags by effect name.
+    Advisory only: intentional graphic boundaries can have large ratios. Keep
+    these measurements, but require replicated texture before an edge warning.
     """
     rgb=frame[...,:3]*frame[...,3:4]
     gx=np.abs(np.diff(rgb,axis=1)).mean(axis=2);gy=np.abs(np.diff(rgb,axis=0)).mean(axis=2)
@@ -104,13 +105,75 @@ def edge_metrics(frame):
     return seam,stretch
 
 
+def edge_streaks(frame, minimum=4):
+    """Find replicated texture, including local block streaks, at frame edges.
+
+    Dense tangential texture distinguishes a copied row/column from a silhouette
+    or a partial grid cell. Gradient ratios alone cannot make that distinction.
+    """
+    rgb=premultiply(frame)[...,:3];found=[]
+    for name,view in (('left',rgb),('right',rgb[:,::-1]),('top',rgb.transpose(1,0,2)),('bottom',rgb[::-1].transpose(1,0,2))):
+        view=view[:,:36]
+        if min(view.shape[:2])<minimum+4:continue
+        # Overlapping 16-pixel windows catch a single displaced block without
+        # diluting it with all the unaffected pixels on that edge.
+        span=min(16,len(view))
+        starts=np.unique(np.r_[np.arange(0,len(view)-span+1,8),len(view)-span])
+        def window_mean(values, count):
+            sums=np.concatenate((np.zeros((1,values.shape[1])),np.cumsum(values,axis=0)))
+            return (sums[starts+count]-sums[starts])/count
+        normal=window_mean(np.abs(np.diff(view,axis=1)).mean(axis=2),span)
+        tangent_deltas=np.abs(np.diff(view,axis=0)).mean(axis=2)
+        tangent=window_mean(tangent_deltas,span-1)
+        density=window_mean(tangent_deltas>.01,span-1)
+        def prefix(values):
+            return np.column_stack((np.zeros(len(values)),np.cumsum(values,axis=1)))
+        normal_prefix,tangent_prefix,density_prefix=map(prefix,(normal,tangent,density))
+        width=0
+        for n in range(minimum,min(32,view.shape[1]-4)+1):
+            normal=normal_prefix[:,n-1]/(n-1)
+            tangent=tangent_prefix[:,n]/n
+            density=density_prefix[:,n]/n
+            interior=(normal_prefix[:,n+3]-normal_prefix[:,n])/3
+            if np.any((normal<1/255)&(tangent>.015)&(density>.25)&(interior>.015)):width=n
+        if width: found.append(dict(edge=name,width_px=width))
+    return found
+
+
+def endpoint_checks(spec,a,b,ctx):
+    """Exact endpoints plus limits approaching them, independent of source motion."""
+    fn=spec['function'];first=fn(a,b,0.,ctx);last=fn(a,b,1.,ctx)
+    error=lambda x,y: float(np.mean(np.abs(premultiply(x)-premultiply(y))))
+    errors=[error(first,a),error(last,b)]
+    limits=[error(fn(a,b,1e-5,ctx),first),error(fn(a,b,1-1e-5,ctx),last)]
+    step=1/(COUNT-1)
+    next_frame,previous_frame=fn(a,b,step,ctx),fn(a,b,1-step,ctx)
+    jumps=[error(next_frame,first),error(previous_frame,last)]
+    neighbors=[error(fn(a,b,2*step,ctx),next_frame),error(fn(a,b,1-2*step,ctx),previous_frame)]
+    abrupt=[jump>max(.10,4*neighbor) for jump,neighbor in zip(jumps,neighbors)]
+    swapped=error(first,b)<1/255 and error(last,a)<1/255 and error(a,b)>2/255
+    return dict(level='FAIL' if max(errors)>1/255 or max(limits)>1/255 or any(abrupt) else 'PASS',
+                swapped=swapped,first_error=errors[0],last_error=errors[1],
+                first_discontinuity=limits[0],last_discontinuity=limits[1],
+                first_frame_jump=jumps[0],last_frame_jump=jumps[1],
+                frame_discontinuities=[name for name,bad in zip(('first','last'),abrupt) if bad])
+
+
+def single_frame_flashes(levels):
+    """An isolated exposure spike returns to the preceding exposure; cuts do not."""
+    levels=np.asarray(levels,dtype=float)
+    if len(levels)<3:return []
+    before,center,after=levels[:-2],levels[1:-1],levels[2:]
+    return (np.flatnonzero((np.minimum(abs(center-before),abs(center-after))>.25)&((center-before)*(center-after)>0))+1).tolist()
+
+
 def invoke(kind,spec,a,b,i,ctx,resources):
     t=i*1000/FPS;ctx.t_ms=t
     if kind=='transition':return spec['function'](a,b,i/(COUNT-1),ctx)
     return spec['function'](a,t,ctx,**resources)
 
 
-def render_case(kind,name,spec,source,size,material,out,audio,resources):
+def render_case(kind,name,spec,source,size,material,out,audio,resources,second_source=None):
     w,h=size;label=f'{material}-{w}x{h}';target=out/(label+'.mp4')
     ctx=Context(w,h,fps=FPS,beats_ms=[0,500,1000,1500],downbeats_ms=[0],seed=19)
     history=deque(maxlen=spec['history']);times=deque(maxlen=spec['history'])
@@ -124,8 +187,7 @@ def render_case(kind,name,spec,source,size,material,out,audio,resources):
         try:
             for i,raw in enumerate(source):
                 a=raw.astype(np.float32)/255
-                b=np.ascontiguousarray(source[(i+COUNT//2)%COUNT,:,::-1]).astype(np.float32)/255
-                # A visibly distinct second shot without adding another treatment.
+                b=second_source[i].astype(np.float32)/255 if second_source is not None else distinct_shot(size,i,material)
                 ctx.history=tuple(reversed(history));ctx.history_times_ms=tuple(reversed(times))
                 with warnings.catch_warnings(record=True) as caught:
                     warnings.simplefilter('always')
@@ -152,7 +214,7 @@ def render_case(kind,name,spec,source,size,material,out,audio,resources):
                 if not np.any(visible) or float(luminance[visible].mean())<5/255:black.append(i)
                 seam,stretch=edge_metrics(output);max_seam=max(max_seam,seam);max_stretch=max(max_stretch,stretch)
                 if seam>6:seams.append(i)
-                if stretch>8:streaks.append(i)
+                if edge_streaks(output):streaks.append(i)
                 rgb=checker(np.rint(output*255).clip(0,255).astype(np.uint8))
                 encoder.stdin.write(rgb.tobytes())
                 if i in (0,12,24,36,47):thumbs.append(Image.fromarray(rgb))
@@ -167,11 +229,29 @@ def render_case(kind,name,spec,source,size,material,out,audio,resources):
     if hidden_delta>1/255:alpha_errors.append('hidden RGB leak')
     result=dict(material=material,size=list(size),clip=target.name,frames=COUNT,duration_seconds=2,
         alpha=dict(level='FAIL' if alpha_errors else 'PASS',events=alpha_errors,max_preserved_delta=alpha_delta,hidden_rgb_delta=hidden_delta),
-        edges=dict(level='WARN' if seams or streaks else 'PASS',seam_frames=seams,stretch_frames=streaks,max_seam_ratio=max_seam,max_stretch_ratio=max_stretch),
+        edges=dict(level='WARN' if streaks else 'PASS',seam_frames=seams,stretch_frames=streaks,max_seam_ratio=max_seam,max_stretch_ratio=max_stretch,
+                   ratio_note='Gradient ratios are advisory; shape boundaries, flat borders and partial grid cells alone are not replicated texture.'),
         black=dict(level='FAIL' if black else 'PASS',frames=black),flicker=flicker,
         determinism=dict(level='PASS' if hashes[0].digest()==hashes[1].digest() else 'FAIL',sha256=hashes[0].hexdigest(),repeat_sha256=hashes[1].hexdigest()),
         qa_media=qa,warnings=sorted(messages))
+    if kind=='transition': result['endpoints']=endpoint_checks(spec,a,b,ctx)
+    from threshold_runtime import sharp4
+    from threshold_registry import check
+    sharp=sharp4(a,output)
+    result['threshold_checks']=[] if sharp is None else [check('harshness.sharp4.min',sharp)]
     return result,thumbs
+
+
+def distinct_shot(size,index=0,material='opaque'):
+    """Independent geometric B shot, not a mirrored/time-shifted copy of A."""
+    w,h=size;y,x=np.indices((h,w),dtype=np.float32)
+    out=np.empty((h,w,4),np.float32)
+    out[...,0]=.12+.1*(x/w);out[...,1]=.3+.4*(y/h)
+    out[...,2]=.65+.18*np.sin((x+y+index*2)/13)
+    mask=(np.abs(x-w*.62-index%9)+np.abs(y-h*.38))<min(w,h)*.24
+    out[mask,:3]=[1,.68,.08]
+    out[...,3]=1 if material=='opaque' else mask.astype(np.float32)
+    return out
 
 
 def contact(rows,path):
@@ -185,7 +265,7 @@ def contact(rows,path):
 
 
 def benchmark(kind,spec,frame,resources):
-    a=cv2.resize(frame,(1280,720)).astype(np.float32)/255;b=a[:,::-1].copy()
+    a=cv2.resize(frame,(1280,720)).astype(np.float32)/255;b=distinct_shot((1280,720),24,'opaque')
     ctx=Context(1280,720,fps=FPS,beats_ms=[0,500,1000,1500],seed=19,history=(a.copy(),)*spec['history'])
     with warnings.catch_warnings():
         warnings.simplefilter('ignore');invoke(kind,spec,a,b,24,ctx,resources)
@@ -199,18 +279,18 @@ def write_index(out,report):
     cards=[]
     for item in report['items']:
         slug=item['id'].replace(':','-');links=' '.join(f'<a href="{slug}/{c["clip"]}">{c["material"]} {c["size"]}</a>' for c in item['cases'])
-        flags=sum(c[k]['level']!='PASS' for c in item['cases'] for k in ('alpha','edges','black','flicker','determinism'))
+        flags=sum(c.get(k,{'level':'PASS'})['level']!='PASS' for c in item['cases'] for k in ('alpha','edges','black','flicker','determinism','endpoints'))
         timing=item.get('benchmark',{}).get('median_ms')
         measured=f'{timing:.2f}' if timing is not None else 'unavailable'
         cards.append(f'<article><h2>{html.escape(item["id"])}</h2><p>{item["status"]} · {flags} check flags · {measured} ms/frame at 720p</p>'
             + (f'<a href="{slug}/contact.jpg"><img src="{slug}/contact.jpg" loading="lazy"></a>' if item['cases'] else '')
             +f'<p>{links}</p><pre>{html.escape(item.get("error",""))}</pre></article>')
     page='<!doctype html><meta charset="utf-8"><title>FX default gate evidence</title><style>body{background:#0d141e;color:#eef1f5;font:16px system-ui;margin:24px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:20px}article{background:#182331;padding:16px;border-radius:12px}img{width:100%}a{color:#8be0ff;margin-right:12px}pre{white-space:pre-wrap}</style>'
-    page+='<h1>Default FX review kit</h1><p>2 seconds · 24 fps · two materials · both aspect ratios · shared 120 BPM accent. Click a clip to play with sound.</p><p>Measurements are heuristics, not aesthetic scores. Intentional flashes, black dips and graphic edges remain flagged. RGBA previews are composited; alpha measurements use the uncomposited frames. Independent review is pending.</p><p><a href="gate-auto.json">Machine measurements and provenance</a></p><main>'+''.join(cards)+'</main>'
+    page+='<h1>Default FX review kit</h1><p>2-second details plus 10-second pair contexts · 24 fps · two materials · both aspect ratios · shared 120 BPM accent.</p><p>Measurements are heuristics, not aesthetic scores. Intentional flashes and black dips remain flagged; border-gradient ratios are advisory. RGBA previews are composited; alpha measurements use the uncomposited frames. Independent technical review determines status.</p><p><a href="gate-auto.json">Measurements</a> · <a href="pairs.json">Pairs</a> · <a href="criteria.json">Criteria</a> · <a href="README.txt">Protocol and commands</a></p><main>'+''.join(cards)+'</main>'
     (out/'index.html').write_text(page,encoding='utf-8')
 
 
-def run(out,items=None,models=None):
+def run(out,items=None,models=None,references=None):
     out=Path(out).resolve()
     if out==ROOT or ROOT in out.parents:raise ValueError('Gate output must be outside the repository')
     if out.exists() and any(out.iterdir()):raise ValueError('Use a new or empty output directory')
@@ -221,16 +301,22 @@ def run(out,items=None,models=None):
     source=ROOT/'examples/neon-zen-pv/segment-01/generation/source.mp4'
     matte=ROOT/'wow/fx/demo/assets/matte-b.png'
     out.mkdir(parents=True,exist_ok=True);audio=out/'beat.wav';beat_audio(audio)
-    report=dict(schema=1,created=datetime.now().isoformat(),command=sys.argv,python=sys.executable,
+    report=dict(schema=2,created=datetime.now().isoformat(),command=sys.argv,python=sys.executable,threshold_registry=snapshot(),
         environment=dict(platform=platform.platform(),numpy=np.__version__,opencv=cv2.__version__,cpu=platform.processor()),
-        source=dict(opaque=str(source.relative_to(ROOT)),opaque_sha256=sha(source),rgba=str(matte.relative_to(ROOT)),rgba_sha256=sha(matte)),
+        source=dict(opaque=str(source.relative_to(ROOT)),opaque_sha256=sha(source),rgba=str(matte.relative_to(ROOT)),rgba_sha256=sha(matte),
+                    b_shot='Independent generated animated diamond/diagonal-gradient shot; fx_gate_kit.distinct_shot v1'),
         methodology=dict(defaults='All catalog visual defaults, including experimental; only parallax model/cache resources relocated',
             alpha='Range/finite/shape every frame; exact alpha for colour-only items; opaque coverage and hidden-RGB probes at frames 0,24,47',
-            edges='Border normal-gradient ratio >6 seam; inverse ratio >8 stretch with interior gradient >.015; review heuristics',
+            edges='Advisory border-gradient ratios; warnings require dense replicated texture >=4 px in local edge windows (v2)',
+            endpoints='Exact A/B identity, swapped endpoints, and p=1e-5 / 1-1e-5 limits; mean associated RGBA error <=1/255',
             flicker='qa_media on decoded MP4, no effect exemptions',determinism='Two complete raw RGBA render hashes',
             black='Visible mean luminance <5/255 or no coverage',aesthetics='No score; independent review required'),items=[])
     # Source buffers are tiny proxies; no whole 720p movie is ever retained.
     materials={(material,size):(source_frames(source,size) if material=='opaque' else cutout_frames(matte,size)) for size in ((480,270),(270,480)) for material in ('opaque','rgba')}
+    from fx_gate_pairs import build_item_pairs, resolve_reference, write_pair_files
+    pairs=[];controls=[]
+    # Resolve all mappings before rendering; never silently compare an item to itself.
+    mapping={f'{kind}:{name}':resolve_reference(kind,name,references or {}) for kind,name,_ in selected}
     for kind,name,spec in selected:
         print(f'{kind}:{name}',flush=True);folder=out/f'{kind}-{name}';folder.mkdir()
         item=dict(id=f'{kind}:{name}',status=spec['status'],defaults={k:v['default'] for k,v in spec['params'].items()},
@@ -248,13 +334,17 @@ def run(out,items=None,models=None):
             benchmark_material='rgba' if name=='multi_cutout' else 'opaque'
             item['benchmark']=benchmark(kind,spec,materials[(benchmark_material,(480,270))][24],resources)
             item['benchmark']['material']=benchmark_material
+            item_pairs,item_controls=build_item_pairs(kind,name,spec,mapping[item['id']],materials,folder,audio,resources)
+            pairs.extend(item_pairs);controls.extend(item_controls)
+            item['pairs']=len(item_pairs);item['reference']=mapping[item['id']]
         except (ValueError,RuntimeError,OSError,cv2.error) as exc:
             item['error']=str(exc);print('  ERROR: '+str(exc),flush=True)
         report['items'].append(item)
         report['total_bytes']=sum(p.stat().st_size for p in out.rglob('*') if p.is_file())
-        if report['total_bytes']>=LIMIT:raise ValueError('Output reached 300 MB safety budget; use --items in separate runs')
+        if report['total_bytes']>=LIMIT:raise ValueError('Output reached 4 GB budget; use --items in separate runs')
         (out/'gate-auto.json').write_text(json.dumps(report,indent=2,ensure_ascii=False,allow_nan=False),encoding='utf-8')
         write_index(out,report)
+        write_pair_files(out,pairs,controls)
     report['total_bytes']=sum(p.stat().st_size for p in out.rglob('*') if p.is_file())
     (out/'gate-auto.json').write_text(json.dumps(report,indent=2,ensure_ascii=False,allow_nan=False),encoding='utf-8')
     return report
@@ -267,9 +357,11 @@ def main(argv=None):
     selection.add_argument('--items',nargs='+',help='Catalog names or effect:name / transition:name')
     selection.add_argument('--gl-transitions',action='store_true',help='Render all 32 experimental P2b gl-transitions ports')
     parser.add_argument('--models',type=Path,default=os.environ.get('VIDEO_GIF_MODELS'),help='Existing Small model directory; no downloads')
+    parser.add_argument('--references',type=Path,help='JSON mapping item IDs to same-family stable item IDs')
     args=parser.parse_args(argv)
     try:
-        result=run(args.out,list(PORT_NAMES) if args.gl_transitions else args.items,args.models)
+        mapping=json.loads(args.references.read_text(encoding='utf-8')) if args.references else None
+        result=run(args.out,list(PORT_NAMES) if args.gl_transitions else args.items,args.models,mapping)
         print(str(args.out.resolve()/'index.html'),flush=True)
         return 2 if any('error' in item for item in result['items']) else 0
     except (ValueError,RuntimeError,OSError) as exc:

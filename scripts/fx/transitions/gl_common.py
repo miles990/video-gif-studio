@@ -1,4 +1,4 @@
-"""Shared CPU sampling for the experimental gl-transitions adaptations.
+"""Shared CPU sampling for the stable gl-transitions adaptations.
 
 UVs address pixel centres, with GLSL's bottom-up Y. Texture lookup is bilinear
 CLAMP_TO_EDGE (or nearest when requested). All samples and blends are premultiplied.
@@ -15,7 +15,16 @@ from ..core import premultiply, straight
 
 
 def mix(a, b, t):
+    if np.ndim(t)==0 and np.shape(a)==np.shape(b) and isinstance(a,np.ndarray):
+        return cv2.addWeighted(a,1-float(t),b,float(t),0)
     t = np.asarray(t, dtype=np.float32)
+    if isinstance(a,np.ndarray) and np.shape(a)==np.shape(b) and a.ndim==3 and t.shape==a.shape[:2]:
+        # OpenCV runs contiguous vector loops; avoid three broadcast temporaries
+        # over four-channel 720p frames on the common spatial-mask path.
+        weights=cv2.merge([t]*a.shape[2])
+        result=cv2.subtract(b,a)
+        cv2.multiply(result,weights,dst=result)
+        return cv2.add(result,a,dst=result)
     if t.ndim == 2 and np.ndim(a) == 3:
         t = t[..., None]
     return a * (1 - t) + b * t
@@ -83,7 +92,11 @@ class Shader:
     def __init__(self, a, b, ctx):
         if a.shape != b.shape or a.shape[:2] != (ctx.height, ctx.width):
             raise ValueError('gl transition: A, B and context dimensions must match')
-        self.a, self.b = premultiply(a), premultiply(b)
+        self.opaque = bool(np.all(a[...,3]==1) and np.all(b[...,3]==1))
+        self.original_a, self.original_b = a, b
+        # Public calls already own private input copies. Shader operations never
+        # mutate these aliases; the opaque path needs no association/division.
+        self.a, self.b = (a,b) if self.opaque else (premultiply(a),premultiply(b))
         self.ctx = ctx
         self.x, self.y = grid(ctx.width, ctx.height)
         self.ratio = ctx.width / ctx.height
@@ -104,13 +117,19 @@ class Shader:
     def warped(self, ax, ay, bx, by, amount):
         return mix(self.sample(self.a, ax, ay), self.sample(self.b, bx, by), amount)
 
+    def finish(self, pm, displacement=False):
+        if self.opaque:
+            pm[...,3]=1
+            return pm  # outer decorator clips RGB once
+        return finish(pm,self.original_a,self.original_b,displacement=displacement)
 
-def finish(pm, a, b):
-    # S-63's matte contract retains empty pixels in the original union of A/B.
-    # Moving sampled coverage is clipped there; opaque sources remain opaque.
+
+def finish(pm, a, b, displacement=False):
+    # Non-geometric reveals retain the original union. Displaced coverage is
+    # exempt: clipping it to source coordinates fragments moving subjects.
     pm = np.asarray(pm, dtype=np.float32)
     alpha = np.clip(pm[..., 3:4], 0, 1)
     pm[..., :3] = np.minimum(np.maximum(pm[..., :3], 0), alpha)
     pm[..., 3:4] = alpha
-    pm[(a[..., 3] == 0) & (b[..., 3] == 0)] = 0
+    if not displacement: pm[(a[..., 3] == 0) & (b[..., 3] == 0)] = 0
     return straight(pm)

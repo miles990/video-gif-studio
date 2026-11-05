@@ -1,0 +1,575 @@
+{
+  "version": 1,
+  "round": 0,
+  "thresholds": [
+    {
+      "id": "audio.loudness.target",
+      "value": -14,
+      "class": "F",
+      "unit": "LUFS",
+      "measures": "FFmpeg ebur128 integrated loudness",
+      "direction": "equal",
+      "anchors": [],
+      "history": [],
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "wow/fx/acceptance-amendments.md section 6: retained streaming target -14 LUFS"
+      },
+      "status": "active",
+      "instrument": "scripts/threshold_runtime.py#v1:audio.loudness.target"
+    },
+    {
+      "id": "audio.loudness.tolerance",
+      "value": 1,
+      "class": "F",
+      "unit": "LU",
+      "measures": "Absolute difference from loudness target",
+      "direction": "max",
+      "anchors": [],
+      "history": [],
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "wow/fx/acceptance-amendments.md section 6: -14 LUFS +/-1"
+      },
+      "status": "active",
+      "instrument": "scripts/threshold_runtime.py#v1:audio.loudness.tolerance"
+    },
+    {
+      "id": "audio.true_peak.max",
+      "value": -1,
+      "class": "F",
+      "unit": "dBTP",
+      "measures": "FFmpeg ebur128 true peak",
+      "direction": "max",
+      "anchors": [],
+      "history": [],
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "AES TD1004 recommendation; wow/fx/thresholds.md E4"
+      },
+      "status": "active",
+      "instrument": "scripts/threshold_runtime.py#v1:audio.true_peak.max"
+    },
+    {
+      "id": "audio.limiter.ceiling",
+      "value": -1.5,
+      "class": "U",
+      "unit": "dBTP",
+      "measures": "Oversampled limiter headroom before encoding",
+      "direction": "max",
+      "anchors": [
+        {
+          "id": "audio.limiter.ceiling.best",
+          "path": "references/threshold-anchors.json#audio.limiter.ceiling/best",
+          "role": "best",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "audio.limiter.ceiling.benchmark",
+          "path": "references/threshold-anchors.json#audio.limiter.ceiling/benchmark",
+          "role": "benchmark",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "audio.limiter.ceiling.known_worse",
+          "path": "references/threshold-anchors.json#audio.limiter.ceiling/known_worse",
+          "role": "known_worse",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "audio.limiter.ceiling.positive_control",
+          "path": "references/threshold-anchors.json#audio.limiter.ceiling/positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "audio.limiter.ceiling.negative_control",
+          "path": "references/threshold-anchors.json#audio.limiter.ceiling/negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "provenance": {
+        "source_class": "ANCHOR",
+        "ref": "scripts/delivery.py P0 encoded-audio QA; 0.5 dB headroom"
+      },
+      "status": "active",
+      "bounds": [
+        -6,
+        -1
+      ],
+      "max_step": 0.15,
+      "instrument": "scripts/threshold_runtime.py#v1:audio.limiter.ceiling"
+    },
+    {
+      "id": "caption.contrast.min",
+      "value": 4.5,
+      "class": "F",
+      "unit": "ratio",
+      "measures": "sRGB relative luminance, fill versus stroke",
+      "direction": "min",
+      "anchors": [],
+      "history": [],
+      "provenance": {
+        "source_class": "EXT",
+        "ref": "WCAG 2.1 1.4.3 https://www.w3.org/TR/WCAG21/#contrast-minimum ; amendments omit outer-ring rule"
+      },
+      "status": "active",
+      "instrument": "scripts/threshold_runtime.py#v1:caption.contrast.min"
+    },
+    {
+      "id": "memory.peak.max",
+      "value": 649950412.8,
+      "class": "R",
+      "unit": "bytes",
+      "measures": "Stable P0 1080x1920 30 s whole-tree peak working set; fixed machine/workload",
+      "direction": "max",
+      "anchors": [
+        {
+          "id": "memory.peak.max.best",
+          "path": "references/threshold-anchors.json#memory.peak.max/best",
+          "role": "best",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "memory.peak.max.benchmark",
+          "path": "references/threshold-anchors.json#memory.peak.max/benchmark",
+          "role": "benchmark",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "memory.peak.max.known_worse",
+          "path": "references/threshold-anchors.json#memory.peak.max/known_worse",
+          "role": "known_worse",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "memory.peak.max.positive_control",
+          "path": "references/threshold-anchors.json#memory.peak.max/positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "memory.peak.max.negative_control",
+          "path": "references/threshold-anchors.json#memory.peak.max/negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "provenance": {
+        "source_class": "ANCHOR",
+        "ref": "wow/fx/benchmark-p0-stable.json: 499961856 * 1.3"
+      },
+      "status": "active",
+      "margin": 1.3,
+      "max_step": 0.1,
+      "bounds": [
+        1,
+        1500000000
+      ],
+      "instrument": "wow/fx/benchmark_p0.py#stable-50ms-tree-memory"
+    },
+    {
+      "id": "visibility.onset_contrast.min",
+      "value": 1.0,
+      "class": "C",
+      "unit": "ratio",
+      "measures": "High-pass onset delta / no-effect temporal median, k=3; v1",
+      "direction": "min",
+      "anchors": [
+        {
+          "id": "visibility.onset_contrast.min.best",
+          "path": "references/threshold-anchors.json#visibility.onset_contrast.min/best",
+          "role": "best",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "visibility.onset_contrast.min.benchmark",
+          "path": "references/threshold-anchors.json#visibility.onset_contrast.min/benchmark",
+          "role": "benchmark",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "visibility.onset_contrast.min.known_worse",
+          "path": "references/threshold-anchors.json#visibility.onset_contrast.min/known_worse",
+          "role": "known_worse",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "visibility.onset_contrast.min.positive_control",
+          "path": "references/threshold-anchors.json#visibility.onset_contrast.min/positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "visibility.onset_contrast.min.negative_control",
+          "path": "references/threshold-anchors.json#visibility.onset_contrast.min/negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5",
+        "agent_invented": true
+      },
+      "status": "calibrate_first",
+      "bounds": [
+        0,
+        100
+      ],
+      "margin": 0.01,
+      "instrument": "scripts/threshold_runtime.py#v1:visibility.onset_contrast.min"
+    },
+    {
+      "id": "harshness.sharp4.min",
+      "value": 0.5,
+      "class": "C",
+      "unit": "ratio",
+      "measures": "Quarter-resolution whole-frame Laplacian variance output / source; v1",
+      "direction": "min",
+      "anchors": [
+        {
+          "id": "harshness.sharp4.min.best",
+          "path": "references/threshold-anchors.json#harshness.sharp4.min/best",
+          "role": "best",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "harshness.sharp4.min.benchmark",
+          "path": "references/threshold-anchors.json#harshness.sharp4.min/benchmark",
+          "role": "benchmark",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "harshness.sharp4.min.known_worse",
+          "path": "references/threshold-anchors.json#harshness.sharp4.min/known_worse",
+          "role": "known_worse",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "harshness.sharp4.min.positive_control",
+          "path": "references/threshold-anchors.json#harshness.sharp4.min/positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "harshness.sharp4.min.negative_control",
+          "path": "references/threshold-anchors.json#harshness.sharp4.min/negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5",
+        "agent_invented": true
+      },
+      "status": "calibrate_first",
+      "bounds": [
+        0,
+        1
+      ],
+      "margin": 0.01,
+      "instrument": "scripts/threshold_runtime.py#v1:harshness.sharp4.min"
+    },
+    {
+      "id": "motion.jerk.rotation.max",
+      "value": 90.0,
+      "class": "C",
+      "unit": "degrees/s^3",
+      "measures": "Third central finite difference; minimum-jerk 10 degrees / 2 s; v1",
+      "direction": "max",
+      "anchors": [
+        {
+          "id": "motion.jerk.rotation.max.best",
+          "path": "references/threshold-anchors.json#motion.jerk.rotation.max/best",
+          "role": "best",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "motion.jerk.rotation.max.benchmark",
+          "path": "references/threshold-anchors.json#motion.jerk.rotation.max/benchmark",
+          "role": "benchmark",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "motion.jerk.rotation.max.known_worse",
+          "path": "references/threshold-anchors.json#motion.jerk.rotation.max/known_worse",
+          "role": "known_worse",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "motion.jerk.rotation.max.positive_control",
+          "path": "references/threshold-anchors.json#motion.jerk.rotation.max/positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "motion.jerk.rotation.max.negative_control",
+          "path": "references/threshold-anchors.json#motion.jerk.rotation.max/negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5",
+        "agent_invented": true
+      },
+      "status": "calibrate_first",
+      "bounds": [
+        90,
+        30000
+      ],
+      "margin": 0.01,
+      "instrument": "scripts/threshold_runtime.py#v1:motion.jerk.rotation.max"
+    },
+    {
+      "id": "motion.jerk.position.max",
+      "value": 1800.0,
+      "class": "C",
+      "unit": "px/s^3",
+      "measures": "Third central finite difference; minimum-jerk 200 px / 2 s; v1",
+      "direction": "max",
+      "anchors": [
+        {
+          "id": "motion.jerk.position.max.best",
+          "path": "references/threshold-anchors.json#motion.jerk.position.max/best",
+          "role": "best",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "motion.jerk.position.max.benchmark",
+          "path": "references/threshold-anchors.json#motion.jerk.position.max/benchmark",
+          "role": "benchmark",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "motion.jerk.position.max.known_worse",
+          "path": "references/threshold-anchors.json#motion.jerk.position.max/known_worse",
+          "role": "known_worse",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "motion.jerk.position.max.positive_control",
+          "path": "references/threshold-anchors.json#motion.jerk.position.max/positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "motion.jerk.position.max.negative_control",
+          "path": "references/threshold-anchors.json#motion.jerk.position.max/negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "Agent seed pending held-out panel calibration; wow/fx/acceptance-amendments.md A6-1/A8-1/A8-2 and section 5",
+        "agent_invented": true
+      },
+      "status": "calibrate_first",
+      "bounds": [
+        1500,
+        100000
+      ],
+      "margin": 0.01,
+      "instrument": "scripts/threshold_runtime.py#v1:motion.jerk.position.max"
+    },
+    {
+      "id": "budget.perceived.max",
+      "value": 2.0,
+      "class": "U",
+      "unit": "perceived/4s",
+      "measures": "Sum of independently measured event perceived values in a rolling 4-second window",
+      "direction": "max",
+      "anchors": [
+        {
+          "id": "budget.perceived.max.best",
+          "path": "references/threshold-anchors.json#budget.perceived.max/best",
+          "role": "best",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "budget.perceived.max.benchmark",
+          "path": "references/threshold-anchors.json#budget.perceived.max/benchmark",
+          "role": "benchmark",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "budget.perceived.max.known_worse",
+          "path": "references/threshold-anchors.json#budget.perceived.max/known_worse",
+          "role": "known_worse",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "budget.perceived.max.positive_control",
+          "path": "references/threshold-anchors.json#budget.perceived.max/positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "budget.perceived.max.negative_control",
+          "path": "references/threshold-anchors.json#budget.perceived.max/negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "Agent provisional default; S-74/S-87, needs reference density/user choices",
+        "agent_invented": true
+      },
+      "status": "calibrate_first",
+      "bounds": [
+        0,
+        20
+      ],
+      "max_step": 0.15,
+      "instrument": "scripts/threshold_runtime.py#v1:budget.perceived.max"
+    },
+    {
+      "id": "budget.events.max",
+      "value": 4.0,
+      "class": "U",
+      "unit": "events/bar",
+      "measures": "Count of effect events per music bar",
+      "direction": "max",
+      "anchors": [
+        {
+          "id": "budget.events.max.best",
+          "path": "references/threshold-anchors.json#budget.events.max/best",
+          "role": "best",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "budget.events.max.benchmark",
+          "path": "references/threshold-anchors.json#budget.events.max/benchmark",
+          "role": "benchmark",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "budget.events.max.known_worse",
+          "path": "references/threshold-anchors.json#budget.events.max/known_worse",
+          "role": "known_worse",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "budget.events.max.positive_control",
+          "path": "references/threshold-anchors.json#budget.events.max/positive_control",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture",
+          "held_out": true
+        },
+        {
+          "id": "budget.events.max.negative_control",
+          "path": "references/threshold-anchors.json#budget.events.max/negative_control",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture",
+          "held_out": true
+        }
+      ],
+      "history": [],
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "Agent provisional default; S-74/S-87, needs reference density/user choices",
+        "agent_invented": true
+      },
+      "status": "calibrate_first",
+      "bounds": [
+        0,
+        32
+      ],
+      "max_step": 0.15,
+      "instrument": "scripts/threshold_runtime.py#v1:budget.events.max"
+    }
+  ],
+  "pending": [],
+  "audit": []
+}

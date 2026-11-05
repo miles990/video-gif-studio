@@ -24,6 +24,11 @@ NONMONOTONIC = {
 RANDOM = {'gl_burn_through', 'gl_luminance_melt', 'gl_random_squares',
           'gl_wind', 'gl_crosshatch', 'gl_perlin_dissolve'}
 
+# Sampled coverage moves with the subject; it is not clipped to the source union.
+DISPLACEMENT = {'gl_cross_warp','gl_directional_warp','gl_dreamy','gl_dreamy_zoom',
+    'gl_rotate_scale_fade','gl_swirl','gl_water_drop','gl_pixelize','gl_hexagonalize',
+    'gl_glitch_memories','gl_scale_in','gl_bounce'}
+
 
 def texture(w, h, seed, matte=False):
     rng = np.random.default_rng(seed)
@@ -56,14 +61,14 @@ def progress_measure(name, w=160, h=90):
 
 
 class PortContract(unittest.TestCase):
-    def test_inventory_defaults_attribution_and_experimental_visibility(self):
+    def test_inventory_defaults_attribution_and_stable_visibility(self):
         provenance = json.loads((ROOT/'wow/fx/p2b-provenance.json').read_text(encoding='utf-8'))
         self.assertEqual(len(PORT_NAMES),32)
         self.assertEqual({x['name'] for x in provenance},set(PORT_NAMES))
         for entry in provenance:
             spec = TRANSITIONS[entry['name']]
-            self.assertEqual(spec['status'],'experimental')
-            self.assertNotIn(entry['name'],catalog()['transitions'])
+            self.assertEqual(spec['status'],'stable')
+            self.assertIn(entry['name'],catalog()['transitions'])
             self.assertEqual({p['name'] for p in entry['uniforms']},set(spec['params']))
             for uniform in entry['uniforms']:
                 literal=uniform['default'].split(';')[0].split('//')[0].strip()
@@ -156,7 +161,8 @@ def alpha_test(name):
             self.assertTrue(np.isfinite(result).all())
             self.assertGreaterEqual(float(result.min()),0);self.assertLessEqual(float(result.max()),1)
             np.testing.assert_allclose(premultiply(result),premultiply(clean),atol=1e-6)
-            self.assertTrue(np.all(result[(a[...,3]==0)&(b[...,3]==0),3]==0))
+            if name not in DISPLACEMENT:
+                self.assertTrue(np.all(result[(a[...,3]==0)&(b[...,3]==0),3]==0))
             aa,bb=a.copy(),b.copy();aa[...,3]=1;bb[...,3]=1
             np.testing.assert_allclose(fn(aa,bb,p,ctx)[...,3],1,atol=1/255)
         # Inputs are immutable from the caller's perspective.

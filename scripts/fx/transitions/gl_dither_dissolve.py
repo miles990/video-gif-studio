@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_dither_dissolve', status='experimental', dotSize='@range(0.002, 0.05) Size of a dither dot, relative to the height; GLSL float, default 0.02')
+@register_transition(name='gl_dither_dissolve', status='stable', style_tags=['復古', '像素'], dotSize='@range(0.002, 0.05) Size of a dither dot, relative to the height; GLSL float, default 0.02')
 def transition(a, b, p, ctx, dotSize=0.02):
     """The incoming image appears through a regular 8x8 ordered dither pattern, like a retro computer screen."""
     if p <= 0:
@@ -28,4 +28,4 @@ def transition(a, b, p, ctx, dotSize=0.02):
         bx, by = (cx>>bit)&1, (cy>>bit)&1
         value += (16/4**bit)*(2*(bx^by)+by)
     out = s.blend(p >= (value+.5)/64)
-    return finish(out, a, b)
+    return s.finish(out)

@@ -1,0 +1,286 @@
+[
+  {
+    "item": "transition:hex_shutter",
+    "status": "stable",
+    "evidence_path": "wow/fx/tests-p2d-green.log",
+    "date": "2026-11-05",
+    "technical_verdict": "NEEDS-FIX",
+    "basis": "Diagnosed defect reproduced before repair; regression passes.",
+    "regression_test": "tests/test_p2d.py::Defects::test_hex_shutter_coverage_crossfade",
+    "reproduction_evidence_path": "wow/fx/tests-p2d-red.log"
+  },
+  {
+    "item": "transition:spin",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_clock_wipe",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_cross_warp",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_directional_warp",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_dreamy",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_dreamy_zoom",
+    "status": "stable",
+    "evidence_path": "wow/fx/tests-p2d-green.log",
+    "date": "2026-11-05",
+    "technical_verdict": "NEEDS-FIX",
+    "basis": "Diagnosed defect reproduced before repair; regression passes.",
+    "regression_test": "tests/test_p2d.py::Defects::test_dreamy_zoom_coverage_crossfade",
+    "reproduction_evidence_path": "wow/fx/tests-p2d-red.log"
+  },
+  {
+    "item": "transition:gl_rotate_scale_fade",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_swirl",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_water_drop",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_burn_through",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_overexposure",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_fade_grayscale",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_color_distance",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_luminance_melt",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_pixelize",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_dither_dissolve",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_random_squares",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_window_slices",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_wind",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_pinwheel",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_polka_dots_curtain",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_crosshatch",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_perlin_dissolve",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_glitch_memories",
+    "status": "stable",
+    "evidence_path": "wow/fx/tests-p2d-green.log",
+    "date": "2026-11-05",
+    "technical_verdict": "NEEDS-FIX",
+    "basis": "Diagnosed defect reproduced before repair; regression passes.",
+    "regression_test": "tests/test_p2d.py::Defects::test_glitch_offsets_inside_frame_and_coherent_per_block",
+    "reproduction_evidence_path": "wow/fx/tests-p2d-red.log"
+  },
+  {
+    "item": "transition:gl_scale_in",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_bounce",
+    "status": "stable",
+    "evidence_path": "wow/fx/tests-p2d-green.log",
+    "date": "2026-11-05",
+    "technical_verdict": "NEEDS-FIX",
+    "basis": "Diagnosed defect reproduced before repair; regression passes.",
+    "regression_test": "tests/test_p2d.py::Defects::test_bounce_no_incoming_under_panel_or_endpoint_jump",
+    "reproduction_evidence_path": "wow/fx/tests-p2d-red.log"
+  },
+  {
+    "item": "transition:gl_multiply_blend",
+    "status": "stable",
+    "evidence_path": "wow/fx/tests-p2d-green.log",
+    "date": "2026-11-05",
+    "technical_verdict": "NEEDS-FIX",
+    "basis": "Diagnosed defect reproduced before repair; regression passes.",
+    "regression_test": "tests/test_p2d.py::Defects::test_multiply_union_coverage_and_overlap_compositing",
+    "reproduction_evidence_path": "wow/fx/tests-p2d-red.log"
+  },
+  {
+    "item": "transition:gl_color_phase",
+    "status": "stable",
+    "evidence_path": "wow/fx/tests-p2d-green.log",
+    "date": "2026-11-05",
+    "technical_verdict": "NEEDS-FIX",
+    "basis": "Diagnosed defect reproduced before repair; regression passes.",
+    "regression_test": "tests/test_p2d.py::Defects::test_color_phase_straight_mix_crossfill_and_pm_bound",
+    "reproduction_evidence_path": "wow/fx/tests-p2d-red.log"
+  },
+  {
+    "item": "transition:gl_hexagonalize",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_squares_wipe",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_bow_tie_horizontal",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_curved_wipe",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  },
+  {
+    "item": "transition:gl_arrow_wipe",
+    "status": "stable",
+    "evidence_path": "wow/fx/gate/p2-tech-verdicts.json",
+    "date": "2026-11-05",
+    "technical_verdict": "SOUND",
+    "basis": "Independent technical SOUND verdict; appeal is not a removal criterion."
+  }
+]

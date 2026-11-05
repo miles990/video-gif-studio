@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "vgs threshold registry",
+  "type": "object",
+  "required": [
+    "version",
+    "thresholds"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer"
+    },
+    "thresholds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "value",
+          "class",
+          "unit",
+          "measures",
+          "direction",
+          "provenance",
+          "history"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_.-]+$",
+            "examples": [
+              "visibility.onset_contrast.min"
+            ]
+          },
+          "value": {
+            "type": [
+              "number",
+              "array",
+              "object"
+            ],
+            "description": "number, [min,max], or {context: value} for U-class per content/platform"
+          },
+          "class": {
+            "enum": [
+              "F",
+              "R",
+              "C",
+              "U"
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "examples": [
+              "LUFS",
+              "dBTP",
+              "ms",
+              "px/short_side",
+              "ratio",
+              "fps",
+              "bytes"
+            ]
+          },
+          "measures": {
+            "type": "string",
+            "description": "what is measured + instrument id/version"
+          },
+          "instrument": {
+            "type": "string",
+            "description": "code path + version hash of the measuring function"
+          },
+          "direction": {
+            "enum": [
+              "min",
+              "max",
+              "range",
+              "equal"
+            ]
+          },
+          "scope": {
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "type": "string"
+              },
+              "platform": {
+                "type": "string"
+              },
+              "user": {
+                "type": "string"
+              }
+            }
+          },
+          "bounds": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "hard F-class limits a U/R/C value can never cross"
+          },
+          "max_step": {
+            "type": "number",
+            "description": "max relative change per automatic update"
+          },
+          "anchors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "path",
+                "role",
+                "expected"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "role": {
+                  "enum": [
+                    "best",
+                    "benchmark",
+                    "known_worse",
+                    "positive_control",
+                    "negative_control",
+                    "style_control"
+                  ]
+                },
+                "expected": {
+                  "enum": [
+                    "pass",
+                    "fail",
+                    "tie"
+                  ]
+                },
+                "label_source": {
+                  "enum": [
+                    "standard",
+                    "fixture",
+                    "review",
+                    "panel",
+                    "user"
+                  ]
+                },
+                "held_out": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "margin": {
+            "type": "number",
+            "description": "C-class: required separation margin between good/bad anchor distributions"
+          },
+          "provenance": {
+            "type": "object",
+            "required": [
+              "source_class",
+              "ref"
+            ],
+            "properties": {
+              "source_class": {
+                "enum": [
+                  "EXT",
+                  "PHYS",
+                  "ANCHOR",
+                  "GUESS"
+                ]
+              },
+              "ref": {
+                "type": "string",
+                "description": "standard URL+version, fixture, or 'agent-invented' with rationale"
+              },
+              "agent_invented": {
+                "type": "boolean"
+              }
+            }
+          },
+          "status": {
+            "enum": [
+              "active",
+              "calibrate_first",
+              "instrument_invalid",
+              "frozen"
+            ]
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "date",
+                "from",
+                "to",
+                "trigger",
+                "approved_by",
+                "anchor_decisions"
+              ],
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "commit": {
+                  "type": "string"
+                },
+                "from": {},
+                "to": {},
+                "trigger": {
+                  "enum": [
+                    "standard_update",
+                    "new_best",
+                    "anchor_set_grew",
+                    "control_failed",
+                    "user_choice",
+                    "manual"
+                  ]
+                },
+                "approved_by": {
+                  "type": "string"
+                },
+                "anchor_decisions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "anchor": {
+                        "type": "string"
+                      },
+                      "before": {
+                        "type": "string"
+                      },
+                      "after": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

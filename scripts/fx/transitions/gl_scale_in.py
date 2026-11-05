@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_scale_in', status='experimental')
+@register_transition(name='gl_scale_in', status='stable', style_tags=['含蓄/柔和', '動感'])
 def transition(a, b, p, ctx):
     """The incoming image scales in from the center while fading in."""
     if p <= 0:
@@ -22,4 +22,4 @@ def transition(a, b, p, ctx):
     s = Shader(a, b, ctx)
     x, y = s.x, s.y
     out = mix(s.a,s.sample(s.b,(x-.5)*p+.5,(y-.5)*p+.5),p)
-    return finish(out, a, b)
+    return s.finish(out, displacement=True)

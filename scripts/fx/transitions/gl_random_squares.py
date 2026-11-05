@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_random_squares', status='experimental', size='@param Number of squares (columns, rows); GLSL ivec2, default ivec2(10, 10)', smoothness="@param Softness of each square's switch; GLSL float, default 0.5")
+@register_transition(name='gl_random_squares', status='stable', style_tags=['幾何', '數位'], size='@param Number of squares (columns, rows); GLSL ivec2, default ivec2(10, 10)', smoothness="@param Softness of each square's switch; GLSL float, default 0.5")
 def transition(a, b, p, ctx, size=(10, 10), smoothness=0.5):
     """The incoming image appears in random squares."""
     if p <= 0:
@@ -24,4 +24,4 @@ def transition(a, b, p, ctx, size=(10, 10), smoothness=0.5):
     sx, sy = vector(size, 2, 'size'); positive(sx,'size'); positive(sy,'size')
     r = random_field(np.floor(x*s.ratio*sx),np.floor(y*sy),ctx.seed)
     out = s.blend(smooth(0,-smoothness,r-p*(1+smoothness)))
-    return finish(out, a, b)
+    return s.finish(out)

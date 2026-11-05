@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_swirl', status='experimental')
+@register_transition(name='gl_swirl', status='stable', style_tags=['迷幻', '搶眼'])
 def transition(a, b, p, ctx):
     """Both images swirl around the center while crossfading."""
     if p <= 0:
@@ -27,4 +27,4 @@ def transition(a, b, p, ctx):
     u = (dx*np.cos(theta)-dy*np.sin(theta))/s.ratio+.5
     v = dx*np.sin(theta)+dy*np.cos(theta)+.5
     out = s.warped(u, v, u, v, p)
-    return finish(out, a, b)
+    return s.finish(out, displacement=True)

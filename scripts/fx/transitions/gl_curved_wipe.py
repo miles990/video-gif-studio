@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_curved_wipe', status='experimental', direction='@param Direction the edge moves toward; GLSL vec2, default vec2(0.0, 1.0)', curvature='@range(0, 1) How far the middle of the edge leads its sides; GLSL float, default 0.6', smoothness='@range(0, 0.2) Softness of the edge; GLSL float, default 0.02', shadow='@color Color of the soft shadow the lifted edge casts on the incoming image (its alpha is its strength; 0 for none); GLSL vec4, default vec4(0.0, 0.0, 0.0, 0.4)')
+@register_transition(name='gl_curved_wipe', status='stable', style_tags=['幾何', '含蓄/柔和'], direction='@param Direction the edge moves toward; GLSL vec2, default vec2(0.0, 1.0)', curvature='@range(0, 1) How far the middle of the edge leads its sides; GLSL float, default 0.6', smoothness='@range(0, 0.2) Softness of the edge; GLSL float, default 0.02', shadow='@color Color of the soft shadow the lifted edge casts on the incoming image (its alpha is its strength; 0 for none); GLSL vec4, default vec4(0.0, 0.0, 0.0, 0.4)')
 def transition(a, b, p, ctx, direction=(0.0, 1.0), curvature=0.6, smoothness=0.02, shadow=(0.0, 0.0, 0.0, 0.4)):
     """The outgoing image is pulled away by its middle: the wipe edge bulges into a smooth curve that leads the way, then flattens as it reaches the far side."""
     if p <= 0:
@@ -32,8 +32,22 @@ def transition(a, b, p, ctx, direction=(0.0, 1.0), curvature=0.6, smoothness=0.0
     edge = -e-soft+2*(e+soft)*ease(t)
     side = -e-soft+2*(e+soft)*ease(p)
     m = 1-smooth(-soft,soft,d-edge)
-    caster = s.sample(s.a,(dx+(edge-d)*v[0])/s.ratio+.5,dy+(edge-d)*v[1]+.5)
-    sh = color[3]*np.sin(np.pi*p)*np.exp(-np.maximum(edge-d,0)/(.012+.25*(edge-side)))*m*caster[...,3]*s.b[...,3]
-    to = s.b.copy(); to[...,:3] = mix(to[...,:3],color[:3]*to[...,3:4],sh)
-    out = mix(s.a,to,m)
-    return finish(out, a, b)
+    out = s.blend(m)
+    distance = np.maximum(edge-d,0)
+    falloff = .012+.25*(edge-side)
+    # Below 1/65535 contribution is less than a uint8 level. Only the shading
+    # band needs an exponential, a caster lookup and a three-channel tint.
+    band = (m>0) & (distance<11.1*falloff) & (s.b[...,3]>0)
+    if color[3] and np.any(band):
+        caster_alpha=1
+        if not s.opaque:
+            u=((dx+(edge-d)*v[0])/s.ratio+.5)[band]
+            vmap=(dy+(edge-d)*v[1]+.5)[band]
+            count=len(u);pad=(-count)%1024
+            u=np.pad(u,(0,pad),mode='edge').reshape(-1,1024)
+            vmap=np.pad(vmap,(0,pad),mode='edge').reshape(-1,1024)
+            caster_alpha=s.sample(s.a,u,vmap)[...,3].ravel()[:count]
+        sh=color[3]*np.sin(np.pi*p)*np.exp(-distance[band]/falloff[band])*m[band]*caster_alpha*s.b[...,3][band]
+        # out already includes B*m; add only the shadow's associated-color delta.
+        out[band,:3] += (color[:3]*s.b[band,3:4]-s.b[band,:3])*(sh*m[band])[:,None]
+    return s.finish(out)

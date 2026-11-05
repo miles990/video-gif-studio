@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_overexposure', status='experimental', strength='@param Amount of overexposure; GLSL float, default 0.6')
+@register_transition(name='gl_overexposure', status='stable', style_tags=['閃光', '搶眼'], strength='@param Amount of overexposure; GLSL float, default 0.6')
 def transition(a, b, p, ctx, strength=0.6):
     """A crossfade through a washed-out, overexposed white."""
     if p <= 0:
@@ -23,4 +23,4 @@ def transition(a, b, p, ctx, strength=0.6):
     x, y = s.x, s.y
     out = s.blend(p)
     out[..., :3] += (s.a[..., :3]+s.b[..., :3]) * (np.sin(np.pi*p)*strength)
-    return finish(out, a, b)
+    return s.finish(out)

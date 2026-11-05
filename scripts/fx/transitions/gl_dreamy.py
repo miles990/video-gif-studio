@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_dreamy', status='experimental')
+@register_transition(name='gl_dreamy', status='stable', style_tags=['夢幻', '含蓄/柔和'])
 def transition(a, b, p, ctx):
     """A crossfade with a gentle wavy distortion."""
     if p <= 0:
@@ -24,4 +24,4 @@ def transition(a, b, p, ctx):
     ay = y + .03*p*np.cos(10*(p+x))
     by = y + .03*(1-p)*np.cos(10*(1-p+x))
     out = s.warped(x, ay, x, by, p)
-    return finish(out, a, b)
+    return s.finish(out, displacement=True)

@@ -1,4 +1,4 @@
-"""Explicit experimental gl-transitions imports; no shader/runtime dependency."""
+"""Explicit stable gl-transitions imports; no shader/runtime dependency."""
 from . import gl_clock_wipe
 from . import gl_cross_warp
 from . import gl_directional_warp

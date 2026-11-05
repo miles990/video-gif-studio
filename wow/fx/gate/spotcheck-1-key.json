@@ -1,0 +1,50 @@
+[
+ {
+  "n": 1,
+  "id": "transition_hex_shutter_opaque-480x270_middle_benchmark",
+  "role": "control-identical (tie)",
+  "candidate_side": "left"
+ },
+ {
+  "n": 2,
+  "id": "transition_gl_burn_through_opaque-480x270_middle_benchmark",
+  "role": "gate: delete",
+  "candidate_side": "left"
+ },
+ {
+  "n": 3,
+  "id": "transition_gl_cross_warp_opaque-480x270_middle_benchmark",
+  "role": "gate: stable",
+  "candidate_side": "left"
+ },
+ {
+  "n": 4,
+  "id": "transition_gl_luminance_melt_rgba-480x270_middle_benchmark",
+  "role": "gate: delete",
+  "candidate_side": "left"
+ },
+ {
+  "n": 5,
+  "id": "transition_gl_water_drop_rgba-270x480_middle_benchmark",
+  "role": "gate: stable",
+  "candidate_side": "right"
+ },
+ {
+  "n": 6,
+  "id": "transition_gl_dreamy_opaque-480x270_middle_style",
+  "role": "control-style (tie)",
+  "candidate_side": "left"
+ },
+ {
+  "n": 7,
+  "id": "transition_gl_polka_dots_curtain_rgba-480x270_middle_benchmark",
+  "role": "gate: experimental",
+  "candidate_side": "right"
+ },
+ {
+  "n": 8,
+  "id": "transition_gl_swirl_opaque-480x270_middle_broken",
+  "role": "control-broken (candidate must win)",
+  "candidate_side": "left"
+ }
+]

@@ -7,6 +7,7 @@ import importlib.util
 import inspect
 import math
 import sys
+import warnings
 import numpy as np
 import cv2
 
@@ -70,9 +71,12 @@ def warp(a, matrix, ctx, sampling=None):
         return cv2.warpAffine(a,matrix,(ctx.width,ctx.height),flags=mode,borderMode=cv2.BORDER_REFLECT_101)
     return straight(cv2.warpAffine(premultiply(a), matrix, (ctx.width, ctx.height), flags=mode, borderMode=cv2.BORDER_CONSTANT))
 
-def register(registry, name=None, status='stable', **docs):
+def register(registry, name=None, status='stable', style_tags=None, **docs):
     if status not in ('stable', 'experimental'):
         raise ValueError('FX status must be stable or experimental')
+    if style_tags is not None and (not isinstance(style_tags,(list,tuple)) or
+                                   any(not isinstance(tag,str) or not tag.strip() for tag in style_tags)):
+        raise ValueError('style_tags must be a list of nonempty strings')
     def decorate(fn):
         key = name or fn.__name__
         params = {}
@@ -84,16 +88,30 @@ def register(registry, name=None, status='stable', **docs):
             if a.ndim != 3 or a.shape[2]!=4 or a.dtype not in (np.uint8,np.float32):
                 raise ValueError('frame must be HxWx4 uint8 or float32')
             converted = list(args)
-            if registry is TRANSITIONS: converted[0] = floating(converted[0])
+            if registry is TRANSITIONS:
+                progress = args[1] if len(args)>1 else kwargs.get('p')
+                if not isinstance(progress,(int,float,np.number)) or not np.isfinite(progress):
+                    raise ValueError(f'{key}: p must be finite')
+                context=args[2] if len(args)>2 else kwargs.get('ctx')
+                if key.startswith('gl_') and context is not None and context.sampling=='nearest':
+                    warnings.warn(f'{key} blends colours in nearest/pixel mode',UserWarning,stacklevel=2)
+                if converted: converted[0] = floating(converted[0])
+                else: kwargs = dict(kwargs,b=floating(kwargs['b']))
             return restore(fn(floating(a), *converted, **kwargs), a.dtype)
         source = str(Path(inspect.getfile(fn)).resolve())
         if key in registry:
             event = {'name':key,'previous':registry[key]['source'],'source':source}
             OVERRIDES.append(event); print('FX override: '+str(event), file=sys.stderr)
         def owned(*args,**kwargs):
+            if registry is TRANSITIONS:
+                progress=args[2] if len(args)>2 else kwargs.get('p')
+                if not isinstance(progress,(int,float,np.number)) or not np.isfinite(progress):
+                    raise ValueError(f'{key}: p must be finite')
             result=fn(*args,**kwargs)
             return np.clip(result,0,1,out=result)
         registry[key] = {'function':wrapped,'owned':owned,'status':status,'params':params,'doc':inspect.getdoc(fn) or key,'source':source,'history':int(docs.get('history',0))}
+        if registry is TRANSITIONS or style_tags is not None:
+            registry[key]['style_tags'] = list(style_tags or [])
         return wrapped
     return decorate
 

@@ -24,7 +24,7 @@ def _burn_field(width, height, seed):
     return n
 
 
-@register_transition(name='gl_burn_through', status='experimental', burnColor='@color Color of the burning edges; GLSL vec3, default vec3(1.0, 0.5, 0.0)')
+@register_transition(name='gl_burn_through', status='stable', style_tags=['搶眼/衝擊', '有機', '火焰'], burnColor='@color Color of the burning edges; GLSL vec3, default vec3(1.0, 0.5, 0.0)')
 def transition(a, b, p, ctx, burnColor=(1.0, 0.5, 0.0)):
     """The outgoing image burns away in noisy, glowing patches."""
     if p <= 0:
@@ -38,4 +38,4 @@ def transition(a, b, p, ctx, burnColor=(1.0, 0.5, 0.0)):
     l = smooth(p, p+.05, n)
     out = mix(s.b, s.a, l)
     out[..., :3] += color * ((1-l)*l*5)[...,None] * out[...,3:4]
-    return finish(out, a, b)
+    return s.finish(out)

@@ -1,0 +1,507 @@
+{
+ "stable": [
+  "gl_arrow_wipe",
+  "gl_bow_tie_horizontal",
+  "gl_clock_wipe",
+  "gl_color_distance",
+  "gl_cross_warp",
+  "gl_curved_wipe",
+  "gl_directional_warp",
+  "gl_dither_dissolve",
+  "gl_dreamy",
+  "gl_fade_grayscale",
+  "gl_glitch_memories",
+  "gl_hexagonalize",
+  "gl_overexposure",
+  "gl_pinwheel",
+  "gl_pixelize",
+  "gl_random_squares",
+  "gl_rotate_scale_fade",
+  "gl_scale_in",
+  "gl_squares_wipe",
+  "gl_swirl",
+  "gl_water_drop",
+  "gl_wind",
+  "gl_window_slices",
+  "hex_shutter",
+  "spin"
+ ],
+ "experimental": [
+  "gl_bounce",
+  "gl_crosshatch",
+  "gl_multiply_blend",
+  "gl_polka_dots_curtain"
+ ],
+ "delete": [
+  "gl_burn_through",
+  "gl_color_phase",
+  "gl_dreamy_zoom",
+  "gl_luminance_melt",
+  "gl_perlin_dissolve"
+ ],
+ "detail": {
+  "gl_arrow_wipe": {
+   "cells": 12,
+   "a": 9,
+   "b": 2,
+   "tie": 1,
+   "p_b": 0.9941,
+   "verdict": "stable"
+  },
+  "gl_bounce": {
+   "cells": 12,
+   "a": 4,
+   "b": 6,
+   "tie": 2,
+   "p_b": 0.377,
+   "verdict": "experimental"
+  },
+  "gl_bow_tie_horizontal": {
+   "cells": 12,
+   "a": 7,
+   "b": 2,
+   "tie": 3,
+   "p_b": 0.9805,
+   "verdict": "stable"
+  },
+  "gl_burn_through": {
+   "cells": 12,
+   "a": 0,
+   "b": 12,
+   "tie": 0,
+   "p_b": 0.0002,
+   "verdict": "delete"
+  },
+  "gl_clock_wipe": {
+   "cells": 12,
+   "a": 10,
+   "b": 0,
+   "tie": 2,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_color_distance": {
+   "cells": 12,
+   "a": 6,
+   "b": 3,
+   "tie": 3,
+   "p_b": 0.9102,
+   "verdict": "stable"
+  },
+  "gl_color_phase": {
+   "cells": 12,
+   "a": 0,
+   "b": 5,
+   "tie": 7,
+   "p_b": 0.0312,
+   "verdict": "delete"
+  },
+  "gl_cross_warp": {
+   "cells": 12,
+   "a": 10,
+   "b": 0,
+   "tie": 2,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_crosshatch": {
+   "cells": 12,
+   "a": 2,
+   "b": 5,
+   "tie": 5,
+   "p_b": 0.2266,
+   "verdict": "experimental"
+  },
+  "gl_curved_wipe": {
+   "cells": 12,
+   "a": 6,
+   "b": 1,
+   "tie": 5,
+   "p_b": 0.9922,
+   "verdict": "stable"
+  },
+  "gl_directional_warp": {
+   "cells": 12,
+   "a": 10,
+   "b": 0,
+   "tie": 2,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_dither_dissolve": {
+   "cells": 12,
+   "a": 9,
+   "b": 2,
+   "tie": 1,
+   "p_b": 0.9941,
+   "verdict": "stable"
+  },
+  "gl_dreamy": {
+   "cells": 12,
+   "a": 12,
+   "b": 0,
+   "tie": 0,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_dreamy_zoom": {
+   "cells": 12,
+   "a": 2,
+   "b": 9,
+   "tie": 1,
+   "p_b": 0.0327,
+   "verdict": "delete"
+  },
+  "gl_fade_grayscale": {
+   "cells": 12,
+   "a": 0,
+   "b": 1,
+   "tie": 11,
+   "p_b": 0.5,
+   "verdict": "stable"
+  },
+  "gl_glitch_memories": {
+   "cells": 12,
+   "a": 7,
+   "b": 3,
+   "tie": 2,
+   "p_b": 0.9453,
+   "verdict": "stable"
+  },
+  "gl_hexagonalize": {
+   "cells": 12,
+   "a": 8,
+   "b": 2,
+   "tie": 2,
+   "p_b": 0.9893,
+   "verdict": "stable"
+  },
+  "gl_luminance_melt": {
+   "cells": 12,
+   "a": 0,
+   "b": 11,
+   "tie": 1,
+   "p_b": 0.0005,
+   "verdict": "delete"
+  },
+  "gl_multiply_blend": {
+   "cells": 12,
+   "a": 2,
+   "b": 5,
+   "tie": 5,
+   "p_b": 0.2266,
+   "verdict": "experimental"
+  },
+  "gl_overexposure": {
+   "cells": 12,
+   "a": 11,
+   "b": 0,
+   "tie": 1,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_perlin_dissolve": {
+   "cells": 12,
+   "a": 2,
+   "b": 10,
+   "tie": 0,
+   "p_b": 0.0193,
+   "verdict": "delete"
+  },
+  "gl_pinwheel": {
+   "cells": 12,
+   "a": 8,
+   "b": 1,
+   "tie": 3,
+   "p_b": 0.998,
+   "verdict": "stable"
+  },
+  "gl_pixelize": {
+   "cells": 12,
+   "a": 7,
+   "b": 1,
+   "tie": 4,
+   "p_b": 0.9961,
+   "verdict": "stable"
+  },
+  "gl_polka_dots_curtain": {
+   "cells": 12,
+   "a": 4,
+   "b": 7,
+   "tie": 1,
+   "p_b": 0.2744,
+   "verdict": "experimental"
+  },
+  "gl_random_squares": {
+   "cells": 12,
+   "a": 8,
+   "b": 0,
+   "tie": 4,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_rotate_scale_fade": {
+   "cells": 12,
+   "a": 6,
+   "b": 3,
+   "tie": 3,
+   "p_b": 0.9102,
+   "verdict": "stable"
+  },
+  "gl_scale_in": {
+   "cells": 12,
+   "a": 12,
+   "b": 0,
+   "tie": 0,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_squares_wipe": {
+   "cells": 12,
+   "a": 11,
+   "b": 0,
+   "tie": 1,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_swirl": {
+   "cells": 12,
+   "a": 9,
+   "b": 2,
+   "tie": 1,
+   "p_b": 0.9941,
+   "verdict": "stable"
+  },
+  "gl_water_drop": {
+   "cells": 12,
+   "a": 7,
+   "b": 1,
+   "tie": 4,
+   "p_b": 0.9961,
+   "verdict": "stable"
+  },
+  "gl_wind": {
+   "cells": 12,
+   "a": 11,
+   "b": 0,
+   "tie": 1,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "gl_window_slices": {
+   "cells": 12,
+   "a": 8,
+   "b": 0,
+   "tie": 4,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "hex_shutter": {
+   "cells": 12,
+   "a": 0,
+   "b": 0,
+   "tie": 12,
+   "p_b": 1.0,
+   "verdict": "stable"
+  },
+  "spin": {
+   "cells": 12,
+   "a": 8,
+   "b": 2,
+   "tie": 2,
+   "p_b": 0.9893,
+   "verdict": "stable"
+  }
+ },
+ "controls": {
+  "broken": "9/10 candidate beat broken",
+  "style": "10/10 tie/no-majority vs restyled",
+  "broken_detail": [
+   [
+    "hex_shutter",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ],
+   [
+    "gl_dreamy_zoom",
+    "none",
+    {
+     "sonnet": "split",
+     "opus": "split",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_overexposure",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ],
+   [
+    "gl_color_distance",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ],
+   [
+    "gl_wind",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ],
+   [
+    "gl_crosshatch",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ],
+   [
+    "gl_perlin_dissolve",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ],
+   [
+    "gl_color_phase",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ],
+   [
+    "gl_squares_wipe",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ],
+   [
+    "gl_curved_wipe",
+    "a",
+    {
+     "sonnet": "a",
+     "opus": "a",
+     "codex": "a"
+    }
+   ]
+  ],
+  "style_detail": [
+   [
+    "hex_shutter",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_dreamy_zoom",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_overexposure",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_color_distance",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_wind",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_crosshatch",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_perlin_dissolve",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_color_phase",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_squares_wipe",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ],
+   [
+    "gl_curved_wipe",
+    "tie",
+    {
+     "sonnet": "tie",
+     "opus": "tie",
+     "codex": "tie"
+    }
+   ]
+  ]
+ },
+ "calls": 866,
+ "cached": 72,
+ "failed_calls": 0
+}

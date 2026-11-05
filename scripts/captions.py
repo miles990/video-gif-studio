@@ -290,7 +290,14 @@ def prepare(spec, base, experimental=False):
             char['highlight']=any(k in highlights for k in range(offset,offset+len(char['char'])))
             offset+=len(char['char'])
     lines=[make_line(group) for group in wrap_words(display,lambda group:width(join_words(group))<=style['words_per_line'])]
+    from threshold_runtime import caption_contrast
+    from threshold_registry import check
+    contrast_checks=[check('caption.contrast.min',caption_contrast(style[key],style['stroke_color']))
+                     for key in ('color','keyword_color','current_word_color')]
+    if any(c['decision']=='fail' for c in contrast_checks):
+        warnings.warn('Caption fill/stroke contrast is below the threshold registry minimum',UserWarning)
     return dict(words=words,lines=lines,style=style,preset=name,status='experimental',method=method,keywords=keywords,
+                threshold_checks=contrast_checks,
                 dropped_codepoints=[f'U+{c:04X}' for c in sorted(dropped)],
                 warning=None if method in ('user_word_timing','faster_whisper','injected_alignment_engine') else 'Timing within cues/script is approximate; correct the exported words before final delivery')
 
@@ -399,28 +406,43 @@ class CaptionRenderer:
                 if measure([word])*.6<=available:
                     expanded.append(word);continue
                 # Last resort: grapheme boundaries, with proportional display timing.
-                chunks=[];chunk=[]
-                for char in word['chars']:
-                    if chunk and sum(self.advance(c) for c in chunk+[char])*.6>available:
-                        chunks.append(chunk);chunk=[]
-                    chunk.append(char)
-                if chunk: chunks.append(chunk)
+                chars=word['chars'];chunks=[];offset=0
+                latin=bool(re.search('[A-Za-z]',word['text'])) and all(ord(c)<128 for c in word['text'])
+                hyphen=dict(chars[0],char='-',highlight=False)
+                while offset<len(chars):
+                    remaining=len(chars)-offset
+                    if remaining<=5 or sum(self.advance(c) for c in chars[offset:])*.6<=available:
+                        count=remaining
+                    else:
+                        count=3
+                        while count<remaining and (remaining-count-1==0 or remaining-count-1>=3):
+                            trial=chars[offset:offset+count+1]+([hyphen] if latin and count+1<remaining else [])
+                            if sum(self.advance(c) for c in trial)*.6>available: break
+                            count+=1
+                    chunks.append(chars[offset:offset+count]);offset+=count
                 warnings.warn('Caption split inside oversized word: '+word['text'],UserWarning)
                 offset=0
-                for chunk in chunks:
+                for index,chunk in enumerate(chunks):
                     start=word['start_ms']+(word['end_ms']-word['start_ms'])*offset/len(word['chars'])
                     offset+=len(chunk)
                     end=word['start_ms']+(word['end_ms']-word['start_ms'])*offset/len(word['chars'])
-                    expanded.append(dict(word,text=''.join(c['char'] for c in chunk),chars=[dict(c,start_ms=start,end_ms=end) for c in chunk],start_ms=start,end_ms=end))
+                    source_text=''.join(c['char'] for c in chunk)
+                    display=chunk+([hyphen] if latin and index<len(chunks)-1 else [])
+                    word_id=f"{word['word_id']}.{index}"
+                    expanded.append(dict(word,text=''.join(c['char'] for c in display),source_text=source_text,split_word=True,
+                        chars=[dict(c,start_ms=start,word_start_ms=start,end_ms=end,word_id=word_id) for c in display],
+                        word_id=word_id,start_ms=start,end_ms=end))
             groups=wrap_words(expanded,lambda group:measure(group)<=available)
             # Keep a short phrase together via bounded uniform reduction.
             if len(groups)==2 and len(groups[1])==1 and len(groups[0])>=2 and measure(line['words'])<=available*1.35:
                 groups=[line['words']]
             wrapped.extend(make_line(group) for group in groups)
         if not math.isfinite(fps) or fps<=0: raise ValueError('Caption fps must be positive')
-        for line in wrapped:
+        for i,line in enumerate(wrapped):
             # Even sub-frame words get one delivered frame, without changing exports.
-            line['end_ms']=max(line['end_ms'],max((math.ceil(w['start_ms']*fps/1000-1e-9)+1)*1000/fps for w in line['words']))
+            if not any(w.get('split_word') for w in line['words']):
+                line['end_ms']=max(line['end_ms'],max((math.ceil(w['start_ms']*fps/1000-1e-9)+1)*1000/fps for w in line['words']))
+            if i+1<len(wrapped): line['end_ms']=min(line['end_ms'],wrapped[i+1]['start_ms'])
         self.lines=wrapped
         for line in wrapped:
             boxes=[self.glyph_box(c) for c in line['chars']]

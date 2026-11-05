@@ -1,0 +1,41 @@
+{
+  "skill_entry_exists": true,
+  "python": "C:\\Users\\User\\.codex\\skills\\video-gif-studio\\.venv\\Scripts\\python.exe",
+  "python_version_supported": true,
+  "packages": {
+    "PIL": true,
+    "numpy": true,
+    "cv2": true
+  },
+  "ffmpeg": "C:\\Users\\User\\.codex\\skills\\video-gif-studio\\.venv\\Lib\\site-packages\\static_ffmpeg\\bin\\win32\\ffmpeg.EXE",
+  "ffprobe": "C:\\Users\\User\\.codex\\skills\\video-gif-studio\\.venv\\Lib\\site-packages\\static_ffmpeg\\bin\\win32\\ffprobe.EXE",
+  "grok_cli": "C:\\Users\\User\\.grok\\bin\\grok.EXE",
+  "grok_support": "bundled",
+  "grok_oauth": {
+    "oauth_session_present": false,
+    "expired": true,
+    "expiry_known": false,
+    "refresh_available": false,
+    "generation_entitlement": "not checked"
+  },
+  "grok_auth_and_generation_quota": "not checked; no external requests made",
+  "local_gif_runtime_ready": true,
+  "media_runtime_ready": true,
+  "qa_media": {
+    "numpy": true,
+    "PIL": true,
+    "ffmpeg": "C:\\Users\\User\\.codex\\skills\\video-gif-studio\\.venv\\Lib\\site-packages\\static_ffmpeg\\bin\\win32\\ffmpeg.EXE",
+    "ffprobe": "C:\\Users\\User\\.codex\\skills\\video-gif-studio\\.venv\\Lib\\site-packages\\static_ffmpeg\\bin\\win32\\ffprobe.EXE",
+    "picture_ready": true,
+    "video_audio_ready": true,
+    "ffmpeg_only_fallback_available": true,
+    "note": "GIF/APNG/PNG need numpy and Pillow. Video/audio use ffmpeg/ffprobe; recent ffmpeg also offers a showinfo timing fallback, verified when QA runs."
+  },
+  "api_key_available": false,
+  "fal": {
+    "support": "bundled MiniMax H3 Max",
+    "key_present": false,
+    "auth_and_quota": "not checked; no external requests made"
+  },
+  "optional_matting_installed": false
+}

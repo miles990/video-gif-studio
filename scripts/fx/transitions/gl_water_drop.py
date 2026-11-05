@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_water_drop', status='experimental', amplitude='@param Frequency of the ripples; GLSL float, default 30', speed='@param Speed of the ripples; GLSL float, default 30')
+@register_transition(name='gl_water_drop', status='stable', style_tags=['有機', '含蓄/柔和'], amplitude='@param Frequency of the ripples; GLSL float, default 30', speed='@param Speed of the ripples; GLSL float, default 30')
 def transition(a, b, p, ctx, amplitude=30.0, speed=30.0):
     """Ripples spread from the center like a drop falling into water, crossfading to the incoming image."""
     if p <= 0:
@@ -25,4 +25,4 @@ def transition(a, b, p, ctx, amplitude=30.0, speed=30.0):
     dist = np.hypot(dx, dy)
     offset = np.where(dist <= p, np.sin(dist*amplitude-p*speed), 0)
     out = s.warped(x+dx*offset/s.ratio, y+dy*offset, x, y, p)
-    return finish(out, a, b)
+    return s.finish(out, displacement=True)

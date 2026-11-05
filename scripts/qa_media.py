@@ -367,9 +367,11 @@ def analyse_audio(path, info, edges):
         i,j = sample_indices(edges,[a,b])
         return event(edges,i,j,seconds=round(a,6),end_seconds=round(b,6))
     full = span(0,float(edges[-1]))
-    return [dict(name='loudness',level='PASS' if abs(lufs+14)<=1 else 'FAIL',message='Integrated loudness: target -14 LUFS +/-1',
+    from threshold_runtime import audio_limits
+    target,tolerance,ceiling=audio_limits()
+    return [dict(name='loudness',level='PASS' if abs(lufs-target)<=tolerance else 'FAIL',message=f'Integrated loudness: target {target:g} LUFS +/-{tolerance:g}',
                  events=[full],lufs=lufs if math.isfinite(lufs) else None),
-            dict(name='true_peak',level='PASS' if tp<=-1 else 'FAIL',message='True peak ceiling -1 dBTP',
+            dict(name='true_peak',level='PASS' if tp<=ceiling else 'FAIL',message=f'True peak ceiling {ceiling:g} dBTP',
                  events=[full],dbtp=tp if math.isfinite(tp) else None),
             dict(name='loudest_100ms',level='PASS',message='Loudest 100 ms RMS window (50 ms hop)',events=[span(at,at+.1)],dbfs=float(db[k])),
             dict(name='silence',level='WARN' if silences else 'PASS',message='Silence >=0.4 s; inspect whether intended',
@@ -463,7 +465,7 @@ def rhythm_cuts(detected, timing, tolerance_ms):
     return kept,excluded
 
 
-def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
+def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None, threshold_metrics=None):
     started = time.perf_counter()
     path, out = Path(path),Path(out)
     if not math.isfinite(fps) or fps<=0:
@@ -486,12 +488,17 @@ def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None):
     timing=read_json(Path(timeline)) if timeline else None
     checks = analyse_picture(st,edges,loop or info['loop'],holds,expected,joins,timing)
     checks += analyse_audio(path,info,edges)
+    from threshold_registry import snapshot, check_metrics
+    runtime_checks=check_metrics(threshold_metrics or {})
+    for c in runtime_checks:
+        checks.append(dict(name=c['id'],level={'pass':'PASS','fail':'FAIL','unknown':'WARN'}[c['decision']],
+                           message=c['reason'],events=[],threshold=c))
     out.mkdir(parents=True,exist_ok=True)
     sheets = {name:sheet(st,edges,name,out) for name in st['targets']}
     report = dict(input=str(path),frames=len(durations),duration_seconds=float(edges[-1]),
                   frame_times_seconds=edges[:-1].tolist(),checks=checks,sheets=sheets,
                   limitations='Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.',
-                  elapsed_seconds=time.perf_counter()-started)
+                  elapsed_seconds=time.perf_counter()-started,threshold_registry=snapshot(),threshold_checks=runtime_checks)
     if info['kind']=='video':
         # Mean period handles WebM's alternating 33/34 ms timestamp ticks.
         report['fps']=round(len(durations)/float(sum(durations)),6)
@@ -543,13 +550,15 @@ def main(argv=None):
     parser.add_argument('--holds',default='',help='Designed holds in seconds, e.g. 1.0-3.0,5.0-6.5')
     parser.add_argument('--expect-cuts',default='',help='Explicit hard-cut times in seconds, comma-separated')
     parser.add_argument('--timeline',type=Path,help='compose_timeline plan or emitted manifest; ordinary joins are not hard cuts')
+    parser.add_argument('--threshold-metrics',type=Path,help='JSON threshold-id -> independently measured value (event, budget, memory, camera channels)')
     args = parser.parse_args(argv)
     try:
         holds = [tuple(map(float,item.split('-'))) for item in args.holds.split(',') if item]
         if any(len(h)!=2 for h in holds):
             raise ValueError('Use --holds START-END[,START-END]')
         report = qa(args.input,args.out,args.fps,args.loop,holds,
-                    [float(v) for v in args.expect_cuts.split(',') if v],args.timeline)
+                    [float(v) for v in args.expect_cuts.split(',') if v],args.timeline,
+                    read_json(args.threshold_metrics) if args.threshold_metrics else None)
     except (OSError,ValueError,RuntimeError,KeyError,IndexError,TypeError,ZeroDivisionError) as exc:
         print(f'qa_media: {exc}',file=sys.stderr)
         return 2

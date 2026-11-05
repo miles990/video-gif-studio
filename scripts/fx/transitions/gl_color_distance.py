@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_color_distance', status='experimental', power='power; GLSL float, default 5.0')
+@register_transition(name='gl_color_distance', status='stable', style_tags=['含蓄/柔和', '有機'], power='power; GLSL float, default 5.0')
 def transition(a, b, p, ctx, power=5.0):
     """Pixels switch to the incoming image in order of how close their colors are."""
     if p <= 0:
@@ -25,4 +25,4 @@ def transition(a, b, p, ctx, power=5.0):
     # Use associated colors for the threshold: hidden RGB must not select pixels.
     m = np.linalg.norm(s.a-s.b, axis=2) <= p
     out = mix(s.blend(m), s.b, p**power)
-    return finish(out, a, b)
+    return s.finish(out)

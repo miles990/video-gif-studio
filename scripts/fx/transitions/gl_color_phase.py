@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_color_phase', status='experimental', fromStep='@range(0, 1) When each channel (r, g, b, a) starts changing; GLSL vec4, default vec4(0.0, 0.2, 0.4, 0.0)', toStep='@range(0, 1) When each channel (r, g, b, a) finishes changing; GLSL vec4, default vec4(0.6, 0.8, 1.0, 1.0)')
+@register_transition(name='gl_color_phase', status='stable', style_tags=['迷幻', '色彩', '復古'], fromStep='@range(0, 1) When each channel (r, g, b, a) starts changing; GLSL vec4, default vec4(0.0, 0.2, 0.4, 0.0)', toStep='@range(0, 1) When each channel (r, g, b, a) finishes changing; GLSL vec4, default vec4(0.6, 0.8, 1.0, 1.0)')
 def transition(a, b, p, ctx, fromStep=(0.0, 0.2, 0.4, 0.0), toStep=(0.6, 0.8, 1.0, 1.0)):
     """A crossfade in which each color channel changes at a different time."""
     if p <= 0:
@@ -23,5 +23,15 @@ def transition(a, b, p, ctx, fromStep=(0.0, 0.2, 0.4, 0.0), toStep=(0.6, 0.8, 1.
     x, y = s.x, s.y
     lo, hi = vector(fromStep,4,'fromStep'),vector(toStep,4,'toStep')
     if np.any(lo>=hi): raise ValueError('fromStep must precede toStep in every channel')
-    out = mix(s.a,s.b,smooth(lo,hi,p))
-    return finish(out, a, b)
+    phase = smooth(lo,hi,p)
+    if s.opaque:
+        out = mix(s.a,s.b,phase)
+    else:
+        aa, ab = a[...,3:4], b[...,3:4]
+        # Cross-fill missing colours from the visible source, never hidden RGB.
+        ca = np.where(aa>0,a[...,:3],np.where(ab>0,b[...,:3],0))
+        cb = np.where(ab>0,b[...,:3],ca)
+        out = np.empty_like(a)
+        out[...,3:4] = aa*(1-phase[3])+ab*phase[3]
+        out[...,:3] = mix(ca,cb,phase[:3])*out[...,3:4]
+    return s.finish(out)

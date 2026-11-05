@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_fade_grayscale', status='experimental', intensity='@range(0, 1) How long the grayscale phase lasts; GLSL float, default 0.3; // if 0.0, the image directly turn grayscale, if 0.9, the grayscale transition phase is very important')
+@register_transition(name='gl_fade_grayscale', status='stable', style_tags=['含蓄/柔和', '復古'], intensity='@range(0, 1) How long the grayscale phase lasts; GLSL float, default 0.3; // if 0.0, the image directly turn grayscale, if 0.9, the grayscale transition phase is very important')
 def transition(a, b, p, ctx, intensity=0.3):
     """A crossfade through grayscale."""
     if p <= 0:
@@ -26,4 +26,4 @@ def transition(a, b, p, ctx, intensity=0.3):
     aa[..., :3] = mix((s.a[..., :3]@weights)[...,None], s.a[..., :3], smooth(1-intensity,0,p))
     bb[..., :3] = mix((s.b[..., :3]@weights)[...,None], s.b[..., :3], smooth(intensity,1,p))
     out = mix(aa, bb, p)
-    return finish(out, a, b)
+    return s.finish(out)

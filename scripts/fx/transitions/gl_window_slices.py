@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_window_slices', status='experimental', count='@param Number of slices; GLSL float, default 10.0', smoothness="@param Softness of the slices' edges; GLSL float, default 0.5")
+@register_transition(name='gl_window_slices', status='stable', style_tags=['幾何', '俐落'], count='@param Number of slices; GLSL float, default 10.0', smoothness="@param Softness of the slices' edges; GLSL float, default 0.5")
 def transition(a, b, p, ctx, count=10.0, smoothness=0.5):
     """The incoming image appears through vertical slices that widen."""
     if p <= 0:
@@ -24,4 +24,4 @@ def transition(a, b, p, ctx, count=10.0, smoothness=0.5):
     positive(count,'count')
     pr = smooth(-smoothness,0,x-p*(1+smoothness))
     out = s.blend(fract(count*x)>=pr)
-    return finish(out, a, b)
+    return s.finish(out)

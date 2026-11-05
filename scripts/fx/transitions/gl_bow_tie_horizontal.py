@@ -12,7 +12,7 @@ from .gl_common import (Shader, finish, mix, smooth, fract, vector, positive,
                         direction_vector, random_field, noise)
 
 
-@register_transition(name='gl_bow_tie_horizontal', status='experimental')
+@register_transition(name='gl_bow_tie_horizontal', status='stable', style_tags=['幾何', '俐落'])
 def transition(a, b, p, ctx):
     """Two triangles grow from the left and right edges into a bow tie that reveals the incoming image."""
     if p <= 0:
@@ -29,4 +29,4 @@ def transition(a, b, p, ctx):
     m = np.where(left,np.where(p<.1,0,np.where(x<.5,left_blur,1)),
                  np.where(right & (x>=.5),right_blur,0))
     out = s.blend(m)
-    return finish(out, a, b)
+    return s.finish(out)

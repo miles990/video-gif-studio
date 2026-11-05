@@ -243,17 +243,20 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
             graph += ['[bedout][sfx]amix=inputs=2:normalize=0[out]' if labels else '[sfx]anull[out]']
         run([*args, '-filter_complex', ';'.join(graph), '-map', '[out]', '-c:a', 'pcm_f32le', str(mixed)])
         measured = None; filt = 'anull'; second = None
+        from threshold_registry import value, default_value
+        target=value('audio.loudness.target');tolerance=value('audio.loudness.tolerance')
+        limiter=default_value('audio.limiter.ceiling');limit=10**(limiter/20)
         if normalize:
-            log = run(['-i', str(mixed), '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-'])
+            log = run(['-i', str(mixed), '-af', f'loudnorm=I={target}:TP={limiter}:LRA=11:print_format=json', '-f', 'null', '-'])
             measured = json.loads(log[log.rfind('{'):log.rfind('}')+1])
-            gain = -14-float(measured['input_i'])
+            gain = target-float(measured['input_i'])
             if not math.isfinite(gain): gain = 0  # Intentionally silent track.
             # Oversample so the lookahead limiter catches intersample peaks.
             # Disable its default makeup gain and compensate its 5 ms latency.
             filt = (f'volume={gain}dB,aresample=192000,'
-                    'alimiter=limit=0.8413951416:attack=5:release=50:level=false:latency=true,aresample=48000')
+                    f'alimiter=limit={limit:.10f}:attack=5:release=50:level=false:latency=true,aresample=48000')
             second = dict(normalization_type='linear', gain_db=gain,
-                          limiter=dict(ceiling_dbtp=-1.5, sample_rate=192000, attack_ms=5, release_ms=50,
+                          limiter=dict(ceiling_dbtp=limiter, sample_rate=192000, attack_ms=5, release_ms=50,
                                        auto_level=False, latency_compensated=True))
         candidate = root/movie.name
         log = run(['-i', str(movie), '-i', str(mixed), '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy',
@@ -267,10 +270,10 @@ def audio_delivery(movie, duration_ms, music=None, source=None, duck=False, norm
         if sfx and normalize:
             for _ in range(4):
                 loud=next((c.get('lufs') for c in checks if c['name']=='loudness'),None)
-                if loud is None or -15<=loud<=-13: break
-                correction=-14-loud;gain+=correction;retries.append(dict(measured_lufs=loud,correction_db=correction))
+                if loud is None or abs(loud-target)<=tolerance: break
+                correction=target-loud;gain+=correction;retries.append(dict(measured_lufs=loud,correction_db=correction))
                 filt=(f'volume={gain}dB,aresample=192000,'
-                      'alimiter=limit=0.8413951416:attack=5:release=50:level=false:latency=true,aresample=48000')
+                      f'alimiter=limit={limit:.10f}:attack=5:release=50:level=false:latency=true,aresample=48000')
                 run(['-y','-i',str(movie),'-i',str(mixed),'-map','0:v:0','-map','1:a:0','-c:v','copy',
                      '-af',filt,'-c:a','libopus' if movie.suffix=='.webm' else 'aac','-b:a','256k','-ar','48000','-ac','2',
                      '-t',str(seconds),*([] if movie.suffix=='.webm' else ['-movflags','+faststart']),str(candidate)])

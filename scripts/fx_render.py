@@ -255,11 +255,11 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
         tr = validate_entry(entry,TRANSITIONS,ctx,where,{'name','duration_ms','review'},experimental)
         if tr['name']=='luma_wipe' and tr['params']['mask'] not in ('linear','radial','cloud'):
             tr['params']['mask']=str((path.parent/tr['params']['mask']).resolve())
-            if not Path(tr['params']['mask']).is_file():raise ValueError(where+'.mask: expected grayscale image or linear/radial/cloud')
+            if not Path(tr['params']['mask']).is_file():raise ValueError(where+'.mask: expected grayscale image or linear/radial/cloud: '+tr['params']['mask'])
         limit = min(segments[i-1]['duration_ms'],segments[i]['duration_ms'])
         length = number(entry.get('duration_ms',400),where+'.duration_ms',1000/fps,limit)
         if length%10: raise ValueError(f'{where}.duration_ms: must be a multiple of 10')
-        if ctx.sampling=='nearest' and (tr['name'] in ('crossfade','whip_pan','flash_cut','glitch') or tr['params'].get('softness',0)):
+        if ctx.sampling=='nearest' and (tr['name'].startswith('gl_') or tr['name'] in ('crossfade','whip_pan','flash_cut','glitch') or tr['params'].get('softness',0)):
             warning = f'{where} {tr["name"]} blends colours in nearest/pixel mode'
             tr['warning'] = warning
             print('Warning: '+warning,file=sys.stderr)
@@ -570,6 +570,8 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
                 source_samples=source_records,experimental_items=experimental_items(plan),audio=audio,
                 collision_policy='same-frame events evaluated together; maximum envelope wins',
                 render=dict(seconds=elapsed,fps=len(output_items)/elapsed,requested_fps=fps,streaming=True))
+            from threshold_registry import snapshot
+            manifest['threshold_registry']=snapshot()
             if ctx.captions: manifest['captions']=ctx.captions
             if sfx_spec: manifest['sfx']=sfx_events
             if ctx.layer_design: manifest['beat_layers']=ctx.layer_design
@@ -582,6 +584,8 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
     elapsed = time.perf_counter()-started
     extra = {'effects':effects,'transitions':transitions,'fx_overrides':list(OVERRIDES),'render':{'seconds':elapsed,'fps':len(images)/elapsed,'requested_fps':ctx.fps},'semantics':'Centered transitions; source endpoints extended; effect intervals end-exclusive; no motion synthesized.'}
     extra['warnings'] = [tr['warning'] for tr in transitions if 'warning' in tr]
+    from threshold_registry import snapshot
+    extra['threshold_registry']=snapshot()
     extra['source_samples']=source_records
     extra['experimental_items']=experimental_items(plan)
     if ctx.captions: extra['captions']=ctx.captions

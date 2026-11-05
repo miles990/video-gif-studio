@@ -1,0 +1,371 @@
+[
+ {
+  "item": "transition:hex_shutter",
+  "verdict": "NEEDS-FIX",
+  "defects": [
+   "[低] RGBA 中點硬換剪影：關閉時 A 魚形深色剪影在一格內換成 B 菱形剪影（rgba-480x270 p=.49→.5 單步 0.050，其餘步中位數≈0；270x480 為 0.031）。不透明素材整格色塊遮住硬切，沒問題。修法：只對非不透明輸入，在 p∈[.47,.53] 交叉淡化兩個剪影的覆蓋。"
+  ],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "搶眼/衝擊"
+  ]
+ },
+ {
+  "item": "transition:spin",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "旋轉",
+   "衝擊"
+  ]
+ },
+ {
+  "item": "transition:gl_clock_wipe",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "含蓄/柔和"
+  ]
+ },
+ {
+  "item": "transition:gl_cross_warp",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "流動",
+   "含蓄/柔和"
+  ]
+ },
+ {
+  "item": "transition:gl_directional_warp",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "流動",
+   "動感"
+  ]
+ },
+ {
+  "item": "transition:gl_dreamy",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "夢幻",
+   "含蓄/柔和"
+  ]
+ },
+ {
+  "item": "transition:gl_dreamy_zoom",
+  "verdict": "NEEDS-FIX",
+  "defects": [
+   "[低] RGBA 中點剪影突變：白化的 A 魚形剪影在一格內換成 B 白菱形（rgba-480x270 p=.49→.5 單步 0.242，是中位數 0.0033 的 73 倍；270x480 為 0.148）。不透明素材因整格全白而看不出。修法：只對非不透明輸入，在全白段（p≈.45–.55）交叉淡化 A、B 的覆蓋。"
+  ],
+  "notes": [
+   "[註] 不透明素材 p=.41–.65（佔 24%）近全白（平均亮度 > .95），是原作的單次閃白，不是單格閃光；做成 12 格轉場時約 3 格全白，光敏風險低。"
+  ],
+  "style_tags": [
+   "夢幻",
+   "搶眼/衝擊",
+   "閃白"
+  ]
+ },
+ {
+  "item": "transition:gl_rotate_scale_fade",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [
+   "[註] 旋轉從靜止直接以全速開始（opaque 第一步 0.114，是中位數 0.0265 的 4.3 倍），對應 gate 的 pops WARN。這是原 GLSL 的線性角度；p→0 的極限連續，不是跳格。可選擇加 ease-in。backColor 在預設參數下不會露出（不透明灰像素實測 0%），RGBA 上的大面積覆蓋是放大 8 倍的主體，屬於位移，不是填色。"
+  ],
+  "style_tags": [
+   "旋轉",
+   "衝擊"
+  ]
+ },
+ {
+  "item": "transition:gl_swirl",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [
+   "[註] 起步很快（opaque 第一步是中位數的 1.4–1.7 倍）。RGBA 進度不單調（270x480 q 回退 0.145）來自漩渦半徑映射，是設計。"
+  ],
+  "style_tags": [
+   "迷幻",
+   "搶眼"
+  ]
+ },
+ {
+  "item": "transition:gl_water_drop",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "有機",
+   "含蓄/柔和"
+  ]
+ },
+ {
+  "item": "transition:gl_burn_through",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [
+   "[註] 燒邊光暈是加法運算，超出 alpha 後會被截斷（RGBA 覆蓋像素中最多 34% 被截），結果是飽和的橘黃邊，屬於設計。透明區沒有洩漏（leak 0）。燒穿的洞和主體被切碎都是效果本身。"
+  ],
+  "style_tags": [
+   "搶眼/衝擊",
+   "有機",
+   "火焰"
+  ]
+ },
+ {
+  "item": "transition:gl_overexposure",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "閃光",
+   "搶眼"
+  ]
+ },
+ {
+  "item": "transition:gl_fade_grayscale",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "含蓄/柔和",
+   "復古"
+  ]
+ },
+ {
+  "item": "transition:gl_color_distance",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [
+   "[註] RGBA 進度偏後段：12 格時最後一格承擔 34% 的變化，p=.75 時才到 26%。原因是 4 通道距離含 alpha，透明對比主體幾乎只靠 p^5 收尾。連續、不跳格。"
+  ],
+  "style_tags": [
+   "含蓄/柔和",
+   "有機"
+  ]
+ },
+ {
+  "item": "transition:gl_luminance_melt",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [
+   "[註] 條紋是逐像素欄的雜湊，寬度固定 1 px，所以 1080p 下會變成細髮絲，屬於設計。進度和畫布比例有關：opaque p=.5 時，橫式 q=.30、直式 q=.58。單調、端點正確。"
+  ],
+  "style_tags": [
+   "故障",
+   "有機"
+  ]
+ },
+ {
+  "item": "transition:gl_pixelize",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "復古",
+   "像素"
+  ]
+ },
+ {
+  "item": "transition:gl_dither_dissolve",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "復古",
+   "像素"
+  ]
+ },
+ {
+  "item": "transition:gl_random_squares",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "數位"
+  ]
+ },
+ {
+  "item": "transition:gl_window_slices",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "俐落"
+  ]
+ },
+ {
+  "item": "transition:gl_wind",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "動感",
+   "有機"
+  ]
+ },
+ {
+  "item": "transition:gl_pinwheel",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "俏皮"
+  ]
+ },
+ {
+  "item": "transition:gl_polka_dots_curtain",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "俏皮"
+  ]
+ },
+ {
+  "item": "transition:gl_crosshatch",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "有機",
+   "含蓄/柔和"
+  ]
+ },
+ {
+  "item": "transition:gl_perlin_dissolve",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "有機",
+   "含蓄/柔和"
+  ]
+ },
+ {
+  "item": "transition:gl_glitch_memories",
+  "verdict": "NEEDS-FIX",
+  "defects": [
+   "[低] 頂邊夾邊拉絲：區塊位移超出畫面時用 CLAMP 取樣，複製了頂列像素，形成 13–15 px 的垂直條紋（opaque-270x480 p=.51–.57 連續 4 格；gate 的 edge_streaks 抓到 top 13–15 px，見 frames/zoom_glitch_top.png）。修法：依區塊到邊界的距離夾住 dx/dy，讓取樣留在畫面內（不要用鏡像邊界）。"
+  ],
+  "notes": [],
+  "style_tags": [
+   "故障",
+   "搶眼/衝擊"
+  ]
+ },
+ {
+  "item": "transition:gl_scale_in",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "含蓄/柔和",
+   "動感"
+  ]
+ },
+ {
+  "item": "transition:gl_bounce",
+  "verdict": "NEEDS-FIX",
+  "defects": [
+   "[高] RGBA 起始跳出加黑影：A 透明時，B 在 p=0⁺ 一次整個露出，而且陰影公式對 d<0（面板下方）的 strength 會截到 1，把 B 塗黑。p=1e-5 時菱形有 46%（480x270）／84%（270x480）的像素變暗超過一半，p=.05 時直式整個菱形變黑。gate 的 endpoints FAIL（first_discontinuity 0.0067/0.0136，first_frame_jump 0.087/0.055）就是這個問題。修法：非不透明路徑只在 d>0（面板已離開的區域）顯示 B，陰影 strength 只作用在 0<d≤h。"
+  ],
+  "notes": [
+   "[註] 不透明素材首格位移很大（12 格時第一格佔總變化 26%）、進度不單調（q 回退 0.39），兩者都是彈跳的設計。"
+  ],
+  "style_tags": [
+   "俏皮",
+   "衝擊"
+  ]
+ },
+ {
+  "item": "transition:gl_multiply_blend",
+  "verdict": "NEEDS-FIX",
+  "defects": [
+   "[中] RGBA 主體在中段消失或碎裂：alpha 也被相乘（αA·αB），中段只剩兩者重疊的區域。覆蓋率 270x480 從 A 0.054／B 0.065 掉到 0.011（-80%），480x270 掉到 0.040（見 frames/gl_multiply_blend_270x480.png p=.5）。修法：用標準可分離混合合成：C=(1-αB)CA+(1-αA)CB+αAαB·mult，α=αA+αB-αAαB。"
+  ],
+  "notes": [],
+  "style_tags": [
+   "含蓄/柔和",
+   "暗調"
+  ]
+ },
+ {
+  "item": "transition:gl_color_phase",
+  "verdict": "NEEDS-FIX",
+  "defects": [
+   "[中] RGBA 預乘色彩超出 alpha：各色彩通道和 alpha 的相位不同，在預乘空間分別混合時，RGB 會大於 alpha 而被截斷。覆蓋像素中 64%（480x270）／83%（270x480）超出，最大超出 0.43，結果是 A 留下純藍的殘影剪影（p≈.7–.85），B 菱形早段偏紅（frames/gl_color_phase_480x270.png）。不透明素材沒問題。修法：非不透明輸入改用 straight 色彩逐通道混合（透明一側用另一來源的顏色代入，不讀隱藏 RGB），alpha 用自己的相位，最後再預乘。"
+  ],
+  "notes": [],
+  "style_tags": [
+   "迷幻",
+   "色彩",
+   "復古"
+  ]
+ },
+ {
+  "item": "transition:gl_hexagonalize",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "數位"
+  ]
+ },
+ {
+  "item": "transition:gl_squares_wipe",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "數位"
+  ]
+ },
+ {
+  "item": "transition:gl_bow_tie_horizontal",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "俐落"
+  ]
+ },
+ {
+  "item": "transition:gl_curved_wipe",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "含蓄/柔和"
+  ]
+ },
+ {
+  "item": "transition:gl_arrow_wipe",
+  "verdict": "SOUND",
+  "defects": [],
+  "notes": [],
+  "style_tags": [
+   "幾何",
+   "搶眼"
+  ]
+ }
+]

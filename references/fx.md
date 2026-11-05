@@ -96,10 +96,14 @@ animated random noise explicitly derive a seed from an integer frame/time, never
 
 ## Stable
 
-The default catalog contains the six round-one effects and four transitions below.
-All round-two operations are **experimental (pending quality gate)**. They are hidden
-from `--list` and `--preview` unless `--experimental` is supplied. To validate or render
-a plan using them, pass `--experimental` or set top-level `"experimental": true`.
+The default catalog contains six effects and 37 transitions: the four original
+transitions, `spin`, and all 32 `gl_*` ports. P2d promotes the 28 SOUND verdicts and
+six repaired items in the [technical status record](../wow/fx/gate/p2-status.json).
+Technical soundness decides status; appeal and style never delete an item.
+Effects retain their current status pending their own gate. Other experimental
+operations remain hidden from `--list` and `--preview` unless `--experimental` is
+supplied. To validate or render a plan using those operations, pass
+`--experimental` or set top-level `"experimental": true`.
 The delivery manifest's `experimental_items` lists used effects (`effect:name`),
 transitions (`transition:name`), and features (`speed`, `ramp`, `interpolate:mode`).
 Stable-only plans record an empty list; opting in alone does not imply experimental use.
@@ -128,6 +132,36 @@ The subject's source RGB is preserved; alpha-over-white removes dark fringe cont
 | whip_pan | blur_px=49, direction=left (or right); two adjacent shots pan together through a horizontal blur, without replicated edge stretching |
 | hex_shutter | color=121522; six-sided aperture closes then opens |
 | flash_cut | none; white midpoint and unchanged endpoints |
+| spin | turns=.25; rotating cut with opaque cover zoom |
+| all 32 `gl_*` ports | stable; full name/default table under P2b gl-transitions below |
+
+### Style tags and technical status
+
+Every transition registry entry and `--list --json` entry has editable `style_tags`
+metadata, separate from render parameters and status. The 34 reviewed entries copy
+the independent [technical verdicts](../wow/fx/gate/p2-tech-verdicts.json) verbatim;
+other entries have an empty list until tagged. Edit a builtin's `@transition(...,
+style_tags=[...])` declaration, or supply the same metadata in a library plugin.
+Tags describe intent, not a quality ranking or a promotion requirement.
+
+| Vocabulary | Meaning |
+| --- | --- |
+| `搶眼`, `衝擊`, `搶眼/衝擊` | attention-grabbing, impactful, or both |
+| `含蓄/柔和` | restrained / gentle |
+| `動感`, `俏皮` | energetic motion; playful |
+| `幾何`, `旋轉`, `流動`, `有機` | geometric; rotating; flowing; organic |
+| `夢幻`, `迷幻` | dreamy; psychedelic |
+| `復古`, `像素`, `數位`, `故障` | retro; pixel; digital; glitch |
+| `火焰`, `閃白`, `閃光`, `色彩`, `暗調`, `俐落` | fire; white flash; flash; colour; dark; crisp |
+
+P2d closes all six diagnosed transition defects: Bounce's RGBA start/shadow,
+MultiplyBlend's lost coverage, ColorPhase's invalid premultiplied colour,
+DreamyZoom and HexShutter's midpoint silhouette swaps, and GlitchMemories' edge
+replication. [Red/green evidence and limitations](../wow/fx/build-notes-p2d.md)
+record the repairs. No diagnosed P2 transition defect remains open; subjective
+appeal, taste-based defaults/recommendations, effects review, and the other
+documented feature limitations remain separate work. Untested custom parameter
+combinations are not implied to have received the independent default review.
 
 Geometry defaults to linear filtering. Set top-level `"sampling":"nearest"` (or the
 individual geometry parameter) for pixel art: no new palette colors or soft alpha are
@@ -373,13 +407,38 @@ missing history is omitted. No feedback or future samples. echo requests four fr
 The renderer keeps a bounded three-source-image cache and one flow pair. Video
 frames flow directly to FFmpeg; raster exports retain their film in memory.
 
-## Open defects (independent review P2a+P2b, 2026-11-05; fix scheduled in P2c — experimental items only)
-- `gl_polka_dots_curtain` lags on wide canvases (at p=0.99 16:9 still 1.5% A, 10:1 66%) — avoid on wide formats.
-- On transparent sources `gl_swirl`, `gl_rotate_scale_fade`, `gl_cross_warp`, `gl_dreamy_zoom` are clipped to fragments by the "both transparent → clear" rule; `spin` zoom-fills transparent subjects; `hex_shutter` mid-frames turn opaque dark blue on transparent backgrounds.
-- Caption `clean` can break an over-long word into a one-letter orphan line that overlaps the next line by 2 frames.
-- gl ports output NaN for non-finite `p` via the Python API; no "blends colours" warning for gl ports in nearest mode.
-- `gl_glitch_memories` faithfully reproduces an upstream shader whose block offset is always 0 (whole-image shift only).
-- Performance: gl ports 98–324 ms/frame at 720p (offline OK, not for live preview).
+## P2c defect resolution (2026-11-05)
+
+The reviewed P2a/P2b defects are fixed. Polka-dot distance is normalized by the
+farthest canvas corner; all 32 ports have delivered-last-frame versus B regressions.
+Pixelize and Hexagonalize blend their first quantization step from the source;
+SquaresWipe gives collapsed cells zero area, preventing endpoint snaps.
+Displacement transitions transport their alpha instead of clipping to the source
+union. Spin uses cover zoom only for opaque input, and a constant transparent border
+for cutouts. HexShutter preserves the selected shot's alpha throughout the shutter.
+Clean captions split overlong words into pieces of at least three graphemes,
+append Latin continuation hyphens, keep piece timings inside the original span,
+and cap display ends at the next line's start. Exports retain the original word text.
+Missing mask diagnostics include the resolved path. Every public/owned transition
+rejects non-finite progress with `ValueError: <name>: p must be finite`; finite values
+outside [0,1] retain the existing endpoint behavior. GL ports warn about blended
+colors in nearest mode, in both Python calls and plan validation/manifests.
+
+Opaque GL calls skip premultiply/finish, spatial blends use contiguous OpenCV loops,
+GlitchMemories uses one coherent RGBA sample of true 16-pixel blocks, and CurvedWipe
+computes shadow sampling/exponentials only in the shading band (tails below 1/65535
+are omitted). Before/after timings and remaining visual-gate flags are in
+[the P2c build notes](../wow/fx/build-notes-p2c.md). Experimental status is unchanged.
+
+The expanded P2c gate exposes a remaining `gl_bounce` RGBA start-limit jump
+(mean associated-RGBA error 0.00670 landscape / 0.01364 portrait at p=1e-5).
+Exact A/B endpoints pass. This existing transparent-panel reveal behavior remains
+flagged for independent review; no stable promotion is claimed. Edge heuristics
+also retain their flags rather than treating intentional graphics as automatic passes.
+
+## Open notes (technical recheck P2d, 2026-11-05; non-blocking)
+- `gl_dreamy_zoom` and `hex_shutter` RGBA midpoint crossfades span 10% / 6% of progress; on very short transitions (≈12 frames) the swap still lands in one frame — consider frame-count-aware widths.
+- fx_gate_kit `edge_streaks` (new detector) false-flags a vertical neon tube in the untouched source (27/48 frames portrait); advisory only — fix in a later slice.
 
 ## Experimental (pending quality gate)
 
@@ -694,7 +753,7 @@ A white/exposure flash is never exempted just because it coincides with a camera
 planned shot cuts still win in rhythm scoring. Excluded flash events remain
 auditable under `flashes.excluded_camera_events`.
 
-## P2a default gate kit
+## P2c pairwise default gate kit
 
 `python scripts/fx_gate_kit.py --out <outside-repo-directory> [--items light_leak spin]`
 renders every stable and experimental registry item with catalog visual defaults.
@@ -706,14 +765,80 @@ RGBA is checked before compositing onto a checkerboard for MP4 viewing.
 border-gradient seam/stretch heuristics, decoded `qa_media` flicker, visible black
 frames, and ten warm 1280×720 float32 call timings. Errors and heuristic flags remain
 visible, including intentional black/white flashes. These are measurements, not an
-aesthetic score or a promotion decision. Two independent reviewers are still required.
+aesthetic score or a promotion decision. The revised two-axis protocol uses
+independent technical review and broken controls for status; preference comparisons
+inform tags and recommendations without deleting technically sound items.
 Alpha range/shape/finite checks cover all frames; colour-only effects additionally
 retain alpha exactly. Opaque coverage and hidden-RGB probes use frames 0, 24 and 47.
 The benchmark uses opaque footage except `multi_cutout`, whose active RGBA path is
 measured; the opaque path intentionally warns and returns unchanged.
-The tool runs serially and enforces a 300 MB output cap. Use the optional runtime and
+The tool runs serially and enforces a 4 GB external-output cap for the expanded kit. Use the optional runtime and
 `--models <existing-model-directory>` for opaque parallax; the only parameter overrides
 are model/cache resource paths, recorded in JSON. No models are downloaded or copied.
+
+Each item also has benchmark/BAD/STYLE triplets for 12 cells (two materials, two
+aspects, entry/middle/exit). `--references mapping.json` overrides the default
+stable same-family reference: e.g. `{"transition:gl_swirl":"transition:whip_pan"}`.
+Mappings must resolve to stable items in the same category. Stable self references
+are permitted as positive controls; experimental self references are rejected.
+B is an independent animated geometric shot, never a mirror of A. Pair folders
+contain 10-second context MP4s with cuts and a 120 BPM beat, 12 full chronological
+stills, three native-resolution crop tiles, and quality-90 JPEG contact sheets.
+`pairs.json` contains direct absolute keyframe-folder paths for `wow-judge --pairs
+... --criteria criteria.json --sheet --thumb 200 --cols 6`. `controls.json` holds
+the answer key separately; `criteria.json` asks whether a professional editor
+would use the default as-is. Deliberately broken variants include a four-pixel
+replicated edge and an exposure/alpha flash included in the stills. Their flash
+must be detected before the pair is emitted. Style controls keep geometry,
+alpha and timing, with a restrained hue change. Auto checks also identify swapped
+endpoints, endpoint-limit discontinuities and replicated edge strips >=4 px.
+P2d checks overlapping local windows for dense repeated texture, including a
+single displaced block. Sparse silhouette edges, partial grid cells and flat
+borders are not streak evidence. Border-gradient ratios and their frame indices
+remain advisory measurements; only replicated texture raises the edge warning.
+Positive and negative controls retain the original GlitchMemories streak and
+Bounce endpoint failure, and accept repaired output.
+
+The installed quick judge currently recompresses sheets at JPEG quality 80 with
+no quality option. Its input schema is supported; the kit's quality-90 sheets and
+lossless PNGs meet the artifact requirement. Formal judging must preserve that
+quality (the external judge needs its quality setting raised before a protocol-
+compliant run). No external judge files are modified by this slice.
+
+## Shared threshold registry and calibration
+
+`references/thresholds.json` follows the schema extracted verbatim from
+`wow/fx/thresholds.md` into `references/thresholds.schema.json`. Controls are anchor
+roles (`positive_control`, `negative_control`), not an extra schema field.
+Audio normalization/QA and caption contrast read the registry. Render manifests,
+QA reports and gate reports record the registry version, round and hash.
+`threshold_runtime.py` exposes onset contrast, quarter-resolution sharpness,
+rolling perceived/event budgets and third-central-difference camera jerk;
+`qa_media --threshold-metrics measurements.json` evaluates externally measured
+channels (including the memory ratchet) using the same registry. Metrics are a
+JSON object of threshold IDs to finite scalar measurements. This branch had no
+previous visibility/budget/jerk runtime implementation to migrate: those new
+channels are explicit provisional seeds, not invented human labels, and return
+`unknown` until calibration. `intent: texture` exempts onset-visibility screening.
+The memory ceiling starts at the retained stable workload's 499,961,856 bytes ? 1.3;
+only measurements with that fixed workload/method are comparable.
+
+Use `python scripts/calibrate.py --registry <registry.json> --out <proposal.json>
+propose <id> --evidence <evidence.json> --round <N> --approved-by <name>`, then
+`python scripts/calibrate.py --registry <proposal.json> --out <next.json> activate
+--round <N+1>` **before starting the next candidate round**. Commands are single lines.
+Evidence includes measurements for every registered held-out anchor, previous
+mean/sigma for drift checks, candidate IDs, trigger and attributable approval.
+R requires three consecutive improvements beyond 2 sigma, tightens only, and caps
+steps at 10%. C requires >=10% sample growth, independent auditor attribution,
+separated good/bad distributions and >=0.25 pooled sigma margin on each side.
+U choices cap steps at 15% and hard bounds; fewer than five distinct choices only
+update defaults, never gate boundaries. F is immutable. All proposals rejudge
+best/benchmark/worse and controls, list flips (requiring `--confirm-flips`), and
+retain evidence plus before/after decisions in history/audit. Drift freezes an
+instrument; failed controls mark it invalid instead of relaxing a threshold.
+Pending changes do not affect runtime reads. Synthetic anchor fixtures exercise
+instruments; they do not establish perceptual validity or a stable promotion.
 
 ## P1 subject-following portrait reframe (experimental)
 
@@ -782,13 +907,12 @@ to beats; that optional acceptance item remains open. This is an independent-sho
 workflow, not a general NLE cache.
 
 
-## P2b gl-transitions (experimental)
+## P2b gl-transitions (stable since P2d)
 
-32 CPU ports are available only with `--experimental` or plan
-`"experimental": true`. Use the registry names below on the incoming segment,
-for example `{"name":"gl_curved_wipe","duration_ms":400}`. They remain
-experimental pending independent visual comparison and user spot checks. A
-technical test pass or a generated gate kit is not a promotion decision.
+32 CPU ports are available without `--experimental`. Use the registry names below
+on the incoming segment, for example `{"name":"gl_curved_wipe","duration_ms":400}`.
+The P2d status record links the independent technical verdicts and regression
+evidence. This is a technical promotion, not a claim that every style suits every edit.
 
 Each port lives in its own `scripts/fx/transitions/gl_*.py`, exposing
 `transition(a,b,p,ctx,**params)` through the registry decorator. The prefix avoids
@@ -796,7 +920,7 @@ collisions with existing transitions. Scalar/vector names and defaults match
 the supplied GLSL; vectors/colors are JSON arrays in plans (Python tuples in
 direct calls), bools are JSON true/false. Colors are float 0..1. GLSL integer
 parameters are integer-valued numbers; `steps<=0` disables stepping where the
-shader supports it. `--list --experimental --json` includes the original
+shader supports it. `--list --json` includes style tags and the original
 parameter explanations and `@range` annotations. No shader compiler, GPU,
 external texture, model, or network is needed at runtime.
 
@@ -811,23 +935,35 @@ These aspect corrections intentionally differ from legacy square-UV shaders.
 Intentional nonlinear warps, pixelation and directional scaling remain visible;
 "no stretching" does not promise that a distortion effect preserves every shape.
 
-All sampling, blending, color thresholds and additive light use premultiplied
-RGBA. RGB is clamped to valid premultiplied coverage, then unpremultiplied once.
-S-63's original-union matte rule is enforced: if BOTH original inputs have zero
-alpha at an output pixel, it stays zero, even when a warp would transport a
-subject there. This can crop moved silhouettes; it deliberately differs from
-unrestricted GLSL coverage. Colored backgrounds and shadows do not create
-coverage outside that union. Exact p=0/1 guards preserve input hidden RGB as
+Transparent sampling, blending, color thresholds and additive light use
+premultiplied RGBA, then unpremultiply once. Opaque inputs take an equivalent fast
+path. The original-union "both transparent -> clear" rule applies to stationary
+reveals and color transitions. Displacement types are explicitly exempt:
+`gl_cross_warp`, `gl_directional_warp`, `gl_dreamy`, `gl_dreamy_zoom`,
+`gl_rotate_scale_fade`, `gl_swirl`, `gl_water_drop`, `gl_pixelize`,
+`gl_hexagonalize`, `gl_glitch_memories`, `gl_scale_in`, and `gl_bounce`.
+Their sampled alpha travels with the subject; hidden RGB still cannot create
+coverage. This prevents fragmenting a moving silhouette. Exact p=0/1 guards preserve input hidden RGB as
 well as visible pixels; intermediate hidden RGB cannot influence output.
-Bounce composites the moving panel over the incoming shot so a transparent
-panel reveals the subject beneath it; selecting transparent panel pixels alone
-can erase a sparse portrait matte. Opaque Bounce output is unchanged.
+Bounce reveals B only where the moving panel has left (`d>0`), and its shadow
+is confined to `0<d<=shadow_height`, preventing B from appearing at `p=0+`.
+Sparse subjects can leave the canvas as the panel moves; this does not authorize
+revealing the incoming subject through the outgoing panel before it has left.
+MultiplyBlend uses union alpha and separable multiply only in the overlap.
+ColorPhase mixes straight RGB with cross-filled missing colours, times alpha
+separately, and then premultiplies, so colour cannot exceed alpha.
+DreamyZoom crossfades RGBA coverages over `.45–.55`; HexShutter uses `.47–.53`.
+Their opaque timing and appearance remain unchanged.
 
 Random fields use `ctx.seed` in addition to original shader seed parameters;
 seed=0 preserves the original hash expression, evaluated in float64 before
 float32 conversion for deterministic CPU results. GLSL implementation-specific
-noise pixels can differ. GlitchMemories uses deterministic progress arithmetic,
-not random numbers. DreamyZoom retains the source's literal 0.039269908...
+noise pixels can differ. GlitchMemories uses seeded block hashes and a sine
+endpoint envelope; its single coherent RGBA offset is an explicit CPU adaptation
+replacing the upstream zero block index and mismatched channel/alpha offsets.
+Each block's displacement is bounded by its full extent, including partial edge
+cells, so all samples stay inside the frame without replicated edge streaks or
+mirrored borders. DreamyZoom retains the source's literal 0.039269908...
 rotation multiplier, despite its misleading DEG2RAD comment. Source defaults,
 authors and SHA256 are retained in `wow/fx/p2b-provenance.json`.
 

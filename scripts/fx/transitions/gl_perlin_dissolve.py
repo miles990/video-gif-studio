@@ -21,7 +21,7 @@ def _noise_field(width, height, scale, context_seed, shader_seed):
     return n
 
 
-@register_transition(name='gl_perlin_dissolve', status='experimental', scale='@param Scale of the noise; higher values make smaller blobs; GLSL float, default 4.0', smoothness='@param Softness of the blob edges; GLSL float, default 0.01', seed='@param Random seed; GLSL float, default 12.9898')
+@register_transition(name='gl_perlin_dissolve', status='stable', style_tags=['有機', '含蓄/柔和'], scale='@param Scale of the noise; higher values make smaller blobs; GLSL float, default 4.0', smoothness='@param Softness of the blob edges; GLSL float, default 0.01', seed='@param Random seed; GLSL float, default 12.9898')
 def transition(a, b, p, ctx, scale=4.0, smoothness=0.01, seed=12.9898):
     """The incoming image appears through blobs of Perlin noise."""
     if p <= 0:
@@ -34,4 +34,4 @@ def transition(a, b, p, ctx, scale=4.0, smoothness=0.01, seed=12.9898):
     n = _noise_field(ctx.width, ctx.height, scale, ctx.seed, seed)
     position = mix(-smoothness,1+smoothness,p)
     out = s.blend(1-smooth(position-smoothness,position+smoothness,n))
-    return finish(out, a, b)
+    return s.finish(out)
