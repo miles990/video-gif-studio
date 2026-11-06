@@ -7,3 +7,5 @@ run-*/
 local-settings.json
 .runtime/
 .scratch/
+private-manifest.json
+.cache/suno-preview/
