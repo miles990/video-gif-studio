@@ -66,6 +66,7 @@ def compile_plan(board,out,size=None,music=None):
     # not silently opt in. A supplied music track is retained independently.
     if plan.pop('sfx',None):write(out/'sound-policy.json',dict(note='Recipe SFX omitted: SFX routing is experimental; supplied music remains unchanged'))
     plan['assets']=deepcopy(b.get('asset_policy',[]))
+    plan['review']=dict(hard_constraints=deepcopy(b.get('hard_constraints',[])),subject=b.get('core',''))
     write(out/'credits.json',credits);write(out/'plan.json',plan)
     from fx_render import validate_plan
     validate_plan(out/'plan.json')
@@ -103,7 +104,7 @@ def render_version(board,out,previous=None,size=None,formats=('png','mp4')):
         if valid:
             shutil.copytree(previous/'shots'/s['id'],shotdir,copy_function=reuse_file);status='cache'
         else:
-            localboard=dict(core=b['core'],fps=b['fps'],shots=[local],preserve_footage_motion=b.get('preserve_footage_motion',False),asset_policy=b.get('asset_policy',[]),reference_paths=b.get('reference_paths',[]))
+            localboard=dict(core=b['core'],hard_constraints=deepcopy(b.get('hard_constraints',[])),fps=b['fps'],shots=[local],preserve_footage_motion=b.get('preserve_footage_motion',False),asset_policy=b.get('asset_policy',[]),reference_paths=b.get('reference_paths',[]))
             compile_plan(localboard,out/'inputs'/s['id'],size)
             render(out/'inputs'/s['id']/'plan.json',shotdir,('png',),fps=b['fps']);status='rendered'
         frames=sorted((shotdir/'frames').glob('*.png'))

@@ -106,36 +106,31 @@ def load_project(project):
     return cards
 
 
+TRANSFORMATION=r'comes back as|snaps into|turns? into|transforms? (?:into|to)|morphs? into|becomes?|dissolves? into|reassembles? (?:into|as)|unfolds? into|碎成|聚成|變成|變為|變彩色|化為|轉化|蛻變|重組|變身|融成'
+
+
+def transformation(draft):
+    clauses=re.split(r'[。；;!?！？\n]|(?<!\d)\.(?!\d)',draft)
+    return next((c.strip() for c in clauses if re.search(TRANSFORMATION,c,re.I)),None)
+
+
+def hard_constraints(draft):
+    # Preserve source wording: checking normalized paraphrases would silently
+    # discard product names and negations. Commas delimit individual clauses.
+    return [c.strip() for c in re.split(r'[，,。；;!?！？\n]',draft) if re.search(r'必須|一定要|不要|不得|禁止|只能|最後.*logo|logo.*最後|\bmust\b|\bno\s+|\bwithout\s+|logo.*last|last.*logo',c,re.I)]
+
+
 def creative(draft,design):
-    """Recorded, editable starting treatments; agent text overrides each slot."""
-    text=draft.lower();zh=bool(re.search('[\u3400-\u9fff]',draft));aesthetic=design['aesthetic'];fence=''
-    subject='the subject';turn='the camera pulls out to reveal the subject inside a larger working assembly'
-    if re.search(r'coffee|cafe|咖啡|菜單',text):
-        subject='菜單紙' if zh else 'the menu sheet';turn='杯緣掠過紙面，揭露底下對應的新飲品' if zh else 'the cup rim sweeps across the paper to reveal the matching new drink underneath'
-    elif 'payment' in text:
-        subject='the request';turn='the request leaves the code and comes back as a payment confirmed'
-    elif '10,000' in text:
-        subject='the user counter';turn='the camera pulls out to reveal 10,000 marks forming the user count'
-    elif 'pricing' in text:
-        subject='the frosted-glass field';turn='the glass folds through itself to reveal a clear pocket behind the cards'
-    elif re.search(r'note-taking|search',text):
-        subject='the search strip';turn='the strip unfolds to reveal matching documents, slack and email on one plane'
-    elif 'calendar' in text:
-        subject='the settings tiles';turn='the messy old settings page snaps into clean grouped sections'
-    elif re.search(r'app',text):
-        subject='the app card';turn='the camera pulls out to reveal the card as one working part of the app'
-    elif design['profile']=='kinetic':
-        subject='the athlete';turn='the camera pulls out to reveal the finish line as the athlete breaks the tape'
-    elif design['profile']=='precision':
-        subject='the watch crown';turn='the camera pulls out to reveal the crown driving the complete watch mechanism'
-    if 'stripe' in text:aesthetic='stripe-gradient dark';fence='stripe’s style'
-    elif 'apple' in text:aesthetic='apple frosted-glass light';fence='apple’s website'
-    elif 'clean and minimal' in text:aesthetic='Swiss white typographic grid';fence='clean and minimal'
-    elif re.search(r'溫暖|warm|cozy',text):
-        aesthetic='晨光底片暖調' if zh else 'morning-window warm film';fence='溫暖' if zh else 'warm and cozy'
-    elif 'riso' in text:aesthetic='two-ink riso stock';fence='riso'
-    return dict(aesthetic=aesthetic,fence=fence,subject=subject,turn=turn,
-                pace=design['pace'],zh=zh,background=bool(re.search(r'background|背景',text)))
+    """An honest language-neutral scaffold; creative content comes from the agent."""
+    zh=bool(re.search('[\u3400-\u9fff]',draft))
+    turn=transformation(draft)
+    subject=re.split(r'[，,。；;:：]|'+TRANSFORMATION,draft,flags=re.I)[0].strip()
+    subject=re.sub(r'^(?:create|make)\s+(?:a\s+)?','',subject,flags=re.I)
+    subject=subject[:40] if zh else ' '.join(subject.split()[:10])
+    subject=subject or ('主體' if zh else 'subject')
+    return dict(aesthetic=design['aesthetic'],fence='',subject=subject,
+                turn=turn or ('鏡頭拉遠，揭露'+subject+'的完整輪廓' if zh else 'the camera pulls out to reveal the complete outline of '+subject),
+                pace=design['pace'],zh=zh,background=bool(re.search(r'background|背景',draft,re.I)))
 
 
 def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,offline=False,
@@ -153,6 +148,8 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
     from taste_pick import load as load_taste
     content=deepcopy(content or {});taste=load_taste() if taste is None else taste;cards=load_project(project);grid=music_grid(music)
     design=stable_choices(structure(draft,content,taste,refstat));copy=creative(draft,design);copy.update({k:v for k,v in content.items() if k in copy})
+    preserved_turn=transformation(draft);constraints=hard_constraints(draft)
+    if preserved_turn:copy['turn']=preserved_turn
     grounded_look=next((c.get('aesthetic_tag') for c in cards if c.get('aesthetic_tag')),None)
     if grounded_look and not content.get('aesthetic'):copy['aesthetic']=grounded_look
     # Grounding precedes beat construction. Attachment slots never go to web.
@@ -193,6 +190,8 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         for group in shot_groups:edges.append(edges[-1]+sum(group))
         edges[-1]=duration;turn_time=edges[-2] if len(edges)==4 else edges[2];anchor='authored phrase'
     turn_index=min(range(len(edges)-1),key=lambda i:abs(edges[i]-turn_time))
+    logo_last=any(re.search(r'logo.*(?:最後|last)|(?:最後|last).*logo',c,re.I) for c in constraints)
+    if logo_last and preserved_turn and re.search('logo',preserved_turn,re.I):turn_index=len(edges)-2
     assignments={h:(turn_index if h in ('a4','m2') else len(edges)-2 if h=='m3' else 0 if h in ('a1','a2','a3','m1') else max(0,turn_index-1)) for h in HANDLES}
     beats=[]
     for i,(start,end) in enumerate(zip(edges,edges[1:])):
@@ -212,9 +211,16 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
     for r in refs:
         if r['handle'].startswith('m') and r.get('mechanism'):
             index=assignments[r['handle']];beats[index]['mechanism']=r['mechanism']
-            if not content.get('beats') and not re.search('comes back as|snaps into',draft,re.I):
+            if not content.get('beats') and not preserved_turn:
                 if r.get('beat_text'):beats[index]['text']=r['beat_text']+' ('+', '.join(beats[index]['refs'])+')'
     if content.get('beats'):beats=deepcopy(content['beats'])
+    if preserved_turn:
+        for b in beats:
+            if b.get('is_turn'):
+                b['text']=preserved_turn+' ('+', '.join(b.get('refs',[]))+')';b['mechanism']='static'
+    if logo_last:
+        beats[-1]['text']+='；最後呈現 logo' if copy['zh'] else '; logo appears last'
+    for b in beats:b['hard_constraints']=deepcopy(constraints)
     for r in refs:
         r['cited_by']=[b['id'] for b in beats if re.search(r'(?<!\w)'+r['handle']+r'(?!\w)',b['text'])]
         role=r['role'];b=r['cited_by'][0] if r['cited_by'] else 1
@@ -230,7 +236,7 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
     assets=[dict(path=c['path'],licence=c.get('licence','user-owned'),owned=c.get('owned',True),role='asset',title=c.get('id','user footage')) for c in cards if c.get('path')]
     assets+=deepcopy(content.get('assets',[]))
     result=dict(version=1,mode=mode,mode_reason=reason,draft=draft,aesthetic=copy['aesthetic'],fence=copy['fence'],
-                subject=copy['subject'],pace=copy['pace'],duration=duration,fps=fps,width=1080,height=1920 if vertical else 1080,
+                subject=copy['subject'],hard_constraints=constraints,pace=copy['pace'],duration=duration,fps=fps,width=1080,height=1920 if vertical else 1080,
                 beats=beats,refs=refs,assets=assets,structure=design,taste=taste,refstat=refstat or {},music=grid,
                 end_hold=0.,hero_height=.5,min_text_px=24,forks=content.get('forks',[]),
                 camera=content.get('camera','拉遠：減速落在完整主體' if copy['zh'] else 'pull: ease out into the full assembly'),meta=meta,
@@ -256,6 +262,7 @@ def prompt(brief):
     zh=bool(re.search('[\u3400-\u9fff]',brief.get('draft','')))
     lines=[('以' if zh else 'in ')+brief['aesthetic']+('：' if zh else ':')]
     for b in brief['beats']:lines.append(f'{b["id"]}. {b["t_start"]:g}–{b["t_end"]:g}s: {b["text"]}')
+    if brief.get('hard_constraints'):lines.append('constraints: '+'; '.join(brief['hard_constraints']))
     lines.append(brief['pace']+'; '+brief['camera'])
     if brief.get('music',{}).get('drop_status')=='no drop detected':
         anchor=brief['music']['turn_anchor'];lines.append(f'No drop detected; turn anchored to bar {anchor["bar"]} at {anchor["time_s"]:g}s.')
@@ -323,7 +330,7 @@ def to_storyboard(brief,variant=1):
                       size=design['sizes'][i%len(design['sizes'])],angle=(i%3)*35,lens='telephoto' if design['profile']=='precision' else 'standard',
                       motion=move,composition=(item['layout']+'; ' if item else '')+refs['a4']['use']+' (a4)',direction='neutral',axis='main',
                       lighting=refs['a3']['use']+' (a3)',color_script=refs['a2']['use']+' (a2)',
-                      action=beat['text'],subject=brief.get('subject','subject'),is_turn=turn,refs=handles,
+                      action=beat['text'],subject=brief.get('subject','subject'),hard_constraints=deepcopy(brief.get('hard_constraints',[])),is_turn=turn,refs=handles,
                       hero_height=beat.get('hero_height',.5),min_text_px=beat.get('min_text_px',24),
                       intent='reveal_subject' if turn else 'breathe',perceived=.15 if turn else .04,
                       recipe=dict(name=name,perceived=.15 if turn else .04,serves_core='Make this beat legible in the chosen aesthetic'),
@@ -340,7 +347,7 @@ def to_storyboard(brief,variant=1):
                 if asset.get('path'):shot['image']=asset['path'];shot['asset']=asset
             shots.append(shot);cursor=end
     curve.append([brief['duration'],curve[-1][1]])
-    board=dict(version=1,core=brief['draft'],fps=brief['fps'],width=brief['width'],height=brief['height'],duration=brief['duration'],shots=shots,tokens=tokens,
+    board=dict(version=1,core=brief['draft'],hard_constraints=deepcopy(brief.get('hard_constraints',[])),fps=brief['fps'],width=brief['width'],height=brief['height'],duration=brief['duration'],shots=shots,tokens=tokens,
                design_curve=curve,design_origin='authored brief beats',editorial_structure=design,warnings=warnings,credits=credits,
                reference_policy='Read references for mechanisms and statistics; render only assets or silhouette cards',
                brief_ref_uses=[dict(handle=r['handle'],use=r['use'],cited_by=r['cited_by']) for r in brief['refs']],

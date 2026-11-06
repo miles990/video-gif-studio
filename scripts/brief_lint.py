@@ -86,7 +86,8 @@ def lint(brief):
         if b.get('id')!=i+1:add('schema',loc+'.id','Beat numbers must be consecutive','Renumber from 1')
         if b.get('is_turn'):
             turns.append(b)
-            if not re.search(r'reveal|morph|comes back as|snaps into|becomes|turns into|zoom.?out|揭露|變成|化為|拉遠|翻開',b.get('text',''),re.I):
+            from brief import TRANSFORMATION
+            if not re.search(TRANSFORMATION+r'|reveal|morph|comes back as|snaps into|becomes|turns into|zoom.?out|揭露|變成|化為|拉遠|翻開',b.get('text',''),re.I):
                 add('no_turn',loc+'.text','Turn has no transformation mechanism','Describe what opens/reveals/changes medium',obj=b)
             if end<=limits['turn_end.min']*duration: add('turn_too_early',loc+'.t_end','Turn ends before 32% of duration','Extend the action beyond 0.32 × duration',obj=b)
             if b.get('hero_height',brief.get('hero_height',0))<limits['hero_height.min']: add('hero_size',loc+'.hero_height','Hero occupies less than 40% frame height','Enlarge the hero to at least 0.4 frame height',obj=b)

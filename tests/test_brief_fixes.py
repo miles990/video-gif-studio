@@ -32,3 +32,19 @@ class FixTests(unittest.TestCase):
             self.assertIn('No drop detected; turn anchored to bar',b['prompt'])
             self.assertTrue(all(s['sound']['section']!='drop' for s in brief.to_storyboard(b)['shots']))
         self.assertTrue(all(s['sound']['section']=='silent' for s in brief.to_storyboard(brief.expand('coffee 5s'))['shots']))
+
+    def test_transformations_and_constraints_survive(self):
+        from brief_render import compile_plan
+        import tempfile
+        for draft,verb in [('玉山茶罐碎成粉重新聚成 logo，logo 一定要最後，不要人臉','聚成'),('玉山茶罐黑白變彩色，必須使用玉山茶罐','變彩色'),('Acme kettle dissolves into steam; no faces; logo must appear last','dissolves into')]:
+            b=brief.expand(draft)
+            turns=[v for v in b['beats'] if v['is_turn']]
+            self.assertEqual(len(turns),1);self.assertIn(verb,turns[0]['text'])
+            self.assertNotIn('the subject',b['prompt'])
+            self.assertNotIn('larger working assembly',b['prompt'])
+            board=brief.to_storyboard(b)
+            self.assertEqual(board['hard_constraints'],b['hard_constraints'])
+            self.assertTrue(all(s['hard_constraints']==b['hard_constraints'] for s in board['shots']))
+            with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
+                plan=compile_plan(board,Path(tmp),size=(64,64))
+                self.assertEqual(plan['review']['hard_constraints'],b['hard_constraints'])
