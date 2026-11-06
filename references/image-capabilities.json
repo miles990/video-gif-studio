@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "experimental",
+  "routes": [
+    {
+      "route": "codex", "probed_at": "2026-11-06", "model_reported": null,
+      "evidence": ["wow/fx/spec-13.md#能力實測", "C:/Users/User/src/vgs-fx-private/imagegen-probe/probe-alpha.log", "C:/Users/User/src/vgs-fx-private/imagegen-probe/probe-ref.log", "C:/Users/User/src/vgs-fx-private/imagegen-probe/probe-gif.log"],
+      "features": {
+        "native_gif": false, "references_max": "untested", "transparent_native": true,
+        "markup_edit": false, "mask_edit": false, "svg_native": false,
+        "n_per_call": 1, "aspects": "prompt_only", "max_size": "untested", "quality_tiers": false
+      },
+      "references_policy_limit": 16,
+      "references_note": "Reference paths supported; 16 is a local guard, not a probed provider maximum.",
+      "quality_control": "prompt_only",
+      "fallbacks": {"gif": "keyframe_loop", "svg": "traced", "edit": "mask_composite", "transparent": "local_matting"}
+    },
+    {
+      "route": "api", "probed_at": null, "model_reported": null,
+      "evidence": ["https://developers.openai.com/api/docs/guides/image-generation"],
+      "features": {"native_gif": "untested", "references_max": "untested", "transparent_native": "untested", "markup_edit": "untested", "mask_edit": "untested", "svg_native": "untested", "n_per_call": "untested", "aspects": "untested", "max_size": "untested", "quality_tiers": "untested"},
+      "enabled_by_default": false,
+      "note": "PNG generations protocol is tested against a fake server; no live API key or live API capability verification. Paid estimate approval and budget required. Native GIF/SVG/edit are not implemented by this adapter."
+    }
+  ]
+}
