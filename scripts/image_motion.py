@@ -22,11 +22,17 @@ def seam_qa(frames,durations=None):
     local=np.r_[steps[:3],steps[-3:]]
     normal=float(np.median(local[local>1e-5])) if np.any(local>1e-5) else 0.
     ratio=seam/max(normal,.01)
-    centers=None
+    yy,xx=np.indices(a.shape[1:3])
+    if np.any(a[...,3]==0):weights=a[...,3]
+    else:
+        # Opaque composites still have a trajectory: background-relative mass.
+        border=np.concatenate((rgb[:,0],rgb[:,-1],rgb[:,:,0],rgb[:,:,-1]),axis=1)
+        background=np.median(border,axis=1)
+        weights=np.linalg.norm(rgb-background[:,None,None,:],axis=3)
+    totals=np.maximum(weights.sum(axis=(1,2)),1)
+    centers=np.stack(((weights*xx).sum(axis=(1,2))/totals,(weights*yy).sum(axis=(1,2))/totals),axis=1)
+    centers*=np.array([frames[0].width/width,frames[0].height/height])
     if np.any(a[...,3]==0):
-        yy,xx=np.indices(a.shape[1:3]);weights=a[...,3]
-        totals=np.maximum(weights.sum(axis=(1,2)),1)
-        centers=np.stack(((weights*xx).sum(axis=(1,2))/totals,(weights*yy).sum(axis=(1,2))/totals),axis=1)
         travel=np.linalg.norm(np.diff(centers,axis=0),axis=1)
         if np.max(travel)>.5:ratio=max(ratio,float(np.linalg.norm(centers[-1]-centers[0])/max(np.median(travel[travel>.01]),.01)))
     durations=np.asarray(durations if durations is not None else [40]*len(frames),float)
@@ -53,15 +59,16 @@ def seam_qa(frames,durations=None):
     if centers is not None:vectors=np.roll(centers,-1,axis=0)-centers
     vectors=vectors.reshape(len(frames),-1)
     def turning(start,end):
-        before=(start-1)%len(frames);after=end%len(frames)
-        for _ in frames:
-            if not paused[before]:break
-            before=(before-1)%len(frames)
-        for _ in frames:
-            if not paused[after]:break
-            after=(after+1)%len(frames)
-        u,v=vectors[before],vectors[after]
-        return float(np.dot(u,v))<0
+        # Hysteresis in source pixels: ignore tiny centroid quantization sign
+        # changes until each side has accumulated at least half a pixel.
+        incoming=np.zeros(2);outgoing=np.zeros(2);n=len(frames)
+        for step in range(1,max(2,n//2)):
+            incoming=centers[start%n]-centers[(start-step)%n]
+            if np.linalg.norm(incoming)>=.5:break
+        for step in range(1,max(2,n//2)):
+            outgoing=centers[(end+step)%n]-centers[end%n]
+            if np.linalg.norm(outgoing)>=.5:break
+        return bool(min(np.linalg.norm(incoming),np.linalg.norm(outgoing))>=.5 and np.dot(incoming,outgoing)<0)
     longest=run=0.
     for i in range(2*len(paused)):
         run=run+durations[i%len(paused)] if paused[i%len(paused)] else 0.
@@ -74,19 +81,32 @@ def seam_qa(frames,durations=None):
             hold+=durations[end%len(paused)];end+=1
         if hold>=max(120,3*np.median(durations)):
             (extrema_holds if turning(start,end) else bad_holds).append(float(hold))
+    endpoint_cap=min(500.,.25*float(durations.sum()))
+    excessive_endpoint=any(d>endpoint_cap for d in extrema_holds) or any(d>endpoint_cap and turning(i,i) for i,d in enumerate(durations))
     long_exposure=any(d>3*np.median(durations) and not turning(i,i) for i,d in enumerate(durations))
-    pause=typical>.1 and (bool(bad_holds) or long_exposure)
+    pause=typical>.1 and (bool(bad_holds) or long_exposure or excessive_endpoint or (bool(extrema_holds) and ratio>3))
     clipped=0
     for frame in frames:
         alpha=np.array(frame.convert('RGBA'))[...,3]
         if np.any(alpha==0) and (np.any(alpha[0]>8) or np.any(alpha[-1]>8) or np.any(alpha[:,0]>8) or np.any(alpha[:,-1]>8)):clipped+=1
     issues=[]
+    motion=np.roll(centers,-1,axis=0)-centers
+    lengths=np.linalg.norm(motion,axis=1);moving_lengths=lengths[lengths>=.5]
+    ordinary_motion=float(np.median(moving_lengths)) if len(moving_lengths) else 0.
+    jump_frames=[]
+    for i in range(len(frames)):
+        before=motion[(i-1)%len(frames)];after=motion[i]
+        offset=float(np.linalg.norm(centers[i]-(centers[(i-1)%len(frames)]+centers[(i+1)%len(frames)])/2))
+        if offset>max(1.,3*ordinary_motion) and np.dot(before,after)<-.5*np.linalg.norm(before)*np.linalg.norm(after):jump_frames.append(i)
+    if jump_frames:issues.append('single_frame_position_jump')
+    if typical>.1 and excessive_endpoint:issues.append('endpoint_hold')
     if ratio>3:issues.append('position_seam')
     if colour_seam>10 and colour_seam>3*max(colour_normal,.1):issues.append('colour_seam')
     if pause or typical>.1 and not .25<=speed_ratio<=4 and not turning(0,0):issues.append('speed_discontinuity')
     if clipped:issues.append('canvas_edge_clipping')
     return dict(status='PASS' if not issues else 'FAIL',issues=issues,colour_seam_delta_e2000=colour_seam,
-                speed_ratio=speed_ratio,longest_hold_ms=longest,non_extremum_holds_ms=bad_holds,extremum_holds_ms=extrema_holds,clipped_frames=clipped,seam_ratio=ratio,seam_difference=seam,
+                speed_ratio=speed_ratio,longest_hold_ms=min(longest,float(durations.sum())),non_extremum_holds_ms=bad_holds,extremum_holds_ms=extrema_holds,clipped_frames=clipped,seam_ratio=ratio,seam_difference=seam,
+                endpoint_hold_cap_ms=endpoint_cap,reversal_hysteresis_px=.5,jump_frames=jump_frames,ordinary_position_step_px=ordinary_motion,
                 ordinary_step=normal,seam_frames=[len(frames)-1,0],moving=bool(np.any(steps>.01)),
                 note='Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review.')
 
