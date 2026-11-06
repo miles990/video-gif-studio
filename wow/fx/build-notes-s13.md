@@ -179,3 +179,70 @@ Final verification:
 The eight patch/message pairs are listed in
 `.scratch/commits/s13-fix-series.json`. Protected spec/acceptance/process/threshold
 files were not changed; no commits were created in the read-only Git directory.
+
+## Fix round 2
+
+Built from `9a26408f17a992d956ed34aa255d4fbdc6a1108d` in the `s13-fix2`
+worktree. The route remains EXPERIMENTAL. All provider calls in this round were
+offline fakes; no new live generation or paid request was made. Source evidence
+is the independent `review-s13-r2` run. Thirteen resized, provenance-hashed PNG
+fixtures were added under `tests/fixtures/live-s13-r2/`; the largest is 498,955
+bytes. Alpha fixtures use nearest-neighbour sampling to retain the original
+low-alpha values. Native-resolution checks separately use the review originals.
+
+Every item started with a failing regression. Seven sequential patch/message
+pairs are in `.scratch/commits/`; no Git metadata was written. Old delivery files
+were moved to `.scratch/commits-before-r2/` because deletion was denied by the
+environment. Protected spec, acceptance, process and threshold files are unchanged.
+
+| Item | Result and evidence |
+| --- | --- |
+| Alpha | Alpha 1–10 is treated as empty for hole analysis. Delivery removes remote haze while retaining colour-consistent coverage within two pixels of opaque material. Geometric wall profiles distinguish thin rings/limb gaps from deep body holes; area alone never authorizes a hole. Both native akimbo sprites and the key pass. Native removed-haze counts: 66,685 / 109,097 / 21,063; preserved gap areas: 11,678 / 19,197 / 93,322 pixels. Deliberate alpha-zero body-hole injections fail. |
+| Identity | Reference-pair spread and ORB evidence are compared with all supplied negatives. No absolute fox-derived identity distance remains. Fox spread/nearest negative: 0.3393 / 0.7183; frog: 0.5565 / 0.8035. Frog A/B builds successfully. No-controls libraries remain unassessed rather than being rejected based on pose distance. Contradictory supplied controls still reject mixed libraries. `--identity-override same\|different` is available for refset build/check and generation, with the decision recorded. Refset approval does not automatically approve subsequent generated subjects. |
+| Shot size | Saliency is never treated as a subject detector. Only supplied mattes, alpha or isolated uniform-background support can establish shot size. Support boxes over 85% of the frame are unassessed. All seven scene keyframes are unassessed for WS/MS/CU; isolated-subject controls still measure. |
+| Loop | Holds are checked for signed motion reversal. Quantized ease-in/out at extrema passes; mid-motion holds, colour jumps and clipping still fail. Both fixture sets pass clean 48-frame amplitude-6/12 and 32-frame amplitude-3 bobs, including opaque composites. Repairs of 12×40, 24×40, 24×80 and 48×40 ms sources pass both loop QA systems and preserve duration. |
+| Aspect | A 2:3 response to 9:16 is cropped only with isolated subject support that fits the crop. Scenes/oversized subjects are unfixable. Flat padding over 5% is never success, including integer-rounding overshoot. Both rounds exercise crop and refusal paths. |
+| Small guards | E_GENERATION as well as E_CAP preserves the first identity-failed generation and records the retry error. CLI alternatives include Grok and local silhouette cards. All-failed keyframes report zero kept shots. Exact price-file SHA256 must be in the repo-reviewed list, currently empty; custom tables require explicit `--price-table-trusted`, recorded and bound to the estimate alongside SHA256. Fresh dates, tiny positive prices and positive budgets cannot confer trust. |
+| Edit | ORB initialization is followed by ECC and independently measured forward/backward LK correspondence residuals. Acceptance remains ≤1 px; larger residuals are explicitly `needs_review`, including storyboard status. The native round-2 edit remains above acceptance: original ORB reprojection 1.5456 px; LK before ECC 2.9466 px, after ECC 2.7266 px (P95 5.6561, 597 validated points). These are different measurements, not a claim that ORB residual improved to subpixel. Outside the expanded mask remains bit-identical. Feathered boundary extra-gradient mean/P95 is 0.2683 / 1.3333 in 8-bit RGB channel levels over 856 edges. Coordinator visual review is still required. |
+
+Calibration and held-out results:
+
+| Decision | Both-set calibration / constraint | Held-out result |
+| --- | --- | --- |
+| Near-zero alpha 10, edge support 2 px | Sweeps at 6/8/10/12 all passed both calibration sprites; 10 covers the reported 1–9 haze. Explicit adjacent-edge and remote-haze controls verify retention/removal. | Key-ring positive excluded from threshold calibration: PASS, 11,990 gap pixels at fixture size, 93,322 native. |
+| Hole geometry | A clear core plus thin-ring wall ≤ core radius; otherwise a limb gap must occupy ≥1.4 times its inscribed disk area and have either elongation ≥1.4 with wall ≤2× radius, or minimum radial wall < half median wall. Enclosed cores of radius ≥2 px that fail these tests are defects. Calibrated with round-1 arm gap and round-2 first akimbo. Circular body-hole injections at 20/35/50% of local opaque depth are rejected in both rounds, including the key shaft. | Second akimbo initially FAILED the first shape-only implementation. It was then used to revise wall profiles and is a regression, **not an untouched holdout**. Key-ring positive stayed excluded from calibration; subsequent artificial shaft-hole negatives exposed an overbroad wall-only rule, which was constrained by shape extent without changing the ring predicate. This additional use is disclosed in fixture provenance. |
+| Relative identity | Histogram margin is half the refset's measured positive/negative separation; ORB floor is the midpoint of positive-minimum and negative-maximum matches. Both fox and frog controls separate without a fixed image-distance cutoff. Missing/overlapping controls do not produce verdicts. | Three fox scenes, four frog scenes, and the same-palette impostor are unassessed. Zero false identity failures on scenes and zero false impostor passes; this is conservative fallback, not semantic identity recognition. |
+| 85% subject box | Requested conservative ceiling, checked with full-frame and isolated matte controls. Both live scene sets fail semantic isolation before any size verdict. | Round-2 square keyframe and round-1 cafe: unassessed. |
+| Motion extrema | Direction dot product <0 establishes reversal; no new fitted speed/hold cutoff. Existing timing/colour/seam limits remain. Round-1 live sprite calibrates quantized trajectories. | Round-2 second sprite: all three bob schedules and opaque composites pass without further threshold changes. |
+| 5% padding | User-required maximum, independent of content tuning. Both sprites fit a narrow crop; both scene sets are refused when subject safety is unknown. Existing 3% rounding-crop and 20% gross-aspect refusal limits remain. | Round-1 cafe and round-2 square scene forced to returned 2:3: both E_ASPECT_UNFIXABLE; round-2 sprite safely crops with zero padding. |
+| Edit 1 px | User-required acceptance, never increased. LK round-trip consistency ≤1 px validates tracks without discarding tracks by their measured displacement. ORB support/inlier and ECC correlation gates retain the existing limits. Synthetic fractional shift, ±4/7° rotation and scale pass; 12° and nonuniform scale refuse. First-round edit calibrates the procedure and is now honestly flagged where local residual exceeds 1. | Second-round native edit: needs_review with residual/seam evidence above. No threshold was tuned to turn this holdout into a pass. |
+
+Full numeric measurements are in `wow/fx/build-evidence-s13-r2.json`, including
+alpha sensitivity, identity controls and each held-out verdict. The geometry
+tests are heuristics with human review still pending; a transparent component's
+artistic intent cannot be proven from alpha alone. The changed older assertions
+remove the reviewed incorrect contracts (large body holes passing, saliency
+framing, untrusted prices, and inflated native-edit tolerance).
+
+Final verification (resumed after the interrupted run):
+- Full suite: **926 tests, zero failures, the same two baseline Windows
+  environment errors, five skips**; `.scratch/full-r2-resumed.log`.
+  Errors are the symlink-privilege and open-overlay-file cleanup cases named in
+  the previous round; no unrelated test or system privilege was changed.
+- Scenario suites: **22 tests passed**; `.scratch/scenarios-r2-final.log`.
+- All seven patches apply sequentially to the base commit above. Each item's
+  focused tests pass (16 / 18 / 11 / 11 / 17 / 24 / 10 tests respectively).
+  Per-item replay logs and commit messages sit beside the patches.
+- Replayed files match the working tree (text normalized to LF, binary exact).
+  All 13 fixture source hashes and the 600,000-byte per-file limit were checked.
+  `git diff --check` passes; protected files and Git metadata are unchanged.
+- `.scratch/commits/series.json` records patch hashes, messages, changed paths,
+  replay test logs, and fixture hashes. No new provider requests were made.
+
+Holdout limitation: there is no pristine alpha-silhouette image left in these
+two supplied sets after the second akimbo and key-shaft counterexamples were
+used for refinement. The unchanged key-ring predicate passing its positive
+control does not make that source image independent again. Consequently the
+strict untouched-image-per-class requirement remains unfulfilled for alpha;
+an additional unseen silhouette is needed before claiming that validation.
+The other held-out verdicts above remain valid for their stated checks.
