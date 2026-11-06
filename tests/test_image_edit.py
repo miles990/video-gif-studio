@@ -31,11 +31,12 @@ class EditTests(ImageCase):
         self.assertEqual(result['revision']['changed_shots'],['s2']);self.assertEqual(len(self.calls()),1)
         for i in [0,2,3,4,5]:self.assertEqual(board['shots'][i],result['shots'][i])
 
-    def test_markup_fills_ring_and_rejects_changed_size(self):
+    def test_markup_fills_ring_and_aligns_changed_size(self):
         note=Image.new('RGBA',(160,240));ImageDraw.Draw(note).ellipse((50,125,108,200),outline='red',width=3)
         path=self.path/'note.png';note.save(path);mask=region_mask(note.size,markup=path)
         self.assertGreater(mask[160,80],0)
-        with self.assertRaises(ImageError):composite(self.base,self.candidate.resize((80,120)),mask)
+        _,qa,_=composite(self.base,self.candidate.resize((80,120)),mask)
+        self.assertTrue(qa['outside_identical'])
         with self.assertRaises(ImageError):composite(self.base,self.base,mask)
 
     def test_image_feedback_resolves_frame_and_object(self):

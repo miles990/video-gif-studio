@@ -41,24 +41,27 @@ def region_mask(size,region=None,markup=None):
 
 
 def register(base,candidate,region):
-    if base.shape!=candidate.shape:raise ImageError('E_EDIT_SIZE','Regeneration changed dimensions; cannot certify pixel-preserving alignment.')
     a=cv2.cvtColor(base[...,:3],cv2.COLOR_RGB2GRAY);b=cv2.cvtColor(candidate[...,:3],cv2.COLOR_RGB2GRAY)
     outside=(region==0).astype('uint8')*255
-    if np.array_equal(a[outside>0],b[outside>0]):return candidate,dict(method='identical_outside',residual_px=0,transform=[[1,0,0],[0,1,0]])
+    if a.shape==b.shape and np.array_equal(a[outside>0],b[outside>0]):return candidate,dict(method='identical_outside',residual_px=0,transform=[[1,0,0],[0,1,0]])
+    tolerance=max(1.,min(base.shape[:2])*.002)
     orb=cv2.ORB_create(nfeatures=3000,edgeThreshold=10,fastThreshold=8)
-    ka,da=orb.detectAndCompute(a,outside);kb,db=orb.detectAndCompute(b,outside)
+    ka,da=orb.detectAndCompute(a,outside);kb,db=orb.detectAndCompute(b,cv2.resize(outside,(b.shape[1],b.shape[0]),interpolation=cv2.INTER_NEAREST))
     if da is not None and db is not None and len(da)>=2:
         matches=cv2.BFMatcher(cv2.NORM_HAMMING).knnMatch(db,da,k=2)
         matches=[pair[0] for pair in matches if len(pair)==2 and pair[0].distance<.75*pair[1].distance]
         if len(matches)>=8:
             source=np.float32([kb[m.queryIdx].pt for m in matches]);target=np.float32([ka[m.trainIdx].pt for m in matches])
-            matrix,inliers=cv2.estimateAffinePartial2D(source,target,method=cv2.RANSAC,ransacReprojThreshold=1)
-            if matrix is not None and inliers.sum()>=8:
+            matrix,inliers=cv2.estimateAffinePartial2D(source,target,method=cv2.RANSAC,ransacReprojThreshold=tolerance*1.5)
+            if matrix is not None and inliers.sum()>=8 and inliers.mean()>=.25:
                 predicted=source@matrix[:,:2].T+matrix[:,2];residual=float(np.median(np.linalg.norm(predicted-target,axis=1)[inliers.ravel()>0]))
-                if residual<=1:
+                scale=float(np.linalg.norm(matrix[:,0]));angle=float(np.degrees(np.arctan2(matrix[1,0],matrix[0,0])))
+                support=np.ptp(target[inliers.ravel()>0],axis=0)/np.array([a.shape[1],a.shape[0]])
+                if residual<=tolerance and .25<=scale<=4 and abs(angle)<=10 and np.all(support>.15):
                     aligned=cv2.warpAffine(candidate,matrix,(base.shape[1],base.shape[0]),flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_REFLECT)
-                    return aligned,dict(method='ORB_RANSAC',residual_px=residual,inliers=int(inliers.sum()),transform=matrix.tolist())
+                    return aligned,dict(method='ORB_RANSAC',residual_px=residual,residual_tolerance_px=tolerance,inliers=int(inliers.sum()),inlier_fraction=float(inliers.mean()),scale=scale,rotation_degrees=angle,transform=matrix.tolist())
     try:
+        if a.shape!=b.shape:raise cv2.error('ECC requires equal dimensions')
         matrix=np.eye(2,3,dtype=np.float32)
         correlation,matrix=cv2.findTransformECC(a,b,matrix,cv2.MOTION_TRANSLATION,
                                                (cv2.TERM_CRITERIA_EPS|cv2.TERM_CRITERIA_COUNT,100,1e-6),outside,5)
@@ -69,7 +72,7 @@ def register(base,candidate,region):
         if correlation>=.8 and residual<=1:
             return aligned,dict(method='ECC_translation',correlation=float(correlation),residual_px=residual,transform=matrix.tolist(),inverse_map=True)
     except cv2.error:pass
-    raise ImageError('E_REGISTRATION','Cannot establish <=1 px alignment outside the edit; select a better reference/regeneration.')
+    raise ImageError('E_REGISTRATION','Cannot establish confident alignment outside the edit; select a better reference/regeneration.',residual_tolerance_px=tolerance)
 
 
 def composite(base,candidate,mask,feather=8):
@@ -79,7 +82,7 @@ def composite(base,candidate,mask,feather=8):
     margin=round(min(base.size)*.02)
     expanded=cv2.dilate(mask,np.ones((2*margin+1,2*margin+1),np.uint8))
     aligned,registration=register(a,b,expanded)
-    outside=expanded==0;rawdiff=np.abs(a.astype(float)-b.astype(float))
+    outside=expanded==0;rawdiff=np.abs(a.astype(float)-aligned.astype(float))
     if feather:
         distance=cv2.distanceTransform((expanded>0).astype('uint8'),cv2.DIST_L2,5)
         weights=np.clip(distance/feather,0,1)
