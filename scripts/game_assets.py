@@ -20,8 +20,16 @@ def main(argv):
         an=sub.add_parser('animate');options(an);an.add_argument('--charsheet',required=True,type=Path)
         an.add_argument('--states',default='idle,run,attack,hurt');an.add_argument('--pose-plan',type=Path);an.add_argument('--fps',nargs='*',default=[])
         an.set_defaults(round='spec-14',cap=40)
+        sp=sub.add_parser('sprite-check');sp.add_argument('images',nargs='+',type=Path);sp.add_argument('--experimental',action='store_true');sp.add_argument('--json',action='store_true')
+        sp.add_argument('--out',type=Path);sp.add_argument('--cleanup',action='store_true');sp.add_argument('--pixel',type=int);sp.add_argument('--palette',type=Path)
+        sp.add_argument('--scale',type=int,default=1);sp.add_argument('--alpha-mode',choices=['straight','premultiplied'],default='straight');sp.add_argument('--particles',action='store_true')
         a=p.parse_args(argv)
         if not a.experimental:raise ImageError('E_EXPERIMENTAL','Game assets are experimental.',suggestion='Pass --experimental.')
+        if a.command=='sprite-check':
+            from game_sprite import sprite_check
+            from image_common import read
+            result=sprite_check(a.images,mode=a.alpha_mode,palette=read(a.palette) if a.palette else None,pixel=a.pixel,scale=a.scale,cleanup=a.cleanup,out=a.out,particles=a.particles)
+            print(json.dumps(dict(ok=result['status']=='PASS',result=result)));return 0 if result['status']=='PASS' else 2
         if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
         adapter,req=adapter_request(a)
         if a.command=='character':

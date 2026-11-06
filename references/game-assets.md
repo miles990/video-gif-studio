@@ -41,3 +41,11 @@ The phase names are anticipation, swing, contact, follow_through, recovery.
 Jump QA measures airborne center-of-alpha parabolas and requires preparation
 and landing compression. Generated motion remains pending visual review; a
 failed report is retained with offending frame numbers, never called seamless.
+
+`sprite-check IMAGE... --experimental [--cleanup --out DIR] [--alpha-mode
+straight|premultiplied] [--pixel 64 --palette palette.json --scale 3]` checks
+alpha-mode evidence, real transparency, disconnected specks, halo colors,
+shared canvas, exact integer grid and new colors. Cleanup preserves opaque
+silhouette pixels and intentional gaps. `--particles` exempts deliberate
+detached VFX; it does not exempt malformed alpha. Internal holes require an
+annotated intended-negative-space mask for semantic classification.
