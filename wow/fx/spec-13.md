@@ -38,3 +38,16 @@ trunk-based：每個 S 一個小切片，測試全綠當天以 experimental 合�
 - TestingCatalog：https://www.testingcatalog.com/openai-launches-images-2-6-with-gifs-and-image-reference/
 - OpenArt 規格（長寬比、4K、16 張參考、透明背景、C2PA）：https://openart.ai/blog/gpt-image-2-6-overview/
 - 注意：部分細節來自第三方整理，實作前以 OpenAI 官方文件與實測為準。
+
+## 能力實測（2026-11-06，Codex 訂閱路線，codex-cli 0.166，image_generation 工具）
+| 功能 | 訂閱路線 | 證據／做法 |
+|---|---|---|
+| 一般出圖（含 9:16、清楚的文字） | ✅ | cafe-keyframe 941×1672，生成 19.6 s；「MENU」正確 |
+| 透明背景 | ✅ 原生（`transparent_background`） | probe-alpha：RGBA、48.6% 全透明；外框周圍有零星半透明白點 → 仍需我們的 alpha 清理／QA |
+| 參考圖（身分／場景保留） | ✅（`referenced_image_paths`） | probe-edit：只換杯子、構圖光線保留；但整張重生，杯子以外平均差 8.5/255（非像素一致） |
+| 局部修改（markup／mask） | ❌ 無參數 | 做法：參考圖重生＋我們用遮罩把改動區合成回原圖（區外像素一致）；精準 markup 需 API |
+| 原生 GIF | ❌ 只回 PNG | 做法：關鍵格＋我們的補格／Grok 做動作；原生 GIF 需 API（付費，需先問） |
+| SVG | ❌ 無格式選項 | 需 API（付費，需先問）；或關鍵格向量化（potrace 類）作替代 |
+| 回報模型名稱 | ❌ 不回報 | manifest 記「codex-image_generation（模型未回報）」 |
+| 模型選擇 Flare／Sunburst、品質、complexity | ❌ | 需 API |
+→ 預設全走訂閱；API 只在使用者同意後用於：原生 GIF、SVG、精準 markup、指定 Flare／Sunburst。

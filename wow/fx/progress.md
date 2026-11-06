@@ -90,3 +90,4 @@
 - 12:10 使用者問 Codex 為何一次只能跑一個、要更好的做法。原因：wow-agent 預設 per-engine codex=1（源自 2026-10-31 16 GB 機器兩個 Codex build＋subagents 並行被記憶體收掉）；但真正的瓶頸是重工作的記憶體，不是 Codex 本身。改為依資源排程：新增 vgs-fx-private/dispatch.sh——重工作（build／全套測試／算繪）佔全機 build 號誌一次一個；輕工作（出圖、文字、小檢查）用 --class light、codex 上限放寬到 3，可與重工作並行，仍守最低可用記憶體 2.5 GB。實測：imagegen-test2 已與 s11-fix 同時在跑。
 ## 待回報給 wow 技能（續）
 4. wow-agent 的 --light 對 Codex 不生效（仍受 codex=1），輕工作被重工作擋住；建議 light 類別不計入 per-engine 上限、只受記憶體下限管。
+- 12:30 Images 2.6 能力探測：訂閱路線可出圖、原生透明背景、參考圖保留身分；不支援局部 markup、原生 GIF、SVG、模型選擇、回報模型名 → 以我們的遮罩合成／補格／向量化補足，API 功能需使用者同意。acceptance-13（獨立出題者，含付費防呆、雙層測試、量化門檻）與保留題 10 條完成。spec-11 的 8 個修正因建造者沙盒無法寫 .git，由協調者依其補丁重建為 8 個小提交並驗證與最終狀態一致，全套測試中。
