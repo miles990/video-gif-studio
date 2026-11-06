@@ -80,7 +80,27 @@ def style_qa(images,token,pixel=False):
             mean=np.degrees(np.angle(np.mean(np.exp(1j*np.radians(angles)))))%360
             for r in rows:
                 if r['light']!='n/a' and abs((r['light']-mean+180)%360-180)>20:issues.append(dict(index=r['index'],kind='light_group_outlier'))
-    return dict(status='PASS' if not issues else 'FAIL',icons=rows,issues=issues,outlier_indices=sorted({r['index'] for r in issues}),light_circular_std_deg=spread)
+    light_mean=float(np.degrees(np.angle(np.mean(np.exp(1j*np.radians(angles)))))%360) if len(angles) else None
+    drift=dict(outline_px=float(np.median([r['outline_px'] for r in rows]))-token['outline_px'],
+               padding_shortfall_px=max(0,token['safe_margin']-min(r['safe_margin'] for r in rows)),
+               light_deg=abs((light_mean-token['light_deg']+180)%360-180) if light_mean is not None else None,
+               light_assessed_items=len(angles),comparison='whole-set median/circular mean versus style token')
+    return dict(status='PASS' if not issues else 'FAIL',icons=rows,issues=issues,outlier_indices=sorted({r['index'] for r in issues}),light_circular_std_deg=spread,set_drift=drift)
+
+
+def fit_icon(im,token,pixel=False):
+    """Restore safe padding before quantization; retain lighting for honest QA."""
+    grid=token['grid'];box=im.getbbox()
+    if not box:raise ImageError('E_ICON_EMPTY','Generated icon is empty.')
+    # Leave already compliant native pixel canvases untouched.
+    margin=min(box[0],box[1],im.width-box[2],im.height-box[3])
+    if im.size==(grid,grid) and margin>=token['safe_margin']:return im
+    crop=im.crop(box);side=grid-2*token['safe_margin'];scale=side/max(crop.size)
+    size=(max(1,round(crop.width*scale)),max(1,round(crop.height*scale)))
+    palette=[p if isinstance(p,dict) else dict(hex=p) for p in token['palette']]
+    crop=quantize(crop,palette,size) if pixel else crop.resize(size,Image.Resampling.LANCZOS)
+    canvas=Image.new('RGBA',(grid,grid));canvas.paste(crop,((grid-size[0])//2,(grid-size[1])//2))
+    return canvas
 
 
 def iconset(adapter,request,items,token,out,pixel=False,fix=False):
@@ -94,11 +114,19 @@ def iconset(adapter,request,items,token,out,pixel=False,fix=False):
     indices=style_qa([rgba(p) for p in paths],token,pixel)['outlier_indices'] if previous else list(range(len(items)))
     records=list(previous['records']) if previous else [None]*len(items);generations=[]
     accepted=next((paths[i] for i in range(len(paths)) if i not in indices and paths[i].exists()),None)
+    anchor=out/'style-anchor.png'
+    if not previous:
+        anchor_result=adapter.generate(replace(request,prompt=f'Original neutral faceted shield style anchor. Exact style token: {token}. ONE object, no text, transparent background. This image defines outline, palette, upper-left lighting and spacing for an inventory set.',refs=[],transparent=True,n=1),out/'generation/style-anchor')
+        anchor_im=rgba(anchor_result['assets'][0]['path']);require_alpha(anchor_im)
+        anchor_im=fit_icon(anchor_im,token,pixel);anchor_im.save(anchor);generations.append(anchor_result)
+        anchor_record=dict(source='generated',file=anchor.name,sha256=digest(anchor),token=token,qa=style_qa([anchor_im],token,pixel))
+    else:anchor_record=previous.get('style_anchor',{})
     for i in indices:
-        refs=[str(accepted.resolve())] if accepted else []
+        refs=[str(accepted.resolve())] if accepted else [str(anchor.resolve())] if anchor.exists() else []
         prompt=f'Original game item icon: {items[i]}. {request.prompt}. Same exact style token: {token}. Single icon, transparent, {grid}x{grid} grid, safe margin {token["safe_margin"]} pixels, no text.'
         result=adapter.generate(replace(request,prompt=prompt,refs=refs,transparent=True,n=1),out/'generation'/f'{i:02d}-{len(previous.get("repairs",[])) if previous else 0}',no_cache=fix)
         im=rgba(result['assets'][0]['path']);require_alpha(im)
+        im=fit_icon(im,token,pixel)
         if pixel:im=quantize(im,[p if isinstance(p,dict) else dict(hex=p) for p in token['palette']],(grid,grid))
         else:im=im.resize((grid,grid),Image.Resampling.LANCZOS)
         im.save(paths[i]);records[i]=dict(index=i,item=items[i],file=paths[i].name,sha256=digest(paths[i]),refs_sent=[digest(p) for p in refs],style_token_sha=token_sha)
@@ -111,6 +139,6 @@ def iconset(adapter,request,items,token,out,pixel=False,fix=False):
     sheet=Image.new('RGBA',(grid*4,grid*math.ceil(len(images)/4)))
     for i,im in enumerate(images):sheet.paste(im,((i%4)*grid,(i//4)*grid))
     sheet.save(out/'sheet.png');write(out/'style.json',token)
-    result=dict(status='experimental',items=items,style_token_sha=token_sha,records=records,qa=qa,repairs=[*(previous.get('repairs',[]) if previous else []),dict(indices=indices,before=before)] if fix else [],review='pending')
+    result=dict(status='experimental',items=items,style_token_sha=token_sha,style_anchor=anchor_record,records=records,qa=qa,repairs=[*(previous.get('repairs',[]) if previous else []),dict(indices=indices,before=before)] if fix else [],review='pending')
     write(out/'iconset.json',result);write(out/'gen-manifest.json',dict(originality=originality(' '.join(items)),generations=generations,style_token_sha=token_sha,fallback='pixel_quantize' if pixel else None))
     return result
