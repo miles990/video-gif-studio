@@ -80,13 +80,29 @@ def export(frames, manifest, out, max_size=2048, padding=2, divisor=1, pivot=Non
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('frames', type=Path)
-    ap.add_argument('--manifest', required=True, type=Path)
+    ap.add_argument('--manifest', type=Path)
+    ap.add_argument('--anim-manifest',nargs='+',type=Path)
+    ap.add_argument('--engine',help='godot4,unity,phaser-hash,phaser-array,pixi,aseprite')
+    ap.add_argument('--extrude',type=int,default=1)
+    ap.add_argument('--pixel',action='store_true')
+    ap.add_argument('--experimental',action='store_true')
     ap.add_argument('--out', required=True, type=Path)
     ap.add_argument('--max-size', type=int, default=2048)
     ap.add_argument('--padding', type=int, default=2)
     ap.add_argument('--scale-divisor', type=int, default=1)
     ap.add_argument('--pivot', type=float, nargs=2, metavar=('X', 'Y'))
     a = ap.parse_args()
+    if a.engine:
+        from image_common import ImageError
+        try:
+            if not a.experimental:raise ImageError('E_EXPERIMENTAL','Engine exports require --experimental.')
+            from game_engines import export_engines
+            r=export_engines(a.anim_manifest or sorted(a.frames.glob('*/anim.json')),a.out,a.engine.split(','),a.max_size,a.padding,a.extrude,a.pixel)
+            print(json.dumps(dict(ok=True,result=r)));return
+        except (ImageError,ValueError,OSError,KeyError) as exc:
+            print(json.dumps(dict(ok=False,error=exc.error if isinstance(exc,ImageError) else dict(code='E_EXPORT',message=str(exc)))))
+            raise SystemExit(2)
+    if not a.manifest:ap.error('--manifest is required for generic export')
     r = export(a.frames, a.manifest, a.out, a.max_size, a.padding, a.scale_divisor, a.pivot)
     print(json.dumps({'frames': len(r['frames']), 'pages': len(r['pages']), 'qc': r['qc']}))
 

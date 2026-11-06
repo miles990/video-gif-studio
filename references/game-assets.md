@@ -49,3 +49,14 @@ shared canvas, exact integer grid and new colors. Cleanup preserves opaque
 silhouette pixels and intentional gaps. `--particles` exempts deliberate
 detached VFX; it does not exempt malformed alpha. Internal holes require an
 annotated intended-negative-space mask for semantic classification.
+
+Engine export: `sprite_export.py anim/ --anim-manifest anim/idle/anim.json
+anim/attack/anim.json --out export/ --engine godot4,unity,phaser-hash,phaser-array,pixi,aseprite
+--pixel --padding 2 --extrude 1 --experimental`. Each output page is decoded
+and each crop compared byte-for-byte with its source. Sidecars retain all
+per-state timing, event and pivot data, including cross-page state sequences.
+Godot resources use format=3 and relative res:// textures. A real Godot test
+project and playback checker are included; Unity remains format-only/untested.
+Phaser durations are additive to its base frame period, as described in the
+[Phaser animation documentation](https://docs.phaser.io/phaser/concepts/animations).
+Pixi uses the [Spritesheet format](https://github.com/pixijs/pixijs-skills/blob/main/skills/pixijs-assets/references/spritesheet.md).
