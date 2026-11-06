@@ -23,6 +23,12 @@ Users may describe only an intended result. Infer a suitable script, motion, tim
 
 ## Defaults unless the user specifies otherwise
 
+- **Suno music and game audio (experimental):** read [Suno routing](references/suno.md).
+  The agent makes MCP calls; Python plans requests, enforces host-transport budgets,
+  measures and exports audio. Use `--experimental`; direct Codex downloads default
+  to a pending list because its guard is instruction-only. Never deliver preview
+  streams, guess measured BPM/key, or certify a loop before decoded-format checks.
+
 - Motion follows plausible physics and visible cause and effect: support and weight transfer drive the body, the hand drives a held weapon, and cloth/particles follow with appropriate inertia. Effects never substitute for missing physical movement.
 - Let the action produce reasonable whole-body travel by default: stepping, lunging, advancing, retreating and returning to balance are allowed when motivated. Show coherent support, push-off, pelvis movement, weight acceptance and recovery. Do not prescribe stationary feet or an immobile lower body merely to simplify alignment or looping; a fixed camera/canvas does not mean a fixed character. Honor an explicitly requested in-place animation or movement limit while retaining plausible weight transfer within it.
 - Human characters retain coherent anatomy, limb proportions, joint ranges, muscle and soft-tissue tension, perspective, foreshortening and occlusion throughout the motion. These defaults also apply to pixel art and stylized humans; explicitly requested exaggeration or nonphysical behavior overrides the relevant default.
