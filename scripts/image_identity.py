@@ -160,7 +160,7 @@ def check(path,refset,identity_override=None):
     data=load(refset);refs=data['images'];negative=data.get('negative_images',[])
     override=override_record(identity_override)
     if override:return dict(status='pass' if identity_override=='same' else 'identity_fail',identity_override=override,refset_sha=digest(refset),visual_review='user override')
-    from identity_engine import engine,describe,verdict,features as semantic_features
+    from identity_engine import engine,describe,verdict,LIMITS,features as semantic_features
     if engine()[0] is None:
         return dict(status='unassessed',reason=describe()['reason'],method=describe(),positive=[fallback_compare(path,r['path']) for r in refs],visual_review='pending')
     if len(refs)<2 or not negative:
@@ -173,7 +173,10 @@ def check(path,refset,identity_override=None):
     aggregate={axis:max(p[axis] for p in positive) for axis in ('structure','colour')}
     source=semantic_features(path)[2]
     status=verdict(aggregate) if source!='saliency' else 'unassessed'
-    return dict(status=status,reason=None if status!='unassessed' else 'Subject evidence does not separate identity from scene/pose variation.',positive=positive,negative=neg,
+    reason=None
+    if status=='unassessed':
+        reason='pose_or_prop_change' if source!='saliency' and aggregate['structure']<LIMITS['structure']['pass'] and aggregate['colour']>=LIMITS['colour']['fail'] else 'Subject evidence does not separate identity from scene/pose variation.'
+    return dict(status=status,reason=reason,positive=positive,negative=neg,
                 aggregate=aggregate,controls=prior,
                 method=describe(),refset_sha=digest(refset),visual_review='pending')
 

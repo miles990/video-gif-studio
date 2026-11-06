@@ -43,5 +43,5 @@ class IdentityRound3(ImageCase):
 
  def test_axes_are_independent_with_abstention_band(self):
   self.assertEqual(verdict(dict(structure=.95,colour=.4)),'identity_fail')
-  self.assertEqual(verdict(dict(structure=.5,colour=.95)),'identity_fail')
+  self.assertEqual(verdict(dict(structure=.5,colour=.95)),'unassessed')
   self.assertEqual(verdict(dict(structure=.81,colour=.95)),'unassessed')

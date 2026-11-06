@@ -1,0 +1,170 @@
+{
+  "source": "review-s13-r4 subscription live Tinroot set; fixture resizes, native images used for 72-hole replay",
+  "records": [
+    {
+      "path": "refFront/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\refFront\\image-1.png",
+      "source_sha256": "95a6aaaaca12ee7105d65c9f97b272eed0fc74a0858c363623aba935da154874",
+      "sha256": "886fe76bbea7e5ea7282e1723cec18f2292825110c05be8ac1d5a37d67d0b744",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 284203
+    },
+    {
+      "path": "refSide/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\refSide\\image-1.png",
+      "source_sha256": "5a1345141133f10391bf8b05cb7136eeff4d0e60a864f18e84759031f82c90dc",
+      "sha256": "3afde2cca042a69d378e37898e71bf664c3fe4b9eb73c51f57e05fdacef5d00a",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 287594
+    },
+    {
+      "path": "refBack/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\refBack\\image-1.png",
+      "source_sha256": "a9cc92c149d1d1234fd6c816fb07653937e425f4f81eef02d55258a9db8403f6",
+      "sha256": "8ce83f6e6a566feb4122354f02d0e84e1105f96194ae0024518f596e914bd1ec",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 304104
+    },
+    {
+      "path": "refAction/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\refAction\\image-1.png",
+      "source_sha256": "9a94f7dce53a2752ed11005201547508f5e8b29f6074337456dc42547631db91",
+      "sha256": "536949eef68c49f1a1eda7b6cbb7b3bf107ab95a2076ad116f4c09f0b5a42fca",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 316275
+    },
+    {
+      "path": "impRecolor/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\impRecolor\\image-1.png",
+      "source_sha256": "4bbf56e60425a198491c084855973c14ce9f35c89c6991edfc523bcd40f3b7b5",
+      "sha256": "6795bceb34d13925308a7d14c50e7b451f842194038c26b48ba4edc8ddebeba3",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 291169
+    },
+    {
+      "path": "impPalette/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\impPalette\\image-1.png",
+      "source_sha256": "3044be5f14958bf547d934109ad57f11824ae9e87161cf5ff6fa8515500d8c0a",
+      "sha256": "a0aa23a3e6649f77acdb5ee5f8f8e23bde848272966a16f3270a682b666f0619",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 325306
+    },
+    {
+      "path": "impSilhouette/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\impSilhouette\\image-1.png",
+      "source_sha256": "e7d54374e915634e744013f11667dfe9dc79232fc88360624ae3c434a569f5c7",
+      "sha256": "38f07ed7f75e8b5331cb5a87f76305e6575effc3f58c6b8b13eff18632c1fa5a",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 250049
+    },
+    {
+      "path": "impTwin/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\impTwin\\image-1.png",
+      "source_sha256": "1c4f4e8e4e3f89cafc93bd934efae8e80f4584947c7c45750fc65a50da736150",
+      "sha256": "2bd3ea0dbdfb87a71d60e0b56d2b4a3da666271259d5ec57c34ce413da2864f3",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 312582
+    },
+    {
+      "path": "spHose/asset.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\spHose\\asset.png",
+      "source_sha256": "1e958d4ec58535c8b389a44fecc6effeaa9cfb7db57ab4f5c9d009b3afab232a",
+      "sha256": "96f5cd649882206f3f208e450ee059cd8a0fafaa699090bb4d69d1bc9ab21fba",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "bytes": 258003
+    },
+    {
+      "path": "spHipsClean/asset.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\spHipsClean\\asset.png",
+      "source_sha256": "a336258d2d3d288ac368e083bec35f22827a83fd81f49f6586fab0c20758d3e6",
+      "sha256": "6aedd7176b05be3304c4161e742babfd1289b2749d67df246f5c816834f410ec",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "bytes": 291911
+    },
+    {
+      "path": "iconClean/asset.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\iconClean\\asset.png",
+      "source_sha256": "71d1b912a23c83bb53e7ccf09fdfacebb668ee080fe125a83850675885c703ec",
+      "sha256": "629d62950e83262d3c77fff799db440edea266c27180362843cfe4d98a08cd86",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "bytes": 417053
+    }
+  ]
+}

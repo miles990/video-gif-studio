@@ -78,6 +78,8 @@ def compare(a,b):
 
 def verdict(scores,limits=None):
     limits=limits or LIMITS
-    if any(scores[k]<limits[k]['fail'] for k in limits):return 'identity_fail'
+    # Structure changes with pose/props. It cannot independently veto identity;
+    # an inconclusive palette also must not become a structural hard reject.
+    if scores['colour']<limits['colour']['fail']:return 'identity_fail'
     if all(scores[k]>=limits[k]['pass'] for k in limits):return 'pass'
     return 'unassessed'
