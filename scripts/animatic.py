@@ -72,7 +72,9 @@ def source_frame(shot,base,size):
         shot['asset_fallback']=dict(path=str(path),reason='missing footage')
         return card(shot,size)
     try:
-        with Image.open(path) as im:return framed(np.array(im.convert('RGBA')),shot,size)
+        with Image.open(path) as im:
+            if not shot.get('apply_framing'):return np.array(im.convert('RGBA').resize(size))
+            return framed(np.array(im.convert('RGBA')),shot,size)
     except OSError:
         cap=cv2.VideoCapture(str(path));cap.set(cv2.CAP_PROP_POS_MSEC,shot.get('in_ms',0));ok,bgr=cap.read();cap.release()
         if not ok:

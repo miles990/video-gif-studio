@@ -7,13 +7,17 @@ This is the complete absorbed authoring method, vocabulary and evidence, not a c
 # Finding references and assets — 改寫自 blank-page references/finding-references.md §Finding references and assets（MIT）
 
 The roles a reference may play, where to search, and how to vet. `scripts/brief_refs.py`
-does the fetching; run it with no arguments for the command list. Output is one JSON
-object per line.
+exposes the `ReferenceFinder` Python adapter; it has no standalone search CLI.
+The agent supplies a transport and vets candidates. Historical shorthand such as
+`channels`, `search`, `still`, `moving` and `pin` below describes research operations,
+not shell commands. Use `channels`, `combined`, `contents`, `connections`,
+`download`, and `contact_sheet` from the bundled module; use an available web tool
+for pin pages. No Pinterest scraping or implicit downloads are provided.
 
 ## Roles — 改寫自 blank-page references/finding-references.md §Roles（MIT）
 
 Every reference gets exactly one role, a take (what it supplies) and a fidelity word.
-A file good for two roles is listed twice with two scoped takes.
+Use a distinct file for each role so the user can compare actual choices.
 
 | role | supplies | never supplies | media | default fidelity | house phrasing |
 |---|---|---|---|---|---|
@@ -257,11 +261,7 @@ Use `ReferenceFinder.sketchfab(query, max_faces)` from `scripts/brief_refs.py`. 
 - **Parts must match the motion.** A lid, arm or door that moves must be its own mesh;
   say which parts move in the take, confirm with `inspect` after download.
 - **Whole object, not a scan fragment or fan variant.** Pick from the sheet.
-- **Download routes**, tried in order by `ReferenceFinder.model_route`: the Objaverse mirror
-  (allenai/objaverse on Hugging Face, 2022 snapshot, ~800k models, no login, rigs
-  survive; `free_download: true` marks these, so prefer them when candidates are
-  close); the Sketchfab API with `SKETCHFAB_TOKEN`; else it prints the page, which goes
-  in `assets:` with `[? download]`.
+- **Download routes:** `ReferenceFinder.model_route` uses an explicitly supplied local Objaverse index, then a supplied authenticated URL. Otherwise record the model page with `[? download]`. It does not fetch a mirror index, manage credentials or promise a downloaded asset.
 - **Role.** Normally an **asset**, used as-is with styling on top. A **copy** reference
   only when the comp redraws it in another medium. Say which.
 

@@ -21,7 +21,7 @@ class FixTests(unittest.TestCase):
         import numpy as np
         import wave,tempfile
         with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
-            rate=8000;duration=30;t=np.arange(rate*duration)/rate
+            rate=8000;duration=90;t=np.arange(rate*duration)/rate
             audio=np.zeros_like(t)
             for start in np.arange(0,duration,60/123):
                 u=t-start;audio+=.2*np.sin(2*np.pi*70*u)*np.exp(-np.maximum(u,0)*45)*(u>=0)*(u<.12)
@@ -31,6 +31,7 @@ class FixTests(unittest.TestCase):
             grid=brief.music_grid(p)
             self.assertIsNone(grid['drop_ms'])
             self.assertAlmostEqual(grid['beats_ms'][50],50*60000/123,delta=25)
+            self.assertAlmostEqual(grid['beats_ms'][170],170*60000/123,delta=25)
             b=brief.expand('coffee 10s',music=grid)
             self.assertIn('No drop detected; turn anchored to bar',b['prompt'])
             self.assertTrue(all(s['sound']['section']!='drop' for s in skeleton_board(b)['shots']))
@@ -93,6 +94,9 @@ class FixTests(unittest.TestCase):
             self.assertEqual(treatment(['a.png'],10,core,factory()),stable_treatment(['a.png'],10,core,factory()))
         b=skeleton_board(brief.expand('sports hype 10s',project=[dict(path=f'{i}.png') for i in range(3)]))
         self.assertEqual([s['image'] for s in b['shots'][:6]],['0.png','1.png','2.png']*2)
+        logo=skeleton_board(brief.expand('Acme kettle; logo must appear last',project=[dict(path='kettle.png'),dict(path='logo.png',role='logo')]))
+        self.assertEqual(logo['shots'][-1]['image'],'logo.png')
+        self.assertTrue(all(s.get('image')!='logo.png' for s in logo['shots'][:-1]))
         for genre in ('ASMR','sleep','meditation'):
             board=skeleton_board(brief.expand(genre+' 10s'))
             self.assertEqual(board['editorial_structure']['profile'],'calm')
@@ -168,3 +172,33 @@ class FixTests(unittest.TestCase):
         path.rename.side_effect=PermissionError('locked')
         with patch('fx_render.time.sleep'):
             with self.assertRaises(PermissionError):rename_delivery(path,Path('done'),attempts=2)
+
+    def test_lint_aesthetic_routine_forks_and_boilerplate(self):
+        from brief_lint import lint
+        from copy import deepcopy
+        b=brief.expand('coffee 5s')
+        for aesthetic in ('vaporwave × Swiss','vaporwave, Swiss','vaporwaveSwiss','賽博龐克巴洛克'):
+            bad=deepcopy(b);bad['aesthetic']=aesthetic
+            self.assertIn('one_aesthetic',[f['rule'] for f in lint(bad)['findings']])
+        for routine in ('5s','9:16','square'):
+            bad=deepcopy(b);bad['forks']=[dict(choice_made=routine,alternative='paper')]
+            self.assertIn('routine_fork',[f['rule'] for f in lint(bad)['findings']])
+        b['forks']=[dict(choice_made='秒針轉為水紋',alternative='齒輪化為月亮')]
+        self.assertNotIn('routine_fork',[f['rule'] for f in lint(b)['findings']])
+        b['end_hold']=2;b['rule_break']=dict(rule='end_hold',why='for lint')
+        self.assertEqual(next(f['severity'] for f in lint(b)['findings'] if f['rule']=='end_hold'),'error')
+        self.assertIn('exemption_reason',[f['rule'] for f in lint(b)['findings']])
+
+    def test_fingerprint_requires_720_and_detects_embedding(self):
+        import cv2,tempfile
+        import numpy as np
+        from brief_guard import signature,audit
+        from PIL import Image
+        with self.assertRaisesRegex(ValueError,'E_FINGERPRINT_RESOLUTION'):signature(np.zeros((180,320,3),np.uint8))
+        with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
+            root=Path(tmp);ref=root/'ref.png';other=root/'other.png'
+            rng=np.random.default_rng(8);base=rng.integers(0,256,(720,960,3),dtype=np.uint8)
+            for i in range(40):cv2.putText(base,str(i),(int(rng.integers(30,900)),int(rng.integers(30,690))),cv2.FONT_HERSHEY_SIMPLEX,1.2,(255,255,255),2)
+            Image.fromarray(base).save(ref);Image.fromarray(rng.integers(0,256,base.shape,dtype=np.uint8)).save(other)
+            self.assertFalse(audit(ref,[ref])['pass_nonembedding'])
+            report=audit(other,[ref]);self.assertTrue(report['pass_nonembedding']);self.assertEqual(report['analysis_short_side'],720)

@@ -22,11 +22,21 @@ def frames(path, step=None):
 
 
 def signature(frame):
+    if min(frame.shape[:2])<720:
+        raise ValueError('E_FINGERPRINT_RESOLUTION: decode originals with short side at least 720 px; proxy upscaling is not evidence')
     gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     small=cv2.resize(gray,(32,32)).astype(np.float32);dct=cv2.dct(small)[:8,:8].flatten();bits=dct>np.median(dct[1:])
-    scale=min(1.,800/max(gray.shape));gray=cv2.resize(gray,None,fx=scale,fy=scale)
-    detector=cv2.ORB_create(nfeatures=1800,fastThreshold=8);kp,desc=detector.detectAndCompute(gray,None)
-    return bits,kp,desc
+    scale=720/min(gray.shape);gray=cv2.resize(gray,None,fx=scale,fy=scale)
+    detector=cv2.ORB_create(nfeatures=1800,fastThreshold=8);points=[];descriptors=[]
+    # Keep the audit canvas at 720 short-side. An internal scale pyramid also
+    # recognizes a reference embedded as a small inset in that canvas.
+    for factor in (1.,.5,.4):
+        level=gray if factor==1 else cv2.resize(gray,None,fx=factor,fy=factor)
+        kp,desc=detector.detectAndCompute(level,None)
+        if desc is None:continue
+        for point in kp:point.pt=(point.pt[0]/factor,point.pt[1]/factor)
+        points.extend(kp);descriptors.append(desc)
+    return bits,points,np.concatenate(descriptors) if descriptors else None
 
 
 def matches(a,b):
@@ -50,5 +60,5 @@ def audit(movie, references):
         for path,ref_time,ref in refs:
             match=matches(sig,ref)
             if match['embedded']:hits.append(dict(time=time,reference=path,reference_time=ref_time,**match))
-    return dict(pass_nonembedding=not hits,frames_checked=checked,hits=hits,
+    return dict(pass_nonembedding=not hits,frames_checked=checked,hits=hits,analysis_short_side=720,
                 limitation='Textureless images are not identifiable by pHash; asset-path isolation remains mandatory.')

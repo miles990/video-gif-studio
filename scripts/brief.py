@@ -73,8 +73,15 @@ def music_grid(source):
     peaks=np.array([i for i in range(1,len(onset)-1) if onset[i]>.25*onset.max() and onset[i]>=onset[i-1] and onset[i]>onset[i+1]])
     beat_ms=lag*10
     if len(peaks)>4:
-        slots=np.rint((peaks*10-offset)/beat_ms).astype(int)
-        good=np.abs(peaks*10-(offset+slots*beat_ms))<beat_ms*.22
+        # Count intervals locally so rounding error cannot wrap the beat index
+        # on long songs. Reject extra peaks less than half a beat apart.
+        selected=[int(peaks[0])]
+        for peak in peaks[1:]:
+            if peak-selected[-1]>=lag*.5:selected.append(int(peak))
+        peaks=np.asarray(selected)
+        slots=round((peaks[0]*10-offset)/beat_ms)+np.r_[0,np.cumsum(np.maximum(1,np.rint(np.diff(peaks)*10/beat_ms).astype(int)))]
+        gaps=np.diff(peaks)*10
+        good=np.r_[True,np.abs(gaps-np.maximum(1,np.rint(gaps/beat_ms))*beat_ms)<beat_ms*.22]
         if len(set(slots[good]))>4:
             fitted,phase=np.polyfit(slots[good],peaks[good]*10,1)
             if abs(fitted-beat_ms)<15:beat_ms=float(fitted);offset=max(0.,float(phase)-10)
@@ -83,7 +90,7 @@ def music_grid(source):
     changes=[]
     for t in down:
         idx=round(t/10)
-        if idx<20 or idx+20>len(energy):continue
+        if idx<lag*2 or idx+lag*2>len(energy):continue
         before=float(np.mean(energy[max(0,idx-lag*2):idx]));after=float(np.mean(energy[idx:min(len(energy),idx+lag*2)]))
         changes.append(((after-before)/max(before,1e-6),t))
     drop=max(changes)[1] if changes and max(changes)[0]>.35 else None
@@ -182,7 +189,8 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         shot_groups=[[b-a] for a,b in zip(edges,edges[1:])];anchor='authored sequence time'
     else:
         timing=plan_timing(duration,dict(asl=design['asl'],cv=design['cv']))['durations']
-        if len(timing)<3:
+        if design['profile']=='calm' and len(timing)<2:timing=[duration*.6,duration*.4]
+        elif len(timing)<3 and design['profile']!='calm':
             weights=[.28,.46,.26] if design['profile']=='precision' else [.25,.40,.35]
             timing=[duration*w for w in weights]
         groups=np.array_split(np.arange(len(timing)),min(4,len(timing)))
@@ -198,7 +206,7 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
     for i,(start,end) in enumerate(zip(edges,edges[1:])):
         handles=[h for h in HANDLES if assignments[h]==i];is_turn=i==turn_index
         if is_turn:body=copy['turn']
-        elif i==0:body=(copy['subject']+'從畫面下緣滑入，紙邊順著手勢展開') if copy['zh'] else copy['subject']+' slides from the lower edge; its working parts settle into place'
+        elif i==0:body=(copy['subject']+'進入畫面，輪廓逐漸清楚') if copy['zh'] else copy['subject']+' slides from the lower edge; its detail comes into view'
         else:body=(copy['subject']+'沿原方向繼續運動，細節保持清楚') if copy['zh'] else copy['subject']+' continues along the same axis; keep its detail readable'
         body+=' ('+', '.join(handles)+')' if handles else ''
         beats.append(dict(id=i+1,t_start=round(start,6),t_end=round(end,6),text=body,is_turn=is_turn,anchor=anchor,
@@ -234,7 +242,7 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
             r['use']+=f'; {r["time_range"][0]:g}–{r["time_range"][1]:g} s at {r["speed_scale"]:g}x'
         if r['handle']=='m2':r['is_turn']=True;r['use']+=' (the turn)'
     vertical=platform in ('ig_reels','tiktok','shorts') or bool(re.search(r'直式|vertical|9:16',draft,re.I))
-    assets=[dict(path=c['path'],licence=c.get('licence','user-owned'),owned=c.get('owned',True),role='asset',title=c.get('id','user footage')) for c in cards if c.get('path')]
+    assets=[dict(path=c['path'],licence=c.get('licence','user-owned'),owned=c.get('owned',True),role=c.get('role','asset'),title=c.get('id','user footage')) for c in cards if c.get('path')]
     assets+=deepcopy(content.get('assets',[]))
     result=dict(version=1,mode=mode,mode_reason=reason,draft=draft,aesthetic=copy['aesthetic'],fence=copy['fence'],
                 subject=copy['subject'],hard_constraints=constraints,pace=copy['pace'],duration=duration,fps=fps,width=1080,height=1920 if vertical else 1080,
@@ -352,13 +360,17 @@ def to_storyboard(brief,variant=1,allow_skeleton=False):
             if design['profile']=='calm':
                 shot['perceived']=.03;shot['recipe']['perceived']=.03;shot['sound']['energy']=.25
             if assets:
-                asset=assets[i%len(assets)]
+                logo_last=any(re.search(r'logo.*(?:最後|last)|(?:最後|last).*logo',c,re.I) for c in brief.get('hard_constraints',[]))
+                logos=[a for a in assets if re.search(r'logo',str(a.get('role',''))+' '+str(a.get('title',''))+' '+Path(a.get('path','')).stem,re.I)]
+                final=beat is brief['beats'][-1] and j==len(lengths)-1
+                candidates=(logos if final else [a for a in assets if a not in logos]) if logo_last and logos else assets
+                asset=candidates[i%len(candidates)] if candidates else {}
                 if asset.get('path'):shot['image']=asset['path'];shot['asset']=asset
             shots.append(shot);cursor=end
     curve.append([brief['duration'],curve[-1][1]])
     if design['profile']=='calm':curve=[[t,.25] for t,_ in curve]
     board=dict(version=1,core=brief['draft'],hard_constraints=deepcopy(brief.get('hard_constraints',[])),fps=brief['fps'],width=brief['width'],height=brief['height'],duration=brief['duration'],shots=shots,tokens=tokens,
-               design_curve=curve,design_origin='authored brief beats',editorial_structure=design,warnings=warnings,credits=credits,
+               design_curve=curve,status=brief.get('status','skeleton'),design_origin='authored brief beats' if brief.get('status')=='proposal' else 'skeleton previs',editorial_structure=design,warnings=warnings,credits=credits,
                reference_policy='Read references for mechanisms and statistics; render only assets or silhouette cards',
                brief_ref_uses=[dict(handle=r['handle'],use=r['use'],cited_by=r['cited_by']) for r in brief['refs']],
                preserve_footage_motion=True,asset_policy=brief.get('assets',[]),music=brief.get('music',{}),reference_paths=[r['path'] for r in brief['refs'] if r.get('path') and r.get('source')!='user'])

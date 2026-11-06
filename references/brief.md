@@ -143,3 +143,17 @@ user answers, reports Wilson intervals and panel agreement, and keeps “未證�
 unless technical evidence, controls and user evidence all support the claim.
 
 Reference sheets are generated from actual local media under `.scratch/brief-refs/`. Missing or undecodable files report `ref_missing`; a directory name alone is not a contact sheet. Each role receives a distinct file. Author `ref_uses` to describe the selected aesthetic and the exact quality taken, rather than accepting a generic material.
+
+Stable `taste_director.py` retains its pre-spec-11 treatment by default. The CLI
+`--experimental-structure` (Python `experimental_structure=True`) opts into genre
+structures, footage motion and WS/MS/CU/ECU cropping. Brief previews opt in explicitly.
+Calm ASMR/sleep/meditation use sustained timing, breathe recipes and a level curve.
+
+For screenshot feedback, use the prior version's `storyboard.json`, which records
+`render_source` after MP4 rendering. A screenshot without sheet metadata is matched
+against decoded prior frames; ambiguous shot matches ask for a target. Contact sheets
+continue to use their timestamp sidecars. Render revisions report `no_visible_effect`
+when recomputed shot pixels are identical. Windows delivery rename retries are bounded.
+
+Reference fingerprint audits require original decoded media with short side at least
+720 px and analyze at that short side. Proxy upscaling is not accepted as evidence.

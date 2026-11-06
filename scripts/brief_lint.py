@@ -14,6 +14,11 @@ ROOT=Path(__file__).resolve().parents[1]
 NONEXEMPT={'licence','ref_provenance','refs_in_output','schema','hard_constraint'}
 
 
+def meaningful_reason(text):
+    text=text.strip()
+    return len(text)>=12 and not re.fullmatch(r'(?:for lint|pass(?: the)? lint|intentional|by design|test(?:ing)?|because|n/?a)[.! ]*',text,re.I) and not re.search(r'^(?:for|to pass|bypass|ignore|skip|satisfy)\s+(?:the\s+)?lint\b',text,re.I)
+
+
 def words(text):
     cjk=re.findall(r'[\u3400-\u9fff\u3040-\u30ff]',text)
     latin=re.findall(r"[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*",text)
@@ -28,7 +33,7 @@ def lint(brief):
         for data in (brief,obj or {}):
             breaks=data.get('rule_break',[])
             annotations.extend([breaks] if isinstance(breaks,dict) else breaks)
-        reason=next((a.get('why',a.get('reason','')).strip() for a in annotations if a.get('rule')==rule and len(a.get('why',a.get('reason','')).strip())>=6),None)
+        reason=next((a.get('why',a.get('reason','')).strip() for a in annotations if a.get('rule')==rule and meaningful_reason(a.get('why',a.get('reason','')))),None)
         if reason and rule not in NONEXEMPT: severity='exempted'
         findings.append(dict(rule=rule,severity=severity,location=location,message=message,fix=fix,**({'reason':reason} if reason else {})))
     if not isinstance(brief,dict): return dict(errors=1,findings=[dict(rule='schema',severity='error',location='$',message='Expected brief object',fix='Use brief.json')])
@@ -50,6 +55,8 @@ def lint(brief):
         if isinstance(obj,dict):
             breaks=obj.get('rule_break',[]);breaks=[breaks] if isinstance(breaks,dict) else breaks
             for a in breaks:
+                if not meaningful_reason(a.get('why',a.get('reason',''))):
+                    add('exemption_reason',path+'.rule_break','Exemption lacks a specific creative or user reason','Describe why this particular scene needs the exception')
                 if a.get('rule') in NONEXEMPT or a.get('rule') in ('*','all'):
                     add('exemption_not_allowed',path+'.rule_break','Cannot waive provenance, licences, embedding or schema','Remove this exemption')
             for k,v in obj.items():
@@ -74,7 +81,8 @@ def lint(brief):
     aesthetic=brief.get('aesthetic')
     generic={'modern','clean','minimal','simple','warm','cozy','cool','sleek','professional','現代','簡約','溫暖','質感','高級','專業'}
     first_line=prompt.splitlines()[0] if prompt else ''
-    if not isinstance(aesthetic,str) or not aesthetic.strip() or re.search(r'\s(?:and|&|\+)\s|混搭|融合',aesthetic+' '+first_line,re.I) or set(aesthetic.lower().split())<=generic or not re.sub(r'現代|簡約|溫暖|質感|高級|專業|\s','',aesthetic):
+    named=re.findall(r'vaporwave|swiss|bauhaus|brutalis\w*|frutiger\s*aero|cyberpunk|baroque|art\s*deco|risograph|riso|蒸氣波|瑞士|包浩斯|賽博龐克|巴洛克|極簡',str(aesthetic),re.I)
+    if not isinstance(aesthetic,str) or not aesthetic.strip() or len(set(n.lower() for n in named))>1 or re.search(r'\s(?:and|&|\+)\s|[×,，+&]|混搭|融合',aesthetic+' '+first_line,re.I) or set(aesthetic.lower().split())<=generic or not re.sub(r'現代|簡約|溫暖|質感|高級|專業|\s','',aesthetic):
         add('one_aesthetic','aesthetic','Commit to one named aesthetic','Name one child of the fence, e.g. morning-window warm film')
     beats=brief.get('beats',[]);refs=brief.get('refs',[])
     if not isinstance(beats,list) or not beats or not all(isinstance(b,dict) for b in beats):
@@ -134,7 +142,7 @@ def lint(brief):
     markers=[m for m in re.findall(r'\[\?\s*([^]]+)\]',prompt.split('refs:')[0]) if m not in ('visual ref','motion ref','download')]
     if max(len(forks),len(markers))>limits['forks.max']:add('forks_max','forks','More than three creative forks','Keep only the three choices that change the idea')
     for i,f in enumerate(forks):
-        if re.search(r'duration|loop|aspect|filename|fps|resolution|秒|直式|橫式|解析度|檔名',json.dumps(f,ensure_ascii=False),re.I):
+        if re.search(r'\b(?:duration|loop|aspect|filename|fps|resolution|square)\b|\d+(?:\.\d+)?\s*(?:s\b|seconds?\b|秒)|\d+\s*:\s*\d+|直式|橫式|解析度|檔名|正方形',json.dumps(f,ensure_ascii=False),re.I):
             add('routine_fork',f'forks[{i}]','Routine choice presented as a creative fork','Set the routine default inline')
     for i,a in enumerate(brief.get('assets',[])):
         status=licence_status(a)

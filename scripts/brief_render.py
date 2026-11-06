@@ -66,7 +66,7 @@ def compile_plan(board,out,size=None,music=None):
     # not silently opt in. A supplied music track is retained independently.
     if plan.pop('sfx',None):write(out/'sound-policy.json',dict(note='Recipe SFX omitted: SFX routing is experimental; supplied music remains unchanged'))
     plan['assets']=deepcopy(b.get('asset_policy',[]))
-    plan['review']=dict(hard_constraints=deepcopy(b.get('hard_constraints',[])),subject=b.get('core',''))
+    plan['review']=dict(hard_constraints=deepcopy(b.get('hard_constraints',[])),subject=b.get('core',''),status=b.get('status','storyboard'))
     write(out/'credits.json',credits);write(out/'plan.json',plan)
     from fx_render import validate_plan
     validate_plan(out/'plan.json')
@@ -104,7 +104,7 @@ def render_version(board,out,previous=None,size=None,formats=('png','mp4')):
         if valid:
             shutil.copytree(previous/'shots'/s['id'],shotdir,copy_function=reuse_file);status='cache'
         else:
-            localboard=dict(core=b['core'],hard_constraints=deepcopy(b.get('hard_constraints',[])),fps=b['fps'],shots=[local],preserve_footage_motion=b.get('preserve_footage_motion',False),asset_policy=b.get('asset_policy',[]),reference_paths=b.get('reference_paths',[]))
+            localboard=dict(core=b['core'],status=b.get('status','storyboard'),hard_constraints=deepcopy(b.get('hard_constraints',[])),fps=b['fps'],shots=[local],preserve_footage_motion=b.get('preserve_footage_motion',False),asset_policy=b.get('asset_policy',[]),reference_paths=b.get('reference_paths',[]))
             compile_plan(localboard,out/'inputs'/s['id'],size)
             render(out/'inputs'/s['id']/'plan.json',shotdir,('png',),fps=b['fps']);status='rendered'
         frames=sorted((shotdir/'frames').glob('*.png'))
@@ -117,7 +117,7 @@ def render_version(board,out,previous=None,size=None,formats=('png','mp4')):
             segment['transition']={k:v for k,v in segment['transition'].items() if k in ('name','duration_ms')}
         segments.append(segment)
     boundaries=[dict(left=records[i-1]['id'],right=r['id'],status='rendered' if r['status']=='rendered' or records[i-1]['status']=='rendered' else 'cache inputs') for i,r in enumerate(records) if i and 'transition' in segments[i]]
-    assembly=dict(fps=b['fps'],segments=segments,assets=deepcopy(b.get('asset_policy',[])))
+    assembly=dict(fps=b['fps'],segments=segments,assets=deepcopy(b.get('asset_policy',[])),review=dict(hard_constraints=deepcopy(b.get('hard_constraints',[])),subject=b['core'],status=b.get('status','storyboard')))
     if b.get('music_source'):assembly['music']=dict(file=b['music_source'])
     write(out/'plan.json',assembly);write(out/'storyboard.json',b);write(out/'credits.json',credits)
     render(out/'plan.json',out/'render',formats,fps=b['fps'])

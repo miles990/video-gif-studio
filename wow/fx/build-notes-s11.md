@@ -127,3 +127,75 @@ plans and timestamped contact sheets are included. They are labelled silhouette/
 not finished client films or before/after appeal evidence. The official S-135
 comparison cannot be claimed complete without the withheld topics and human votes.
 Live reference vetting and the independent whole-proposal reading also remain open.
+
+## Fix round
+
+2026-11-06, builder worktree `C:/Users/User/src/vgs-fx`, branch `s11-fix`,
+base `4cbf5790db5b0b1ad7755cbc5855ead2d0a2d96a` (also `origin/main`).
+Spec-11 remains **EXPERIMENTAL**. No promotion or push was performed.
+
+| Item | Change | Evidence |
+| --- | --- | --- |
+| 1 | Prior shots/beats required for delta and housekeeping; incidental version asides retain brief mode. | Context/no-context routing regressions. |
+| 2 | Relative energy-change drop candidates; long-song onset fit; complete comparison windows; no-drop bar disclosure; silent/phrase sound fields without invented drops. | Known WAV drops plus 90-second 123 BPM no-drop signal, checked at beat 170. |
+| 3 | Generic draft transformation extraction replaces README-sentence branches; source transformation owns the turn; original constraints pass into beats, shots and plan review metadata. | Chinese powder-to-logo and monochrome-to-color, English dissolving, named product, no faces and logo-last fixtures. |
+| 4 | Unauthored output is `skeleton`, with a creative fork; conversion refuses it unless `--allow-skeleton`; source hard constraints are non-exemptible lint requirements. | Default rejection, explicit previs override, authored content and missing-constraint tests. |
+| 5 | Agent `ref_uses`, aesthetic-derived defaults, distinct reference paths, generated still/motion sheets and `ref_missing`; documentation uses repository adapters instead of nonexistent CLIs. | Five distinct local images, authored material use, real sheet path and missing-reference warnings. |
+| 6 | Source crops implement shot size; shots rotate footage and reserve identified logo assets for the end; calm structure and level intensity; original stable director retained behind default-off `--experimental-structure`. | Six encoded genres, all 15 pairwise frame differences above 1 intensity level on the 0..255 scale; direct WS/MS/CU/ECU crop controls; legacy-default comparison. |
+| 7 | Multiple quantities yield one question; bare shot numbers, Chinese multipliers and roll directions; decoded screenshot matching; expected/observed no-visible-effect reports; bounded Windows rename retry. | Target grammar, clockwise/counter-clockwise, pixel-to-time match within one frame, no-op and transient/permanent rename-lock tests. |
+| 8 | Combined aesthetic separators/known concatenations, numeric routine forks without the second-hand false positive, meaningful waiver reasons, original-media fingerprint minimum of 720 px short side and inset feature pyramid. | Positive/negative lint controls; low-resolution rejection; full/graded/scaled embedding controls and unrelated high-resolution imagery. |
+
+Validation uses the supplied skill Python and managed FFmpeg path, with TEMP/TMP
+and all generated fixtures under `.scratch/`. Heavy processes run sequentially.
+The 169-test brief/taste pass had zero failures/errors (`.scratch/fix6.json`).
+The final full-suite and scenario receipts are recorded below after completion.
+
+Commit limitation: **no local commits were created**. Git cannot create
+`C:/Users/User/.codex/skills/video-gif-studio/.git/worktrees/vgs-fx/index.lock`
+because that worktree metadata is outside the writable roots. Both `git add` and
+`git commit` returned Permission denied; this builder created no commit or branch update.
+Eight ordered recovery patches and matching requested commit-message files are in
+`.scratch/fix-snapshots/`. They are patches, not commits; the final patch includes
+integration corrections and this validation record. This does not satisfy the
+requested one-local-commit-per-item requirement until Git metadata becomes writable.
+
+The tests establish routing, timing, provenance separation and measurable rendered
+differences, not human aesthetic preference or promotion to stable. Contact sheets
+use synthetic owned test media. Visual inspection through `view_image` was denied
+by that tool's filesystem access; decoded frame comparisons provide the recorded
+image evidence.
+
+Final validation:
+
+- Full suite: **820 tests, 0 failures, the same 2 environment errors, 4 skipped**,
+  803.839 seconds. Receipt: `.scratch/fix-round-full-final.log` / `.json`.
+  The two errors are `test_install` symlink privilege and `test_mask_review`
+  Windows open-image cleanup; neither is a new regression against 808 / 2.
+- Scenario suites included in that final run: **5 brief + 14 taste passed**.
+  Receipt: `.scratch/fix-round-scenarios.json`.
+- Ordered recovery-patch stages: **25 / 26 / 27 / 28 / 29 / 31 / 34 / 36 tests**,
+  respectively, all passing (236 total executions). Each stage was reconstructed
+  under `.scratch/` from the original HEAD and tested in a fresh Python process.
+  Receipt: `.scratch/fix-snapshots/stage-tests.json`.
+- All eight patches apply sequentially with Git and reproduce the final worktree;
+  receipt: `.scratch/fix-snapshots/patch-validation.json`. No index or branch was
+  changed to perform this verification.
+- Final six-genre evidence:
+  `.scratch/s11-fix-genres-2lvqsyn_/evidence.json`, with six timestamped sheets and
+  encoded clips. The minimum of all 15 pairwise frame mean-absolute differences is
+  **34.516** on the 0..255 intensity scale (required test floor: 1).
+- `git diff --check` passes. Protected specs, acceptance files, `process.md` and
+  `thresholds.md` are unchanged by this builder. See the external HEAD movement below.
+- Earlier failed/interrupted exploratory test logs remain in scratch; the final
+  receipts named above supersede them. The 90-second music regression exposed and
+  fixed both cumulative beat-slot drift and a partial end-window false drop.
+
+Outstanding requested work: create the eight local commits once the worktree's
+Git metadata is writable. No push is authorized or performed.
+
+External movement observed during final verification: `s11-fix` advanced from
+`4cbf579` to `c2ccd0273b329aec3841512bce24f967161d69f7`, an externally created,
+Claude-authored spec-13 commit. It adds only `wow/fx/spec-13.md`; no source, test or
+file touched by these fixes changed. It was preserved and is not counted as a
+builder fix commit. `origin/main` was also externally advanced to `b185890`.
+The final test evidence remains applicable because the external commit is spec-only.

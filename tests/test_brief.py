@@ -243,10 +243,10 @@ class BriefRenderScenarios(unittest.TestCase):
     def test_ref_fingerprints_positive_negative(self):
         from brief_guard import signature,matches
         import cv2
-        rng=np.random.default_rng(42);base=rng.integers(0,256,(360,480,3),dtype=np.uint8)
+        rng=np.random.default_rng(42);base=rng.integers(0,256,(720,960,3),dtype=np.uint8)
         # Structured texture gives ORB stable corners under resampling.
-        for i in range(40):cv2.putText(base,str(i),(int(rng.integers(20,400)),int(rng.integers(20,340))),cv2.FONT_HERSHEY_SIMPLEX,.7,(255,255,255),2)
-        overlay=np.full_like(base,70);overlay[50:194,50:242]=cv2.resize(base,(192,144))
+        for i in range(40):cv2.putText(base,str(i),(int(rng.integers(20,900)),int(rng.integers(20,680))),cv2.FONT_HERSHEY_SIMPLEX,.7,(255,255,255),2)
+        overlay=np.full_like(base,70);overlay[100:388,100:484]=cv2.resize(base,(384,288))
         hsv=cv2.cvtColor(base,cv2.COLOR_BGR2HSV);hsv[:,:,1]=np.clip(hsv[:,:,1].astype(float)*1.2,0,255).astype(np.uint8);graded=cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
         for variant in (base,overlay,graded):self.assertTrue(matches(signature(base),signature(variant))['embedded'])
         other=rng.integers(0,256,base.shape,dtype=np.uint8);self.assertFalse(matches(signature(base),signature(other))['embedded'])
