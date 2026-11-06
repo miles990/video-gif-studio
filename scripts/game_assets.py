@@ -30,6 +30,10 @@ def main(argv):
         tiles=ts.add_parser('tileset');options(tiles);tiles.add_argument('--grid',type=int,default=16);tiles.add_argument('--set',choices=['wang16','blob47','min13'],default='wang16')
         vf=sub.add_parser('vfx');options(vf);vf.add_argument('--kind',choices=['explosion','magic','hit','pickup'],default='explosion')
         vf.add_argument('--loop',action='store_true');vf.add_argument('--oneshot',action='store_true');vf.add_argument('--pixel',action='store_true');vf.add_argument('--blend',choices=['add','alpha'],default='add');vf.add_argument('--color',default='#80DAFF');vf.set_defaults(size='96',frames=12)
+        kv=sub.add_parser('kf-video');options(kv);kv.add_argument('--first',type=Path,required=True);kv.add_argument('--last',type=Path,required=True)
+        kv.add_argument('--approve-video');kv.add_argument('--video-driver',type=Path);kv.add_argument('--duration',type=float,default=5)
+        # Override the generic image route choices; video never shares API authority.
+        next(a for a in kv._actions if a.dest=='route').choices=['grok','fal','local'];kv.set_defaults(route='local')
         a=p.parse_args(argv)
         if not a.experimental:raise ImageError('E_EXPERIMENTAL','Game assets are experimental.',suggestion='Pass --experimental.')
         if a.command=='sprite-check':
@@ -38,6 +42,12 @@ def main(argv):
             result=sprite_check(a.images,mode=a.alpha_mode,palette=read(a.palette) if a.palette else None,pixel=a.pixel,scale=a.scale,cleanup=a.cleanup,out=a.out,particles=a.particles)
             print(json.dumps(dict(ok=result['status']=='PASS',result=result)));return 0 if result['status']=='PASS' else 2
         if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
+        if a.command=='kf-video':
+            from game_video import keyframes_video
+            from image_identity import load
+            refs=[r['path'] for r in load(a.refs)['images']] if a.refs else []
+            result=keyframes_video(a.first,a.last,refs,a.route,a.out,a.approve_video,a.duration,a.prices,a.video_driver,a.prompt or 'Original character motion')
+            print(json.dumps(dict(ok=True,result=result)));return 0
         if a.command=='vfx':
             from game_vfx import vfx
             if a.loop and a.oneshot:raise ImageError('E_ARGUMENT','Choose --loop or --oneshot, not both.')
