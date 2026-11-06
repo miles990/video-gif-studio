@@ -7,6 +7,60 @@ from audio_loop import RATE,decode,encode,normalise,loudness
 from image_common import write,read,ImageError
 
 
+def regeneration_request(name,theme_key='Am',bpm=120):
+    """An exact unsubmitted request; caller still needs spending authorization."""
+    from audio_measure import key_name
+    descriptions={
+        'level-up':'One isolated 2-second level-up jingle: ascending A C E A bell motif',
+        'victory':'One isolated 3-second victory jingle: triumphant A C E A motif resolving to a minor triad',
+        'failure':'One isolated 2-second failure jingle: descending E D C A bell motif, soft low strings',
+        'pickup':'One isolated 0.5-second item pickup UI sound: two sparkling plucked notes E A, crisp instant onset',
+        'confirm':'One isolated 0.4-second confirmation UI sound: soft plucked A C E minor chord, crisp instant onset',
+    }
+    if name not in descriptions:raise ValueError('Unknown cue')
+    key=key_name(theme_key)
+    return dict(tool='sounds_create',params=dict(
+        description=f'{descriptions[name]}. In {key} at {bpm} BPM. Preserve a natural reverb decay, then silence. No repeats, no background music, no voice.',
+        key=key,tempo=bpm,loop=False,title=f'Rime Glass Ridge {name} fix',
+        idempotency_key=f's15-fix-{name}-{key}-{bpm}-v1'),submitted=False)
+
+
+def correct_key(x,theme_key='Am',target=-12):
+    """Conservative chroma-based correction, <=2 semitones, no paid fallback.
+
+    Transposition preserves mode. A parallel major cannot be turned into minor
+    by shifting its root; compatible relationships still retain spec_mismatch.
+    """
+    from audio_measure import measure,key_name,relation,NAMES
+    from audio_loop import ffmpeg_pcm
+    theme=key_name(theme_key);before=measure(x);key=before['key']
+    report=dict(theme_key=theme,before=before,theme_relation=relation(theme,key),
+                key_source='local_estimate',listening_review='pending',pitch_semitones=0)
+    if key is None or key.endswith('m')!=theme.endswith('m'):
+        return None,dict(report,status='regenerate_needed',reason='Unknown key or mode mismatch; transposition cannot change mode')
+    shift=(NAMES.index(theme.rstrip('m'))-NAMES.index(key.rstrip('m'))+6)%12-6
+    if abs(shift)>2:
+        return None,dict(report,status='regenerate_needed',reason='Required transposition exceeds two semitones',required_semitones=shift)
+    y=x
+    if shift:
+        ratio=2**(shift/12)
+        # Rubberband preserves tempo. Missing filter is a local failure, never a paid retry.
+        y=ffmpeg_pcm(x,f'rubberband=tempo=1:pitch={ratio:.12f}')
+    duration_error=abs(len(y)-len(x))/48
+    y,post=cleanup(y,target)
+    after=measure(y)
+    levels=post['measured']
+    quality=dict(duration_error_ms=duration_error,key_match=after['key']==theme,
+                 true_peak=levels['true_peak'],lufs=levels['lufs'],dc=post['dc'],
+                 release_peak=float(np.max(abs(y[-480:]))))
+    passed=(duration_error<=10 and quality['key_match'] and levels['true_peak'] is not None
+            and levels['true_peak']<=-1 and levels['lufs'] is not None
+            and abs(levels['lufs']-target)<=1 and post['dc']<=.001 and quality['release_peak']<=.001)
+    report.update(status='PASS' if passed else 'regenerate_needed',after=after,quality=quality,
+                  cleanup=post,pitch_semitones=shift,method='ffmpeg rubberband' if shift else 'cleanup only')
+    return (y if passed else None),report
+
+
 def regions(x,threshold_db=-50,gap_ms=400):
     signal=x-np.median(x,axis=0)
     active=np.flatnonzero(np.max(np.abs(signal),axis=1)>10**(threshold_db/20))
