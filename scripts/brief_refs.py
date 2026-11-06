@@ -185,8 +185,9 @@ def ground(aesthetic, cards=(), taste=None, refstat=None, library=(), provider=N
         moving=i>=5;query=role+' animation' if moving else aesthetic
         chosen=None;source='local_lib'
         if not moving and cards:
-            terms={'look':['light','window','cup','光','杯'],'palette':['light','orange','光','橘'],
-                   'material':['menu','paper','菜單','紙'],'composition':['cup','杯'],'detail':['open','text','字','店']}[role]
+            terms={'look':['light','lighting','光'],'palette':['palette','color','色'],
+                   'material':['material','surface','材質'],'composition':['hero','composition','構圖'],
+                   'detail':['detail','texture','細節']}[role]
             ranked=sorted(((j,c) for j,c in enumerate(cards) if available(c)),key=lambda pair:(-sum(t in json.dumps(pair[1],ensure_ascii=False).lower() for t in terms),pair[0]))
             if ranked:chosen=deepcopy(ranked[0][1]);source='user';chosen['origin_handle']='u'+str(ranked[0][0]+1)
         for origin,data in (('taste',taste),('refstat',refstat)):

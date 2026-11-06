@@ -92,3 +92,58 @@ class DeltaTests(unittest.TestCase):
             self.assertTrue(edit['changes'])
             self.assertTrue(all(c['change']=='brightness' and c['quantified']['measured_y']<80 for c in edit['changes']))
             self.assertEqual({s for c in edit['changes'] for s in c['target']['shots']}, {b['shots'][0]['id']})
+
+
+class FootageTests(unittest.TestCase):
+    def test_content_assignment_beats_file_order(self):
+        cards=[dict(path='explosion.png',description='fire explosion VFX'),
+               dict(path='hero.png',description='knight hero',role='hero'),
+               dict(path='shield.png',description='shield item icon')]
+        b=brief.expand('knight hero game trailer 5s',project=cards)
+        for beat in b['beats']:beat['text']='knight hero reveals a shield item icon '+ ' '.join(beat['refs'])
+        board=brief.to_storyboard(b,allow_skeleton=True)
+        self.assertIn('hero.png',[s.get('image') for s in board['shots']])
+        self.assertNotIn('explosion.png',[s.get('image') for s in board['shots']])
+        b['beats'][-1]['text']='fire explosion reveals sparks '+ ' '.join(b['beats'][-1]['refs'])
+        board=brief.to_storyboard(b,allow_skeleton=True)
+        self.assertEqual(board['shots'][-1]['image'],'explosion.png')
+
+    def test_six_genres_decoded_contact_sheets_include_hero(self):
+        import tempfile,json,cv2
+        import numpy as np
+        from PIL import Image,ImageDraw
+        from brief_render import render_version
+        from brief_refs import contact_sheet
+        folder=Path(tempfile.mkdtemp(dir=ROOT/'.scratch',prefix='round2-genres-'))
+        hero=folder/'knight-hero.png'
+        # A recognizable generated game fixture: helmet, armor, shield and sword.
+        sprite=Image.new('RGB',(45,30),(21,29,48));draw=ImageDraw.Draw(sprite)
+        for x in range(0,45,5):draw.line((x,0,x,29),fill=(36,46,68))
+        draw.rectangle((18,4,26,11),fill=(180,210,230));draw.rectangle((19,7,25,8),fill=(10,20,30))
+        draw.rectangle((17,12,27,21),fill=(40,185,190));draw.rectangle((17,22,20,27),fill=(160,185,210))
+        draw.rectangle((24,22,27,27),fill=(160,185,210));draw.rectangle((11,13,16,22),fill=(225,165,40))
+        draw.rectangle((31,6,32,20),fill=(230,240,245));draw.line((29,18,34,18),fill=(225,165,40))
+        sprite.resize((180,120),Image.Resampling.NEAREST).save(hero)
+        cards=[dict(path=str(hero),role='hero',description='knight hero sprite')]
+        genres=['horror','game trailer','VFX showcase','icon set','ASMR meditation','graphic typography']
+        samples=[];records=[];profiles=[]
+        old=cv2.getNumThreads();cv2.setNumThreads(1)
+        try:
+            for i,genre in enumerate(genres):
+                b=brief.expand(genre+' knight 3s',project=cards)
+                # Explicit previs still permits comparing pending icon-set design.
+                board=brief.to_storyboard(b,allow_skeleton=True)
+                self.assertIn(str(hero),[s.get('image') for s in board['shots']])
+                profiles.append(board['editorial_structure']['profile'])
+                render_version(board,folder/str(i),size=(96,64),formats=('mp4',))
+                movie=next((folder/str(i)/'render').glob('*.mp4'))
+                sheet=folder/f'{i}-sheet.png';meta=contact_sheet(movie,sheet)
+                cap=cv2.VideoCapture(str(movie));frames=[]
+                for t in meta['frames_at_s']:
+                    cap.set(cv2.CAP_PROP_POS_MSEC,t*1000);ok,frame=cap.read();self.assertTrue(ok);frames.append(frame.astype(float))
+                cap.release();samples.append(np.array(frames));records.append(dict(genre=genre,sheet=str(sheet)))
+            self.assertEqual(len(set(profiles)),6)
+            differences=[dict(a=genres[i],b=genres[j],mean_abs=float(np.abs(samples[i]-samples[j]).mean())) for i in range(6) for j in range(i)]
+            self.assertTrue(all(d['mean_abs']>1 for d in differences),differences)
+            (folder/'evidence.json').write_text(json.dumps(dict(genres=records,frame_differences=differences),indent=2),encoding='utf-8')
+        finally:cv2.setNumThreads(old)

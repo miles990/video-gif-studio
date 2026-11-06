@@ -93,7 +93,8 @@ class FixTests(unittest.TestCase):
         for core in ('sports hype','meditation sleep','precision watch'):
             self.assertEqual(treatment(['a.png'],10,core,factory()),stable_treatment(['a.png'],10,core,factory()))
         b=skeleton_board(brief.expand('sports hype 10s',project=[dict(path=f'{i}.png') for i in range(3)]))
-        self.assertEqual([s['image'] for s in b['shots'][:6]],['0.png','1.png','2.png']*2)
+        # Unlabelled footage is retained deterministically, never round-robin.
+        self.assertEqual({s['image'] for s in b['shots']}, {'0.png'})
         logo=skeleton_board(brief.expand('Acme kettle; logo must appear last',project=[dict(path='kettle.png'),dict(path='logo.png',role='logo')]))
         self.assertEqual(logo['shots'][-1]['image'],'logo.png')
         self.assertTrue(all(s.get('image')!='logo.png' for s in logo['shots'][:-1]))

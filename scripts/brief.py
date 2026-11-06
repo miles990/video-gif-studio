@@ -234,7 +234,7 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
             r['use']+=f'; {r["time_range"][0]:g}–{r["time_range"][1]:g} s at {r["speed_scale"]:g}x'
         if r['handle']=='m2':r['is_turn']=True;r['use']+=' (the turn)'
     vertical=platform in ('ig_reels','tiktok','shorts') or bool(re.search(r'直式|vertical|9:16',draft,re.I))
-    assets=[dict(path=c['path'],licence=c.get('licence','user-owned'),owned=c.get('owned',True),role=c.get('role','asset'),title=c.get('id','user footage')) for c in cards if c.get('path')]
+    assets=[dict(deepcopy(c),licence=c.get('licence','user-owned'),owned=c.get('owned',True),role=c.get('role','asset'),title=c.get('title',c.get('id','user footage'))) for c in cards if c.get('path')]
     assets+=deepcopy(content.get('assets',[]))
     result=dict(version=1,mode=mode,mode_reason=reason,draft=draft,aesthetic=copy['aesthetic'],fence=copy['fence'],
                 subject=copy['subject'],hard_constraints=constraints,pace=copy['pace'],duration=duration,fps=fps,width=1080,height=1920 if vertical else 1080,
@@ -327,7 +327,7 @@ def to_storyboard(brief,variant=1,allow_skeleton=False):
         cursor=beat['t_start'];curve.append([cursor,.8 if beat['is_turn'] else .25])
         for j,length in enumerate(lengths):
             i=len(shots);turn=beat['is_turn'] and j==0;name=design['recipes'][(i+1)%len(design['recipes'])]
-            if turn:name={'kinetic':'drop','precision':'hero_glow','graphic':'reveal_subject','warm':'soft_hit','fresh':'soft_hit','calm':'breathe'}[design['profile']]
+            if turn:name={'kinetic':'drop','precision':'hero_glow','graphic':'reveal_subject','warm':'soft_hit','fresh':'soft_hit','calm':'breathe','horror':'outro_settle','game_trailer':'impact','vfx_showcase':'soft_hit','icon_set':'hero_glow'}[design['profile']]
             move=item['mechanic'] if item else design['moves'][i%len(design['moves'])] if design['profile']=='calm' else beat.get('mechanism',design['moves'][i%len(design['moves'])])
             from storyboard import MOVES
             why='Beat '+str(beat['id'])+': '+beat['text']
@@ -359,7 +359,8 @@ def to_storyboard(brief,variant=1,allow_skeleton=False):
                 logos=[a for a in assets if re.search(r'logo',str(a.get('role',''))+' '+str(a.get('title',''))+' '+Path(a.get('path','')).stem,re.I)]
                 final=beat is brief['beats'][-1] and j==len(lengths)-1
                 candidates=(logos if final else [a for a in assets if a not in logos]) if logo_last and logos else assets
-                asset=candidates[i%len(candidates)] if candidates else {}
+                from brief_assets import select_asset
+                asset=select_asset(candidates,beat['text'],brief.get('subject',''),first=i==0)
                 if asset.get('path'):shot['image']=asset['path'];shot['asset']=asset
             shots.append(shot);cursor=end
     curve.append([brief['duration'],curve[-1][1]])

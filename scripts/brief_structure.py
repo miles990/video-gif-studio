@@ -10,6 +10,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES = {
+    'horror': dict(asl=4.2,cv=.65,sizes=['WS','ECU','WS'],transitions=['crossfade'],family='dissolve',
+                   recipes=['breathe','outro_settle'],moves=['static','push','static'],
+                   aesthetic='chiaroscuro nocturne',pace='long suspense, abrupt apparition, uneasy recovery'),
+    'game_trailer': dict(asl=.85,cv=.5,sizes=['WS','MS','CU'],transitions=['wipe'],family='geometric',
+                         recipes=['hook_snap','impact','hero_glow'],moves=['push','pan','pull'],
+                         aesthetic='painted heroic fantasy',pace='establish the hero, attack, reveal the arena'),
+    'vfx_showcase': dict(asl=1.6,cv=.15,sizes=['WS','WS','MS'],transitions=['crossfade'],family='dissolve',
+                         recipes=['breathe','soft_hit'],moves=['static'],
+                         aesthetic='emissive particle study',pace='anticipation, full effect expansion, complete decay'),
+    'icon_set': dict(asl=2.8,cv=.1,sizes=['CU','CU','MS'],transitions=['wipe'],family='geometric',
+                     recipes=['hero_glow','outro_settle'],moves=['static'],
+                     aesthetic='engraved inventory miniatures',pace='consistent scale, readable silhouettes, orderly inspection'),
     'calm': dict(asl=6., cv=.12, sizes=['WS','MS','WS'],
                  transitions=['crossfade'], family='dissolve', recipes=['breathe'],
                  moves=['static','drift','static'], aesthetic='mist-veiled natural light', pace='quiet, sustained, gently resolve detail'),
@@ -35,13 +47,17 @@ PROFILES = {
 def structure(core, brief=None, profile=None, target=None):
     brief = brief or {}
     authored = ' '.join(str(brief.get(k,'')) for k in ('aesthetic','pace','fence')).lower()
-    signals=r'asmr|sleep|meditat|calm|ambient|mist-veiled|睡眠|助眠|冥想|療癒|sport|hype|kinetic|snappy|stadium|運動|熱血|衝擊|快剪|japan|fresh|linen|日系|日式|清新|watch|luxury|precision|atelier|手錶|腕錶|精品|warm|cozy|cafe|coffee|溫暖|咖啡'
+    signals=r'asmr|sleep|meditat|calm|ambient|mist-veiled|睡眠|助眠|冥想|療癒|sport|hype|kinetic|snappy|stadium|運動|熱血|衝擊|快剪|japan|fresh|linen|日系|日式|清新|watch|luxury|precision|atelier|手錶|腕錶|精品|warm|cozy|溫暖'
     text=authored if re.search(signals,authored) else core.lower()
-    if re.search(r'asmr|sleep|meditat|calm|ambient|mist-veiled|睡眠|助眠|冥想|療癒',text):key='calm'
+    if re.search(r'icon[ -]?set|圖示集|圖標集|道具圖示',core,re.I):key='icon_set'
+    elif re.search(r'vfx[ -]?showcase|特效展示',core,re.I):key='vfx_showcase'
+    elif re.search(r'game[ -]?trailer|遊戲預告',core,re.I):key='game_trailer'
+    elif re.search(r'horror|恐怖|驚悚',core,re.I):key='horror'
+    elif re.search(r'asmr|sleep|meditat|calm|ambient|mist-veiled|睡眠|助眠|冥想|療癒',text):key='calm'
     elif re.search(r'sport|hype|kinetic|snappy|stadium|運動|熱血|衝擊|快剪', text): key='kinetic'
     elif re.search(r'japan|fresh|linen|日系|日式|清新', text): key='fresh'
     elif re.search(r'watch|luxury|precision|atelier|手錶|腕錶|精品', text): key='precision'
-    elif re.search(r'warm|cozy|cafe|coffee|溫暖|咖啡', text): key='warm'
+    elif re.search(r'warm|cozy|溫暖', text): key='warm'
     else: key='graphic'
     result=deepcopy(PROFILES[key]); result['profile']=key
     pace=str(brief.get('pace','')).lower()
