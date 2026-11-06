@@ -53,8 +53,13 @@ def main(argv=None):
     try:
         p=Parser(description=__doc__);sub=p.add_subparsers(dest='command',required=True)
         for name in ('generate','estimate','probe','usage'):options(sub.add_parser(name))
+        k=sub.add_parser('keyframes');options(k);k.add_argument('storyboard',type=Path);k.add_argument('--shots',nargs='+')
         a=p.parse_args(argv);adapter,req=adapter_request(a)
-        if a.command=='estimate':result=adapter.estimate(req)
+        if a.command=='keyframes':
+            if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
+            from image_keyframes import keyframes
+            result=keyframes(read(a.storyboard),adapter,a.out,req,a.shots,a.approve_spend,a.max_usd)
+        elif a.command=='estimate':result=adapter.estimate(req)
         elif a.command=='generate':
             if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
             result=adapter.generate(req,a.out,a.approve_spend,a.max_usd,a.no_cache)

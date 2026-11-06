@@ -23,6 +23,8 @@ def preflight(board):
         for field in ('image','footage'):
             if s.get(field) and str(Path(s[field]).resolve()).casefold() in denied:
                 raise ValueError(f'E_REF_EMBED shots[{i}].{field}: reference media cannot enter outputs')
+        if s.get('keyframe') and str(Path(s['keyframe']['path']).resolve()).casefold() in denied:
+            raise ValueError(f'E_REF_EMBED shots[{i}].keyframe: reference media cannot enter outputs')
         if s.get('asset'):validate_assets([s['asset']])
         recipe=s.get('recipe');name=recipe.get('name') if isinstance(recipe,dict) else recipe
         if name:
@@ -95,6 +97,8 @@ def render_version(board,out,previous=None,size=None,formats=('png','mp4')):
         local=deepcopy(s);duration=round(s['end']-s['start'],6);local.update(start=0.,end=duration,duration=duration,transition='cut')
         for key in ('beat','beats','anchor','refs','why','serves_core'):local.pop(key,None)
         deps={}
+        if s.get('keyframe'):
+            path=Path(s['keyframe']['path']);deps['keyframe']=digest(path) if path.is_file() else 'missing'
         for field in ('image','footage'):
             if s.get(field):deps[field]=digest(s[field]) if Path(s[field]).is_file() else 'missing'
         fingerprint=hashlib.sha256(json.dumps(dict(shot=local,files=deps,size=size,fps=b['fps'],footage_motion=b.get('preserve_footage_motion',False),engine=engine),sort_keys=True).encode()).hexdigest()

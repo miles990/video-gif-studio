@@ -65,6 +65,25 @@ def moved(frame,shot,t):
 
 
 def source_frame(shot,base,size):
+    keyframe=shot.get('keyframe')
+    if keyframe:
+        from image_keyframes import fit_image
+        from image_common import digest
+        path=base/keyframe['path']
+        if path.is_file() and (not keyframe.get('sha256') or digest(path)==keyframe['sha256']):
+            with Image.open(path) as im:frame=np.array(fit_image(im,size)[0])
+            if keyframe.get('status') in ('size_mismatch','identity_fail'):
+                im=Image.fromarray(frame);ImageDraw.Draw(im).text((7,7),keyframe['status'],fill='#ff5555');frame=np.array(im)
+            return frame
+        shot['keyframe_failure']=dict(code='E_KEYFRAME',message='missing or changed keyframe')
+    if shot.get('keyframe_failure'):
+        shot['asset_fallback']=dict(reason='no keyframe',error=shot['keyframe_failure'])
+        im=Image.fromarray(card(shot,size))
+        from PIL import ImageFont
+        font_path=Path('C:/Windows/Fonts/msjh.ttc')
+        font=ImageFont.truetype(str(font_path),max(12,size[1]//20)) if font_path.is_file() else ImageFont.load_default()
+        ImageDraw.Draw(im).text((7,size[1]//2),'無關鍵格 / NO KEYFRAME',font=font,fill='#ffdddd')
+        return np.array(im)
     filename=shot.get('image',shot.get('footage'))
     if not filename:return card(shot,size)
     path=base/filename
@@ -221,8 +240,14 @@ def render(board,out,base=Path('.'),music=None,size=(320,180)):
 
 
 def main(argv=None):
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('storyboard',type=Path);p.add_argument('--out',type=Path,required=True);p.add_argument('--music',type=Path);a=p.parse_args(argv)
-    try:render(read(a.storyboard),a.out,a.storyboard.parent,a.music);return 0
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('storyboard',type=Path);p.add_argument('--out',type=Path,required=True);p.add_argument('--music',type=Path);p.add_argument('--keyframes',type=Path);a=p.parse_args(argv)
+    try:
+        board=read(a.storyboard)
+        if a.keyframes:
+            from image_keyframes import attach_keyframes
+            board=attach_keyframes(board,a.keyframes)
+        from brief_render import proxy_size
+        render(board,a.out,a.storyboard.parent,a.music,size=proxy_size(board));return 0
     except (OSError,ValueError,KeyError,TypeError,RuntimeError) as exc:print('animatic: '+str(exc),file=sys.stderr);return 2
 
 

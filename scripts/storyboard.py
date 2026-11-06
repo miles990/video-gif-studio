@@ -149,3 +149,13 @@ def shot_table(board):
     columns=('id','start','end','size','angle','lens','motion','composition','direction','axis','lighting','color_script','sound','intent','recipe','perceived','transition','beats','why','serves_core')
     def cell(x):return (json.dumps(x,ensure_ascii=False) if isinstance(x,(dict,list)) else str(x)).replace('|','\\|').replace('\n',' ')
     return '| '+' | '.join(columns)+' |\n| '+' | '.join('---' for _ in columns)+' |\n'+'\n'.join('| '+' | '.join(cell(s.get(c,'')) for c in columns)+' |' for s in b['shots'])+'\n'
+
+
+def main(argv=None):
+    import sys
+    from imagegen import main as image_main
+    args=list(sys.argv[1:] if argv is None else argv)
+    return image_main(args)
+
+
+if __name__=='__main__':raise SystemExit(main())
