@@ -232,7 +232,7 @@ def previews(frames,durations,out,loop):
 def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),plan=None,fps=None):
     charsheet=Path(charsheet);contract=read(charsheet);out=Path(out);originality(request.prompt or 'original character')
     plan=read(plan) if isinstance(plan,(str,Path)) else (plan or {});fps=fps or {};size=tuple(contract['canvas']);palette=read(charsheet.parent/contract['palette'])
-    refs=[str((charsheet.parent/v['file']).resolve()) for v in contract['views'] if v['name'] in ('front','three_quarter')]
+    refs=[str((charsheet.parent/(f'identity/{v["name"]}.png' if (charsheet.parent/f'identity/{v["name"]}.png').exists() else v['file'])).resolve()) for v in contract['views'] if v['name'] in ('front','three_quarter')]
     all_results={};generations=[]
     for state in states:
         if state not in DEFAULTS:raise ImageError('E_STATE','Unknown animation state: '+state)
@@ -255,9 +255,12 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
             if contract.get('pixel'):im=quantize(im,palette)
             im.save(folder/'keys'/f'{j:02d}.png');keys.append(im)
             from image_identity import compare
-            metrics=[compare(folder/'keys'/f'{j:02d}.png',ref) for ref in refs]
+            metrics=[compare(source,ref) for ref in refs]
+            from image_identity import check,override_record
+            identity=check(source,charsheet.parent/'refset.json',request.identity_override) if (charsheet.parent/'refset.json').exists() else dict(status='unassessed',reason='Source identity refset unavailable')
+            identity.update(measurement_stage='source_before_downscale',source_size=list(rgba(source).size),source_sha256=digest(source),measurements=metrics)
             key_records.append(dict(frame=index,file=f'keys/{j:02d}.png',refs_sent=sent,source_sha=digest(source),points=key.get('points') or silhouette_points(im),guide_source='annotated' if key.get('points') else 'silhouette_preview',
-                identity=dict(status='pass' if metrics and all(m['bhattacharyya']<=.35 and m['orb_good_matches']>=25 for m in metrics) and contract.get('identity',{}).get('controls_valid') else 'unassessed',measurements=metrics)))
+                identity=identity))
         frames=[];records=[];durations=spec.get('durations_ms',[round(1000/rate/10)*10]*count)
         if len(durations)!=count or any(not isinstance(v,(float,int)) or not math.isfinite(v) or v<20 for v in durations):raise ImageError('E_TIMING','Supply one finite duration >=20 ms per frame.')
         phases=spec.get('phases',[])

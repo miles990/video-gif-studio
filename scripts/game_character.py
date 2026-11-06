@@ -192,10 +192,12 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
             req=replace(req,prompt=prompt+' IMPORTANT: a single isolated character only; NOT a turnaround sheet or multiple poses.')
             result=adapter.generate(req,out/'generation'/(name+'-single'),no_cache=True);source=Path(result['assets'][0]['path'])
             im,subject=prepare_subject(rgba(source),name)
-        actual[name]=list(im.size);im=im.resize(size,Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
+        actual[name]=list(im.size)
+        (out/'identity').mkdir(parents=True,exist_ok=True);identity_file=out/'identity'/f'{name}.png';im.save(identity_file)
+        im=im.resize(size,Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
         (out/'views').mkdir(parents=True,exist_ok=True);file=out/'views'/f'{name}.png';im.save(file)
         records.append(dict(name=name,facing=facing,file=f'views/{name}.png',refs_sent=[digest(p) for p in req.refs],size_actual=actual[name],subject=subject))
-        views[name]=im;refs.append(str(file.resolve()));manifests.append(result)
+        views[name]=im;refs.append(str(identity_file.resolve()));manifests.append(result)
     palette=palette_of(list(views.values()),16 if pixel else 12)
     if pixel:
         views={n:quantize(im,palette) for n,im in views.items()}
@@ -203,7 +205,7 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
     write(out/'palette.json',palette);palette_image(palette).save(out/'palette.png')
     front=views['front'];face=(size[0]//4,size[1]//8,size[0]//2,size[1]//3);expressions={};exp_records=[]
     for name in EXPRESSIONS:
-        req=replace(request,refs=[str((out/'views/front.png').resolve())],transparent=True,n=1,
+        req=replace(request,refs=[str((out/'identity/front.png').resolve())],transparent=True,n=1,
                     prompt=f'{request.prompt}\nSame front view, ONLY change eyes, eyebrows and mouth to expression {name}. Keep ears, scarf and outfit unchanged. Canvas {size[0]}x{size[1]}.')
         generated=adapter.generate(req,out/'generation'/name);im=rgba(generated['assets'][0]['path']).resize(size,Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
         if pixel:im=quantize(im,palette)
@@ -212,8 +214,9 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
         (out/'expressions').mkdir(exist_ok=True);fixed.save(out/'expressions'/f'{name}.png');expressions[name]=fixed
         exp_records.append(dict(name=name,file=f'expressions/{name}.png',refs_sent=[digest(p) for p in req.refs],fallback='local_face_composite',face_box=list(face)))
         manifests.append(generated)
-    paths={n:out/'views'/f'{n}.png' for n in views};identity=identity_report(paths,negatives,near,palette,request.identity_override)
-    refset=dict(version=1,name=request.prompt,images=[dict(path=f'views/{n}.png',sha256=digest(p),role='identity',source='generated',licence='original generated artwork') for n,p in paths.items()],
+    paths={n:out/'identity'/f'{n}.png' for n in views};identity=identity_report(paths,negatives,near,palette,request.identity_override)
+    identity.update(measurement_stage='source_before_downscale',source_sizes=actual,source_sha256={n:digest(p) for n,p in paths.items()})
+    refset=dict(version=1,name=request.prompt,images=[dict(path=f'identity/{n}.png',sha256=digest(p),role='identity',source='generated',licence='original generated artwork') for n,p in paths.items()],
                 negative_images=[dict(path=str(Path(p).resolve()),sha256=digest(p)) for p in negatives],controls={'valid':identity['controls_valid']},visual_review={'status':'pending'})
     write(out/'refset.json',refset)
     heights=[im.getbbox()[3]-im.getbbox()[1] if im.getbbox() else 0 for im in views.values()]
