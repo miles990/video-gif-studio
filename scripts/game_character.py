@@ -112,7 +112,10 @@ def prepare_subject(im, view='front', reference_paths=()):
                 for j,(cx,cy,cw,ch,_) in enumerate(candidates):
                     cell=im.crop((int(cx)-2,int(cy)-2,int(cx+cw)+2,int(cy+ch)+2));p=Path(tmp)/f'{j}.png';cell.save(p);cell_paths.append(p)
                 metrics=[[compare(ref,p) for p in cell_paths] for ref in reference_paths]
-                scores=[[m['orb_good_matches']/max(1,max(v['orb_good_matches'] for v in row))+1-m['bhattacharyya'] for m in row] for row in metrics]
+                def match_score(m,row):
+                    if 'structure' in m:return m['structure']+m['colour']  # two-axis engine
+                    return m['orb_good_matches']/max(1,max(v['orb_good_matches'] for v in row))+1-m['bhattacharyya']  # ORB fallback
+                scores=[[match_score(m,row) for m in row] for row in metrics]
                 assignments=list(permutations(range(count),len(reference_paths)))
                 best=max(assignments,key=lambda assignment:sum(scores[k][j] for k,j in enumerate(assignment)))
                 index=next(j for j in range(count) if j not in best)
