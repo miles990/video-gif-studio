@@ -4,12 +4,26 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 import numpy as np
 from PIL import Image, ImageDraw
-from image_fixtures import ImageCase, intended_gaps
+from image_fixtures import ImageCase, ROOT, intended_gaps
 from image_alpha import alpha_qa, enclosed_regions
 from image_hole_judge import prepare_inputs, SubscriptionHoleJudge
 
 
 class AlphaRound4(ImageCase):
+ def test_tinroot_claw_gaps_keep_context_and_cannot_auto_fail(self):
+  path=ROOT/'tests/fixtures/live-s13-r4/spHipsClean/asset.png';seen=[]
+  def judge(path,regions):
+   manifest=json.loads(Path(path).with_suffix('.inputs.json').read_text())
+   self.assertIn('clamp hands',manifest['description'])
+   self.assertEqual(len(manifest['crops']),len(regions));seen.append(manifest)
+   return intended_gaps(path,regions)
+  with Image.open(path) as im:
+   result=alpha_qa(im,judge=judge,overlay_path=self.path/'claws.png',description='Tinroot robot with clamp hands on hips; designed gaps between claws and arms.')
+  self.assertEqual(result['status'],'PASS',result)
+  self.assertGreaterEqual(len(result['hole_review']['regions']),2)
+  self.assertEqual(len(seen),2)
+  self.assertTrue(all(r['classification']=='intended_gap' for r in result['hole_review']['answers']))
+
  def art(self):
   im=Image.new('RGBA',(160,160));d=ImageDraw.Draw(im)
   d.rectangle((20,20,140,140),fill='orange')
