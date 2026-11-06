@@ -1,0 +1,3159 @@
+{
+  "base_commit": "a03d1e1c807e82edfba0cab4902131ddaebd815c",
+  "status": "experimental; live semantic judge and crop-generation validation blocked",
+  "model_sha256": "f22797eabf810a75e41de68d378541ebea372122b25c4ce3ef25ff618250c20a",
+  "identity": {
+    "rows": [
+      {
+        "set": "r1",
+        "name": "ref1",
+        "label": "same",
+        "structure": 0.926683783531189,
+        "colour": 0.9508164745137823
+      },
+      {
+        "set": "r1",
+        "name": "ref2",
+        "label": "same",
+        "structure": 0.926683783531189,
+        "colour": 0.9508164745137823
+      },
+      {
+        "set": "r1",
+        "name": "neg",
+        "label": "different",
+        "structure": 0.7609692215919495,
+        "colour": 0.5585574032043065
+      },
+      {
+        "set": "r2",
+        "name": "refA",
+        "label": "same",
+        "structure": 0.8680147528648376,
+        "colour": 0.8667396452330942
+      },
+      {
+        "set": "r2",
+        "name": "refB",
+        "label": "same",
+        "structure": 0.8680147528648376,
+        "colour": 0.8667396452330942
+      },
+      {
+        "set": "r2",
+        "name": "neg",
+        "label": "different",
+        "structure": 0.7130664587020874,
+        "colour": 0.4011251292925174
+      },
+      {
+        "set": "r2",
+        "name": "imp",
+        "label": "different",
+        "structure": 0.6521095037460327,
+        "colour": 0.6423824614490234
+      },
+      {
+        "set": "r3",
+        "name": "refFront",
+        "label": "same",
+        "structure": 0.8865910768508911,
+        "colour": 0.8844185972351473
+      },
+      {
+        "set": "r3",
+        "name": "refSide",
+        "label": "same",
+        "structure": 0.8865910768508911,
+        "colour": 0.8844185972351473
+      },
+      {
+        "set": "r3",
+        "name": "refBack",
+        "label": "same",
+        "structure": 0.872344970703125,
+        "colour": 0.8766323966854059
+      },
+      {
+        "set": "r3",
+        "name": "refAction",
+        "label": "same",
+        "structure": 0.8549607396125793,
+        "colour": 0.8187725763917767
+      },
+      {
+        "set": "r3",
+        "name": "impSpecies",
+        "label": "different",
+        "structure": 0.634620189666748,
+        "colour": 0.4089294445775881
+      },
+      {
+        "set": "r3",
+        "name": "impRecolor",
+        "label": "different",
+        "structure": 0.9557099342346191,
+        "colour": 0.6494698176889965
+      }
+    ],
+    "leave_one_set_out": [
+      {
+        "held_out": "r1",
+        "calibrated_on": [
+          "r2",
+          "r3"
+        ],
+        "limits": {
+          "structure": {
+            "fail": 0.7603645523389181,
+            "pass": 0.8076626459757487
+          },
+          "colour": {
+            "fail": 0.7059040705899232,
+            "pass": 0.76233832349085
+          }
+        },
+        "results": [
+          {
+            "set": "r1",
+            "name": "ref1",
+            "label": "same",
+            "structure": 0.926683783531189,
+            "colour": 0.9508164745137823,
+            "status": "pass"
+          },
+          {
+            "set": "r1",
+            "name": "ref2",
+            "label": "same",
+            "structure": 0.926683783531189,
+            "colour": 0.9508164745137823,
+            "status": "pass"
+          },
+          {
+            "set": "r1",
+            "name": "neg",
+            "label": "different",
+            "structure": 0.7609692215919495,
+            "colour": 0.5585574032043065,
+            "status": "identity_fail"
+          }
+        ],
+        "training_errors": 0
+      },
+      {
+        "held_out": "r2",
+        "calibrated_on": [
+          "r1",
+          "r3"
+        ],
+        "limits": {
+          "structure": {
+            "fail": 0.792299727598826,
+            "pass": 0.8236302336057028
+          },
+          "colour": {
+            "fail": 0.7059040705899232,
+            "pass": 0.76233832349085
+          }
+        },
+        "results": [
+          {
+            "set": "r2",
+            "name": "refA",
+            "label": "same",
+            "structure": 0.8680147528648376,
+            "colour": 0.8667396452330942,
+            "status": "pass"
+          },
+          {
+            "set": "r2",
+            "name": "refB",
+            "label": "same",
+            "structure": 0.8680147528648376,
+            "colour": 0.8667396452330942,
+            "status": "pass"
+          },
+          {
+            "set": "r2",
+            "name": "neg",
+            "label": "different",
+            "structure": 0.7130664587020874,
+            "colour": 0.4011251292925174,
+            "status": "identity_fail"
+          },
+          {
+            "set": "r2",
+            "name": "imp",
+            "label": "different",
+            "structure": 0.6521095037460327,
+            "colour": 0.6423824614490234,
+            "status": "identity_fail"
+          }
+        ],
+        "training_errors": 0
+      },
+      {
+        "held_out": "r3",
+        "calibrated_on": [
+          "r1",
+          "r2"
+        ],
+        "limits": {
+          "structure": {
+            "fail": 0.7966510653495789,
+            "pass": 0.8323329091072083
+          },
+          "colour": {
+            "fail": 0.7171681893770471,
+            "pass": 0.7919539173050706
+          }
+        },
+        "results": [
+          {
+            "set": "r3",
+            "name": "refFront",
+            "label": "same",
+            "structure": 0.8865910768508911,
+            "colour": 0.8844185972351473,
+            "status": "pass"
+          },
+          {
+            "set": "r3",
+            "name": "refSide",
+            "label": "same",
+            "structure": 0.8865910768508911,
+            "colour": 0.8844185972351473,
+            "status": "pass"
+          },
+          {
+            "set": "r3",
+            "name": "refBack",
+            "label": "same",
+            "structure": 0.872344970703125,
+            "colour": 0.8766323966854059,
+            "status": "pass"
+          },
+          {
+            "set": "r3",
+            "name": "refAction",
+            "label": "same",
+            "structure": 0.8549607396125793,
+            "colour": 0.8187725763917767,
+            "status": "pass"
+          },
+          {
+            "set": "r3",
+            "name": "impSpecies",
+            "label": "different",
+            "structure": 0.634620189666748,
+            "colour": 0.4089294445775881,
+            "status": "identity_fail"
+          },
+          {
+            "set": "r3",
+            "name": "impRecolor",
+            "label": "different",
+            "structure": 0.9557099342346191,
+            "colour": 0.6494698176889965,
+            "status": "identity_fail"
+          }
+        ],
+        "training_errors": 0
+      }
+    ],
+    "pooled_limits": {
+      "structure": {
+        "fail": 0.792299727598826,
+        "pass": 0.8236302336057028
+      },
+      "colour": {
+        "fail": 0.7059040705899232,
+        "pass": 0.76233832349085
+      }
+    },
+    "production_limits": {
+      "structure": {
+        "fail": 0.7923,
+        "pass": 0.82363
+      },
+      "colour": {
+        "fail": 0.705904,
+        "pass": 0.762338
+      }
+    },
+    "caveat": "Cross-validation on three already reviewed live sets; not a claim of untouched future data."
+  },
+  "alpha": {
+    "designed_controls": [
+      {
+        "set": "r1",
+        "path": "live-s13/sprite/native/image-1.png",
+        "status": "needs_review",
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-0.png"
+      },
+      {
+        "set": "r1",
+        "path": "live-s13/probe-alpha.png",
+        "status": "PASS",
+        "enclosed_regions": 0,
+        "overlay": null
+      },
+      {
+        "set": "r2",
+        "path": "live-s13-r2/sprite/native/image-1.png",
+        "status": "needs_review",
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-2.png"
+      },
+      {
+        "set": "r2",
+        "path": "live-s13-r2/sprite2/native/image-1.png",
+        "status": "needs_review",
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-3.png"
+      },
+      {
+        "set": "r2",
+        "path": "live-s13-r2/key/native/image-1.png",
+        "status": "needs_review",
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-4.png"
+      },
+      {
+        "set": "r3",
+        "path": "live-s13-r3/spRing/native/image-1.png",
+        "status": "needs_review",
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-5.png"
+      },
+      {
+        "set": "r3",
+        "path": "live-s13-r3/spLegs/native/image-1.png",
+        "status": "needs_review",
+        "enclosed_regions": 4,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-6.png"
+      },
+      {
+        "set": "r3",
+        "path": "live-s13-r3/icon/native/image-1.png",
+        "status": "needs_review",
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-7.png"
+      }
+    ],
+    "injected_controls": [
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_center_r20.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_center_r20.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_center_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_center_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_center_r50.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_center_r50.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_center_r70.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_center_r70.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_center_r85.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_center_r85.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_edge_r15_gap6.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_edge_r15_gap6.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_edge_r25_gap10.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_edge_r25_gap10.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_edge_r25_gap20.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_edge_r25_gap20.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_edge_r40_gap12.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_edge_r40_gap12.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_edge_r40_gap35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_edge_r40_gap35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_haze_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_haze_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_semi128_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_semi128_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_slit.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_slit.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\icon_tiny_r3.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 2,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\icon_tiny_r3.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_center_r20.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_center_r20.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_center_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_center_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_center_r50.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_center_r50.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_center_r70.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_center_r70.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_center_r85.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_center_r85.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_edge_r15_gap6.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_edge_r15_gap6.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_edge_r25_gap10.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_edge_r25_gap10.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_edge_r25_gap20.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_edge_r25_gap20.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_edge_r40_gap12.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_edge_r40_gap12.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_edge_r40_gap35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_edge_r40_gap35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_haze_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_haze_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_semi128_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_semi128_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_slit.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_slit.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\legs_tiny_r3.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 1,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\legs_tiny_r3.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_center_r20.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_center_r20.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_center_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_center_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_center_r50.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_center_r50.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_center_r70.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_center_r70.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_center_r85.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_center_r85.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_edge_r15_gap6.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_edge_r15_gap6.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_edge_r25_gap10.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_edge_r25_gap10.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_edge_r25_gap20.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_edge_r25_gap20.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_edge_r40_gap12.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_edge_r40_gap12.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_edge_r40_gap35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_edge_r40_gap35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_haze_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_haze_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_semi128_r35.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_semi128_r35.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_slit.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_slit.png"
+      },
+      {
+        "path": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\off\\holes\\ring_tiny_r3.png",
+        "status": "needs_review",
+        "fake_judge_status": "FAIL",
+        "fake_judge_body_regions": 1,
+        "enclosed_regions": 3,
+        "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\ring_tiny_r3.png"
+      }
+    ],
+    "injected_false_pass": 0,
+    "semantic_recall": null,
+    "semantic_false_pass": null,
+    "judge_status": "unavailable: Codex child app-server access denied in sandbox",
+    "warning": "Abstentions are not detections. Blocking all unreviewed components does not measure semantic recall.",
+    "leave_one_set_out": [
+      {
+        "calibrated_on": [
+          "r2",
+          "r3"
+        ],
+        "held_out": "r1",
+        "policy": "No geometry approval; <=4 px specks excluded. No fitted semantic thresholds.",
+        "positive_results": [
+          {
+            "set": "r1",
+            "path": "live-s13/sprite/native/image-1.png",
+            "status": "needs_review",
+            "enclosed_regions": 1,
+            "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-0.png"
+          },
+          {
+            "set": "r1",
+            "path": "live-s13/probe-alpha.png",
+            "status": "PASS",
+            "enclosed_regions": 0,
+            "overlay": null
+          }
+        ],
+        "semantic_recall": null,
+        "semantic_false_pass": null
+      },
+      {
+        "calibrated_on": [
+          "r1",
+          "r3"
+        ],
+        "held_out": "r2",
+        "policy": "No geometry approval; <=4 px specks excluded. No fitted semantic thresholds.",
+        "positive_results": [
+          {
+            "set": "r2",
+            "path": "live-s13-r2/sprite/native/image-1.png",
+            "status": "needs_review",
+            "enclosed_regions": 1,
+            "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-2.png"
+          },
+          {
+            "set": "r2",
+            "path": "live-s13-r2/sprite2/native/image-1.png",
+            "status": "needs_review",
+            "enclosed_regions": 3,
+            "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-3.png"
+          },
+          {
+            "set": "r2",
+            "path": "live-s13-r2/key/native/image-1.png",
+            "status": "needs_review",
+            "enclosed_regions": 1,
+            "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-4.png"
+          }
+        ],
+        "semantic_recall": null,
+        "semantic_false_pass": null
+      },
+      {
+        "calibrated_on": [
+          "r1",
+          "r2"
+        ],
+        "held_out": "r3",
+        "policy": "No geometry approval; <=4 px specks excluded. No fitted semantic thresholds.",
+        "positive_results": [
+          {
+            "set": "r3",
+            "path": "live-s13-r3/spRing/native/image-1.png",
+            "status": "needs_review",
+            "enclosed_regions": 2,
+            "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-5.png"
+          },
+          {
+            "set": "r3",
+            "path": "live-s13-r3/spLegs/native/image-1.png",
+            "status": "needs_review",
+            "enclosed_regions": 4,
+            "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-6.png"
+          },
+          {
+            "set": "r3",
+            "path": "live-s13-r3/icon/native/image-1.png",
+            "status": "needs_review",
+            "enclosed_regions": 1,
+            "overlay": "C:\\Users\\User\\src\\vgs-img\\.scratch\\r3\\evidence\\alpha\\positive-7.png"
+          }
+        ],
+        "semantic_recall": null,
+        "semantic_false_pass": null
+      }
+    ]
+  },
+  "edits": {
+    "replays": [
+      {
+        "set": "r1",
+        "resolution": "fixture",
+        "base_size": [
+          432,
+          768
+        ],
+        "candidate_size": [
+          410,
+          768
+        ],
+        "outside_mean": 0.0,
+        "outside_p999": 0.0,
+        "outside_fraction_over10": 0.0,
+        "outside_identical": true,
+        "inside_delta_e2000": 16.083300802567663,
+        "raw_outside_mean": 7.885244435121662,
+        "registration": {
+          "method": "ORB_RANSAC",
+          "residual_px": 0.19570143520832062,
+          "inliers": 1036,
+          "inlier_fraction": 0.487758945386064,
+          "scale": 1.001135364472013,
+          "rotation_degrees": -0.12942519363934574,
+          "transform": [
+            [
+              1.0011328102714014,
+              0.0022614585108096334,
+              0.8938414993693325
+            ],
+            [
+              -0.0022614585108096334,
+              1.0011328102714014,
+              -0.2503961476757599
+            ]
+          ],
+          "ecc_attempted": true,
+          "ecc_accepted": false,
+          "residual_tolerance_px": 1.0,
+          "orb_residual_px": 0.661122267294137,
+          "pre_ecc_subpixel_residual_px": 1.198270320892334,
+          "ecc_correlation": 0.9549982274361104,
+          "residual_p95_px": 0.9930577874183655,
+          "residual_method": "independent_band_forward_backward_LK",
+          "residual_points": 74,
+          "residual_support": [
+            0.9675925925925926,
+            0.99609375
+          ],
+          "acceptance": "pass",
+          "dense_flow": {
+            "method": "cv2_DIS",
+            "accepted": true,
+            "consistent_fraction": 1.0,
+            "before": {
+              "residual_px": 0.8597384691238403,
+              "residual_p95_px": 1.7651410102844238,
+              "residual_points": 75,
+              "residual_method": "independent_band_forward_backward_LK"
+            },
+            "after": {
+              "residual_px": 0.19570143520832062,
+              "residual_p95_px": 0.9930577874183655,
+              "residual_points": 74,
+              "residual_method": "independent_band_forward_backward_LK"
+            }
+          },
+          "global_residual_px": 1.198270320892334
+        },
+        "margin_px": 9,
+        "feather_px": 3,
+        "requested_feather_px": 8,
+        "seam": {
+          "boundary_edges": 352,
+          "boundary_gradient_excess_mean": 0.0,
+          "boundary_gradient_excess_p95": 0.0,
+          "boundary_gradient_mean": 7.714962121212121,
+          "units": "8-bit RGB channel levels",
+          "status": "review_metric",
+          "cut": {
+            "method": "minimum_cost_graph_cut_color",
+            "feather_px": 3,
+            "selected_pixels": 6133
+          },
+          "ghosting": {
+            "flagged": false,
+            "offset_edge_pixels": [
+              93,
+              4
+            ],
+            "edge_pixels": [
+              565,
+              472
+            ],
+            "offset_fractions": [
+              0.16460176991150444,
+              0.00847457627118644
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band"
+          }
+        },
+        "acceptance": "pass",
+        "visual_review": "pending: semantic change and composite seam"
+      },
+      {
+        "set": "r1",
+        "resolution": "native",
+        "base_size": [
+          1080,
+          1920
+        ],
+        "candidate_size": [
+          916,
+          1717
+        ],
+        "outside_mean": 0.0,
+        "outside_p999": 0.0,
+        "outside_fraction_over10": 0.0,
+        "outside_identical": true,
+        "inside_delta_e2000": 19.605006537627045,
+        "raw_outside_mean": 9.25162246439106,
+        "registration": {
+          "method": "ORB_RANSAC",
+          "residual_px": 0.37411701679229736,
+          "inliers": 696,
+          "inlier_fraction": 0.5304878048780488,
+          "scale": 1.1198163341633072,
+          "rotation_degrees": -0.1652718212780812,
+          "transform": [
+            [
+              1.1198116754191358,
+              0.00323014766469388,
+              0.40981916619365094
+            ],
+            [
+              -0.00323014766469388,
+              1.1198116754191358,
+              -0.9728275515874373
+            ]
+          ],
+          "ecc_attempted": true,
+          "ecc_accepted": false,
+          "residual_tolerance_px": 1.0,
+          "orb_residual_px": 1.617512877355367,
+          "pre_ecc_subpixel_residual_px": 2.1424477100372314,
+          "ecc_correlation": 0.9212150371163006,
+          "residual_p95_px": 1.9714950323104858,
+          "residual_method": "independent_band_forward_backward_LK",
+          "residual_points": 119,
+          "residual_support": [
+            0.9351851851851852,
+            0.9479166666666666
+          ],
+          "acceptance": "pass",
+          "dense_flow": {
+            "method": "cv2_DIS",
+            "accepted": true,
+            "consistent_fraction": 0.9517747302611677,
+            "before": {
+              "residual_px": 3.554896831512451,
+              "residual_p95_px": 5.575062274932861,
+              "residual_points": 133,
+              "residual_method": "independent_band_forward_backward_LK"
+            },
+            "after": {
+              "residual_px": 0.37411701679229736,
+              "residual_p95_px": 1.9714950323104858,
+              "residual_points": 119,
+              "residual_method": "independent_band_forward_backward_LK"
+            }
+          },
+          "global_residual_px": 2.1424477100372314
+        },
+        "margin_px": 22,
+        "feather_px": 3,
+        "requested_feather_px": 8,
+        "seam": {
+          "boundary_edges": 856,
+          "boundary_gradient_excess_mean": 0.0,
+          "boundary_gradient_excess_p95": 0.0,
+          "boundary_gradient_mean": 5.767523364485982,
+          "units": "8-bit RGB channel levels",
+          "status": "review_metric",
+          "cut": {
+            "method": "minimum_cost_graph_cut_color",
+            "feather_px": 3,
+            "selected_pixels": 35986
+          },
+          "ghosting": {
+            "flagged": false,
+            "offset_edge_pixels": [
+              134,
+              20
+            ],
+            "edge_pixels": [
+              821,
+              709
+            ],
+            "offset_fractions": [
+              0.16321559074299635,
+              0.028208744710860368
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band"
+          }
+        },
+        "acceptance": "pass",
+        "visual_review": "pending: semantic change and composite seam"
+      },
+      {
+        "set": "r2",
+        "resolution": "fixture",
+        "base_size": [
+          378,
+          672
+        ],
+        "candidate_size": [
+          359,
+          672
+        ],
+        "outside_mean": 0.0,
+        "outside_p999": 0.0,
+        "outside_fraction_over10": 0.0,
+        "outside_identical": true,
+        "inside_delta_e2000": 15.255841931827264,
+        "raw_outside_mean": 6.461923902039242,
+        "registration": {
+          "method": "ORB_RANSAC_ECC",
+          "residual_px": 0.23989035189151764,
+          "inliers": 1032,
+          "inlier_fraction": 0.599651365485183,
+          "scale": 1.0021433742089927,
+          "rotation_degrees": 0.14346659272995502,
+          "transform": [
+            [
+              1.0021412743704403,
+              -0.0020455598520317487,
+              2.7299829904907953
+            ],
+            [
+              0.0020455598520317483,
+              1.0021412743704403,
+              -0.9256767839013693
+            ]
+          ],
+          "ecc_attempted": true,
+          "ecc_accepted": true,
+          "residual_tolerance_px": 1.0,
+          "orb_residual_px": 0.7236790394358834,
+          "pre_ecc_subpixel_residual_px": 1.0014716386795044,
+          "ecc_correlation": 0.9741135454931158,
+          "residual_p95_px": 0.8592742681503296,
+          "residual_method": "independent_band_forward_backward_LK",
+          "residual_points": 107,
+          "residual_support": [
+            0.9470899470899471,
+            0.9821428571428571
+          ],
+          "acceptance": "pass",
+          "dense_flow": {
+            "method": "cv2_DIS",
+            "accepted": true,
+            "consistent_fraction": 1.0,
+            "before": {
+              "residual_px": 0.4350092113018036,
+              "residual_p95_px": 0.9293729662895203,
+              "residual_points": 109,
+              "residual_method": "independent_band_forward_backward_LK"
+            },
+            "after": {
+              "residual_px": 0.23989035189151764,
+              "residual_p95_px": 0.8592742681503296,
+              "residual_points": 107,
+              "residual_method": "independent_band_forward_backward_LK"
+            }
+          },
+          "global_residual_px": 0.9842708706855774
+        },
+        "margin_px": 8,
+        "feather_px": 3,
+        "requested_feather_px": 8,
+        "seam": {
+          "boundary_edges": 302,
+          "boundary_gradient_excess_mean": 0.0,
+          "boundary_gradient_excess_p95": 0.0,
+          "boundary_gradient_mean": 9.139072847682119,
+          "units": "8-bit RGB channel levels",
+          "status": "review_metric",
+          "cut": {
+            "method": "minimum_cost_graph_cut_color",
+            "feather_px": 3,
+            "selected_pixels": 4154
+          },
+          "ghosting": {
+            "flagged": false,
+            "offset_edge_pixels": [
+              134,
+              14
+            ],
+            "edge_pixels": [
+              579,
+              441
+            ],
+            "offset_fractions": [
+              0.231433506044905,
+              0.031746031746031744
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band"
+          }
+        },
+        "acceptance": "pass",
+        "visual_review": "pending: semantic change and composite seam"
+      },
+      {
+        "set": "r2",
+        "resolution": "native",
+        "base_size": [
+          1080,
+          1920
+        ],
+        "candidate_size": [
+          916,
+          1717
+        ],
+        "outside_mean": 0.0,
+        "outside_p999": 0.0,
+        "outside_fraction_over10": 0.0,
+        "outside_identical": true,
+        "inside_delta_e2000": 15.533083472727148,
+        "raw_outside_mean": 7.099993284806839,
+        "registration": {
+          "method": "ORB_RANSAC_ECC",
+          "residual_px": 0.4435040354728699,
+          "inliers": 551,
+          "inlier_fraction": 0.5083025830258303,
+          "scale": 1.119240617071963,
+          "rotation_degrees": 0.0437874921104558,
+          "transform": [
+            [
+              1.1192373857839006,
+              -0.0027353785767319267,
+              9.63150728819482
+            ],
+            [
+              0.0027353785767319267,
+              1.1192373857839006,
+              -1.705336492500253
+            ]
+          ],
+          "ecc_attempted": true,
+          "ecc_accepted": true,
+          "residual_tolerance_px": 1.0,
+          "orb_residual_px": 1.5455769180461525,
+          "pre_ecc_subpixel_residual_px": 2.9466428756713867,
+          "ecc_correlation": 0.9481778153370115,
+          "residual_p95_px": 1.5804803371429443,
+          "residual_method": "independent_band_forward_backward_LK",
+          "residual_points": 295,
+          "residual_support": [
+            0.8574074074074074,
+            0.8713541666666667
+          ],
+          "acceptance": "pass",
+          "dense_flow": {
+            "method": "cv2_DIS",
+            "accepted": true,
+            "consistent_fraction": 0.9644549763033176,
+            "before": {
+              "residual_px": 1.157637119293213,
+              "residual_p95_px": 2.9059841632843018,
+              "residual_points": 299,
+              "residual_method": "independent_band_forward_backward_LK"
+            },
+            "after": {
+              "residual_px": 0.4435040354728699,
+              "residual_p95_px": 1.5804803371429443,
+              "residual_points": 295,
+              "residual_method": "independent_band_forward_backward_LK"
+            }
+          },
+          "global_residual_px": 2.726625919342041
+        },
+        "margin_px": 22,
+        "feather_px": 3,
+        "requested_feather_px": 8,
+        "seam": {
+          "boundary_edges": 856,
+          "boundary_gradient_excess_mean": 0.0,
+          "boundary_gradient_excess_p95": 0.0,
+          "boundary_gradient_mean": 4.45404984423676,
+          "units": "8-bit RGB channel levels",
+          "status": "review_metric",
+          "cut": {
+            "method": "minimum_cost_graph_cut_color",
+            "feather_px": 3,
+            "selected_pixels": 31618
+          },
+          "ghosting": {
+            "flagged": false,
+            "offset_edge_pixels": [
+              279,
+              25
+            ],
+            "edge_pixels": [
+              1089,
+              733
+            ],
+            "offset_fractions": [
+              0.256198347107438,
+              0.034106412005457026
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band"
+          }
+        },
+        "acceptance": "pass",
+        "visual_review": "pending: semantic change and composite seam"
+      },
+      {
+        "set": "r3",
+        "resolution": "fixture",
+        "base_size": [
+          360,
+          640
+        ],
+        "candidate_size": [
+          341,
+          640
+        ],
+        "outside_mean": 0.0,
+        "outside_p999": 0.0,
+        "outside_fraction_over10": 0.0,
+        "outside_identical": true,
+        "inside_delta_e2000": 30.069011139127106,
+        "raw_outside_mean": 9.961827427583977,
+        "registration": {
+          "method": "ORB_RANSAC_ECC",
+          "residual_px": 0.26503580808639526,
+          "inliers": 644,
+          "inlier_fraction": 0.36302142051860203,
+          "scale": 1.001746969085346,
+          "rotation_degrees": 0.334324497371654,
+          "transform": [
+            [
+              1.001743505831222,
+              0.0026337659017379796,
+              3.4031073471755695
+            ],
+            [
+              -0.0026337659017379796,
+              1.001743505831222,
+              -0.011062761047015757
+            ]
+          ],
+          "ecc_attempted": true,
+          "ecc_accepted": true,
+          "residual_tolerance_px": 1.0,
+          "orb_residual_px": 0.65177739248888,
+          "pre_ecc_subpixel_residual_px": 2.0181875228881836,
+          "ecc_correlation": 0.9334048105612784,
+          "residual_p95_px": 1.7857338190078735,
+          "residual_method": "independent_band_forward_backward_LK",
+          "residual_points": 121,
+          "residual_support": [
+            0.9638888888888889,
+            0.9578125
+          ],
+          "acceptance": "pass",
+          "dense_flow": {
+            "method": "cv2_DIS",
+            "accepted": true,
+            "consistent_fraction": 1.0,
+            "before": {
+              "residual_px": 2.605969190597534,
+              "residual_p95_px": 4.526021480560303,
+              "residual_points": 124,
+              "residual_method": "independent_band_forward_backward_LK"
+            },
+            "after": {
+              "residual_px": 0.26503580808639526,
+              "residual_p95_px": 1.7857338190078735,
+              "residual_points": 121,
+              "residual_method": "independent_band_forward_backward_LK"
+            }
+          },
+          "global_residual_px": 1.8972047567367554
+        },
+        "margin_px": 7,
+        "feather_px": 3,
+        "requested_feather_px": 8,
+        "seam": {
+          "boundary_edges": 441,
+          "boundary_gradient_excess_mean": 0.3560090702947845,
+          "boundary_gradient_excess_p95": 0.0,
+          "boundary_gradient_mean": 29.876795162509445,
+          "units": "8-bit RGB channel levels",
+          "status": "review_metric",
+          "cut": {
+            "method": "minimum_cost_graph_cut_color",
+            "feather_px": 3,
+            "selected_pixels": 22192
+          },
+          "ghosting": {
+            "flagged": false,
+            "offset_edge_pixels": [
+              168,
+              54
+            ],
+            "edge_pixels": [
+              1434,
+              1261
+            ],
+            "offset_fractions": [
+              0.11715481171548117,
+              0.04282315622521808
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band"
+          }
+        },
+        "acceptance": "pass",
+        "visual_review": "pending: semantic change and composite seam"
+      },
+      {
+        "set": "r3",
+        "resolution": "native",
+        "base_size": [
+          1080,
+          1920
+        ],
+        "candidate_size": [
+          916,
+          1717
+        ],
+        "outside_mean": 0.0,
+        "outside_p999": 0.0,
+        "outside_fraction_over10": 0.0,
+        "outside_identical": true,
+        "inside_delta_e2000": 30.38303314435881,
+        "raw_outside_mean": 11.630173777961,
+        "registration": {
+          "method": "ORB_RANSAC_ECC",
+          "residual_px": 0.38091689348220825,
+          "inliers": 392,
+          "inlier_fraction": 0.35062611806797855,
+          "scale": 1.1264403346500325,
+          "rotation_degrees": 0.651562089208498,
+          "transform": [
+            [
+              1.126417728695116,
+              0.007141325958822963,
+              3.4135728980844817
+            ],
+            [
+              -0.0071413259588229624,
+              1.126417728695116,
+              -3.661674292024742
+            ]
+          ],
+          "ecc_attempted": true,
+          "ecc_accepted": true,
+          "residual_tolerance_px": 1.0,
+          "orb_residual_px": 1.7250610616508857,
+          "pre_ecc_subpixel_residual_px": 6.469289779663086,
+          "ecc_correlation": 0.869462550785282,
+          "residual_p95_px": 2.4079911708831787,
+          "residual_method": "independent_band_forward_backward_LK",
+          "residual_points": 432,
+          "residual_support": [
+            0.9435185185185185,
+            0.7989583333333333
+          ],
+          "acceptance": "pass",
+          "dense_flow": {
+            "method": "cv2_DIS",
+            "accepted": true,
+            "consistent_fraction": 0.9416744455531593,
+            "before": {
+              "residual_px": 5.758115768432617,
+              "residual_p95_px": 12.958827018737793,
+              "residual_points": 492,
+              "residual_method": "independent_band_forward_backward_LK"
+            },
+            "after": {
+              "residual_px": 0.38091689348220825,
+              "residual_p95_px": 2.4079911708831787,
+              "residual_points": 432,
+              "residual_method": "independent_band_forward_backward_LK"
+            }
+          },
+          "global_residual_px": 5.128851890563965
+        },
+        "margin_px": 22,
+        "feather_px": 3,
+        "requested_feather_px": 8,
+        "seam": {
+          "boundary_edges": 1328,
+          "boundary_gradient_excess_mean": 0.24648594377510039,
+          "boundary_gradient_excess_p95": 0.0,
+          "boundary_gradient_mean": 18.008032128514053,
+          "units": "8-bit RGB channel levels",
+          "status": "review_metric",
+          "cut": {
+            "method": "minimum_cost_graph_cut_color",
+            "feather_px": 3,
+            "selected_pixels": 201094
+          },
+          "ghosting": {
+            "flagged": true,
+            "offset_edge_pixels": [
+              572,
+              335
+            ],
+            "edge_pixels": [
+              2751,
+              2477
+            ],
+            "offset_fractions": [
+              0.207924391130498,
+              0.13524424707307225
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band"
+          }
+        },
+        "acceptance": "needs_review",
+        "visual_review": "pending: semantic change and composite seam"
+      }
+    ],
+    "ghost_controls": [
+      {
+        "set": "r1",
+        "shift_px": 0,
+        "label": "clean",
+        "flagged": false,
+        "offset_edge_pixels": [
+          0,
+          0
+        ],
+        "edge_pixels": [
+          1112,
+          1112
+        ],
+        "offset_fractions": [
+          0.0,
+          0.0
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r1",
+        "shift_px": 2,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          266,
+          249
+        ],
+        "edge_pixels": [
+          1112,
+          1112
+        ],
+        "offset_fractions": [
+          0.2392086330935252,
+          0.2239208633093525
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r1",
+        "shift_px": 4,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          481,
+          497
+        ],
+        "edge_pixels": [
+          1112,
+          1122
+        ],
+        "offset_fractions": [
+          0.43255395683453235,
+          0.44295900178253117
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r1",
+        "shift_px": 6,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          550,
+          565
+        ],
+        "edge_pixels": [
+          1112,
+          1130
+        ],
+        "offset_fractions": [
+          0.49460431654676257,
+          0.5
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r2",
+        "shift_px": 0,
+        "label": "clean",
+        "flagged": false,
+        "offset_edge_pixels": [
+          0,
+          0
+        ],
+        "edge_pixels": [
+          1181,
+          1181
+        ],
+        "offset_fractions": [
+          0.0,
+          0.0
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r2",
+        "shift_px": 2,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          252,
+          222
+        ],
+        "edge_pixels": [
+          1181,
+          1140
+        ],
+        "offset_fractions": [
+          0.21337849280270957,
+          0.19473684210526315
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r2",
+        "shift_px": 4,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          374,
+          339
+        ],
+        "edge_pixels": [
+          1181,
+          1132
+        ],
+        "offset_fractions": [
+          0.31668077900084673,
+          0.299469964664311
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r2",
+        "shift_px": 6,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          412,
+          372
+        ],
+        "edge_pixels": [
+          1181,
+          1147
+        ],
+        "offset_fractions": [
+          0.3488569009314141,
+          0.32432432432432434
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r3",
+        "shift_px": 0,
+        "label": "clean",
+        "flagged": false,
+        "offset_edge_pixels": [
+          0,
+          0
+        ],
+        "edge_pixels": [
+          2678,
+          2678
+        ],
+        "offset_fractions": [
+          0.0,
+          0.0
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r3",
+        "shift_px": 2,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          603,
+          605
+        ],
+        "edge_pixels": [
+          2678,
+          2639
+        ],
+        "offset_fractions": [
+          0.2251680358476475,
+          0.22925350511557407
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r3",
+        "shift_px": 4,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          608,
+          581
+        ],
+        "edge_pixels": [
+          2678,
+          2596
+        ],
+        "offset_fractions": [
+          0.2270351008215086,
+          0.22380585516178736
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      },
+      {
+        "set": "r3",
+        "shift_px": 6,
+        "label": "ghost",
+        "flagged": true,
+        "offset_edge_pixels": [
+          626,
+          585
+        ],
+        "edge_pixels": [
+          2678,
+          2582
+        ],
+        "offset_fractions": [
+          0.2337565347274085,
+          0.22656855151045702
+        ],
+        "offset_range_px": [
+          1,
+          8
+        ],
+        "minimum_pairs": 8,
+        "minimum_fraction": 0.1,
+        "method": "reciprocal_offset_edges_in_seam_band"
+      }
+    ],
+    "leave_one_set_out": [
+      {
+        "held_out": "r1",
+        "calibrated_on": [
+          "r2",
+          "r3"
+        ],
+        "min_pairs": 8,
+        "min_fraction": 0.1,
+        "training_errors": 0,
+        "results": [
+          {
+            "set": "r1",
+            "shift_px": 0,
+            "label": "clean",
+            "flagged": false,
+            "offset_edge_pixels": [
+              0,
+              0
+            ],
+            "edge_pixels": [
+              1112,
+              1112
+            ],
+            "offset_fractions": [
+              0.0,
+              0.0
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": false
+          },
+          {
+            "set": "r1",
+            "shift_px": 2,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              266,
+              249
+            ],
+            "edge_pixels": [
+              1112,
+              1112
+            ],
+            "offset_fractions": [
+              0.2392086330935252,
+              0.2239208633093525
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          },
+          {
+            "set": "r1",
+            "shift_px": 4,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              481,
+              497
+            ],
+            "edge_pixels": [
+              1112,
+              1122
+            ],
+            "offset_fractions": [
+              0.43255395683453235,
+              0.44295900178253117
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          },
+          {
+            "set": "r1",
+            "shift_px": 6,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              550,
+              565
+            ],
+            "edge_pixels": [
+              1112,
+              1130
+            ],
+            "offset_fractions": [
+              0.49460431654676257,
+              0.5
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          }
+        ]
+      },
+      {
+        "held_out": "r2",
+        "calibrated_on": [
+          "r1",
+          "r3"
+        ],
+        "min_pairs": 8,
+        "min_fraction": 0.1,
+        "training_errors": 0,
+        "results": [
+          {
+            "set": "r2",
+            "shift_px": 0,
+            "label": "clean",
+            "flagged": false,
+            "offset_edge_pixels": [
+              0,
+              0
+            ],
+            "edge_pixels": [
+              1181,
+              1181
+            ],
+            "offset_fractions": [
+              0.0,
+              0.0
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": false
+          },
+          {
+            "set": "r2",
+            "shift_px": 2,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              252,
+              222
+            ],
+            "edge_pixels": [
+              1181,
+              1140
+            ],
+            "offset_fractions": [
+              0.21337849280270957,
+              0.19473684210526315
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          },
+          {
+            "set": "r2",
+            "shift_px": 4,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              374,
+              339
+            ],
+            "edge_pixels": [
+              1181,
+              1132
+            ],
+            "offset_fractions": [
+              0.31668077900084673,
+              0.299469964664311
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          },
+          {
+            "set": "r2",
+            "shift_px": 6,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              412,
+              372
+            ],
+            "edge_pixels": [
+              1181,
+              1147
+            ],
+            "offset_fractions": [
+              0.3488569009314141,
+              0.32432432432432434
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          }
+        ]
+      },
+      {
+        "held_out": "r3",
+        "calibrated_on": [
+          "r1",
+          "r2"
+        ],
+        "min_pairs": 8,
+        "min_fraction": 0.1,
+        "training_errors": 0,
+        "results": [
+          {
+            "set": "r3",
+            "shift_px": 0,
+            "label": "clean",
+            "flagged": false,
+            "offset_edge_pixels": [
+              0,
+              0
+            ],
+            "edge_pixels": [
+              2678,
+              2678
+            ],
+            "offset_fractions": [
+              0.0,
+              0.0
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": false
+          },
+          {
+            "set": "r3",
+            "shift_px": 2,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              603,
+              605
+            ],
+            "edge_pixels": [
+              2678,
+              2639
+            ],
+            "offset_fractions": [
+              0.2251680358476475,
+              0.22925350511557407
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          },
+          {
+            "set": "r3",
+            "shift_px": 4,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              608,
+              581
+            ],
+            "edge_pixels": [
+              2678,
+              2596
+            ],
+            "offset_fractions": [
+              0.2270351008215086,
+              0.22380585516178736
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          },
+          {
+            "set": "r3",
+            "shift_px": 6,
+            "label": "ghost",
+            "flagged": true,
+            "offset_edge_pixels": [
+              626,
+              585
+            ],
+            "edge_pixels": [
+              2678,
+              2582
+            ],
+            "offset_fractions": [
+              0.2337565347274085,
+              0.22656855151045702
+            ],
+            "offset_range_px": [
+              1,
+              8
+            ],
+            "minimum_pairs": 8,
+            "minimum_fraction": 0.1,
+            "method": "reciprocal_offset_edges_in_seam_band",
+            "calibrated_flag": true
+          }
+        ]
+      }
+    ],
+    "bounds": {
+      "residual_px": 1,
+      "feather_px": 3,
+      "flow_roundtrip_px": 1,
+      "offset_range_px": [
+        1,
+        8
+      ],
+      "canny": [
+        60,
+        120
+      ]
+    },
+    "caveat": "Existing full-frame generations replayed. New crop-conditioned live generation is blocked by subscription CLI app-server access; no new crop quality claim."
+  },
+  "loops": {
+    "rows": [
+      {
+        "set": "r1",
+        "case": "clean",
+        "status": "PASS",
+        "issues": [],
+        "colour_seam_delta_e2000": 0.22341214216118876,
+        "speed_ratio": 0.9920181906009149,
+        "longest_hold_ms": 0.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.022893056388105,
+        "seam_difference": 1.7888935804367065,
+        "endpoint_hold_cap_ms": 320.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 0.9383505565778639,
+        "ordinary_step": 1.7732067108154297,
+        "seam_frames": [
+          31,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r1",
+        "case": "endpoint_2s",
+        "status": "FAIL",
+        "issues": [
+          "endpoint_hold",
+          "speed_discontinuity"
+        ],
+        "colour_seam_delta_e2000": 0.22341214216118876,
+        "speed_ratio": 0.9920181906009149,
+        "longest_hold_ms": 1960.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [
+          1960.0
+        ],
+        "clipped_frames": 0,
+        "seam_ratio": 1.022893056388105,
+        "seam_difference": 1.7888935804367065,
+        "endpoint_hold_cap_ms": 500.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 0.9383505565778639,
+        "ordinary_step": 1.7732067108154297,
+        "seam_frames": [
+          80,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r1",
+        "case": "midmotion_360ms",
+        "status": "FAIL",
+        "issues": [
+          "speed_discontinuity"
+        ],
+        "colour_seam_delta_e2000": 0.22341214216118876,
+        "speed_ratio": 0.9920181906009149,
+        "longest_hold_ms": 360.0,
+        "non_extremum_holds_ms": [
+          360.0
+        ],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.022893056388105,
+        "seam_difference": 1.7888935804367065,
+        "endpoint_hold_cap_ms": 410.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 0.9383505565778639,
+        "ordinary_step": 1.7732067108154297,
+        "seam_frames": [
+          40,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r1",
+        "case": "single_jump_12px",
+        "status": "FAIL",
+        "issues": [
+          "single_frame_position_jump"
+        ],
+        "colour_seam_delta_e2000": 0.22341214216118876,
+        "speed_ratio": 0.9920181906009149,
+        "longest_hold_ms": 0.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.022893056388105,
+        "seam_difference": 1.7888935804367065,
+        "endpoint_hold_cap_ms": 320.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [
+          16,
+          17
+        ],
+        "ordinary_position_step_px": 0.9388820110545806,
+        "ordinary_step": 1.7732067108154297,
+        "seam_frames": [
+          31,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r2",
+        "case": "clean",
+        "status": "PASS",
+        "issues": [],
+        "colour_seam_delta_e2000": 0.2625928844791337,
+        "speed_ratio": 0.9917523841028609,
+        "longest_hold_ms": 80.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.0068799095946317,
+        "seam_difference": 2.1137566566467285,
+        "endpoint_hold_cap_ms": 320.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 1.078249620474399,
+        "ordinary_step": 2.117873191833496,
+        "seam_frames": [
+          31,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r2",
+        "case": "endpoint_2s",
+        "status": "FAIL",
+        "issues": [
+          "endpoint_hold",
+          "speed_discontinuity"
+        ],
+        "colour_seam_delta_e2000": 0.2625928844791337,
+        "speed_ratio": 0.9917523841028609,
+        "longest_hold_ms": 2040.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [
+          2040.0
+        ],
+        "clipped_frames": 0,
+        "seam_ratio": 1.0068799095946317,
+        "seam_difference": 2.1137566566467285,
+        "endpoint_hold_cap_ms": 500.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 1.078249620474399,
+        "ordinary_step": 2.117873191833496,
+        "seam_frames": [
+          80,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r2",
+        "case": "midmotion_360ms",
+        "status": "FAIL",
+        "issues": [
+          "speed_discontinuity"
+        ],
+        "colour_seam_delta_e2000": 0.2625928844791337,
+        "speed_ratio": 0.9917523841028609,
+        "longest_hold_ms": 360.0,
+        "non_extremum_holds_ms": [
+          360.0
+        ],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.0068799095946317,
+        "seam_difference": 2.1137566566467285,
+        "endpoint_hold_cap_ms": 410.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 1.078249620474399,
+        "ordinary_step": 2.117873191833496,
+        "seam_frames": [
+          40,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r2",
+        "case": "single_jump_12px",
+        "status": "FAIL",
+        "issues": [
+          "single_frame_position_jump"
+        ],
+        "colour_seam_delta_e2000": 0.2625928844791337,
+        "speed_ratio": 0.9917523841028609,
+        "longest_hold_ms": 80.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.0068799095946317,
+        "seam_difference": 2.1137566566467285,
+        "endpoint_hold_cap_ms": 320.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [
+          16,
+          17
+        ],
+        "ordinary_position_step_px": 1.0784806335566042,
+        "ordinary_step": 2.117873191833496,
+        "seam_frames": [
+          31,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r3",
+        "case": "clean",
+        "status": "PASS",
+        "issues": [],
+        "colour_seam_delta_e2000": 0.23076281333124213,
+        "speed_ratio": 0.9928439518306492,
+        "longest_hold_ms": 0.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.0853024787663414,
+        "seam_difference": 2.1794233322143555,
+        "endpoint_hold_cap_ms": 320.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 0.9777382628480213,
+        "ordinary_step": 2.1762781143188477,
+        "seam_frames": [
+          31,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r3",
+        "case": "endpoint_2s",
+        "status": "FAIL",
+        "issues": [
+          "endpoint_hold",
+          "speed_discontinuity"
+        ],
+        "colour_seam_delta_e2000": 0.23076281333124213,
+        "speed_ratio": 0.9928439518306492,
+        "longest_hold_ms": 1960.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [
+          1960.0
+        ],
+        "clipped_frames": 0,
+        "seam_ratio": 1.0853024787663414,
+        "seam_difference": 2.1794233322143555,
+        "endpoint_hold_cap_ms": 500.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 0.9777382628480213,
+        "ordinary_step": 2.1762781143188477,
+        "seam_frames": [
+          80,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r3",
+        "case": "midmotion_360ms",
+        "status": "FAIL",
+        "issues": [
+          "speed_discontinuity"
+        ],
+        "colour_seam_delta_e2000": 0.23076281333124213,
+        "speed_ratio": 0.9928439518306492,
+        "longest_hold_ms": 360.0,
+        "non_extremum_holds_ms": [
+          360.0
+        ],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.0853024787663414,
+        "seam_difference": 2.1794233322143555,
+        "endpoint_hold_cap_ms": 410.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [],
+        "ordinary_position_step_px": 0.9777382628480213,
+        "ordinary_step": 2.1762781143188477,
+        "seam_frames": [
+          40,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      },
+      {
+        "set": "r3",
+        "case": "single_jump_12px",
+        "status": "FAIL",
+        "issues": [
+          "single_frame_position_jump"
+        ],
+        "colour_seam_delta_e2000": 0.23076281333124213,
+        "speed_ratio": 0.9928439518306492,
+        "longest_hold_ms": 0.0,
+        "non_extremum_holds_ms": [],
+        "extremum_holds_ms": [],
+        "clipped_frames": 0,
+        "seam_ratio": 1.0853024787663414,
+        "seam_difference": 2.1794233322143555,
+        "endpoint_hold_cap_ms": 320.0,
+        "reversal_hysteresis_px": 0.5,
+        "jump_frames": [
+          16,
+          17
+        ],
+        "ordinary_position_step_px": 0.9777382628480213,
+        "ordinary_step": 2.1762781143188477,
+        "seam_frames": [
+          31,
+          0
+        ],
+        "moving": true,
+        "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+      }
+    ],
+    "leave_one_set_out": [
+      {
+        "held_out": "r1",
+        "calibrated_on": [
+          "r2",
+          "r3"
+        ],
+        "fixed_bounds": {
+          "endpoint_fraction": 0.25,
+          "endpoint_ms": 500,
+          "reversal_px": 0.5,
+          "jump_px": 1,
+          "jump_multiple": 3
+        },
+        "training_errors": 0,
+        "results": [
+          {
+            "set": "r1",
+            "case": "clean",
+            "status": "PASS",
+            "issues": [],
+            "colour_seam_delta_e2000": 0.22341214216118876,
+            "speed_ratio": 0.9920181906009149,
+            "longest_hold_ms": 0.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.022893056388105,
+            "seam_difference": 1.7888935804367065,
+            "endpoint_hold_cap_ms": 320.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 0.9383505565778639,
+            "ordinary_step": 1.7732067108154297,
+            "seam_frames": [
+              31,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r1",
+            "case": "endpoint_2s",
+            "status": "FAIL",
+            "issues": [
+              "endpoint_hold",
+              "speed_discontinuity"
+            ],
+            "colour_seam_delta_e2000": 0.22341214216118876,
+            "speed_ratio": 0.9920181906009149,
+            "longest_hold_ms": 1960.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [
+              1960.0
+            ],
+            "clipped_frames": 0,
+            "seam_ratio": 1.022893056388105,
+            "seam_difference": 1.7888935804367065,
+            "endpoint_hold_cap_ms": 500.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 0.9383505565778639,
+            "ordinary_step": 1.7732067108154297,
+            "seam_frames": [
+              80,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r1",
+            "case": "midmotion_360ms",
+            "status": "FAIL",
+            "issues": [
+              "speed_discontinuity"
+            ],
+            "colour_seam_delta_e2000": 0.22341214216118876,
+            "speed_ratio": 0.9920181906009149,
+            "longest_hold_ms": 360.0,
+            "non_extremum_holds_ms": [
+              360.0
+            ],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.022893056388105,
+            "seam_difference": 1.7888935804367065,
+            "endpoint_hold_cap_ms": 410.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 0.9383505565778639,
+            "ordinary_step": 1.7732067108154297,
+            "seam_frames": [
+              40,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r1",
+            "case": "single_jump_12px",
+            "status": "FAIL",
+            "issues": [
+              "single_frame_position_jump"
+            ],
+            "colour_seam_delta_e2000": 0.22341214216118876,
+            "speed_ratio": 0.9920181906009149,
+            "longest_hold_ms": 0.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.022893056388105,
+            "seam_difference": 1.7888935804367065,
+            "endpoint_hold_cap_ms": 320.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [
+              16,
+              17
+            ],
+            "ordinary_position_step_px": 0.9388820110545806,
+            "ordinary_step": 1.7732067108154297,
+            "seam_frames": [
+              31,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          }
+        ]
+      },
+      {
+        "held_out": "r2",
+        "calibrated_on": [
+          "r1",
+          "r3"
+        ],
+        "fixed_bounds": {
+          "endpoint_fraction": 0.25,
+          "endpoint_ms": 500,
+          "reversal_px": 0.5,
+          "jump_px": 1,
+          "jump_multiple": 3
+        },
+        "training_errors": 0,
+        "results": [
+          {
+            "set": "r2",
+            "case": "clean",
+            "status": "PASS",
+            "issues": [],
+            "colour_seam_delta_e2000": 0.2625928844791337,
+            "speed_ratio": 0.9917523841028609,
+            "longest_hold_ms": 80.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.0068799095946317,
+            "seam_difference": 2.1137566566467285,
+            "endpoint_hold_cap_ms": 320.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 1.078249620474399,
+            "ordinary_step": 2.117873191833496,
+            "seam_frames": [
+              31,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r2",
+            "case": "endpoint_2s",
+            "status": "FAIL",
+            "issues": [
+              "endpoint_hold",
+              "speed_discontinuity"
+            ],
+            "colour_seam_delta_e2000": 0.2625928844791337,
+            "speed_ratio": 0.9917523841028609,
+            "longest_hold_ms": 2040.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [
+              2040.0
+            ],
+            "clipped_frames": 0,
+            "seam_ratio": 1.0068799095946317,
+            "seam_difference": 2.1137566566467285,
+            "endpoint_hold_cap_ms": 500.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 1.078249620474399,
+            "ordinary_step": 2.117873191833496,
+            "seam_frames": [
+              80,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r2",
+            "case": "midmotion_360ms",
+            "status": "FAIL",
+            "issues": [
+              "speed_discontinuity"
+            ],
+            "colour_seam_delta_e2000": 0.2625928844791337,
+            "speed_ratio": 0.9917523841028609,
+            "longest_hold_ms": 360.0,
+            "non_extremum_holds_ms": [
+              360.0
+            ],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.0068799095946317,
+            "seam_difference": 2.1137566566467285,
+            "endpoint_hold_cap_ms": 410.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 1.078249620474399,
+            "ordinary_step": 2.117873191833496,
+            "seam_frames": [
+              40,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r2",
+            "case": "single_jump_12px",
+            "status": "FAIL",
+            "issues": [
+              "single_frame_position_jump"
+            ],
+            "colour_seam_delta_e2000": 0.2625928844791337,
+            "speed_ratio": 0.9917523841028609,
+            "longest_hold_ms": 80.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.0068799095946317,
+            "seam_difference": 2.1137566566467285,
+            "endpoint_hold_cap_ms": 320.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [
+              16,
+              17
+            ],
+            "ordinary_position_step_px": 1.0784806335566042,
+            "ordinary_step": 2.117873191833496,
+            "seam_frames": [
+              31,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          }
+        ]
+      },
+      {
+        "held_out": "r3",
+        "calibrated_on": [
+          "r1",
+          "r2"
+        ],
+        "fixed_bounds": {
+          "endpoint_fraction": 0.25,
+          "endpoint_ms": 500,
+          "reversal_px": 0.5,
+          "jump_px": 1,
+          "jump_multiple": 3
+        },
+        "training_errors": 0,
+        "results": [
+          {
+            "set": "r3",
+            "case": "clean",
+            "status": "PASS",
+            "issues": [],
+            "colour_seam_delta_e2000": 0.23076281333124213,
+            "speed_ratio": 0.9928439518306492,
+            "longest_hold_ms": 0.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.0853024787663414,
+            "seam_difference": 2.1794233322143555,
+            "endpoint_hold_cap_ms": 320.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 0.9777382628480213,
+            "ordinary_step": 2.1762781143188477,
+            "seam_frames": [
+              31,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r3",
+            "case": "endpoint_2s",
+            "status": "FAIL",
+            "issues": [
+              "endpoint_hold",
+              "speed_discontinuity"
+            ],
+            "colour_seam_delta_e2000": 0.23076281333124213,
+            "speed_ratio": 0.9928439518306492,
+            "longest_hold_ms": 1960.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [
+              1960.0
+            ],
+            "clipped_frames": 0,
+            "seam_ratio": 1.0853024787663414,
+            "seam_difference": 2.1794233322143555,
+            "endpoint_hold_cap_ms": 500.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 0.9777382628480213,
+            "ordinary_step": 2.1762781143188477,
+            "seam_frames": [
+              80,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r3",
+            "case": "midmotion_360ms",
+            "status": "FAIL",
+            "issues": [
+              "speed_discontinuity"
+            ],
+            "colour_seam_delta_e2000": 0.23076281333124213,
+            "speed_ratio": 0.9928439518306492,
+            "longest_hold_ms": 360.0,
+            "non_extremum_holds_ms": [
+              360.0
+            ],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.0853024787663414,
+            "seam_difference": 2.1794233322143555,
+            "endpoint_hold_cap_ms": 410.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [],
+            "ordinary_position_step_px": 0.9777382628480213,
+            "ordinary_step": 2.1762781143188477,
+            "seam_frames": [
+              40,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          },
+          {
+            "set": "r3",
+            "case": "single_jump_12px",
+            "status": "FAIL",
+            "issues": [
+              "single_frame_position_jump"
+            ],
+            "colour_seam_delta_e2000": 0.23076281333124213,
+            "speed_ratio": 0.9928439518306492,
+            "longest_hold_ms": 0.0,
+            "non_extremum_holds_ms": [],
+            "extremum_holds_ms": [],
+            "clipped_frames": 0,
+            "seam_ratio": 1.0853024787663414,
+            "seam_difference": 2.1794233322143555,
+            "endpoint_hold_cap_ms": 320.0,
+            "reversal_hysteresis_px": 0.5,
+            "jump_frames": [
+              16,
+              17
+            ],
+            "ordinary_position_step_px": 0.9777382628480213,
+            "ordinary_step": 2.1762781143188477,
+            "seam_frames": [
+              31,
+              0
+            ],
+            "moving": true,
+            "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+          }
+        ]
+      }
+    ]
+  },
+  "fixtures": {
+    "source": "review-s13-r3 subscription live set, $0 API spend",
+    "records": [
+      {
+        "path": "refFront/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\refFront\\image-1.png",
+        "source_sha256": "7d36826cce36e5339811b881da167c6e76ce29348314ebf3e8ddae5e9e2df8b8",
+        "sha256": "b34165f7f60ac812a9341877a0d38f773f616e7c6c12a95c533c4aa7f6e5c946",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 281875
+      },
+      {
+        "path": "refSide/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\refSide\\image-1.png",
+        "source_sha256": "98e70cce9f69b63076b976028ac711ce6f7bd6ac13f22ea965df44115788c88e",
+        "sha256": "3fd45bed4cea949cf3a09a3c074556b1a9d59dbf69bbff19915dea04c5c9b03c",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 252536
+      },
+      {
+        "path": "refBack/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\refBack\\image-1.png",
+        "source_sha256": "261169cecabbc211525b1a37a69c28a3efc1eaf077aca7281421222dc043a502",
+        "sha256": "2efe71538cefff6a41c56314cfba46769bf4bc74cc6bbbc827433083e1d6285f",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 276739
+      },
+      {
+        "path": "refAction/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\refAction\\image-1.png",
+        "source_sha256": "7f214df900306f13a09d74c887bcbc4803969f841ab99b70ec0904ab856450fa",
+        "sha256": "5d9ef1ca7a52cd8aec6dd3f144f543ad03c037160b323f9288dcb2b5a6eb08d2",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 252103
+      },
+      {
+        "path": "impRecolor/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\impRecolor\\image-1.png",
+        "source_sha256": "a4aac30ed18e1754dbfa72769e0b23b0b33ddcb47087acb4166b57f27691cd65",
+        "sha256": "efd2d74113f44bcde2b47a34a3ef74d5315d2b798e6712391d92082707bc28b6",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 302211
+      },
+      {
+        "path": "impSpecies/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\impSpecies\\image-1.png",
+        "source_sha256": "198d48602480b4fe2f98217805d604dc982f183505484080dfc4092f571711e2",
+        "sha256": "24602bc111a7c44cbf9bf3d1630619479b71de436f42561f34de2aaae96f80d4",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 322876
+      },
+      {
+        "path": "spRing/native/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\spRing\\native\\image-1.png",
+        "source_sha256": "9730fc86a561aae05f25771ef0e13fe95d36214973a52a2c268eb7262105a4b1",
+        "sha256": "cefa268e5225fe00a121227b182f05600f123bee62201c15387e2b40ef93759f",
+        "original_size": [
+          1254,
+          1254
+        ],
+        "size": [
+          640,
+          640
+        ],
+        "bytes": 313596
+      },
+      {
+        "path": "spLegs/native/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\spLegs\\native\\image-1.png",
+        "source_sha256": "bd4f7be384d90490cdf6fd9fbb931b9e73ba6f5ffdb573b3ed373c339914e15a",
+        "sha256": "efe22b1eb874c7c0f02975bb056e055da832146ef3c47a4bfe298d77e28e3c7e",
+        "original_size": [
+          1254,
+          1254
+        ],
+        "size": [
+          640,
+          640
+        ],
+        "bytes": 323043
+      },
+      {
+        "path": "icon/native/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\icon\\native\\image-1.png",
+        "source_sha256": "bf86e3a5b59cfd3f0c23fbd3e166a110441ef279c66031277c521d0338a34aa0",
+        "sha256": "70c1d063a9fcaf33c3be2709625cf1a556d36d7caa40a8b1d0cd4cb31f65af40",
+        "original_size": [
+          1254,
+          1254
+        ],
+        "size": [
+          640,
+          640
+        ],
+        "bytes": 311556
+      },
+      {
+        "path": "kf/shot-1/keyframe.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\kf\\shot-1\\keyframe.png",
+        "source_sha256": "aab7968127921efc1341eccc0533049330baf1b2b55434df68c5394270ecb670",
+        "sha256": "396511ac3dacb029cdb6611c4bb241e52743b558f709bbcd9f630a3d3eccb616",
+        "original_size": [
+          1080,
+          1920
+        ],
+        "size": [
+          360,
+          640
+        ],
+        "bytes": 498533
+      },
+      {
+        "path": "edit/regeneration/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\edit\\regeneration\\image-1.png",
+        "source_sha256": "c4fc6cbfe9ebd358b26b26bc41d5123fe4fca25f45ce4940d45dafac86518b71",
+        "sha256": "b70820aeb5f3e6d248a2ea5cd387fd56578c5f9f7f0ff38b6f2f75b37ca923c3",
+        "original_size": [
+          916,
+          1717
+        ],
+        "size": [
+          341,
+          640
+        ],
+        "bytes": 398720
+      },
+      {
+        "path": "edit/mask.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\edit\\mask.png",
+        "source_sha256": "04383f5c4be3d37594570cdfe3599f5f73bf81f47e64fdc76503e989c63baeae",
+        "sha256": "0f37d2418c0b15ef46d92c1fff3e0f9f3fc22d19f287b94f18409153ab04f5e9",
+        "original_size": [
+          1080,
+          1920
+        ],
+        "size": [
+          360,
+          640
+        ],
+        "bytes": 569
+      }
+    ]
+  },
+  "validation": {
+    "focused": {
+      "identity_including_spec14": 29,
+      "alpha": {
+        "run": 22,
+        "skipped": 1
+      },
+      "edit": 13,
+      "loops": 12,
+      "retry": 7
+    },
+    "scenarios": {
+      "run": 26,
+      "failures": 0,
+      "errors": 0
+    },
+    "live_judge_attempt": {
+      "login": "ChatGPT verified with explicit existing config path",
+      "exec": "failed to initialize in-process app-server client: access denied",
+      "log": ".scratch/r3/live-icon-overlay.judge.jsonl",
+      "semantic_recall": null,
+      "semantic_false_pass": null
+    },
+    "full_suite": {
+      "tests": 971,
+      "failures": [],
+      "errors": [
+        "test_install.InstallTests.test_same_source_symlink_is_preserved",
+        "test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report"
+      ],
+      "skipped": [
+        [
+          "test_js_styles.JSPlugins.test_api_noise_is_reproducible",
+          "no headless Chromium available"
+        ],
+        [
+          "test_js_styles.JSPlugins.test_js_plugin_draws_on_canvas_and_is_recorded",
+          "no headless Chromium available"
+        ],
+        [
+          "test_js_styles.JSPlugins.test_manga_action_speed_lines_only_where_motion_was_measured",
+          "no headless Chromium available"
+        ],
+        [
+          "test_js_styles.JSPlugins.test_math_random_and_wrong_size_are_refused",
+          "no headless Chromium available"
+        ],
+        [
+          "test_fx_round2.RoundOneRegressions.test_h264_mid_freeze_keyframe",
+          "H.264 regression needs explicit FFmpeg runtime"
+        ],
+        [
+          "test_s13_r3_alpha.AlphaRound3.test_live_subscription_judge",
+          "opt-in subscription vision test"
+        ]
+      ],
+      "shards": [
+        {
+          "tests": 383,
+          "failures": [],
+          "errors": [
+            "test_install.InstallTests.test_same_source_symlink_is_preserved"
+          ],
+          "skipped": [],
+          "elapsed_seconds": 364.73399999999674
+        },
+        {
+          "tests": 221,
+          "failures": [],
+          "errors": [],
+          "skipped": [
+            [
+              "test_js_styles.JSPlugins.test_api_noise_is_reproducible",
+              "no headless Chromium available"
+            ],
+            [
+              "test_js_styles.JSPlugins.test_js_plugin_draws_on_canvas_and_is_recorded",
+              "no headless Chromium available"
+            ],
+            [
+              "test_js_styles.JSPlugins.test_manga_action_speed_lines_only_where_motion_was_measured",
+              "no headless Chromium available"
+            ],
+            [
+              "test_js_styles.JSPlugins.test_math_random_and_wrong_size_are_refused",
+              "no headless Chromium available"
+            ]
+          ],
+          "elapsed_seconds": 554.5939999999828
+        },
+        {
+          "tests": 189,
+          "failures": [],
+          "errors": [
+            "test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report"
+          ],
+          "skipped": [
+            [
+              "test_fx_round2.RoundOneRegressions.test_h264_mid_freeze_keyframe",
+              "H.264 regression needs explicit FFmpeg runtime"
+            ]
+          ],
+          "elapsed_seconds": 183.65600000001723
+        },
+        {
+          "tests": 178,
+          "failures": [],
+          "errors": [],
+          "skipped": [
+            [
+              "test_s13_r3_alpha.AlphaRound3.test_live_subscription_judge",
+              "opt-in subscription vision test"
+            ]
+          ],
+          "elapsed_seconds": 110.70299999997951
+        }
+      ]
+    }
+  }
+}

@@ -246,3 +246,65 @@ control does not make that source image independent again. Consequently the
 strict untouched-image-per-class requirement remains unfulfilled for alpha;
 an additional unseen silhouette is needed before claiming that validation.
 The other held-out verdicts above remain valid for their stated checks.
+
+## Fix round 3
+
+2026-11-06. Instrument replacement on `s13-fix3`, base `a03d1e1c807e82edfba0cab4902131ddaebd815c`. Patches target that checked-out base. At verification `origin/main` pointed to `93c2bb2529558e5b7d15df1c75cbebd8e76d4ec0`; this work does not update Git metadata. The subscription image route remains **EXPERIMENTAL**.
+
+Implementation and offline validation are recorded below. **The requested live semantic-judge accuracy and new crop-conditioned generation validation are not complete.** The installed Codex CLI verifies an existing ChatGPT login when given its existing configuration path, but its child app-server exits with access denied in this sandbox. No paid fallback was used. The opt-in live test was attempted and failed availability; it was not counted as a pass. Its log is `.scratch/r3/live-icon-overlay.judge.jsonl`.
+
+| Item | Change | Verification / limitation |
+| --- | --- | --- |
+| Identity | Optional DINOv2-small ONNX, CLS concatenated with mean patch tokens, L2 normalization, 224 px ImageNet input, alpha/background crop padded white. Independent subject-only Lab a*b* 12×12 intersection. Each axis takes its maximum over reference members. Both must pass; either clearly failing rejects; the band abstains. | All three threshold cross-validation rotations separate their held-out poses and impostors. Missing/corrupt model or runtime yields an explicit unassessed ORB/HSV fallback. Doctor reports model availability and SHA256. No downloads. |
+| Refsets and callers | Rejected builds leave the target untouched; malformed/rejected/missing-image libraries raise `E_REFSET_INVALID`. Existing override and refset CLI remain. Spec-14 character/animation consumers now use the new axes instead of indexing old ORB fields. | 29 focused identity and spec-14 tests pass. Reference-library pose novelty alone does not reject a library: palette contradiction, or structural failure with a positive negative-control match, is needed. Candidate checks retain both-axis gates. |
+| Alpha holes | Enumerate enclosed zero-alpha cores independently of translucent channels. No geometry verdict approves a core above four pixels. Numbered overlays feed a subscription-only Codex image-input judge with strict JSON schema and exhaustive ID validation. Substantial translucent defects are reviewed too. | Missing/invalid/uncertain judge returns `needs_review` and overlay. 42/42 reviewer injections reach a fake oracle as body holes and fail. Without a judge all 42 abstain: zero automatic false passes, **not measured semantic recall**. Live AI recall/false-pass are unavailable. |
+| Local edit | Send only mask bbox plus context (max of 32 px and 10% of shorter source side), demand same crop framing, refine with forward/backward-checked DIS flow in the boundary band, choose OpenCV colour-cost graph-cut seam, feather at most 3 px. Independent LK band residual and reciprocal offset-edge ghost detector gate delivery. | Outside expanded mask is bit-identical. Needs-review result uses `edited.needs-review.png`, `ok:false`, CLI exit 3; delta propagates review status. Old full-frame native generations are replayed below. New crop-conditioned live generation remains blocked. |
+| Loops | Endpoint holds over min(25% of period, 500 ms) fail. Reversal requires accumulated displacement ≥0.5 source pixels on both sides. Isolated opposing jumps above max(1 px, 3× ordinary motion) fail. | Clean breathing passes all three sets; 1.96–2.04 s endpoint freezes, 360 ms mid-motion holds and 12 px single-frame jumps fail all three. Quantization does not manufacture a reversal. |
+| Retry reachability | Fake cap and generation-failure cassettes now honor 9:16 and assert a second attempt addressed to `identity-retry`. | Cap retains the first generation; unavailable retry also retains it. Real two-axis checking of the recoloured Bramble cassette triggers two calls; a scene with unassessed identity makes one. Shot-size unassessed is separate from identity and does not itself trigger a retry. |
+
+### Leave-one-set-out: identity
+
+Each training fold uses two live sets only. For each axis the interval between the lowest positive best-match score and highest separable negative is split into thirds: fail below the lower cut, pass above the upper cut. An inseparable negative on one axis must fail the other axis. The table reports held-out results; each positive excludes itself from its reference matches. Production uses the pooled cuts, rounded to six decimals. These are cross-validation results on already reviewed sets, not untouched future data.
+
+| Train → held out | Structure fail / pass | Colour fail / pass | Held-out positives passed | Held-out impostors rejected | Training errors |
+| --- | --- | --- | --- | --- | --- |
+| r2+r3 → r1 | 0.760365 / 0.807663 | 0.705904 / 0.762338 | 2/2 | 1/1 | 0 |
+| r1+r3 → r2 | 0.792300 / 0.823630 | 0.705904 / 0.762338 | 2/2 | 2/2 | 0 |
+| r1+r2 → r3 | 0.796651 / 0.832333 | 0.717168 / 0.791954 | 4/4 | 2/2 | 0 |
+
+Production structure fail/pass: **0.792300 / 0.823630**; colour: **0.705904 / 0.762338**. Model SHA256: `f22797eabf810a75e41de68d378541ebea372122b25c4ce3ef25ff618250c20a`.
+
+### Leave-one-set-out: alpha, edit and motion
+
+| Instrument | r2+r3 → r1 | r1+r3 → r2 | r1+r2 → r3 |
+| --- | --- | --- | --- |
+| Alpha semantic judge | Unavailable; no semantic accuracy result | Unavailable; no semantic accuracy result | Unavailable; no semantic accuracy result |
+| Alpha unavailable policy | Enclosed components abstain; exterior-connected gaps need no judge | Enclosed components abstain | Enclosed components abstain; all 42 injected defects abstain |
+| Ghost detector sweep | 1/1 clean control clear; 3/3 shifted controls flagged | 1/1 clean clear; 3/3 shifted flagged | 1/1 clean clear; 3/3 shifted flagged; native reviewed ghosting flagged |
+| Motion fixed-policy validation | Clean passes; all 3 defects fail | Clean passes; all 3 defects fail | Clean passes; all 3 defects fail |
+
+Ghost sweep uses minimum paired-edge counts {4,8,12} and fractions {5%,10%,15%}; train on two sets, prefer the predeclared 8-pair/10% rule in equal-error ties, then evaluate the third. All folds select 8 pairs / 10%, with zero training errors. Clean controls are identical originals, and defects shift by 2/4/6 px. This limited control set does not establish a broad natural-image false-positive rate. Canny 60/120 and offset interval (1,8] px are fixed instrument settings tested across those controls.
+
+The edit 1 px acceptance bound, 1 px flow round-trip guard, 3 px feather, and motion 0.5 px hysteresis / 25% / 500 ms hold bounds are fixed policy or instrument constraints, validated across the folds rather than fitted to an excluded image. Alpha’s ≤4-pixel speck exclusion still exposes all 42 native reviewer injections, including radius-3 controls. Full AI-judge threshold/accuracy validation cannot be claimed while the route is unavailable.
+
+### Native edit replay
+
+These reuse the original reviewer full-frame generations. The new crop request and exit semantics are tested with cassettes; the numbers below do not claim fresh crop generation. Residual is the independently measured LK **median in source pixels**; P95 is also shown so subpixel medians are not mistaken for every point being within one pixel.
+
+| Set | Before DIS band median | After DIS band median / P95 | Ghost flag | Result |
+| --- | --- | --- | --- | --- |
+| r1 | 3.555 px | 0.374 / 1.971 px | False | pass |
+| r2 | 1.158 px | 0.444 / 1.580 px | False | pass |
+| r3 | 5.758 px | 0.381 / 2.408 px | True | needs_review |
+
+All six fixture/native replays preserve outside pixels exactly. Native r3 remains review-only even though its median falls below 1 px: the offset-edge detector catches the residual spine/stem ghosting. Its prior global LK residual was 5.129 px; that global measure is retained separately and is not substituted for the new band measurement.
+
+### Reproduction and handoff
+
+- Numeric evidence: `wow/fx/build-evidence-s13-r3.json`. R3 adds 12 images, each ≤600,000 bytes (maximum 498,533), with source/file SHA256 and dimensions in `tests/fixtures/live-s13-r3/provenance.json`.
+- Run `tests/s13_r3_identity_evidence.py OUTPUT.json` for identity rotations. Run `tests/s13_r3_validation.py alpha|edits|loops --out .scratch/RESULT --private C:/Users/User/src/vgs-fx-private` for all-set replay; omit `--private` for fixture-only measurements.
+- Offline suites use fake judges. Set `VGS_LIVE_HOLE_JUDGE=1` and run `test_s13_r3_alpha.AlphaRound3.test_live_subscription_judge` only in a working subscription CLI environment. This is the outstanding live validation, not a skipped success.
+- Focused results: identity/spec-14 29 passed; alpha/CLI 22 run, 1 opt-in skip; edit 13 passed; loops 12 passed; retry 7 passed. Scenario suites: 26 passed. Final full suite: **971 tests, zero failures, exactly the two baseline Windows environment errors, 6 skips**. All tests ran on isolated copies of the exact five-patch replay, partitioned by module across four processes; results are in `.scratch/r3/full-final.json` and `full-shard-0.log` through `full-shard-3.log`.
+- `.scratch/commits/01-identity.patch` through `05-retry.patch` apply sequentially to the base archive and reproduce the worktree. Each has a companion commit-message `.txt`. No protected spec, acceptance, process or thresholds file was edited.
+
+Final verification: patch files replay cleanly; replayed code and fixtures match the worktree; `git diff --check` passes; protected documents match the base archive. The two environment errors remain the missing Windows symlink privilege and an open review-overlay file during temporary-directory cleanup. A pre-fix full run exposed one alpha review-manifest regression; it is fixed and absent from this final run. No new failures remain. `06-validation.patch` carries these notes and the numeric evidence.
