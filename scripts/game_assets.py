@@ -28,6 +28,8 @@ def main(argv):
         tile=sub.add_parser('tile');ts=tile.add_subparsers(dest='action',required=True)
         tex=ts.add_parser('texture');options(tex);tex.set_defaults(size='256',round='spec-14',cap=40)
         tiles=ts.add_parser('tileset');options(tiles);tiles.add_argument('--grid',type=int,default=16);tiles.add_argument('--set',choices=['wang16','blob47','min13'],default='wang16')
+        vf=sub.add_parser('vfx');options(vf);vf.add_argument('--kind',choices=['explosion','magic','hit','pickup'],default='explosion')
+        vf.add_argument('--loop',action='store_true');vf.add_argument('--oneshot',action='store_true');vf.add_argument('--pixel',action='store_true');vf.add_argument('--blend',choices=['add','alpha'],default='add');vf.add_argument('--color',default='#80DAFF');vf.set_defaults(size='96',frames=12)
         a=p.parse_args(argv)
         if not a.experimental:raise ImageError('E_EXPERIMENTAL','Game assets are experimental.',suggestion='Pass --experimental.')
         if a.command=='sprite-check':
@@ -36,7 +38,9 @@ def main(argv):
             result=sprite_check(a.images,mode=a.alpha_mode,palette=read(a.palette) if a.palette else None,pixel=a.pixel,scale=a.scale,cleanup=a.cleanup,out=a.out,particles=a.particles)
             print(json.dumps(dict(ok=result['status']=='PASS',result=result)));return 0 if result['status']=='PASS' else 2
         if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
-        if a.loop and a.oneshot:raise ImageError('E_ARGUMENT','Choose --loop or --oneshot, not both.')
+        if a.command=='vfx':
+            from game_vfx import vfx
+            if a.loop and a.oneshot:raise ImageError('E_ARGUMENT','Choose --loop or --oneshot, not both.')
             result=vfx(a.out,a.kind,a.frames,int(a.size),a.loop,a.pixel,a.blend,a.color)
             print(json.dumps(dict(ok=result['qa']['status']=='PASS',result=result)));return 0 if result['qa']['status']=='PASS' else 2
         if a.command=='tile' and a.action=='tileset':

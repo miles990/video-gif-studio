@@ -183,10 +183,10 @@ def previews(frames,durations,out,loop):
     out=Path(out);encode(frames,durations,out/'preview.gif')
     # gif_pipeline defaults to loop forever; one-shot derivatives omit loop.
     if not loop:
-        from PIL import ImageSequence
-        with Image.open(out/'preview.gif') as gif:decoded=[f.copy() for f in ImageSequence.Iterator(gif)];info=gif.info.copy()
-        for f in decoded:f.info.pop('loop',None)
-        decoded[0].save(out/'preview.gif',save_all=True,append_images=decoded[1:],duration=durations,disposal=2,transparency=info.get('transparency',255),optimize=False)
+        # Remove only the loop application extension. Re-encoding decoded GIF
+        # frames would lose durations when transparent frames were coalesced.
+        file=out/'preview.gif';raw=file.read_bytes()
+        file.write_bytes(raw.replace(b'!\xff\x0bNETSCAPE2.0\x03\x01\x00\x00\x00',b'',1))
     qc=verify(out/'preview.gif',frames,durations)
     frames[0].save(out/'preview.png',save_all=True,append_images=frames[1:],duration=durations,loop=0 if loop else 1,disposal=0,blend=0)
     contact(frames,out/'contact.png');return qc
