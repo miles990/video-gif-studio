@@ -54,7 +54,15 @@ def alpha_qa(image):
     black_outer=float(luma[outer].mean()) if outer.any() else 0.
     # Enclosed nonopaque components; outside-connected alpha is not an interior hole.
     hn,hl,hs,_=cv2.connectedComponentsWithStats((alpha<250).astype('uint8'),8)
-    boundary=set(np.unique(hl[frame]));holes=sum(int(hs[i,cv2.CC_STAT_AREA]) for i in range(1,hn) if i not in boundary)
+    boundary=set(np.unique(hl[frame]));holes=0;negative_space=0
+    for i in range(1,hn):
+        if i in boundary:continue
+        area=int(hs[i,cv2.CC_STAT_AREA]);values=alpha[hl==i]
+        clear=int(np.sum(values==0))
+        # Antialiased outlines may surround a fully clear intentional gap.
+        if clear>max(64,largest*.005) and clear/area>=.80:
+            negative_space+=area
+        else:holes+=area
     hole_ratio=holes/max(largest,1)
     issues=[]
     if fake:issues.append('fake_transparency')
@@ -65,7 +73,7 @@ def alpha_qa(image):
     if halo_good is not None and halo_good<.95 or black_outer>8:issues.append('halo')
     return dict(status='PASS' if not issues else 'FAIL',issues=issues,fake_transparency=fake,
                 transparent_fraction=fraction,clear_border_fraction=clear_border,speck_ratio=specks,
-                interior_hole_ratio=hole_ratio,halo_good_fraction=halo_good,black_outer_luma=black_outer,
+                interior_hole_ratio=hole_ratio,designed_negative_space_pixels=negative_space,halo_good_fraction=halo_good,black_outer_luma=black_outer,
                 fractional_alpha_pixels=int(np.sum((alpha>0)&(alpha<255))),visual_review='pending')
 
 
