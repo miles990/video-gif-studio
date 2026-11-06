@@ -151,3 +151,11 @@ def render_track(events, duration_ms, target, user_folder=None, kenney_folder=No
     finally:
         scratch.unlink(missing_ok=True)
     return report
+
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv)>1 and sys.argv[1]=='jingle':
+        from audio_jingle import main
+        raise SystemExit(main(sys.argv[2:]))
+    raise SystemExit('Use: sfx.py jingle SOURCE --out DIR --experimental; procedural SFX remains a library API.')
