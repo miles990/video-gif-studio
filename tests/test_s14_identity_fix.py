@@ -30,7 +30,11 @@ class IdentityFixTests(unittest.TestCase):
                 paths[view]=Path(folder)/(view+'.png');subject.save(paths[view])
             side=compare(paths['front'],paths['side'])
             near=compare(paths['front'],'tests/fixtures/live-s14/wolf-near.png')
-            self.assertLess(side['bhattacharyya'],near['bhattacharyya'])
+            # two-axis instrument (spec-13 round 3): the recoloured lookalike keeps structure but loses colour
+            self.assertGreater(side['colour'],near['colour'])
+            from identity_engine import verdict
+            self.assertEqual(verdict(side),'pass')
+            self.assertNotEqual(verdict(near),'pass')
 
     def test_cross_view_uncertainty_and_override(self):
         paths={n:Path('tests/fixtures/live-s14')/('wolf-'+n+'.png') for n in ('front','side','back')}
