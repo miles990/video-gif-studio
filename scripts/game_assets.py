@@ -66,7 +66,7 @@ def main(argv):
             print(json.dumps(dict(ok=result['qa']['status']=='PASS',result=result)));return 0 if result['qa']['status']=='PASS' else 2
         if a.command=='tile' and a.action=='tileset':
             from game_tiles import tileset
-            result=tileset(a.out,a.grid,a.set)
+            result=tileset(a.out,a.grid,a.set,prompt=a.prompt)
             print(json.dumps(dict(ok=True,result=result)));return 0
         if a.command=='tile':a.size=f'{a.size}x{a.size}' if 'x' not in a.size else a.size
         adapter,req=adapter_request(a)

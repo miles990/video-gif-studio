@@ -83,7 +83,25 @@ def variants(kind):
     raise ImageError('E_TILESET','Use wang16, blob47 or min13.')
 
 
-def tileset(out,grid=16,kind='wang16',palette=('#30472C','#81704B')):
+def prompt_palette(prompt):
+    import re
+    explicit=re.findall(r'#[0-9a-fA-F]{6}\b',prompt)
+    if len(explicit)>=2:return tuple(c.upper() for c in explicit[:2])
+    colors={'red':'#B84538','blue':'#3466A1','green':'#41733A','purple':'#663399','violet':'#663399','turquoise':'#40E0D0',
+            'gold':'#D5AC42','white':'#EEEAE0','black':'#262735','grey':'#697481','gray':'#697481','brown':'#81704B',
+            '紅':'#B84538','红':'#B84538','藍':'#3466A1','蓝':'#3466A1','綠':'#41733A','绿':'#41733A','紫':'#663399','青':'#40E0D0','金':'#D5AC42','白':'#EEEAE0','黑':'#262735','灰':'#697481'}
+    found=[]
+    for match in re.finditer('|'.join(r'\b'+k+r'\b' if k.isascii() else k for k in colors),prompt,re.I):
+        c=colors[match.group().lower()]
+        if c not in found:found.append(c)
+    if len(found)>=2:return tuple(found[:2])
+    if found:
+        rgb=tuple(bytes.fromhex(found[0][1:]));return (found[0],'#%02X%02X%02X'%tuple(round(v*.55) for v in rgb))
+    return ('#30472C','#81704B')
+
+
+def tileset(out,grid=16,kind='wang16',palette=('#30472C','#81704B'),prompt=''):
+    if prompt:palette=prompt_palette(prompt)
     if grid not in (16,32):raise ImageError('E_GRID','Tilesets support logical 16 or 32 pixel grids.')
     out=Path(out);out.mkdir(parents=True,exist_ok=True);(out/'tiles').mkdir(exist_ok=True)
     colors=np.array([tuple(bytes.fromhex(p.lstrip('#'))) for p in palette],np.uint8)
@@ -113,7 +131,7 @@ def tileset(out,grid=16,kind='wang16',palette=('#30472C','#81704B')):
     for i,im in enumerate(tiles):sheet.paste(im,((i%8)*grid,(i//8)*grid))
     sheet.save(out/'tileset.png');preview(sheet,out/'preview-3x3.png')
     qa=tileset_qa(tiles,records,kind,grid)
-    result=dict(kind=kind,grid=grid,variants=records,palette=list(palette),qa=qa,source='local procedural corner/edge material topology',filter='nearest',status='experimental')
+    result=dict(kind=kind,grid=grid,variants=records,palette=list(palette),prompt=prompt,color_interpretation='hex or named colors; default earth palette if unspecified',qa=qa,source='local procedural corner/edge material topology',filter='nearest',status='experimental')
     write(out/'tileset.json',result);return result
 
 

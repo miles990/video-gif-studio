@@ -21,7 +21,14 @@ def estimate(first,last,refs,route,out,duration=5,prices=None,driver=None,prompt
     originality(prompt)
     request=dict(first_frame_sha=digest(first),last_frame_sha=digest(last),refs_sent=[digest(p) for p in refs],route=route,duration_seconds=duration,prompt=prompt,
                  driver_sha=digest(driver) if driver else None,prices=prices)
-    binding=key(request);receipt=out/'video-estimate.json';now=datetime.now(timezone.utc)
+    binding=key(request);receipt=out/'estimates'/(route+'-'+binding+'.json');now=datetime.now(timezone.utc)
+    # Honour explicit expiry edits to the legacy latest-estimate receipt, while
+    # retaining independent immutable request slots for every route.
+    latest=out/'video-estimate.json'
+    if latest.exists():
+        previous=read(latest)
+        if previous.get('request_sha')==binding and datetime.fromisoformat(previous['expires_at'])<=now:
+            write(receipt,previous)
     if receipt.exists():
         previous=read(receipt)
         if previous.get('request_sha')==binding and datetime.fromisoformat(previous['expires_at'])>now:return previous
@@ -35,7 +42,7 @@ def estimate(first,last,refs,route,out,duration=5,prices=None,driver=None,prompt
     result=dict(request_sha=binding,request=request,route=route,duration_seconds=duration,cost_estimate_usd=cost,
                 cost_status='reviewed' if cost is not None else 'unknown; reviewed price table required before model dispatch',
                 created_at=now.isoformat(),expires_at=(now+timedelta(minutes=30)).isoformat(),local_alternatives=['nearest key-pose inbetweens','2.5D camera move','local composition'])
-    result['estimate_id']=key(result);write(receipt,result);return result
+    result['estimate_id']=key(result);write(receipt,result);write(latest,result);return result
 
 
 def local_video(first,last,out,duration=5,frames=24):
