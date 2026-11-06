@@ -113,12 +113,7 @@ def load_project(project):
     return cards
 
 
-TRANSFORMATION=r'comes back as|snaps into|turns? into|transforms? (?:into|to)|morphs? into|becomes?|dissolves? into|reassembles? (?:into|as)|unfolds? into|碎成|聚成|變成|變為|變彩色|化為|轉化|蛻變|重組|變身|融成'
-
-
-def transformation(draft):
-    clauses=re.split(r'[。；;!?！？\n]|(?<!\d)\.(?!\d)',draft)
-    return next((c.strip() for c in clauses if re.search(TRANSFORMATION,c,re.I)),None)
+from brief_language import TRANSFORMATION, transformation
 
 
 def hard_constraints(draft):
@@ -131,7 +126,9 @@ def creative(draft,design):
     """An honest language-neutral scaffold; creative content comes from the agent."""
     zh=bool(re.search('[\u3400-\u9fff]',draft))
     turn=transformation(draft)
-    subject=re.split(r'[，,。；;:：]|'+TRANSFORMATION,draft,flags=re.I)[0].strip()
+    from brief_language import TIMING
+    subject_text=re.sub(TIMING,'',draft,flags=re.I).strip(' ，,:：')
+    subject=re.split(r'[，,。；;:：]|'+TRANSFORMATION,subject_text,flags=re.I)[0].strip()
     subject=re.sub(r'^(?:create|make)\s+(?:a\s+)?','',subject,flags=re.I)
     subject=subject[:40] if zh else ' '.join(subject.split()[:10])
     subject=subject or ('主體' if zh else 'subject')
@@ -157,7 +154,6 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
     authored=bool(content.get('beats') or content.get('turn'))
     design=stable_choices(structure(draft,content,taste,refstat));copy=creative(draft,design);copy.update({k:v for k,v in content.items() if k in copy})
     preserved_turn=transformation(draft);constraints=hard_constraints(draft)
-    if preserved_turn:copy['turn']=preserved_turn
     grounded_look=next((c.get('aesthetic_tag') for c in cards if c.get('aesthetic_tag')),None)
     if grounded_look and not content.get('aesthetic'):copy['aesthetic']=grounded_look
     # Grounding precedes beat construction. Attachment slots never go to web.
@@ -223,10 +219,6 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
             if not content.get('beats') and not preserved_turn:
                 if r.get('beat_text'):beats[index]['text']=r['beat_text']+' ('+', '.join(beats[index]['refs'])+')'
     if content.get('beats'):beats=deepcopy(content['beats'])
-    if preserved_turn:
-        for b in beats:
-            if b.get('is_turn'):
-                b['text']=preserved_turn+' ('+', '.join(b.get('refs',[]))+')';b['mechanism']='static'
     if logo_last:
         beats[-1]['text']+='；最後呈現 logo' if copy['zh'] else '; logo appears last'
     for b in beats:b['hard_constraints']=deepcopy(constraints)
@@ -329,6 +321,9 @@ def to_storyboard(brief,variant=1,allow_skeleton=False):
         item=brief['items'][variant-1]
     for beat in brief['beats']:
         duration=beat['t_end']-beat['t_start'];lengths=beat.get('shot_durations',[duration]);lengths=np.array(lengths,float);lengths*=duration/lengths.sum()
+        # A resultative action is continuous, even when the pacing grid proposes
+        # several shots. There can be no cut or transition inside this beat.
+        if transformation(beat['text']):lengths=np.array([duration])
         cursor=beat['t_start'];curve.append([cursor,.8 if beat['is_turn'] else .25])
         for j,length in enumerate(lengths):
             i=len(shots);turn=beat['is_turn'] and j==0;name=design['recipes'][(i+1)%len(design['recipes'])]

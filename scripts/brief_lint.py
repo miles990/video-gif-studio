@@ -85,6 +85,11 @@ def lint(brief):
     if not isinstance(aesthetic,str) or not aesthetic.strip() or len(set(n.lower() for n in named))>1 or re.search(r'\s(?:and|&|\+)\s|[×,，+&]|混搭|融合',aesthetic+' '+first_line,re.I) or set(aesthetic.lower().split())<=generic or not re.sub(r'現代|簡約|溫暖|質感|高級|專業|\s','',aesthetic):
         add('one_aesthetic','aesthetic','Commit to one named aesthetic','Name one child of the fence, e.g. morning-window warm film')
     beats=brief.get('beats',[]);refs=brief.get('refs',[])
+    from brief_language import transformation, results
+    source_turn=transformation(brief.get('draft',''))
+    turn_text=' '.join(b.get('text','') for b in beats if b.get('is_turn'))
+    if source_turn and (not transformation(turn_text) or any(h.casefold() not in turn_text.casefold() for h in results(source_turn))):
+        add('transformation_preserved','beats','Draft transformation results are missing','Preserve the result complements in the authored turn; do not replace it with the raw draft')
     if not isinstance(beats,list) or not beats or not all(isinstance(b,dict) for b in beats):
         add('schema','beats','Nonempty beat objects required','Provide numbered beats with t_start, t_end and text');return result(findings)
     duration=brief.get('duration',0)
