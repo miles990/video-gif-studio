@@ -81,13 +81,20 @@ def frame_qa(path, shot, colour=None, subject_mask=None):
     if subject_mask is not None:
         mask=np.asarray(subject_mask)>0
         if mask.shape!=a.shape[:2]:raise ImageError('E_MASK','Subject mask must match the keyframe.')
+        result['subject_method']='supplied_matte'
     else:
         from image_identity import subject_region
         mask,method=subject_region(a)
         result['subject_method']=method
+        if method=='saliency':
+            result['size_reason']='Saliency is not a character detector or isolated matte.'
+            return result
     # No opaque portrait/face detector is falsely inferred from a bounding box.
     if mask is not None and mask.any():
         y,x=np.where(mask);h=(y.max()-y.min()+1)/a.shape[0];w=(x.max()-x.min()+1)/a.shape[1]
+        if h*w>.85:
+            result.update(size_reason='Subject support covers over 85% of frame; framing is unassessed.',subject_box_fraction=float(h*w))
+            return result
         size=shot['size'];ok={'EWS':h<=.20,'WS':.20<=h<=.55,'MS':.45<=h<=.85,'CU':w>=.45,'ECU':w>=.60}[size]
         result.update(subject_height_fraction=float(h),subject_width_fraction=float(w),size_status='pass' if ok else 'size_mismatch')
     return result

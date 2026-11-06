@@ -17,7 +17,7 @@ class LiveAspectTests(ImageCase):
   im=Image.new('RGB',(180,320),'#444444');ImageDraw.Draw(im).rectangle((50,90,130,319),fill='orange');im.save(self.fixture)
   self.assertEqual(frame_qa(self.fixture,dict(size='MS'))['size_status'],'pass')
   report=frame_qa(LIVE/'kf/shot-2/keyframe.png',dict(size='MS'))
-  self.assertNotEqual(report['size_status'],'unassessed')
+  self.assertEqual(report['size_status'],'unassessed')
  def test_large_mismatch_marked_on_shot(self):
   self.configure(image=str(LIVE/'sprite/native/image-1.png'));b=board();b['shots']=b['shots'][:1]
   shot=keyframes(b,self.adapter,self.path/'kf',self.request())['shots'][0]
