@@ -51,7 +51,8 @@ def prepare_sprite(sprite_pack,project,analysis):
     return qa
 
 
-def scene(project):
+def scene(project,switch_at_ms=8000):
+    if not 0<switch_at_ms<30000:raise ValueError('Switch must occur inside the demo')
     (project/'demo.gd').write_text('''extends Node2D
 var explore: AudioStreamPlayer
 var battle: AudioStreamPlayer
@@ -105,7 +106,7 @@ func _process(delta: float):
     elapsed += delta
     if clock_driver == null: return
     var audio_ms: float = clock_driver.current_audio_ms
-    if not switched and audio_ms >= 8000:
+    if not switched and audio_ms >= SWITCH_AT_MS:
         explore.volume_db = -80
         battle.volume_db = 0
         switched = true
@@ -150,7 +151,7 @@ func _process(delta: float):
         clock_driver = null
         await get_tree().process_frame
         get_tree().call_deferred("quit",0)
-''',encoding='utf-8')
+'''.replace('SWITCH_AT_MS',str(float(switch_at_ms))),encoding='utf-8')
 
 
 def build(out,sprite_pack,inputs=None,rehearsal=False,godot=None):

@@ -51,6 +51,43 @@ of equal-power incoming preroll; no silence fade. It returns QA, never an
 unconditional seamless claim. Calibration remains experimental: at least ten
 live loops and independent listening have not yet been completed.
 
+Fix-round local loop making: `audio_loop.py make SOURCE.wav --bpm 120 --out
+.scratch/run/processed.wav --experimental` estimates a 5ms spectral-flux grid,
+searches 2/4/8/16-bar cuts and zero crossings within 1ms, and selects a measured
+equal-power incoming-preroll crossfade of 5ms to one beat. The existing loop
+verifier is unchanged. `audio_grid.grid` reports tempo alternatives and labels
+metrical accent phase `local_estimate`; it does not claim independent downbeat
+recognition. The older RMS estimate is preserved separately in fix-pack reports.
+Both WAV and decoded OGG must pass; OGG now carries LOOPSTART/LOOPLENGTH comments.
+
+`audio_variants.align_to_loop(reference_pcm, source_pcm)` refines each candidate
+source bar using measured onset correlation, re-cuts from real source preroll,
+and checks both the resulting loop and every declared bidirectional hard/faded
+switch. It allows <=4% tempo correction only when needed and targets <=2ms
+alignment. It does not merely rotate a finished loop and assume it still passes.
+
+`audio_jingle.correct_key` measures chroma, transposes at most two semitones with
+rubberband and rechecks key, duration, loudness, peak, DC and release. Transposition
+cannot change major/minor mode; larger/mode conflicts are `regenerate_needed`.
+`regeneration_request` returns exact unsubmitted sounds_create parameters and
+does not authorize or dispatch spending. Missing cues stay missing.
+
+Analysis-only previews: `audio_preview.py PLAYLIST_OR_FILE --out
+.scratch/run/analysis --experimental`. FFmpeg probes the actual container/codec
+and decodes HLS playlists directly (AAC MPEG-TS/fMP4), Opus, or other supported
+audio. Remote playlists use an HTTP(S) protocol whitelist excluding local files;
+local fixtures exclude network protocols. Preview PCM cannot enter a delivery.
+The live `encoding: 1.0.0` label does not identify a codec. Supplied evidence had
+no playable MP4 header or original payload, so live decoding remains blocked;
+offline HLS tests are not proof of decoding that provider-specific transport.
+
+Offline repair-pack rebuild: `audio_fix_pack.py --original UNPACKED_OLD_PACK
+--sources FINAL_SOURCES --out NEW_SCRATCH_PACK --godot GODOT_EXE --experimental`.
+This consumes existing download receipts, records source/output measurements,
+checks encoded transitions, remeasures Godot two-cycle playback and attack sync,
+and produces a ZIP. A partial cue inventory or unresolved preview remains an
+experimental partial result even when BGM and engine checks pass. No Suno calls.
+
 `sfx.py jingle FILE --out DIR --experimental` delegates to `audio_jingle.py`:
 exactly five silence-separated cues or E_SPRITE_COUNT; DC removal, silence trim,
 release fade and loudness/peak measurements. The original six synthesized SFX
