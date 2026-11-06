@@ -117,7 +117,7 @@ def keyframes(board, adapter, out, request=None, selected=None, approval=None, m
             identity=None
             if req.refset_path:
                 from image_identity import check
-                identity=check(source,req.refset_path)
+                identity=check(source,req.refset_path,identity_override=req.identity_override)
                 if identity['status']=='identity_fail':
                     retry=replace(current,prompt=current.prompt+'\nIdentity correction: match all supplied identity details exactly. Preserve face, markings and costume.')
                     try:
@@ -127,7 +127,7 @@ def keyframes(board, adapter, out, request=None, selected=None, approval=None, m
                         identity=dict(identity,retry_error=exc.error,generation_retained='first')
                     else:
                         generated=retried
-                        source=Path(generated['assets'][0]['path']);identity=check(source,req.refset_path)
+                        source=Path(generated['assets'][0]['path']);identity=check(source,req.refset_path,identity_override=req.identity_override)
             with Image.open(source) as image:frame,fit=fit_image(image,size)
             path=folder/'keyframe.png';frame.save(path)
             qa=frame_qa(path,shot,swatch(b,shot))

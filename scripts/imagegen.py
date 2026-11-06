@@ -16,6 +16,7 @@ class Parser(argparse.ArgumentParser):
 def options(p):
     p.add_argument('--prompt',default='')
     p.add_argument('--refs',type=Path)
+    p.add_argument('--identity-override',choices=['same','different'],help='Human identity decision, recorded in the manifest.')
     p.add_argument('--size',default='1024x1024')
     p.add_argument('--aspect')
     p.add_argument('--quality',choices=['draft','final'],default='draft')
@@ -49,7 +50,7 @@ def adapter_request(a):
     cmd=[sys.executable,a.codex] if a.codex and a.codex.endswith('.py') else a.codex
     adapter=Adapter(state=a.state,codex=cmd,timeout=a.timeout,round_id=a.round,cap=a.cap,run_id=a.run_id,api_base=a.api_base,prices=a.prices)
     req=Request(prompt=a.prompt,refs=refs,refset_sha=refset_sha,refset_path=str(a.refs) if a.refs else None,size=a.size,aspect=a.aspect,quality=a.quality,n=a.n,
-                route=a.route,transparent=a.transparent,format=a.format,model=a.model,seed=a.seed,experimental=a.experimental)
+                route=a.route,transparent=a.transparent,format=a.format,model=a.model,seed=a.seed,experimental=a.experimental,identity_override=a.identity_override)
     return adapter,req
 
 
@@ -80,7 +81,9 @@ def main(argv=None):
         rb=rs.add_parser('build');rb.add_argument('--name',required=True);rb.add_argument('--images',nargs='+',type=Path,required=True)
         rb.add_argument('--out',type=Path,required=True);rb.add_argument('--role',default='identity');rb.add_argument('--source',default='user');rb.add_argument('--licence')
         rb.add_argument('--negative',nargs='+',type=Path);rb.add_argument('--json',action='store_true')
+        rb.add_argument('--identity-override',choices=['same','different'])
         rc=rs.add_parser('check');rc.add_argument('--refs',type=Path,required=True);rc.add_argument('--image',type=Path,required=True);rc.add_argument('--json',action='store_true')
+        rc.add_argument('--identity-override',choices=['same','different'])
         rr=rs.add_parser('review');rr.add_argument('--refs',type=Path,required=True);rr.add_argument('--same',choices=['yes','no'],required=True);rr.add_argument('--comment',default='');rr.add_argument('--json',action='store_true')
         a=p.parse_args(argv)
         if a.command in ('variants-page','pick'):
@@ -115,8 +118,8 @@ def main(argv=None):
             print(json.dumps(dict(ok=True,result=result),ensure_ascii=False));return 0
         if a.command=='refset':
             from image_identity import build,check,review
-            if a.ref_command=='build':result=build(a.name,a.images,a.out,a.role,a.source,a.licence,a.negative)
-            elif a.ref_command=='check':result=check(a.image,a.refs)
+            if a.ref_command=='build':result=build(a.name,a.images,a.out,a.role,a.source,a.licence,a.negative,a.identity_override)
+            elif a.ref_command=='check':result=check(a.image,a.refs,a.identity_override)
             else:result=review(a.refs,a.same=='yes',a.comment)
             print(json.dumps(dict(ok=True,result=result),ensure_ascii=False));return 0
         adapter,req=adapter_request(a)

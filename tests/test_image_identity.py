@@ -34,7 +34,7 @@ class IdentityTests(ImageCase):
         with self.assertRaises(ImageError):load(ref)
 
     def test_mixed_library_and_limit_rejected(self):
-        with self.assertRaises(ImageError) as err:build('mixed',[self.a,self.neg],self.path/'bad.json')
+        with self.assertRaises(ImageError) as err:build('mixed',[self.a,self.neg],self.path/'bad.json',negative=[self.b])
         self.assertEqual(err.exception.error['code'],'E_REFSET_MIXED')
         with self.assertRaises(ImageError):build('too many',[self.a]*17,self.path/'bad.json')
 

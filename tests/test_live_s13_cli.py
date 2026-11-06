@@ -32,7 +32,8 @@ class LiveCliTests(ImageCase):
   self.assertEqual(result.returncode,2);data=json.loads(result.stderr);self.assertEqual(data['error']['code'],'E_SVG_UNSAFE');self.assertIn(str(path),data['error']['location'])
  def test_mixed_refs_list_all_suspicious_images(self):
   refs=[LIVE/'ref1/image-1.png',LIVE/'ref2/image-1.png',LIVE/'neg/image-1.png',LIVE/'cafe-matcha.png']
-  with self.assertRaises(ImageError) as cm:build('mixed',refs,self.path/'refs.json')
+  self.assertFalse(build('uncontrolled',refs,self.path/'refs.json')['controls']['valid'])
+  with self.assertRaises(ImageError) as cm:build('mixed',refs,self.path/'refs.json',identity_override='different')
   self.assertEqual(cm.exception.error['suspect_indices'],[1,2,3,4]);self.assertEqual(len(cm.exception.error['suspect_images']),4)
  def test_fake_transparency_record_survives_matting(self):
   with Image.open(LIVE/'sprite/cleaned.png') as im:sprite=im.convert('RGBA').resize((512,512))

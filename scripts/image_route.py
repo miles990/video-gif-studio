@@ -37,9 +37,12 @@ class Request:
     markup_sha: str | None = None
     refset_sha: str | None = None
     refset_path: str | None = None
+    identity_override: str | None = None
     experimental: bool = False
 
     def normalized(self):
+        if self.identity_override not in (None,'same','different'):
+            raise ImageError('E_IDENTITY_OVERRIDE','Use same or different.')
         if not self.experimental:
             raise ImageError('E_EXPERIMENTAL', 'Image generation is experimental.', suggestion='Pass --experimental or experimental: true.')
         if self.route not in ('codex', 'api', 'auto'):
@@ -74,7 +77,7 @@ class Request:
         return dict(route='codex' if self.route == 'auto' else self.route, model=self.model,
                     prompt=prompt, size=self.size, aspect=self.aspect, quality=self.quality,
                     n=self.n, transparent=self.transparent, format=self.format, seed=self.seed,
-                    refs=refs, markup_sha=self.markup_sha, refset_sha=self.refset_sha)
+                    refs=refs, markup_sha=self.markup_sha, refset_sha=self.refset_sha,identity_override=self.identity_override)
 
 
 def request_key(data):
@@ -257,7 +260,7 @@ class Adapter:
         manifest = dict(schema_version=1, status='pending', route=data['route'], model='unreported', model_reported=None,
                         quality=data['quality'], quality_control='prompt_only' if data['route']=='codex' else 'native',
                         size_requested=data['size'], size_actual=[], aspect_actual=[], n_requested=data['n'], n_returned=0,
-                        elapsed_s=0, prompt_sha=key(data['prompt']), refs_sent=data['refs'], refset_sha=req.refset_sha,
+                        elapsed_s=0, prompt_sha=key(data['prompt']), refs_sent=data['refs'], refset_sha=req.refset_sha,identity_override=req.identity_override,
                         feature_used=['png']+(['references'] if data['refs'] else [])+(['transparent_native_requested'] if data['transparent'] else []),
                         cache_key=cache_key, cache_hit=False, no_cache=no_cache, c2pa_present='unknown', c2pa_claim_generator=None,
                         synthid='not_verifiable_locally', subscription_images=0, cost_estimate_usd=0, approval_id=approval,

@@ -6,8 +6,7 @@ import numpy as np
 from PIL import Image
 from image_common import ImageError,digest,read,utc,write
 
-METHOD=dict(name='ORB + masked HSV histogram',opencv_version=cv2.__version__,lowe_ratio=.75,
-            same_hist_max=.40,same_matches_min=25,different_hist_min=.50,different_matches_max=9,
+METHOD=dict(name='ORB + masked HSV histogram, refset-relative controls',opencv_version=cv2.__version__,lowe_ratio=.75,
             embedding='unavailable: no local weights plus permissive licence and runtime verified; no model downloads')
 
 
@@ -49,11 +48,10 @@ def compare(a,b):
     if da is not None and db is not None and len(db)>=2:
         matches=cv2.BFMatcher(cv2.NORM_HAMMING).knnMatch(da,db,k=2)
         good=sum(len(pair)==2 and pair[0].distance<.75*pair[1].distance for pair in matches)
-    return dict(bhattacharyya=distance,orb_good_matches=good,
-                same=distance<=METHOD['same_hist_max'] and good>=25,different=distance>=.50 or good<10)
+    return dict(bhattacharyya=distance,orb_good_matches=good)
 
 
-def build(name,images,out,role='identity',source='user',licence=None,negative=None):
+def build(name,images,out,role='identity',source='user',licence=None,negative=None,identity_override=None):
     if not 1<=len(images)<=16:raise ImageError('E_REFSET_LIMIT','A reference library must contain 1..16 images.')
     if role not in ('identity','costume','product','scene'):raise ImageError('E_REFSET_ROLE','Invalid reference role.')
     if source not in ('user','generated','web'):raise ImageError('E_REFSET_SOURCE','Invalid reference source.')
@@ -66,17 +64,21 @@ def build(name,images,out,role='identity',source='user',licence=None,negative=No
     if role in ('identity','product'):
         for i,j in combinations(range(len(images)),2):
             metric=compare(images[i],images[j]);pairs.append(dict(a=i,b=j,**metric))
-            if metric['different']:
-                suspects.update((i+1,j+1))
+    prior=relative_controls(images,negative or [])
+    if role in ('identity','product') and prior.get('contradicted'):
+        suspects.update(range(1,len(images)+1))
+    override=override_record(identity_override)
+    if identity_override=='same':suspects.clear()
+    if identity_override=='different':suspects.update(range(1,len(images)+1))
     if suspects:
         indices=sorted(suspects)
-        raise ImageError('E_REFSET_MIXED','Reference library cannot establish one identity.',suspect_indices=indices,suspect_images=[records[i-1]['path'] for i in indices],measurements=pairs)
+        rejected=dict(status='rejected',identity_override=override,suspect_indices=indices,suspect_images=[records[i-1]['path'] for i in indices],measurements=pairs)
+        write(out,rejected)
+        raise ImageError('E_REFSET_MIXED','Reference library has contradictory identity evidence.',**rejected)
     result=dict(version=1,name=name,images=records,created_at=utc(),method=METHOD,pairwise=pairs,
                 negative_images=[dict(path=str(Path(p).resolve()),sha256=digest(p)) for p in (negative or [])],
-                visual_review=dict(status='pending',question='Are these the same character/product?',chooser=None))
-    if len(images)>=2 and negative:
-        result['controls']=controls(images[0],images[1],negative[0])
-    else:result['controls']=dict(valid=False,reason='Need two distinct positive poses and a different-identity negative reference.')
+                identity_override=override,visual_review=dict(status='accepted' if identity_override=='same' else 'pending',question='Are these the same character/product?',chooser='user' if override else None))
+    result['controls']=prior
     write(out,result);return result
 
 
@@ -91,31 +93,51 @@ def load(path):
 
 
 def controls(positive_a,positive_b,negative):
-    if digest(positive_a)==digest(positive_b):
-        return dict(valid=False,reason='Positive controls must be distinct images/poses; identity is unassessed.',method=METHOD)
-    positive=compare(positive_a,positive_b);bad=compare(positive_a,negative)
-    separation=bad['bhattacharyya']-positive['bhattacharyya']
-    result=dict(valid=positive['same'] and bad['different'] and separation>=.10,positive=positive,negative=bad,method=METHOD,histogram_separation=separation)
-    if not result['valid']:result['reason']='Positive and negative controls are not separated; no artwork verdict.'
-    return result
+    return relative_controls([positive_a,positive_b],[negative])
 
 
-def check(path,refset):
+def override_record(value):
+    if value not in (None,'same','different'):raise ImageError('E_IDENTITY_OVERRIDE','Use same or different.')
+    return dict(decision=value,chooser='user',timestamp=utc()) if value else None
+
+
+def relative_controls(images,negative):
+    if len(set(digest(p) for p in images))<2 or not negative or set(digest(p) for p in images)&set(digest(p) for p in negative):
+        return dict(valid=False,reason='Need independent positive poses and negative identities.',method=METHOD)
+    positive=[compare(a,b) for a,b in combinations(images,2)]
+    bad=[compare(a,b) for a in images for b in negative]
+    spread=max(p['bhattacharyya'] for p in positive)
+    nearest=min(p['bhattacharyya'] for p in bad)
+    positive_matches=min(p['orb_good_matches'] for p in positive)
+    negative_matches=max(p['orb_good_matches'] for p in bad)
+    valid=nearest>spread and positive_matches>negative_matches
+    return dict(valid=valid,contradicted=nearest<spread and negative_matches>positive_matches,
+                positive=positive,negative=bad,positive_spread=spread,negative_distance=nearest,
+                positive_matches_min=positive_matches,negative_matches_max=negative_matches,
+                histogram_separation=nearest-spread,method=METHOD,
+                reason=None if valid else 'Positive and negative controls overlap; identity is unassessed.')
+
+
+def check(path,refset,identity_override=None):
     data=load(refset);refs=data['images'];negative=data.get('negative_images',[])
+    override=override_record(identity_override)
+    if override:return dict(status='pass' if identity_override=='same' else 'identity_fail',identity_override=override,refset_sha=digest(refset),visual_review='user override')
     if len(refs)<2 or not negative:
         return dict(status='unassessed',reason='Missing independent positive/negative controls',method=METHOD,visual_review='pending')
-    prior=controls(refs[0]['path'],refs[1]['path'],negative[0]['path'])
+    prior=relative_controls([r['path'] for r in refs],[r['path'] for r in negative])
     if not prior['valid']:
         return dict(status='unassessed',reason=prior['reason'],controls=prior,method=METHOD,visual_review='pending')
     positive=[compare(path,r['path']) for r in refs]
     neg=[compare(path,r['path']) for r in negative]
     # ORB has no vector centroid: use the library distribution, not a fictitious cosine.
     h=float(np.median([r['bhattacharyya'] for r in positive]));matches=float(np.median([r['orb_good_matches'] for r in positive]))
-    ok=h<=METHOD['same_hist_max'] and matches>=25 and all(r['different'] and r['bhattacharyya']-h>=.10 for r in neg)
+    margin=prior['histogram_separation']/2
+    match_floor=(prior['positive_matches_min']+prior['negative_matches_max'])/2
+    ok=h<=prior['positive_spread'] and matches>=match_floor and all(r['bhattacharyya']-h>=margin for r in neg)
     # A failed match is not evidence of another identity, especially under scene
     # lighting or an uncertain saliency crop. Require a separated negative match.
     negative_h=min(r['bhattacharyya'] for r in neg)
-    negative_match=any(r['same'] for r in neg) and h-negative_h>=.10
+    negative_match=any(r['bhattacharyya']<=prior['positive_spread'] and r['orb_good_matches']>=match_floor for r in neg) and h-negative_h>=margin
     status='pass' if ok else 'identity_fail' if negative_match else 'unassessed'
     return dict(status=status,reason=None if status!='unassessed' else 'Subject evidence does not separate identity from scene/pose variation.',positive=positive,negative=neg,
                 aggregate=dict(bhattacharyya_median=h,orb_good_matches_median=matches),controls=prior,
