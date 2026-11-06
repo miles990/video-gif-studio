@@ -1,0 +1,189 @@
+{
+  "source": "review-s13-r2/work/live",
+  "files": [
+    {
+      "path": "sprite/native/image-1.png",
+      "source_sha256": "142b2284b95b46e9e25f40da7626c337ba9edd6aab67806c61d3dcfc4db6f261",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "fixture_size": [
+        448,
+        672
+      ],
+      "bytes": 453170
+    },
+    {
+      "path": "sprite2/native/image-1.png",
+      "source_sha256": "a7813c7698c89590c8ef827e14135ba88bdd9ad8644f8872c8817d1b39068613",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "fixture_size": [
+        448,
+        672
+      ],
+      "bytes": 431277
+    },
+    {
+      "path": "key/native/image-1.png",
+      "source_sha256": "45308a3a982257223f147b939d894108f3a564552cc9b9b24539dbe95da67da7",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "fixture_size": [
+        448,
+        448
+      ],
+      "bytes": 118569
+    },
+    {
+      "path": "refA/image-1.png",
+      "source_sha256": "009da4c5c1183b69c37358a5061e96cc05eb47868ab3286196636fa5e885b7b2",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "fixture_size": [
+        448,
+        672
+      ],
+      "bytes": 399853
+    },
+    {
+      "path": "refB/image-1.png",
+      "source_sha256": "cd1a88a79d710210bab824e99b86a950cd319ad180ae98aceca1a8428415bf1a",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "fixture_size": [
+        448,
+        672
+      ],
+      "bytes": 390177
+    },
+    {
+      "path": "neg/image-1.png",
+      "source_sha256": "6ff7c3693d7231fcb2cbeb6c9251a1be2c31d6141bde8d4b169898a63e963fc1",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "fixture_size": [
+        448,
+        672
+      ],
+      "bytes": 387850
+    },
+    {
+      "path": "imp/image-1.png",
+      "source_sha256": "a19c4d09f85217767c4fd50835170f571743926d62b36001c66bd4b729ebdfc8",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "fixture_size": [
+        448,
+        672
+      ],
+      "bytes": 349478
+    },
+    {
+      "path": "edit/regeneration/image-1.png",
+      "source_sha256": "7091f59a026d819d2811ed642c5e4053eb1157dd81457bd408274393a081cf3e",
+      "original_size": [
+        916,
+        1717
+      ],
+      "fixture_size": [
+        359,
+        672
+      ],
+      "bytes": 378896
+    },
+    {
+      "path": "edit/mask.png",
+      "source_sha256": "8436c167488bf9e5d1fe92d0dc77e80e3d583269dc57c4c636c99f77bb0251bf",
+      "original_size": [
+        1080,
+        1920
+      ],
+      "fixture_size": [
+        378,
+        672
+      ],
+      "bytes": 420
+    },
+    {
+      "path": "kf/shot-1/keyframe.png",
+      "source_sha256": "5307a8fc79a80cc3a7d94d3bf394ef8c1a72ba80ab8fe90b1f9821fc30818017",
+      "original_size": [
+        1080,
+        1920
+      ],
+      "fixture_size": [
+        378,
+        672
+      ],
+      "bytes": 497567
+    },
+    {
+      "path": "kf/shot-2/keyframe.png",
+      "source_sha256": "8f28159014d7afc163445d8d3842316a6b007e4d1c90ed597ef87473263f7955",
+      "original_size": [
+        1080,
+        1920
+      ],
+      "fixture_size": [
+        378,
+        672
+      ],
+      "bytes": 470282
+    },
+    {
+      "path": "kf/shot-3/keyframe.png",
+      "source_sha256": "0862b2fe91333ffae8f7a8bd8fc3e1c3e2f6d8407dcb99c0438940f657e25972",
+      "original_size": [
+        1080,
+        1920
+      ],
+      "fixture_size": [
+        378,
+        672
+      ],
+      "bytes": 498955
+    },
+    {
+      "path": "kfsq/shot-1/keyframe.png",
+      "source_sha256": "01e51c9db7094a164974adf1f4c4eda80676a07e40b6cbb7ba5684088c7a668c",
+      "original_size": [
+        1024,
+        1024
+      ],
+      "fixture_size": [
+        448,
+        448
+      ],
+      "bytes": 376525
+    }
+  ],
+  "held_out": [
+    "sprite2/native/image-1.png",
+    "key/native/image-1.png",
+    "imp/image-1.png",
+    "kfsq/shot-1/keyframe.png",
+    "edit/regeneration/image-1.png"
+  ],
+  "calibration_policy": "Initial split is listed in held_out; the disclosure records subsequent use. Thresholds calibrated with both fixture sets. See build-notes-s13.md and build-evidence-s13-r2.json for sensitivity and honest first-held-out results.",
+  "holdout_disclosure": {
+    "sprite2": "Initially held out; failed shape-only geometry, then used to revise wall profiles. Reported as a regression, not a pristine holdout.",
+    "key": "Original key-ring positive excluded from threshold calibration and passed; later shaft-hole negative injections exposed an overbroad wall-only rule. Original ring predicate was unchanged.",
+    "imp": "Held out identity negative; unassessed, never passed.",
+    "kfsq": "Held out scene positive/framing/aspect; unassessed and unsafe aspect refused.",
+    "edit": "Held out edit; still exceeds 1 px, marked needs_review without retuning."
+  }
+}

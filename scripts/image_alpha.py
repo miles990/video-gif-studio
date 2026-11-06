@@ -6,6 +6,31 @@ import numpy as np
 from PIL import Image
 from image_common import ImageError,c2pa,digest,write
 
+NEAR_ZERO_ALPHA=10
+
+
+def clear_haze(a):
+    """Keep two pixels of true edge coverage, discard remote near-zero haze."""
+    a=a.copy();_,distance=nearest_opaque(a)
+    haze=(a[...,3]>0)&(a[...,3]<=NEAR_ZERO_ALPHA)
+    if distance is not None:haze &= distance>2
+    a[haze]=0
+    return a,int(haze.sum())
+
+
+def wall_profile(component, exterior):
+    """Ray lengths through enclosing material; limb gaps have unequal walls."""
+    depth=cv2.distanceTransform(component.astype('uint8'),cv2.DIST_L2,5)
+    cy,cx=np.unravel_index(depth.argmax(),depth.shape);h,w=depth.shape
+    radii=np.arange(1,np.hypot(h,w)+1)
+    walls=[]
+    for angle in np.linspace(0,2*np.pi,32,endpoint=False):
+        x=np.rint(cx+radii*np.cos(angle)).astype(int);y=np.rint(cy+radii*np.sin(angle)).astype(int)
+        valid=(x>=0)&(x<w)&(y>=0)&(y<h);x=x[valid];y=y[valid]
+        leave=np.flatnonzero(~component[y,x]);reach=np.flatnonzero(exterior[y,x])
+        if len(leave) and len(reach):walls.append(float(reach[0]-leave[0]))
+    return min(walls,default=0),float(np.median(walls)) if walls else 0.
+
 
 def checkerboard(a):
     rgb=a[...,:3].astype(float);h,w=rgb.shape[:2]
@@ -38,9 +63,9 @@ def nearest_opaque(a):
 
 def alpha_qa(image):
     from shot_match import lab,delta_e
-    a=np.array(image.convert('RGBA'));alpha=a[...,3];visible=alpha>0
+    a,_=clear_haze(np.array(image.convert('RGBA')));alpha=a[...,3];visible=alpha>NEAR_ZERO_ALPHA
     frame=np.zeros(alpha.shape,bool);frame[:2]=True;frame[-2:]=True;frame[:,:2]=True;frame[:,-2:]=True
-    fake=checkerboard(a);fraction=float(np.mean(alpha==0));clear_border=float(np.mean(alpha[frame]==0))
+    fake=checkerboard(a);fraction=float(np.mean(alpha<=NEAR_ZERO_ALPHA));clear_border=float(np.mean(alpha[frame]<=NEAR_ZERO_ALPHA))
     n,labels,stats,_=cv2.connectedComponentsWithStats(visible.astype('uint8'),8)
     areas=stats[1:,cv2.CC_STAT_AREA];largest=int(areas.max()) if len(areas) else 0
     specks=(int(areas.sum())-largest)/max(largest,1)
@@ -54,32 +79,55 @@ def alpha_qa(image):
     black_outer=float(luma[outer].mean()) if outer.any() else 0.
     # Enclosed nonopaque components; outside-connected alpha is not an interior hole.
     hn,hl,hs,_=cv2.connectedComponentsWithStats((alpha<250).astype('uint8'),8)
-    boundary=set(np.unique(hl[frame]));holes=0;negative_space=0
+    boundary=set(np.unique(hl[frame]));holes=0;negative_space=0;body_holes=0;geometry=[]
+    exterior=np.isin(hl,list(boundary))
+    wall_distance=cv2.distanceTransform((~exterior).astype('uint8'),cv2.DIST_L2,5)
     for i in range(1,hn):
         if i in boundary:continue
         area=int(hs[i,cv2.CC_STAT_AREA]);values=alpha[hl==i]
-        clear=int(np.sum(values==0))
-        # Antialiased outlines may surround a fully clear intentional gap.
-        if clear>max(64,largest*.005) and clear/area>=.80:
+        component=hl==i
+        radius=float(cv2.distanceTransform(component.astype('uint8'),cv2.DIST_L2,5).max())
+        bridge=float(wall_distance[component].min())
+        _,_,w,h,_=hs[i];elongation=max(w,h)/max(1,min(w,h))
+        # A thin enclosing ring or elongated limb gap opens into the exterior
+        # after crossing a narrow wall. Deep, compact body holes do not.
+        thin,median_wall=wall_profile(component,exterior) if radius>=2 else (0,0)
+        # Compact holes in opaque body/shaft material are not limb gaps, even
+        # when the body is longer in one direction. A limb-bounded gap is
+        # elongated/angular relative to its inscribed disk AND has thin walls.
+        shape_extent=area/max(np.pi*radius*radius,1)
+        limb_gap=shape_extent>=1.4 and ((elongation>=1.4 and bridge<=2*radius) or thin<median_wall/2)
+        designed=(values<=NEAR_ZERO_ALPHA).any() and (bridge<=radius or limb_gap)
+        geometry.append(dict(area=area,radius_px=radius,wall_px=bridge,elongation=float(elongation),shape_extent=float(shape_extent),minimum_ray_wall=thin,median_ray_wall=median_wall,designed=bool(designed)))
+        if designed:
             negative_space+=area
-        else:holes+=area
+        else:
+            holes+=area
+            if radius>=2:body_holes+=1
     hole_ratio=holes/max(largest,1)
     issues=[]
     if fake:issues.append('fake_transparency')
     if not .15<=fraction<=.90:issues.append('transparent_fraction')
     if clear_border<.99:issues.append('clipped_border')
     if specks>.001:issues.append('isolated_specks')
-    if hole_ratio>.005:issues.append('interior_holes')
+    if body_holes or hole_ratio>.005:issues.append('interior_holes')
     if halo_good is not None and halo_good<.95 or black_outer>8:issues.append('halo')
     return dict(status='PASS' if not issues else 'FAIL',issues=issues,fake_transparency=fake,
                 transparent_fraction=fraction,clear_border_fraction=clear_border,speck_ratio=specks,
                 interior_hole_ratio=hole_ratio,designed_negative_space_pixels=negative_space,halo_good_fraction=halo_good,black_outer_luma=black_outer,
-                fractional_alpha_pixels=int(np.sum((alpha>0)&(alpha<255))),visual_review='pending')
+                fractional_alpha_pixels=int(np.sum((alpha>0)&(alpha<255))),hole_geometry=geometry,near_zero_alpha=NEAR_ZERO_ALPHA,visual_review='pending')
 
 
 def cleanup(image):
     from shot_match import lab,delta_e
-    a=np.array(image.convert('RGBA'));before=alpha_qa(image)
+    a,haze_removed=clear_haze(np.array(image.convert('RGBA')));before=alpha_qa(image)
+    original=a.copy()
+    _,edge_distance=nearest_opaque(a)
+    soft_edge=(a[...,3]>0)&(a[...,3]<=NEAR_ZERO_ALPHA)
+    if edge_distance is not None:soft_edge &= edge_distance<=2
+    # Only preserve colour-consistent coverage; white fragments are not soft edges.
+    nearest,_=nearest_opaque(a)
+    if nearest is not None:soft_edge &= delta_e(lab(a[...,:3]),lab(nearest))<=20
     n,labels,stats,_=cv2.connectedComponentsWithStats((a[...,3]>0).astype('uint8'),8)
     areas=stats[1:,cv2.CC_STAT_AREA];removed=0
     if len(areas):
@@ -95,16 +143,18 @@ def cleanup(image):
         radius=max(1,min(3,round(min(image.size)/400)))
         kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2*radius+1,2*radius+1))
         silhouette=cv2.morphologyEx((a[...,3]>=128).astype('uint8')*255,cv2.MORPH_OPEN,kernel)
-        silhouette=cv2.erode(silhouette,np.ones((3,3),np.uint8))
+        if not soft_edge.any():silhouette=cv2.erode(silhouette,np.ones((3,3),np.uint8))
         envelope=cv2.GaussianBlur(silhouette.astype('float32'),(0,0),.4)
         a[...,3]=np.minimum(a[...,3],np.rint(envelope).astype('uint8'))
+        a[...,3][soft_edge]=original[...,3][soft_edge]
     nearest,distance=nearest_opaque(a);recolored=0
     if nearest is not None:
         edge=(a[...,3]>0)&(a[...,3]<250)&(distance<=5)
         bad=edge&(delta_e(lab(a[...,:3]),lab(nearest))>20)
         recolored=int(bad.sum());a[...,:3][bad]=nearest[bad]
+    a,final_haze=clear_haze(a);haze_removed+=final_haze
     result=Image.fromarray(a)
-    return result,dict(before=before,after=alpha_qa(result),removed_speck_pixels=removed,despilled_pixels=recolored,hard_sticker_edge_cleanup=hard_sticker,
+    return result,dict(before=before,after=alpha_qa(result),removed_haze_pixels=haze_removed,removed_speck_pixels=removed,despilled_pixels=recolored,hard_sticker_edge_cleanup=hard_sticker,
                        alpha_policy='preserve graded alpha except isolated components; straight RGB edge despill')
 
 

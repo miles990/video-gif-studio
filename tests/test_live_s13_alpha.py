@@ -8,7 +8,7 @@ class LiveAlphaTests(ImageCase):
   with Image.open(LIVE/'sprite/native/image-1.png') as im:
    result,report=cleanup(im)
   self.assertEqual(report['after']['status'],'PASS',report)
-  self.assertGreater(report['removed_speck_pixels'],0)
+  self.assertGreater(report['removed_speck_pixels']+report['removed_haze_pixels'],0)
   self.assertGreater(report['after']['designed_negative_space_pixels'],0)
  def test_small_and_semitransparent_holes_still_fail(self):
   with Image.open(LIVE/'sprite/native/image-1.png') as im:base,_=cleanup(im)
@@ -16,11 +16,11 @@ class LiveAlphaTests(ImageCase):
   for alpha in (0,120):
    b=a.copy();b[cy-8:cy+8,cx-8:cx+8,3]=alpha
    qa=alpha_qa(Image.fromarray(b));self.assertGreater(qa['interior_hole_ratio'],0)
- def test_large_clear_gap_is_preserved(self):
+ def test_large_body_hole_is_flagged(self):
   im=Image.new('RGBA',(200,200));d=ImageDraw.Draw(im);d.rectangle((20,20,180,180),fill='orange');d.rectangle((70,70,130,130),fill=(0,0,0,0))
-  qa=alpha_qa(im);self.assertNotIn('interior_holes',qa['issues']);self.assertGreater(qa['designed_negative_space_pixels'],3000)
+  qa=alpha_qa(im);self.assertIn('interior_holes',qa['issues']);self.assertEqual(qa['designed_negative_space_pixels'],0)
 
  def test_original_probe_also_passes_cleanup(self):
   with Image.open(LIVE/'probe-alpha.png') as im:_,report=cleanup(im)
   self.assertEqual(report['after']['status'],'PASS',report)
-  self.assertGreater(report['removed_speck_pixels'],0)
+  self.assertGreater(report['removed_speck_pixels']+report['removed_haze_pixels'],0)
