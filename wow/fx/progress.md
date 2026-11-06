@@ -97,3 +97,9 @@
 - 13:45 使用者給 Suno MCP 存取權 → Codex 已 OAuth 連線、Claude Code 已註冊待 /mcp 登入；實測 35 個工具、Premier、歌曲點數 8,510、下載點數 67（稀缺）。spec-15：遊戲 BGM 無縫循環（sounds_create loop/tempo/key）、jingle／音效、影片配樂、同主題變奏、歌詞逐字對齊→字幕、節拍驅動 sprite 動畫、下載點數防呆。spec-13 重建 10 個小提交、解 2 處與 spec-11 的衝突後全套通過，快轉進 main 12c1715。
 - 14:00 使用者在另一個 Claude Code 工作階段完成 Suno /mcp 登入 → claude mcp list 顯示 suno ✔ Connected；新開的 Claude Code 工作階段可直接用 Suno 工具（本工作階段因啟動時未載入，仍經 Codex 使用）。
 - 14:30 acceptance-14（獨立出題者）完成，保留題 10 條；Godot 4 載入驗證需要 4.x → 下載可攜版 Godot 4.7.2（MIT）到 vgs-fx-private/tools/godot4（不動使用者既有的 3.2）。
+
+## 2026-11-06 spec-13 第三次重審 → 換量測工具
+- 第三組 live 新圖（刺蝟郵差）顯示：前兩輪只調了 ORB／HSV 的身分門檻、alpha 幾何規則，換一組圖就失效（身分排序反轉；意外破洞 43% 被放行；局部修改殘差 5.13 px 且有重影）。
+- 判斷：問題出在量測工具本身，不是門檻值。協調者先拿第三組圖驗證新的身分量測（DINOv2-small ONNX 結構相似度＋主體色盤交集，兩軸都過才算同一角色），再用第二組青蛙圖當保留組確認，同一組門檻（結構 ≥0.80、色盤 ≥0.75）兩組都分得開。探針：vgs-fx-private/agent-probe/identity_dino_palette_probe.py。
+- 偏離：協調者自己跑了儀器效度探針（只驗證量測，不是產品程式碼）；onnxruntime 裝進 venv，DINOv2 模型放 ~/.cache/video-gif-studio/models（選用引擎，缺模型時退回並標 unassessed）。
+- 第三輪修正：身分換新量測；alpha 破洞改由 AI 看圖判斷，判不出來就標 needs_review、不再用幾何規則放行；局部修改改成只重生裁切區＋光流＋最小差異接縫＋重影偵測；循環加端點停頓上限與遲滯。門檻一律輪流用其中兩組校準、第三組驗證（三組 live 圖）。
