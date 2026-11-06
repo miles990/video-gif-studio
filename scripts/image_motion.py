@@ -22,6 +22,7 @@ def seam_qa(frames,durations=None):
     local=np.r_[steps[:3],steps[-3:]]
     normal=float(np.median(local[local>1e-5])) if np.any(local>1e-5) else 0.
     ratio=seam/max(normal,.01)
+    centers=None
     if np.any(a[...,3]==0):
         yy,xx=np.indices(a.shape[1:3]);weights=a[...,3]
         totals=np.maximum(weights.sum(axis=(1,2)),1)
@@ -38,15 +39,43 @@ def seam_qa(frames,durations=None):
     colour_seam=float(colour_steps[0]);colour_normal=float(np.median(colour_steps[1:]))
     cycle=np.r_[steps,seam];speed=cycle/(durations/1000)
     moving=speed[speed>.01];typical=float(np.median(moving)) if len(moving) else 0.
-    incoming=float(np.median(speed[-4:-1]));outgoing=float(np.median(speed[:3]))
+    # Zero pixel steps from raster quantization are assessed as holds below;
+    # they are not observations of a lower continuous-motion velocity.
+    incoming_steps=speed[-4:-1];outgoing_steps=speed[:3]
+    speed_assessed=bool(np.any(incoming_steps>.01) and np.any(outgoing_steps>.01))
+    incoming=float(np.median(incoming_steps[incoming_steps>.01])) if speed_assessed else 0.
+    outgoing=float(np.median(outgoing_steps[outgoing_steps>.01])) if speed_assessed else 0.
     speed_ratio=(incoming+.05)/(outgoing+.05)
-    # A long hold is a discontinuity even if the first and last poses match.
+    # Quantized ease-in/out naturally repeats poses at a turning point.
+    # Test the signed motion on either side, not just the duration of the hold.
     paused=cycle<=max(.01,float(np.median(cycle))*.05)
+    vectors=np.roll(values,-1,axis=0)-values
+    if centers is not None:vectors=np.roll(centers,-1,axis=0)-centers
+    vectors=vectors.reshape(len(frames),-1)
+    def turning(start,end):
+        before=(start-1)%len(frames);after=end%len(frames)
+        for _ in frames:
+            if not paused[before]:break
+            before=(before-1)%len(frames)
+        for _ in frames:
+            if not paused[after]:break
+            after=(after+1)%len(frames)
+        u,v=vectors[before],vectors[after]
+        return float(np.dot(u,v))<0
     longest=run=0.
     for i in range(2*len(paused)):
         run=run+durations[i%len(paused)] if paused[i%len(paused)] else 0.
         longest=max(longest,run)
-    pause=typical>.1 and (longest>=max(120,3*np.median(durations)) or durations.max()>3*np.median(durations))
+    bad_holds=[];extrema_holds=[]
+    for start in range(len(paused)):
+        if not paused[start] or paused[(start-1)%len(paused)]:continue
+        end=start;hold=0.
+        while paused[end%len(paused)] and end<start+len(paused):
+            hold+=durations[end%len(paused)];end+=1
+        if hold>=max(120,3*np.median(durations)):
+            (extrema_holds if turning(start,end) else bad_holds).append(float(hold))
+    long_exposure=any(d>3*np.median(durations) and not turning(i,i) for i,d in enumerate(durations))
+    pause=typical>.1 and (bool(bad_holds) or long_exposure)
     clipped=0
     for frame in frames:
         alpha=np.array(frame.convert('RGBA'))[...,3]
@@ -54,10 +83,10 @@ def seam_qa(frames,durations=None):
     issues=[]
     if ratio>3:issues.append('position_seam')
     if colour_seam>10 and colour_seam>3*max(colour_normal,.1):issues.append('colour_seam')
-    if pause or typical>.1 and not .25<=speed_ratio<=4:issues.append('speed_discontinuity')
+    if pause or typical>.1 and not .25<=speed_ratio<=4 and not turning(0,0):issues.append('speed_discontinuity')
     if clipped:issues.append('canvas_edge_clipping')
     return dict(status='PASS' if not issues else 'FAIL',issues=issues,colour_seam_delta_e2000=colour_seam,
-                speed_ratio=speed_ratio,longest_hold_ms=longest,clipped_frames=clipped,seam_ratio=ratio,seam_difference=seam,
+                speed_ratio=speed_ratio,longest_hold_ms=longest,non_extremum_holds_ms=bad_holds,extremum_holds_ms=extrema_holds,clipped_frames=clipped,seam_ratio=ratio,seam_difference=seam,
                 ordinary_step=normal,seam_frames=[len(frames)-1,0],moving=bool(np.any(steps>.01)),
                 note='Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review.')
 
