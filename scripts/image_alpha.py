@@ -86,7 +86,7 @@ def enclosed_regions(alpha):
     return result,regions
 
 
-def alpha_qa(image,judge=None,overlay_path=None):
+def alpha_qa(image,judge=None,overlay_path=None,description=''):
     from shot_match import lab,delta_e
     a,_=clear_haze(np.array(image.convert('RGBA')));alpha=a[...,3];visible=alpha>NEAR_ZERO_ALPHA
     frame=np.zeros(alpha.shape,bool);frame[:2]=True;frame[-2:]=True;frame[:,:2]=True;frame[:,-2:]=True
@@ -107,15 +107,17 @@ def alpha_qa(image,judge=None,overlay_path=None):
     holes=0;negative_space=0;body_holes=0;geometry=regions
     review=dict(status='not_needed',regions=[]);pending=False
     if regions:
-        from image_hole_judge import overlay,validate
+        from image_hole_judge import consistent_review
         if overlay_path is None:
             import hashlib
             overlay_path=Path(__file__).resolve().parents[1]/'.scratch/alpha-reviews'/(hashlib.sha256(a.tobytes()).hexdigest()+'.png')
-        review=dict(status='needs_review',overlay_path=overlay(Image.fromarray(a),hl,regions,overlay_path),regions=regions)
+        target=Path(overlay_path).resolve()
+        review=dict(status='needs_review',overlay_path=str(target),regions=regions,
+                    inputs=[str(target.with_suffix('.inputs.json')),str(target.with_name(target.stem+'.shuffled.inputs.json'))])
         answers={}
         try:
-            if judge is None:raise ValueError('Subscription vision judge unavailable; geometry cannot approve enclosed regions.')
-            answers=validate(judge(review['overlay_path'],regions),regions)
+            merged,rounds=consistent_review(Image.fromarray(a),hl,regions,overlay_path,judge,description)
+            answers={r['id']:r for r in merged};review['inputs']=rounds
             review['answers']=list(answers.values());review['status']='assessed'
         except Exception as exc:
             # A provider/decoder failure cannot turn semantic uncertainty into
@@ -145,7 +147,7 @@ def alpha_qa(image,judge=None,overlay_path=None):
                 fractional_alpha_pixels=int(np.sum((alpha>0)&(alpha<255))),hole_geometry=geometry,near_zero_alpha=NEAR_ZERO_ALPHA,visual_review='pending')
 
 
-def cleanup(image,judge=None,overlay_path=None):
+def cleanup(image,judge=None,overlay_path=None,description=''):
     from shot_match import lab,delta_e
     a,haze_removed=clear_haze(np.array(image.convert('RGBA')));before=alpha_qa(image)
     original=a.copy()
@@ -181,7 +183,7 @@ def cleanup(image,judge=None,overlay_path=None):
         recolored=int(bad.sum());a[...,:3][bad]=nearest[bad]
     a,final_haze=clear_haze(a);haze_removed+=final_haze
     result=Image.fromarray(a)
-    return result,dict(before=before,after=alpha_qa(result,judge=judge,overlay_path=overlay_path),removed_haze_pixels=haze_removed,removed_speck_pixels=removed,despilled_pixels=recolored,hard_sticker_edge_cleanup=hard_sticker,
+    return result,dict(before=before,after=alpha_qa(result,judge=judge,overlay_path=overlay_path,description=description),removed_haze_pixels=haze_removed,removed_speck_pixels=removed,despilled_pixels=recolored,hard_sticker_edge_cleanup=hard_sticker,
                        alpha_policy='preserve graded alpha except isolated components; straight RGB edge despill')
 
 
@@ -226,7 +228,7 @@ def transparent_asset(adapter,req,out,approval=None,max_usd=0,no_cache=False):
         alpha_source='matted';fallback='solid_background_chroma_matte'
     from image_hole_judge import SubscriptionHoleJudge
     judge=SubscriptionHoleJudge(adapter) if req.route in ('codex','auto') else None
-    cleaned,clean_report=cleanup(native,judge=judge,overlay_path=out/'alpha-holes.png')
+    cleaned,clean_report=cleanup(native,judge=judge,overlay_path=out/'alpha-holes.png',description=req.prompt)
     clean_report['fake_transparency_detected']=report['fake_transparency']
     provenance=dict(fake_transparency_detected=report['fake_transparency'],native_alpha_qa=report,
                     alpha_source=alpha_source,fallback=fallback,matting_background=backing,cleanup=clean_report,

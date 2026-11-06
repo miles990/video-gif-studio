@@ -69,6 +69,7 @@ def main(argv=None):
         ing=sub.add_parser('ingest');ing.add_argument('gif',type=Path);ing.add_argument('--out',required=True,type=Path);ing.add_argument('--json',action='store_true')
         alpha=sub.add_parser('alpha');alpha.add_argument('image',type=Path);alpha.add_argument('--out',type=Path);alpha.add_argument('--cleanup',action='store_true');alpha.add_argument('--json',action='store_true')
         alpha.add_argument('--codex');alpha.add_argument('--timeout',type=float,default=120)
+        alpha.add_argument('--prompt',default='',help='Character/asset description for contextual hole review')
         e=sub.add_parser('edit');options(e);e.add_argument('--image',type=Path,required=True);e.add_argument('--instruction',required=True)
         e.add_argument('--region');e.add_argument('--markup',type=Path);e.add_argument('--feather',type=int,default=8)
         d=sub.add_parser('delta');options(d);d.add_argument('storyboard',type=Path);d.add_argument('--draft',required=True);d.add_argument('--markup',type=Path);d.add_argument('--feedback',type=Path)
@@ -116,8 +117,8 @@ def main(argv=None):
             with Image.open(a.image) as im:
                 if a.cleanup:
                     if not a.out:raise ImageError('E_ARGUMENT','Cleanup requires --out PNG.')
-                    cleaned,result=cleanup(im,judge=judge,overlay_path=overlay_path);a.out.parent.mkdir(parents=True,exist_ok=True);cleaned.save(a.out)
-                else:result=alpha_qa(im,judge=judge,overlay_path=overlay_path)
+                    cleaned,result=cleanup(im,judge=judge,overlay_path=overlay_path,description=a.prompt);a.out.parent.mkdir(parents=True,exist_ok=True);cleaned.save(a.out)
+                else:result=alpha_qa(im,judge=judge,overlay_path=overlay_path,description=a.prompt)
             status=result.get('after',result)['status']
             print(json.dumps(dict(ok=status=='PASS',result=result)));return 0 if status=='PASS' else 3 if status=='needs_review' else 2
         if a.command in ('motion','ingest'):
