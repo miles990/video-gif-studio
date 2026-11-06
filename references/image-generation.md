@@ -90,3 +90,15 @@ cosine-time ping-pong repair and records discarded frames. Ingest preserves Pill
 disposal-composited RGBA and every original delay; the sprite JSON has those same
 delays. Browser preview encoding may merge <=20 ms exposures, as documented by the
 existing GIF pipeline. Grok/fal video generation is a separate user-approved step.
+
+Transparent generation (`generate --transparent`) attempts native alpha first,
+removes isolated alpha components <=0.1% of the largest subject, and despills
+semi-transparent edge colours using nearby opaque subject pixels. It preserves
+graded alpha. QA measures border transparency, isolated components/holes, black
+background outer-band brightness, and CIEDE2000 edge colour continuity. RGB
+checkerboards are detected from periodic neutral patterns on at least three edges;
+an interior patterned tablecloth is a negative control. Opaque/fake-alpha output
+gets one explicit solid-background regeneration and local chroma matting, recorded
+as `alpha_source:matted`. A failed QA result is not delivered as a final sticker.
+Output includes RGBA, binary-alpha PNG/GIF and black/white/magenta composites.
+`alpha_qa.py image.png --json` is read-only; add `--cleanup --out new.png` to repair.

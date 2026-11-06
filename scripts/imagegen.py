@@ -57,6 +57,7 @@ def main(argv=None):
         motion=sub.add_parser('motion');motion.add_argument('--keyframes',nargs='+',required=True,type=Path);motion.add_argument('--out',required=True,type=Path)
         motion.add_argument('--frames',type=int,default=48);motion.add_argument('--frame-ms',type=int,default=40);motion.add_argument('--size');motion.add_argument('--json',action='store_true')
         ing=sub.add_parser('ingest');ing.add_argument('gif',type=Path);ing.add_argument('--out',required=True,type=Path);ing.add_argument('--json',action='store_true')
+        alpha=sub.add_parser('alpha');alpha.add_argument('image',type=Path);alpha.add_argument('--out',type=Path);alpha.add_argument('--cleanup',action='store_true');alpha.add_argument('--json',action='store_true')
         k=sub.add_parser('keyframes');options(k);k.add_argument('storyboard',type=Path);k.add_argument('--shots',nargs='+')
         r=sub.add_parser('refset');rs=r.add_subparsers(dest='ref_command',required=True)
         rb=rs.add_parser('build');rb.add_argument('--name',required=True);rb.add_argument('--images',nargs='+',type=Path,required=True)
@@ -65,6 +66,15 @@ def main(argv=None):
         rc=rs.add_parser('check');rc.add_argument('--refs',type=Path,required=True);rc.add_argument('--image',type=Path,required=True);rc.add_argument('--json',action='store_true')
         rr=rs.add_parser('review');rr.add_argument('--refs',type=Path,required=True);rr.add_argument('--same',choices=['yes','no'],required=True);rr.add_argument('--comment',default='');rr.add_argument('--json',action='store_true')
         a=p.parse_args(argv)
+        if a.command=='alpha':
+            from PIL import Image
+            from image_alpha import alpha_qa,cleanup
+            with Image.open(a.image) as im:
+                if a.cleanup:
+                    if not a.out:raise ImageError('E_ARGUMENT','Cleanup requires --out PNG.')
+                    cleaned,result=cleanup(im);a.out.parent.mkdir(parents=True,exist_ok=True);cleaned.save(a.out)
+                else:result=alpha_qa(im)
+            print(json.dumps(dict(ok=True,result=result)));return 0 if (result.get('after',result)['status']=='PASS') else 2
         if a.command in ('motion','ingest'):
             from image_motion import loop_keyframes,ingest_gif
             if a.command=='motion':result=loop_keyframes(a.keyframes,a.out,a.frames,a.frame_ms,tuple(map(int,a.size.split('x'))) if a.size else None)
@@ -84,7 +94,10 @@ def main(argv=None):
         elif a.command=='estimate':result=adapter.estimate(req)
         elif a.command=='generate':
             if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
-            result=adapter.generate(req,a.out,a.approve_spend,a.max_usd,a.no_cache)
+            if a.transparent:
+                from image_alpha import transparent_asset
+                result=transparent_asset(adapter,req,a.out,a.approve_spend,a.max_usd,a.no_cache)
+            else:result=adapter.generate(req,a.out,a.approve_spend,a.max_usd,a.no_cache)
         elif a.command=='probe':
             # Recorded probes are read-only evidence, not an implicit generation.
             result=read(Path(__file__).resolve().parents[1]/'references/image-capabilities.json')
