@@ -10,6 +10,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES = {
+    'calm': dict(asl=6., cv=.12, sizes=['WS','MS','WS'],
+                 transitions=['crossfade'], family='dissolve', recipes=['breathe'],
+                 moves=['static','drift','static'], aesthetic='mist-veiled natural light', pace='quiet, sustained, gently resolve detail'),
     'kinetic': dict(asl=1.0, cv=.60, sizes=['WS','CU','ECU','MS','CU'],
                     transitions=['gl_burn_through','gl_luminance_melt'], family='energy',
                     recipes=['hook_snap','build','drop','impact'], moves=['static','whip','push'],
@@ -32,9 +35,10 @@ PROFILES = {
 def structure(core, brief=None, profile=None, target=None):
     brief = brief or {}
     authored = ' '.join(str(brief.get(k,'')) for k in ('aesthetic','pace','fence')).lower()
-    signals=r'sport|hype|kinetic|snappy|stadium|運動|熱血|衝擊|快剪|japan|fresh|linen|日系|日式|清新|watch|luxury|precision|atelier|手錶|腕錶|精品|warm|cozy|cafe|coffee|溫暖|咖啡'
+    signals=r'asmr|sleep|meditat|calm|ambient|mist-veiled|睡眠|助眠|冥想|療癒|sport|hype|kinetic|snappy|stadium|運動|熱血|衝擊|快剪|japan|fresh|linen|日系|日式|清新|watch|luxury|precision|atelier|手錶|腕錶|精品|warm|cozy|cafe|coffee|溫暖|咖啡'
     text=authored if re.search(signals,authored) else core.lower()
-    if re.search(r'sport|hype|kinetic|snappy|stadium|運動|熱血|衝擊|快剪', text): key='kinetic'
+    if re.search(r'asmr|sleep|meditat|calm|ambient|mist-veiled|睡眠|助眠|冥想|療癒',text):key='calm'
+    elif re.search(r'sport|hype|kinetic|snappy|stadium|運動|熱血|衝擊|快剪', text): key='kinetic'
     elif re.search(r'japan|fresh|linen|日系|日式|清新', text): key='fresh'
     elif re.search(r'watch|luxury|precision|atelier|手錶|腕錶|精品', text): key='precision'
     elif re.search(r'warm|cozy|cafe|coffee|溫暖|咖啡', text): key='warm'

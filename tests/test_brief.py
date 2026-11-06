@@ -111,7 +111,7 @@ class BriefTests(unittest.TestCase):
         for expanded in (False,True):
             rows=[]
             for core in ('sports hype 30s','Japanese fresh 30s','precision watch ad 30s'):
-                board=skeleton_board(brief.expand(core,taste=factory())) if expanded else treatment(['missing.png'],30,core,factory())
+                board=skeleton_board(brief.expand(core,taste=factory())) if expanded else treatment(['missing.png'],30,core,factory(),experimental_structure=True)
                 durations=np.array([s['end']-s['start'] for s in board['shots']]);families={transition_family(s['transition']) for s in board['shots'] if s['transition']!='cut'}
                 recipes={s['recipe']['name'] for s in board['shots'] if s.get('recipe')}
                 rows.append((len(durations),round(durations.mean(),2),round(durations.std()/durations.mean(),2),frozenset(families),frozenset(recipes)))

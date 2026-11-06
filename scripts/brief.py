@@ -324,8 +324,8 @@ def to_storyboard(brief,variant=1,allow_skeleton=False):
         cursor=beat['t_start'];curve.append([cursor,.8 if beat['is_turn'] else .25])
         for j,length in enumerate(lengths):
             i=len(shots);turn=beat['is_turn'] and j==0;name=design['recipes'][(i+1)%len(design['recipes'])]
-            if turn:name={'kinetic':'drop','precision':'hero_glow','graphic':'reveal_subject','warm':'soft_hit','fresh':'soft_hit'}[design['profile']]
-            move=item['mechanic'] if item else beat.get('mechanism',design['moves'][i%len(design['moves'])])
+            if turn:name={'kinetic':'drop','precision':'hero_glow','graphic':'reveal_subject','warm':'soft_hit','fresh':'soft_hit','calm':'breathe'}[design['profile']]
+            move=item['mechanic'] if item else design['moves'][i%len(design['moves'])] if design['profile']=='calm' else beat.get('mechanism',design['moves'][i%len(design['moves'])])
             from storyboard import MOVES
             why='Beat '+str(beat['id'])+': '+beat['text']
             if move not in MOVES:
@@ -348,13 +348,15 @@ def to_storyboard(brief,variant=1,allow_skeleton=False):
                       background='#d2ad7f' if design['profile']=='warm' else '#dce7de' if design['profile']=='fresh' else '#263444')
             for field in ('elements','captions','min_text_px'):
                 if field in beat:shot[field]=deepcopy(beat[field])
+            shot['apply_framing']=True
+            if design['profile']=='calm':
+                shot['perceived']=.03;shot['recipe']['perceived']=.03;shot['sound']['energy']=.25
             if assets:
-                preferred='a4' if turn else 'a3' if beat['id']<next(x['id'] for x in brief['beats'] if x['is_turn']) else 'a5'
-                source=refs[preferred].get('path') if refs[preferred].get('source')=='user' else None
-                asset=next((a for a in assets if source and a.get('path')==source),assets[i%len(assets)])
+                asset=assets[i%len(assets)]
                 if asset.get('path'):shot['image']=asset['path'];shot['asset']=asset
             shots.append(shot);cursor=end
     curve.append([brief['duration'],curve[-1][1]])
+    if design['profile']=='calm':curve=[[t,.25] for t,_ in curve]
     board=dict(version=1,core=brief['draft'],hard_constraints=deepcopy(brief.get('hard_constraints',[])),fps=brief['fps'],width=brief['width'],height=brief['height'],duration=brief['duration'],shots=shots,tokens=tokens,
                design_curve=curve,design_origin='authored brief beats',editorial_structure=design,warnings=warnings,credits=credits,
                reference_policy='Read references for mechanisms and statistics; render only assets or silhouette cards',

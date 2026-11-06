@@ -15,7 +15,9 @@ def card(shot,size=(320,180)):
     scale={'EWS':.08,'WS':.18,'MS':.34,'CU':.65,'ECU':.9}[shot['size']]
     scale=max(scale,shot.get('hero_height',0)/1.92)
     radius=max(2,round(h*scale*.32));cx=w//2;cy=int(h*.46)
-    if shot.get('hero_height')!=0:
+    if any('no faces' in c.lower() or '不要人臉' in c for c in shot.get('hard_constraints',[])):
+        d.rectangle((cx-radius,cy-radius,cx+radius,cy+4*radius),fill='#18232e')
+    elif shot.get('hero_height')!=0:
         d.ellipse((cx-radius,cy-radius,cx+radius,cy+radius),fill='#18232e')
         d.polygon([(cx-radius,cy+radius),(cx-2*radius,cy+5*radius),(cx+2*radius,cy+5*radius),(cx+radius,cy+radius)],fill='#18232e')
     else:
@@ -70,13 +72,23 @@ def source_frame(shot,base,size):
         shot['asset_fallback']=dict(path=str(path),reason='missing footage')
         return card(shot,size)
     try:
-        with Image.open(path) as im:return np.array(im.convert('RGBA').resize(size))
+        with Image.open(path) as im:return framed(np.array(im.convert('RGBA')),shot,size)
     except OSError:
         cap=cv2.VideoCapture(str(path));cap.set(cv2.CAP_PROP_POS_MSEC,shot.get('in_ms',0));ok,bgr=cap.read();cap.release()
         if not ok:
             shot['asset_fallback']=dict(path=str(path),reason='undecodable footage')
             return card(shot,size)
-        return cv2.cvtColor(cv2.resize(bgr,size),cv2.COLOR_BGR2RGBA)
+        return framed(cv2.cvtColor(bgr,cv2.COLOR_BGR2RGBA),shot,size)
+
+
+def framed(frame,shot,size):
+    """Opt-in source crop for brief previews; stable callers retain their framing."""
+    if not shot.get('apply_framing'):return cv2.resize(frame,size)
+    zoom={'EWS':1.,'WS':1.,'MS':1.4,'CU':2.,'ECU':3.}[shot['size']]
+    h,w=frame.shape[:2];aspect=size[0]/size[1]
+    crop_w=min(w,h*aspect)/zoom;crop_h=crop_w/aspect
+    x=max(0,round((w-crop_w)/2));y=max(0,round((h-crop_h)/2))
+    return cv2.resize(frame[y:y+max(1,round(crop_h)),x:x+max(1,round(crop_w))],size)
 
 
 def shot_labels(frame,shot):
@@ -157,7 +169,7 @@ def to_plan(board,out,base=Path('.'),size=(320,180),music=None):
                 if capture is not None:
                     capture.set(cv2.CAP_PROP_POS_MSEC,s.get('in_ms',0)+t*s.get('motion_speed',1))
                     ok,bgr=capture.read()
-                    if ok:last_video_frame=cv2.cvtColor(cv2.resize(bgr,size),cv2.COLOR_BGR2RGBA)
+                    if ok:last_video_frame=framed(cv2.cvtColor(bgr,cv2.COLOR_BGR2RGBA),s,size)
                     source=last_video_frame
                 Image.fromarray(shot_labels(moved(source,s,t/1000),s)).save(folder/f'{j:05d}.png')
         finally:

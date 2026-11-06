@@ -78,3 +78,53 @@ class FixTests(unittest.TestCase):
             self.assertTrue(Path(b['contact_sheets']).is_file())
             self.assertIn('ref_missing',[f['rule'] for f in lint(b)['findings']])
             self.assertNotIn('paper grain',b['prompt'])
+
+    def test_framing_rotation_and_stable_opt_in(self):
+        import numpy as np
+        from animatic import framed
+        from taste_director import treatment,stable_treatment
+        from taste_pick import factory
+        frame=np.random.default_rng(19).integers(0,256,(180,240,4),dtype=np.uint8)
+        images=[framed(frame,dict(size=s,apply_framing=True),(96,64)) for s in ('WS','MS','CU','ECU')]
+        for i in range(4):
+            for j in range(i):self.assertGreater(np.abs(images[i].astype(float)-images[j]).mean(),20)
+        self.assertTrue(np.array_equal(framed(frame,dict(size='WS'),(96,64)),framed(frame,dict(size='ECU'),(96,64))))
+        for core in ('sports hype','meditation sleep','precision watch'):
+            self.assertEqual(treatment(['a.png'],10,core,factory()),stable_treatment(['a.png'],10,core,factory()))
+        b=skeleton_board(brief.expand('sports hype 10s',project=[dict(path=f'{i}.png') for i in range(3)]))
+        self.assertEqual([s['image'] for s in b['shots'][:6]],['0.png','1.png','2.png']*2)
+        for genre in ('ASMR','sleep','meditation'):
+            board=skeleton_board(brief.expand(genre+' 10s'))
+            self.assertEqual(board['editorial_structure']['profile'],'calm')
+            self.assertTrue(all(s['recipe']['name']=='breathe' for s in board['shots']))
+            self.assertEqual(len({p[1] for p in board['design_curve']}),1)
+
+    def test_six_genres_have_distinct_rendered_sheets(self):
+        import tempfile,json
+        import numpy as np
+        import cv2
+        from PIL import Image
+        from brief_render import render_version
+        from brief_refs import contact_sheet
+        folder=Path(tempfile.mkdtemp(dir=ROOT/'.scratch',prefix='s11-fix-genres-'))
+        old_threads=cv2.getNumThreads();cv2.setNumThreads(1)
+        try:
+            yy,xx=np.indices((120,180));cards=[]
+            for i in range(3):
+                pixels=np.stack(((xx*3+i*40)%256,(yy*4+i*60)%256,((xx+yy)*2+i*20)%256),axis=-1).astype('uint8')
+                p=folder/f'asset-{i}.png';Image.fromarray(pixels).save(p);cards.append(dict(path=str(p)))
+            structures=[];samples=[];records=[]
+            for i,genre in enumerate(('sports hype','Japanese fresh','precision watch','warm coffee','graphic typography','ASMR meditation')):
+                board=skeleton_board(brief.expand(genre+' 4s',project=cards))
+                structures.append(tuple((s['size'],s['duration'],s['recipe']['name'],s['motion']) for s in board['shots']))
+                render_version(board,folder/str(i),size=(96,64),formats=('mp4',))
+                movie=next((folder/str(i)/'render').glob('*.mp4'))
+                meta=contact_sheet(movie,folder/f'{i}-sheet.png');cap=cv2.VideoCapture(str(movie));frames=[]
+                for t in meta['frames_at_s']:
+                    cap.set(cv2.CAP_PROP_POS_MSEC,t*1000);ok,f=cap.read();self.assertTrue(ok);frames.append(f.astype(float))
+                cap.release();samples.append(np.array(frames));records.append(dict(genre=genre,sheet=f'{i}-sheet.png'))
+            self.assertEqual(len(set(structures)),6)
+            differences=[dict(a=i,b=j,mean_abs=float(np.abs(samples[i]-samples[j]).mean())) for i in range(6) for j in range(i)]
+            self.assertTrue(all(v['mean_abs']>1 for v in differences),differences)
+            (folder/'evidence.json').write_text(json.dumps(dict(genres=records,frame_differences=differences),indent=2),encoding='utf-8')
+        finally:cv2.setNumThreads(old_threads)
