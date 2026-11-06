@@ -87,6 +87,7 @@ def main():
     ap.add_argument('--pixel',action='store_true')
     ap.add_argument('--experimental',action='store_true')
     ap.add_argument('--allow-qa-fail',action='store_true',help='Explicit preview export; failed QA is retained.')
+    ap.add_argument('--beat-sync',type=Path,help='Experimental Suno analysis/local beat map; audio-clock schedules.')
     ap.add_argument('--out', required=True, type=Path)
     ap.add_argument('--max-size', type=int, default=2048)
     ap.add_argument('--padding', type=int, default=2)
@@ -98,7 +99,30 @@ def main():
         try:
             if not a.experimental:raise ImageError('E_EXPERIMENTAL','Engine exports require --experimental.')
             from game_engines import export_engines
-            r=export_engines(a.anim_manifest or sorted(a.frames.glob('*/anim.json')),a.out,a.engine.split(','),a.max_size,a.padding,a.extrude,a.pixel,a.allow_qa_fail)
+            manifests=a.anim_manifest or sorted(a.frames.glob('*/anim.json'))
+            syncs={}
+            if a.beat_sync:
+                from audio_beat_sync import schedule,retime_manifest,verify_motion,export_clock
+                from image_common import read,write,ROOT
+                import tempfile,shutil
+                # Stage beside scratch, preserving each source frame and its hashes.
+                stage=Path(tempfile.mkdtemp(prefix='beat-sync-',dir=ROOT/'.scratch'))
+                try:
+                    staged=[]
+                    for source in manifests:
+                        original=read(source);sync=schedule(original,read(a.beat_sync));syncs[original['state']]=sync
+                        adjusted=retime_manifest(original,sync)
+                        frames=[Image.open(source.parent/f['file']).convert('RGBA') for f in adjusted['frames']]
+                        adjusted['qa']=verify_motion(adjusted,frames);sync['motion_qa']=adjusted['qa']
+                        if adjusted['qa']['status']!='PASS' and not a.allow_qa_fail:
+                            raise ImageError('E_QA_FAIL','Retimed motion is not certified',qa=adjusted['qa'])
+                        dest=stage/original['state'];shutil.copytree(source.parent,dest);write(dest/'anim.json',adjusted);staged.append(dest/'anim.json')
+                    r=export_engines(staged,a.out,a.engine.split(','),a.max_size,a.padding,a.extrude,a.pixel,a.allow_qa_fail)
+                    write(a.out/'beat-sync.json',dict(states=syncs,runtime_av_sync='untested'))
+                    export_clock(a.out/'audio_clock.gd')
+                finally:shutil.rmtree(stage)
+            else:
+                r=export_engines(manifests,a.out,a.engine.split(','),a.max_size,a.padding,a.extrude,a.pixel,a.allow_qa_fail)
             print(json.dumps(dict(ok=True,result=r)));return
         except (ImageError,ValueError,OSError,KeyError) as exc:
             print(json.dumps(dict(ok=False,error=exc.error if isinstance(exc,ImageError) else dict(code='E_EXPORT',message=str(exc)))))
