@@ -1,6 +1,8 @@
 import numpy as np
+import unittest
 from PIL import Image,ImageDraw
 from image_fixtures import ImageCase
+from identity_engine import engine
 from image_common import ImageError,digest,read
 from image_identity import build,check,compare,controls,load
 
@@ -25,6 +27,7 @@ class IdentityTests(ImageCase):
         super().setUp();self.a=self.path/'a.png';self.b=self.path/'b.png';self.neg=self.path/'neg.png'
         mascot(self.a);mascot(self.b,pose=8);mascot(self.neg,negative=True)
 
+    @unittest.skipUnless(engine()[0] is not None,'optional DINOv2 model/runtime unavailable')
     def test_controls_and_reference_integrity(self):
         result=controls(self.a,self.b,self.neg);self.assertTrue(result['valid'])
         ref=self.path/'refs.json';build('Mia',[self.a,self.b],ref,negative=[self.neg])
@@ -33,6 +36,7 @@ class IdentityTests(ImageCase):
         mascot(self.a,pose=20)
         with self.assertRaises(ImageError):load(ref)
 
+    @unittest.skipUnless(engine()[0] is not None,'optional DINOv2 model/runtime unavailable')
     def test_mixed_library_and_limit_rejected(self):
         with self.assertRaises(ImageError) as err:build('mixed',[self.a,self.neg],self.path/'bad.json',negative=[self.b])
         self.assertEqual(err.exception.error['code'],'E_REFSET_MIXED')
@@ -42,6 +46,7 @@ class IdentityTests(ImageCase):
         self.assertFalse(controls(self.a,self.b,self.b)['valid'])
         self.assertFalse(controls(self.a,self.a,self.neg)['valid'])
 
+    @unittest.skipUnless(engine()[0] is not None,'optional DINOv2 model/runtime unavailable')
     def test_all_keyframes_send_same_refset_and_retry_drift_once(self):
         from dataclasses import replace
         from image_keyframes import keyframes

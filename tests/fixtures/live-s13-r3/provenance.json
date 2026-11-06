@@ -1,0 +1,185 @@
+{
+  "source": "review-s13-r3 subscription live set, $0 API spend",
+  "records": [
+    {
+      "path": "refFront/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\refFront\\image-1.png",
+      "source_sha256": "7d36826cce36e5339811b881da167c6e76ce29348314ebf3e8ddae5e9e2df8b8",
+      "sha256": "b34165f7f60ac812a9341877a0d38f773f616e7c6c12a95c533c4aa7f6e5c946",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 281875
+    },
+    {
+      "path": "refSide/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\refSide\\image-1.png",
+      "source_sha256": "98e70cce9f69b63076b976028ac711ce6f7bd6ac13f22ea965df44115788c88e",
+      "sha256": "3fd45bed4cea949cf3a09a3c074556b1a9d59dbf69bbff19915dea04c5c9b03c",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 252536
+    },
+    {
+      "path": "refBack/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\refBack\\image-1.png",
+      "source_sha256": "261169cecabbc211525b1a37a69c28a3efc1eaf077aca7281421222dc043a502",
+      "sha256": "2efe71538cefff6a41c56314cfba46769bf4bc74cc6bbbc827433083e1d6285f",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 276739
+    },
+    {
+      "path": "refAction/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\refAction\\image-1.png",
+      "source_sha256": "7f214df900306f13a09d74c887bcbc4803969f841ab99b70ec0904ab856450fa",
+      "sha256": "5d9ef1ca7a52cd8aec6dd3f144f543ad03c037160b323f9288dcb2b5a6eb08d2",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 252103
+    },
+    {
+      "path": "impRecolor/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\impRecolor\\image-1.png",
+      "source_sha256": "a4aac30ed18e1754dbfa72769e0b23b0b33ddcb47087acb4166b57f27691cd65",
+      "sha256": "efd2d74113f44bcde2b47a34a3ef74d5315d2b798e6712391d92082707bc28b6",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 302211
+    },
+    {
+      "path": "impSpecies/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\impSpecies\\image-1.png",
+      "source_sha256": "198d48602480b4fe2f98217805d604dc982f183505484080dfc4092f571711e2",
+      "sha256": "24602bc111a7c44cbf9bf3d1630619479b71de436f42561f34de2aaae96f80d4",
+      "original_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        427,
+        640
+      ],
+      "bytes": 322876
+    },
+    {
+      "path": "spRing/native/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\spRing\\native\\image-1.png",
+      "source_sha256": "9730fc86a561aae05f25771ef0e13fe95d36214973a52a2c268eb7262105a4b1",
+      "sha256": "cefa268e5225fe00a121227b182f05600f123bee62201c15387e2b40ef93759f",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "bytes": 313596
+    },
+    {
+      "path": "spLegs/native/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\spLegs\\native\\image-1.png",
+      "source_sha256": "bd4f7be384d90490cdf6fd9fbb931b9e73ba6f5ffdb573b3ed373c339914e15a",
+      "sha256": "efe22b1eb874c7c0f02975bb056e055da832146ef3c47a4bfe298d77e28e3c7e",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "bytes": 323043
+    },
+    {
+      "path": "icon/native/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\icon\\native\\image-1.png",
+      "source_sha256": "bf86e3a5b59cfd3f0c23fbd3e166a110441ef279c66031277c521d0338a34aa0",
+      "sha256": "70c1d063a9fcaf33c3be2709625cf1a556d36d7caa40a8b1d0cd4cb31f65af40",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "bytes": 311556
+    },
+    {
+      "path": "kf/shot-1/keyframe.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\kf\\shot-1\\keyframe.png",
+      "source_sha256": "aab7968127921efc1341eccc0533049330baf1b2b55434df68c5394270ecb670",
+      "sha256": "396511ac3dacb029cdb6611c4bb241e52743b558f709bbcd9f630a3d3eccb616",
+      "original_size": [
+        1080,
+        1920
+      ],
+      "size": [
+        360,
+        640
+      ],
+      "bytes": 498533
+    },
+    {
+      "path": "edit/regeneration/image-1.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\edit\\regeneration\\image-1.png",
+      "source_sha256": "c4fc6cbfe9ebd358b26b26bc41d5123fe4fca25f45ce4940d45dafac86518b71",
+      "sha256": "b70820aeb5f3e6d248a2ea5cd387fd56578c5f9f7f0ff38b6f2f75b37ca923c3",
+      "original_size": [
+        916,
+        1717
+      ],
+      "size": [
+        341,
+        640
+      ],
+      "bytes": 398720
+    },
+    {
+      "path": "edit/mask.png",
+      "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r3\\work\\live\\edit\\mask.png",
+      "source_sha256": "04383f5c4be3d37594570cdfe3599f5f73bf81f47e64fdc76503e989c63baeae",
+      "sha256": "0f37d2418c0b15ef46d92c1fff3e0f9f3fc22d19f287b94f18409153ab04f5e9",
+      "original_size": [
+        1080,
+        1920
+      ],
+      "size": [
+        360,
+        640
+      ],
+      "bytes": 569
+    }
+  ]
+}

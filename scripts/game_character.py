@@ -9,7 +9,8 @@ import re
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 from image_common import ImageError, digest, read, write
-from image_identity import compare, features, METHOD
+from image_identity import compare, relative_controls
+from identity_engine import engine, describe, verdict
 
 VIEWS = {'front':'front', 'side':'left', 'back':'back', 'three_quarter':'three_quarter_left'}
 EXPRESSIONS = ('neutral','joy','anger','sadness','surprise','pain')
@@ -231,7 +232,7 @@ def identity_report(paths, negatives=(), near=None, palette=None, identity_overr
     override=override_record(identity_override)
     if override:
         return dict(status='pass' if identity_override=='same' else 'fail', identity_override=override,
-                    controls_valid=False, method=METHOD, views={}, visual_review='user override')
+                    controls_valid=False, method=describe(), views={}, visual_review='user override')
     paths={n:Path(p) for n,p in paths.items()};front=paths['front']
     controls=relative_controls(list(paths.values()),[*negatives,*([near] if near else [])])
     signatures={n:view_palette_signature(p) for n,p in paths.items()}
@@ -248,9 +249,15 @@ def identity_report(paths, negatives=(), near=None, palette=None, identity_overr
         return row
     expectations={'front':'face and asymmetric features','side':'profile; visible-side features only',
                   'back':'hidden face; costume and silhouette','three_quarter':'partial face and visible-side features'}
-    rows={n:dict(**evidence(p,signatures[n]),expectation=expectations.get(n,'pose-dependent'),
-                 status='pass' if controls['valid'] else 'unassessed') for n,p in paths.items()}
-    return dict(status='pass' if controls['valid'] else 'unassessed',method=METHOD,views=rows,
+    available=engine()[0] is not None;rows={}
+    for n,p in paths.items():
+        metrics=[compare(p,other) for m,other in paths.items() if m!=n]
+        scores={axis:max(x[axis] for x in metrics) for axis in ('structure','colour')} if available and metrics and 'structure' in metrics[0] else {}
+        status=verdict(scores) if scores and controls['valid'] else 'unassessed'
+        rows[n]=dict(**evidence(p,signatures[n]),expectation=expectations.get(n,'pose-dependent'),aggregate=scores,status=status,passes_threshold=status=='pass')
+    statuses=[r['status'] for r in rows.values()]
+    overall='fail' if 'identity_fail' in statuses else 'pass' if statuses and all(s=='pass' for s in statuses) else 'unassessed'
+    return dict(status=overall,method=describe(),views=rows,
                 controls=controls,controls_valid=controls['valid'],view_palette_controls=palette_controls,negative_controls=[evidence(p) for p in negatives],
                 near_control=evidence(near) if near else None,
                 reason=controls.get('reason'),visual_review='pending')

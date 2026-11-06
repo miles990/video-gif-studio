@@ -28,5 +28,7 @@ report['qa_media']={'numpy':packages['numpy'], 'PIL':packages['PIL'],
 report['api_key_available']=bool(os.environ.get('XAI_API_KEY','').strip())
 report['fal']={'support':'bundled MiniMax H3 Max', 'key_present':key_present(), 'auth_and_quota':'not checked; no external requests made'}
 report['optional_matting_installed']=importlib.util.find_spec('rembg') is not None
+from identity_engine import capability
+report['optional_identity_engine']=capability()
 print(json.dumps(report,indent=2))
 raise SystemExit(0 if report['skill_entry_exists'] and report['local_gif_runtime_ready'] and report['media_runtime_ready'] else 1)

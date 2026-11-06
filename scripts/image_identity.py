@@ -1,4 +1,4 @@
-"""Local identity reference library. ORB/HSV fallback; controls gate every verdict."""
+"""Two-axis local identity reference library; optional conservative ORB fallback."""
 from itertools import combinations
 from pathlib import Path
 import cv2
@@ -42,7 +42,7 @@ def features(path):
     return hist,descriptors
 
 
-def compare(a,b):
+def fallback_compare(a,b):
     ha,da=features(a);hb,db=features(b)
     distance=float(cv2.compareHist(ha,hb,cv2.HISTCMP_BHATTACHARYYA));good=0
     if da is not None and db is not None and len(db)>=2:
@@ -51,14 +51,21 @@ def compare(a,b):
     return dict(bhattacharyya=distance,orb_good_matches=good)
 
 
+def compare(a,b):
+    from identity_engine import engine,compare as semantic_compare
+    return semantic_compare(a,b) if engine()[0] is not None else fallback_compare(a,b)
+
+
 def build(name,images,out,role='identity',source='user',licence=None,negative=None,identity_override=None):
+    from identity_engine import engine,features as semantic_features
     if not 1<=len(images)<=16:raise ImageError('E_REFSET_LIMIT','A reference library must contain 1..16 images.')
     if role not in ('identity','costume','product','scene'):raise ImageError('E_REFSET_ROLE','Invalid reference role.')
     if source not in ('user','generated','web'):raise ImageError('E_REFSET_SOURCE','Invalid reference source.')
     if source=='web' and not licence:raise ImageError('E_LICENCE','Web references require a recorded licence, including unknown.')
     records=[]
     for file in images:
-        path=Path(file).resolve();features(path)
+        path=Path(file).resolve()
+        (semantic_features if engine()[0] is not None else features)(path)
         records.append(dict(path=str(path),sha256=digest(path),role=role,source=source,licence=licence or ('user supplied' if source=='user' else 'generated')))
     pairs=[];suspects=set()
     if role in ('identity','product'):
@@ -73,9 +80,9 @@ def build(name,images,out,role='identity',source='user',licence=None,negative=No
     if suspects:
         indices=sorted(suspects)
         rejected=dict(status='rejected',identity_override=override,suspect_indices=indices,suspect_images=[records[i-1]['path'] for i in indices],measurements=pairs)
-        write(out,rejected)
         raise ImageError('E_REFSET_MIXED','Reference library has contradictory identity evidence.',**rejected)
-    result=dict(version=1,name=name,images=records,created_at=utc(),method=METHOD,pairwise=pairs,
+    from identity_engine import describe
+    result=dict(version=2,name=name,images=records,created_at=utc(),method=describe(),pairwise=pairs,
                 negative_images=[dict(path=str(Path(p).resolve()),sha256=digest(p)) for p in (negative or [])],
                 identity_override=override,visual_review=dict(status='accepted' if identity_override=='same' else 'pending',question='Are these the same character/product?',chooser='user' if override else None))
     result['controls']=prior
@@ -83,10 +90,18 @@ def build(name,images,out,role='identity',source='user',licence=None,negative=No
 
 
 def load(path):
-    path=Path(path);data=read(path)
+    path=Path(path)
+    try:data=read(path)
+    except (OSError,ValueError,TypeError) as exc:
+        raise ImageError('E_REFSET_INVALID',f'Cannot read reference library: {exc}') from None
+    if not isinstance(data,dict) or data.get('status')=='rejected' or not isinstance(data.get('images'),list) or not isinstance(data.get('negative_images',[]),list):
+        raise ImageError('E_REFSET_INVALID','Invalid or rejected reference library; rebuild the refset.')
     if not 1<=len(data['images'])<=16:raise ImageError('E_REFSET_LIMIT','A reference library must contain 1..16 images.')
     for item in [*data['images'],*data.get('negative_images',[])]:
+        if not isinstance(item,dict) or not isinstance(item.get('path'),str) or not isinstance(item.get('sha256'),str):
+            raise ImageError('E_REFSET_INVALID','Reference entries require path and sha256; rebuild the refset.')
         file=(path.parent/item['path']).resolve()
+        if not file.is_file():raise ImageError('E_REFSET_INVALID',f'Reference image is missing: {file}')
         if digest(file)!=item['sha256']:raise ImageError('E_REFSET_CHANGED','Reference bytes changed; rebuild the library.')
         item['path']=str(file)
     return data
@@ -101,11 +116,11 @@ def override_record(value):
     return dict(decision=value,chooser='user',timestamp=utc()) if value else None
 
 
-def relative_controls(images,negative):
+def fallback_controls(images,negative):
     if len(set(digest(p) for p in images))<2 or not negative or set(digest(p) for p in images)&set(digest(p) for p in negative):
         return dict(valid=False,reason='Need independent positive poses and negative identities.',method=METHOD)
-    positive=[compare(a,b) for a,b in combinations(images,2)]
-    bad=[compare(a,b) for a in images for b in negative]
+    positive=[fallback_compare(a,b) for a,b in combinations(images,2)]
+    bad=[fallback_compare(a,b) for a in images for b in negative]
     spread=max(p['bhattacharyya'] for p in positive)
     nearest=min(p['bhattacharyya'] for p in bad)
     positive_matches=min(p['orb_good_matches'] for p in positive)
@@ -118,30 +133,49 @@ def relative_controls(images,negative):
                 reason=None if valid else 'Positive and negative controls overlap; identity is unassessed.')
 
 
+def relative_controls(images,negative):
+    from identity_engine import engine,describe,verdict,LIMITS
+    if engine()[0] is None:
+        result=fallback_controls(images,negative)
+        result.update(valid=False,contradicted=False,reason=describe()['reason'],method=describe())
+        return result
+    if len(set(digest(p) for p in images))<2 or not negative or set(digest(p) for p in images)&set(digest(p) for p in negative):
+        return dict(valid=False,reason='Need independent positive poses and negative identities.',method=describe())
+    positive=[dict(index=i,**{axis:max(compare(a,b)[axis] for j,b in enumerate(images) if j!=i) for axis in ('structure','colour')}) for i,a in enumerate(images)]
+    bad=[{axis:max(compare(n,a)[axis] for a in images) for axis in ('structure','colour')} for n in negative]
+    # A library is not a candidate: an isolated unfamiliar pose can be useful.
+    # Reject palette contradictions, or structural failures that positively
+    # match a supplied negative. Do not reject merely for a novel silhouette.
+    contradicted=any(p['colour']<LIMITS['colour']['fail'] or
+                     (p['structure']<LIMITS['structure']['fail'] and
+                      max(compare(images[p['index']],n)['structure'] for n in negative)>=LIMITS['structure']['pass']) for p in positive)
+    # A reference in the abstention band does not contradict the library. Each
+    # candidate must still independently pass both absolute, cross-set gates.
+    valid=not contradicted and all(verdict(n)=='identity_fail' for n in bad)
+    return dict(valid=valid,contradicted=contradicted,positive=positive,negative=bad,method=describe(),
+                reason=None if valid else 'Positive and negative controls do not separate on both identity axes.')
+
+
 def check(path,refset,identity_override=None):
     data=load(refset);refs=data['images'];negative=data.get('negative_images',[])
     override=override_record(identity_override)
     if override:return dict(status='pass' if identity_override=='same' else 'identity_fail',identity_override=override,refset_sha=digest(refset),visual_review='user override')
+    from identity_engine import engine,describe,verdict,features as semantic_features
+    if engine()[0] is None:
+        return dict(status='unassessed',reason=describe()['reason'],method=describe(),positive=[fallback_compare(path,r['path']) for r in refs],visual_review='pending')
     if len(refs)<2 or not negative:
-        return dict(status='unassessed',reason='Missing independent positive/negative controls',method=METHOD,visual_review='pending')
+        return dict(status='unassessed',reason='Missing independent positive/negative controls',method=describe(),visual_review='pending')
     prior=relative_controls([r['path'] for r in refs],[r['path'] for r in negative])
     if not prior['valid']:
-        return dict(status='unassessed',reason=prior['reason'],controls=prior,method=METHOD,visual_review='pending')
+        return dict(status='unassessed',reason=prior['reason'],controls=prior,method=describe(),visual_review='pending')
     positive=[compare(path,r['path']) for r in refs]
     neg=[compare(path,r['path']) for r in negative]
-    # ORB has no vector centroid: use the library distribution, not a fictitious cosine.
-    h=float(np.median([r['bhattacharyya'] for r in positive]));matches=float(np.median([r['orb_good_matches'] for r in positive]))
-    margin=prior['histogram_separation']/2
-    match_floor=(prior['positive_matches_min']+prior['negative_matches_max'])/2
-    ok=h<=prior['positive_spread'] and matches>=match_floor and all(r['bhattacharyya']-h>=margin for r in neg)
-    # A failed match is not evidence of another identity, especially under scene
-    # lighting or an uncertain saliency crop. Require a separated negative match.
-    negative_h=min(r['bhattacharyya'] for r in neg)
-    negative_match=any(r['bhattacharyya']<=prior['positive_spread'] and r['orb_good_matches']>=match_floor for r in neg) and h-negative_h>=margin
-    status='pass' if ok else 'identity_fail' if negative_match else 'unassessed'
+    aggregate={axis:max(p[axis] for p in positive) for axis in ('structure','colour')}
+    source=semantic_features(path)[2]
+    status=verdict(aggregate) if source!='saliency' else 'unassessed'
     return dict(status=status,reason=None if status!='unassessed' else 'Subject evidence does not separate identity from scene/pose variation.',positive=positive,negative=neg,
-                aggregate=dict(bhattacharyya_median=h,orb_good_matches_median=matches),controls=prior,
-                method=METHOD,refset_sha=digest(refset),visual_review='pending')
+                aggregate=aggregate,controls=prior,
+                method=describe(),refset_sha=digest(refset),visual_review='pending')
 
 
 def review(refset,same,comment=''):
