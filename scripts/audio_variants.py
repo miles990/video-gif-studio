@@ -6,6 +6,65 @@ from image_common import ImageError
 from audio_measure import NAMES,key_name,relation,measure
 
 
+def phase_lag(a,b,max_ms=100):
+    """Signed 1ms onset correlation on corresponding windows (B shift to A)."""
+    def onset(x):
+        x=x[:len(x)//48*48]
+        r=np.sqrt(np.mean(x.reshape(-1,48,2)**2,axis=(1,2)))
+        return np.maximum(np.diff(r,prepend=r[0]),0)
+    u,v=onset(a),onset(b)
+    if len(u)!=len(v) or not len(u):raise ValueError('Equal nonempty phase windows required')
+    corr=np.fft.irfft(np.fft.rfft(u)*np.conj(np.fft.rfft(v)),n=len(u))
+    ids=np.arange(-max_ms,max_ms+1)
+    return int(ids[np.argmax(corr[ids%len(u)])])
+
+
+def align_to_loop(reference,source,bpm=120,meter='4/4',max_checks=60):
+    """Re-cut real source bars on a shared onset grid, verifying loops and switches.
+
+    The spectral accent grid is refined by measured onset correlation, then
+    searched within +/-4ms for a zero crossing. We do not rotate a finished
+    loop and assume its new seam is valid. No samples are synthesized/repeated.
+    """
+    from audio_grid import grid
+    from audio_loop_make import candidates
+    from audio_loop import check,normalise
+    measured=grid(source,meter);original=dict(measured);stretch_report=None
+    if abs(measured['bpm']-bpm)>.5:
+        source,stretch_report=stretch(source,measured['bpm'],bpm)
+        measured=grid(source,meter)
+    bar=round(bar_samples(bpm,meter));count=round(len(reference)/bar)
+    if abs(len(reference)-count*bar)>2:raise ValueError('Reference must contain whole bars')
+    options=[];seen=set()
+    for start in range(measured['downbeat_sample'],len(source)-len(reference)+1,bar):
+        lag=phase_lag(reference,source[start:start+len(reference)])
+        for delta in np.arange(-4,4.1,.5):
+            origin=start-round((lag+delta)*48)
+            if origin<round(RATE*60/bpm):continue
+            refined=dict(measured,downbeat_sample=origin)
+            for y,cut in candidates(source[:origin+len(reference)+49],bpm,meter,(count,),refined):
+                key=(cut['start_sample'],cut['crossfade_samples'])
+                if key in seen:continue
+                seen.add(key)
+                residual=phase_lag(reference,y)
+                if abs(cut['correlation_lag_ms'])<=1 and abs(residual)<=2:
+                    options.append((y,dict(cut,initial_phase_lag_ms=lag,
+                                          grid_refinement_samples=origin-start,residual_phase_ms=residual)))
+    trials=[]
+    for y,cut in sorted(options,key=lambda p:p[1]['score'])[:max_checks]:
+        y,gain=normalise(y);qa=check(y,bpm,meter,measured_bpm=measured['bpm'])
+        entry=dict(selected=cut,qa=qa);trials.append(entry)
+        if qa['status']!='PASS':continue
+        transition=switches(reference,y,bpm,meter);entry['switches']=transition
+        if transition['status']=='PASS':
+            return y,dict(status='PASS',method='local bar grid + onset phase refinement + re-cut',
+                          source_grid=original,grid=measured,stretch=stretch_report,selected=cut,
+                          first_downbeat_difference_ms=abs(cut['residual_phase_ms']),
+                          switch_points_ms=transition['switch_points_ms'],switches=transition,
+                          qa=qa,normalization=gain,trials=trials)
+    raise ImageError('E_VARIANT_ALIGN','No loop and bidirectional transition candidate passed',trials=trials)
+
+
 def stretch(x,measured_bpm,target_bpm):
     if measured_bpm is None or min(measured_bpm,target_bpm)<=0:raise ValueError('Measured BPM required')
     ratio=target_bpm/measured_bpm

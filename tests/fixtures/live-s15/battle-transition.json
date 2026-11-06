@@ -1,0 +1,48 @@
+{
+  "source_file": "battle-0.wav",
+  "source_sha256": "264f6e5572344f2c2d727e07d3eb4b53c217c895cede9a2243dacf3d4b7cfc3c",
+  "start_sample": 384945,
+  "end_sample": 624945,
+  "sample_rate": 48000,
+  "excerpt_sha256": "52b656b751b177e2721c0ad0ea00404ebc68c1dd9856eee5276bd195e0e332d8",
+  "local_grid": {
+    "bpm": 120.19319250938358,
+    "beat_samples": 23961.423603713298,
+    "downbeat_sample": 24000,
+    "beat_phase_sample": 22456,
+    "bar_samples": 95845.69441485319,
+    "meter": "4/4",
+    "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+    "downbeat_source": "local_estimate",
+    "listening_review": "pending",
+    "tempo_candidates": [
+      {
+        "bpm": 120.0,
+        "strength": 553769.2471296024
+      },
+      {
+        "bpm": 160.0,
+        "strength": 501148.5997993165
+      },
+      {
+        "bpm": 80.0,
+        "strength": 494232.99992349953
+      },
+      {
+        "bpm": 96.0,
+        "strength": 238032.27324471128
+      },
+      {
+        "bpm": 68.57142857142857,
+        "strength": 187399.93713237986
+      }
+    ],
+    "accent_strength": [
+      74.7077666532227,
+      29.777510157228864,
+      31.783037026352723,
+      60.40601770164884
+    ]
+  },
+  "crossfade_samples": 1920
+}
