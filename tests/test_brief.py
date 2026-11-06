@@ -55,7 +55,7 @@ class BriefTests(unittest.TestCase):
             ('把 v3 匯出成 mp4 給 IG，檔名 cafe_menu_final','housekeeping'),('check the render','housekeeping')]
         self.assertEqual(len(cases),20)
         for text,expected in cases:
-            with self.subTest(text=text):self.assertEqual(brief.classify(text)[0],expected)
+            with self.subTest(text=text):self.assertEqual(brief.classify(text,previous={'shots':[{'id':'shot-1'}]})[0],expected)
         self.assertEqual(brief.classify('第 5 格太暗',image='contact.png')[0],'image_feedback')
 
     def test_eight_briefs_determinism_lint_schema_and_md(self):
@@ -83,7 +83,7 @@ class BriefTests(unittest.TestCase):
     def test_housekeeping_and_edits_never_acquire(self):
         provider=CassetteProvider({})
         for draft in ['check the render','把 v3 匯出成 mp4 給 IG','make it faster']:
-            b=brief.expand(draft,provider=provider);self.assertNotIn('aesthetic',b)
+            b=brief.expand(draft,provider=provider,previous={'shots':[{'id':'shot-1','motion':'static'}]});self.assertNotIn('aesthetic',b)
         self.assertEqual(provider.requests,[])
 
     def test_user_slots_first_and_web_only_gaps(self):
