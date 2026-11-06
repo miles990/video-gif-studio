@@ -195,3 +195,5 @@ steps and durations, rotates the full cycle without dropping poses, and requires
 the existing qa_media position AND velocity loop check to pass. A failure leaves
 an explicitly rejected preview (`E_LOOP_QA`), not an accepted delivery.
 Roundtrip tests include real separate CLI processes sharing one cache entry.
+
+Price tables must carry a nonempty version and an ISO date within the last 30 days (no future dates). Zero, non-finite, negative, or rounded-to-zero prices are refused. API dispatch always requires a strictly positive `--max-usd`, including cached requests. No reviewed price file is shipped in this checkout.

@@ -106,3 +106,76 @@ only, not signature validity or SynthID.
 
 Every supplied feature remains behind the experimental generation gate. No quality
 threshold or capability claim was relaxed to label an untested live result as passed.
+
+
+## Fix round
+
+This round uses 46 real subscription-output fixtures in
+`tests/fixtures/live-s13/`. `provenance.json` records source paths, original SHA-256
+hashes and dimensions. PNG fixtures are downscaled to at most 768 pixels on the
+long edge and below 1 MB each. No provider is called by these regressions.
+
+1. Local edits now estimate a similarity transform with ORB/RANSAC across changed
+   canvas sizes, report residual, scale, rotation, inlier count and fraction, and
+   refuse weak or spatially concentrated alignment. The native 1080x1920 edit
+   has 696 inliers, median residual 1.62 px and a reported resolution-aware
+   tolerance of 2.16 px (max(1 px, 0.2% of the short edge)). The expanded composite-region
+   mask remains explicit; every pixel outside it is copied exactly from the source.
+2. Identity uses alpha, uniform-background subtraction or existing local saliency
+   support. The live positive histogram distance is 0.3393 and the negative is
+   0.7183 (separation 0.3790). The positive threshold is 0.40 with a required 0.10
+   control margin. Failed controls and inconclusive scene/pose matches are
+   `unassessed`; only a separated negative-identity match permits automatic retry.
+   Saliency is a foreground proxy, not a semantic subject detector.
+3. An identity retry blocked by the image cap retains the first generation and
+   labels its identity result with the retry error and `generation_retained:first`.
+4. Large clear enclosed gaps are designed negative space, including antialiased
+   outlines. Small or semi-transparent holes remain defects. The real sprite's
+   roughly 1% detached specks are cleaned without filling its arm/body gap.
+5. Loop QA now checks subject colour, timing/speed discontinuity and transparent
+   canvas-edge clipping, and blocks failed delivery. Repair keeps duration within
+   10%. Single-image motion uses fixed-scale sway and is explicitly a
+   **breathing/sway placeholder**. Real idle animation requires multiple key poses
+   (spec-14); no articulation is claimed.
+6. Aspect differences requiring over 20% padding/cropping are refused as
+   `aspect_unfixable`; differences up to 3% are uniformly cropped. Subject-region
+   measurement also handles subjects touching the lower canvas edge.
+7. Storyboard variants derive their prompt before validation. Login/CLI failures
+   list alternatives. Partial keyframes exit non-zero while retaining successes.
+   SVG refusal preserves the standard error code and asset path. Manifests retain
+   native fake-transparency evidence, and mixed-refset errors list every image
+   involved in suspicious pairs.
+8. This checkout contains no reviewed price file. The strict-table alternative is
+   implemented: nonempty version, ISO date within 30 days, no future date, and
+   positive finite price and rounded total. A strictly positive `--max-usd` is
+   required independently of the estimate, so default zero cannot authorize API
+   dispatch. No prices or paid approval are invented.
+
+Baseline: 875 tests, zero failures, two existing Windows environment errors
+(symlink privilege and open overlay-file cleanup), five skips. Each fix has a
+regression that failed before its implementation.
+
+Final verification:
+- Full suite: **906 tests, zero failures, the same two baseline environment errors,
+  five skips**; `.scratch/full-verified.log`.
+- Scenario suites: **22 passed**; `.scratch/scenarios-final.log`.
+- Real-output regressions: **31 passed**; `.scratch/live-final.log`.
+- All eight patches apply in order to commit
+  `0935b2dec40f608e72640306295d1c8bc80fcb94`, with green checks after every item.
+  The final stage runs **71 image and live-regression tests**; per-item logs sit
+  beside the patches in `.scratch/commits/`.
+- The two unchanged environment errors are
+  `test_install.InstallTests.test_same_source_symlink_is_preserved` (Windows
+  symlink privilege) and
+  `test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report`
+  (open-file cleanup on Windows).
+- Native-size edit and sprite checks also pass. The native edit has zero outside
+  pixel drift; the native sprite has zero residual specks and preserves 12,171
+  negative-space pixels. A delivered 24-frame sway has zero clipped frames.
+  Inspect `.scratch/fix-round-review/` for the edit comparison, GIF and QA evidence.
+- Largest fixture: 628,728 bytes. Fixtures include keyframes, both positive refs,
+  negative refs, sprite, loop frames, local edit and all three supplied probes.
+
+The eight patch/message pairs are listed in
+`.scratch/commits/s13-fix-series.json`. Protected spec/acceptance/process/threshold
+files were not changed; no commits were created in the read-only Git directory.

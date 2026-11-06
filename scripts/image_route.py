@@ -2,6 +2,7 @@
 import base64
 from copy import deepcopy
 from dataclasses import dataclass, field
+from datetime import date, datetime, timezone
 import json
 import math
 import os
@@ -143,12 +144,18 @@ class Adapter:
             return dict(route='codex', images=data['n'], cost_estimate_usd=0, subscription_images=data['n'], model='unreported')
         if not self.prices:
             raise ImageError('E_PRICE_REQUIRED', 'A dated, reviewed price table is required; no prices are guessed.', suggestion='Supply --prices with version, date, and rows of model/quality/size/unit_usd.')
+        try:
+            priced_on=date.fromisoformat(self.prices['date'])
+            age=(datetime.now(timezone.utc).date()-priced_on).days
+            if not self.prices['version'] or not 0<=age<=30:raise ValueError()
+        except (ValueError,TypeError,KeyError):
+            raise ImageError('E_PRICE_REQUIRED','Price table must have a version and an ISO date no more than 30 days old, not in the future.') from None
         model = data['model'] or ('gpt-image-2.6-flare' if data['quality']=='draft' else 'gpt-image-2.6-sunburst')
         quality = 'low' if data['quality']=='draft' else 'high'
         rows = [r for r in self.prices['rows'] if (r['model'],r['quality'],r['size'])==(model,quality,data['size'])]
         if len(rows)!=1:raise ImageError('E_PRICE_REQUIRED', 'No unique reviewed price for this model/quality/size.')
         unit = float(rows[0]['unit_usd'])
-        if not math.isfinite(unit) or unit < 0:raise ImageError('E_PRICE_REQUIRED', 'Price must be finite and nonnegative.')
+        if not math.isfinite(unit) or unit <= 0 or round(unit*data['n'],8)<=0:raise ImageError('E_PRICE_REQUIRED', 'Price and rounded total must be finite and strictly positive.')
         result = dict(route='api', model=model, quality=quality, size=data['size'], n=data['n'], unit_usd=unit,
                       cost_estimate_usd=round(unit*data['n'], 8), price_version=self.prices['version'], price_date=self.prices['date'],
                       request_sha=request_key(data), endpoint=self.api_base)
@@ -162,7 +169,7 @@ class Adapter:
                              suggestion='After explicit user consent, pass --approve-spend ESTIMATE_ID and --max-usd AMOUNT.', estimate=estimate)
         if approval != estimate['estimate_id']:
             raise ImageError('E_APPROVAL_MISMATCH', 'Approval does not match the current request, price, and endpoint.', estimate=estimate)
-        if not math.isfinite(max_usd) or max_usd < estimate['cost_estimate_usd']:
+        if not math.isfinite(max_usd) or max_usd <= 0 or max_usd < estimate['cost_estimate_usd']:
             raise ImageError('E_BUDGET', 'Estimate exceeds --max-usd (default 0).', estimate=estimate)
         return estimate
 

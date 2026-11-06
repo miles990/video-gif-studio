@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime,timezone
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 import json
@@ -85,7 +86,7 @@ class RouteTests(ImageCase):
             def log_message(self,*a):pass
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
         try:
-            prices=dict(version='fixture-v1',date='2026-11-06',rows=[dict(model='gpt-image-2.6-flare',quality='low',size='1024x1024',unit_usd=.1)])
+            prices=dict(version='fixture-v1',date=datetime.now(timezone.utc).date().isoformat(),rows=[dict(model='gpt-image-2.6-flare',quality='low',size='1024x1024',unit_usd=.1)])
             adapter=Adapter(self.path/'state',api_base=f'http://127.0.0.1:{server.server_port}/v1',prices=prices)
             req=self.request(route='api');est=adapter.estimate(req)
             with patch.dict(os.environ,{'OPENAI_API_KEY':'sk-TEST'}):
