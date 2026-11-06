@@ -12,7 +12,7 @@ def validate_motion(size,frames,frame_ms):
     if frame_ms%10:raise ImageError('E_GIF_PARAMS','GIF timing must be an integer multiple of 10 ms.')
 
 
-def seam_qa(frames):
+def seam_qa(frames,durations=None):
     width=min(192,frames[0].width);height=max(1,round(frames[0].height*width/frames[0].width))
     a=np.array([np.array(f.convert('RGBA').resize((width,height),Image.Resampling.BOX)) for f in frames],np.float32)
     rgb=a[...,:3]*a[...,3:4]/255
@@ -28,7 +28,36 @@ def seam_qa(frames):
         centers=np.stack(((weights*xx).sum(axis=(1,2))/totals,(weights*yy).sum(axis=(1,2))/totals),axis=1)
         travel=np.linalg.norm(np.diff(centers,axis=0),axis=1)
         if np.max(travel)>.5:ratio=max(ratio,float(np.linalg.norm(centers[-1]-centers[0])/max(np.median(travel[travel>.01]),.01)))
-    return dict(status='PASS' if ratio<=3 else 'FAIL',seam_ratio=ratio,seam_difference=seam,
+    durations=np.asarray(durations if durations is not None else [40]*len(frames),float)
+    if len(durations)!=len(frames) or np.any(durations<=0):raise ImageError('E_LOOP_TIMING','Supply a positive duration per frame.')
+    # Compare visible-subject colour independently of positional pixel differences.
+    from shot_match import lab,delta_e
+    weights=a[...,3:4]/255
+    colours=(a[...,:3]*weights).sum(axis=(1,2))/np.maximum(weights.sum(axis=(1,2)),1)
+    colour_steps=delta_e(lab(colours[:,None,:]),lab(np.roll(colours,1,axis=0)[:,None,:])).ravel()
+    colour_seam=float(colour_steps[0]);colour_normal=float(np.median(colour_steps[1:]))
+    cycle=np.r_[steps,seam];speed=cycle/(durations/1000)
+    moving=speed[speed>.01];typical=float(np.median(moving)) if len(moving) else 0.
+    incoming=float(np.median(speed[-4:-1]));outgoing=float(np.median(speed[:3]))
+    speed_ratio=(incoming+.05)/(outgoing+.05)
+    # A long hold is a discontinuity even if the first and last poses match.
+    paused=cycle<=max(.01,float(np.median(cycle))*.05)
+    longest=run=0.
+    for i in range(2*len(paused)):
+        run=run+durations[i%len(paused)] if paused[i%len(paused)] else 0.
+        longest=max(longest,run)
+    pause=typical>.1 and (longest>=max(120,3*np.median(durations)) or durations.max()>3*np.median(durations))
+    clipped=0
+    for frame in frames:
+        alpha=np.array(frame.convert('RGBA'))[...,3]
+        if np.any(alpha==0) and (np.any(alpha[0]>8) or np.any(alpha[-1]>8) or np.any(alpha[:,0]>8) or np.any(alpha[:,-1]>8)):clipped+=1
+    issues=[]
+    if ratio>3:issues.append('position_seam')
+    if colour_seam>10 and colour_seam>3*max(colour_normal,.1):issues.append('colour_seam')
+    if pause or typical>.1 and not .25<=speed_ratio<=4:issues.append('speed_discontinuity')
+    if clipped:issues.append('canvas_edge_clipping')
+    return dict(status='PASS' if not issues else 'FAIL',issues=issues,colour_seam_delta_e2000=colour_seam,
+                speed_ratio=speed_ratio,longest_hold_ms=longest,clipped_frames=clipped,seam_ratio=ratio,seam_difference=seam,
                 ordinary_step=normal,seam_frames=[len(frames)-1,0],moving=bool(np.any(steps>.01)),
                 note='Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review.')
 
@@ -71,7 +100,7 @@ def deliver(frames,durations,out,manifest,sprites=True,media_qa=True):
         frames=frames[rotation:]+frames[:rotation];durations=durations[rotation:]+durations[:rotation];indices=indices[rotation:]+indices[:rotation]
         encode(frames,durations,out/'preview.gif')
     for i,frame in enumerate(frames):frame.save(out/'frames'/f'{i:05d}.png')
-    manifest=dict(manifest,durations_ms=durations,source_indices=indices,decoded_wrap_rotation_frames=rotation,loop=seam_qa(frames))
+    manifest=dict(manifest,durations_ms=durations,source_indices=indices,decoded_wrap_rotation_frames=rotation,loop=seam_qa(frames,durations))
     manifest['gif_qc']=verify(out/'preview.gif',frames,durations)
     write(out/'manifest.json',manifest)
     if sprites:
@@ -83,6 +112,8 @@ def deliver(frames,durations,out,manifest,sprites=True,media_qa=True):
         write(out/'manifest.json',manifest)
         if manifest['media_qa_loop']['level']=='FAIL':
             raise ImageError('E_LOOP_QA','Encoded GIF failed existing position/velocity seam QA; delivery remains a preview.',report=manifest['media_qa_loop'])
+    if manifest['loop']['status']=='FAIL':
+        raise ImageError('E_LOOP_QA','Loop continuity or canvas-edge QA failed; delivery remains a preview.',report=manifest['loop'])
     return dict(manifest,output=str(out.resolve()))
 
 
@@ -93,17 +124,22 @@ def loop_keyframes(paths,out,frames=48,frame_ms=40,size=None,sprites=True,media_
     validate_motion(size,frames,frame_ms)
     keys=[]
     for path in paths:
-        with Image.open(path) as im:keys.append(np.array(fit_image(im,size,background=(0,0,0,0))[0],np.float32))
+        with Image.open(path) as im:
+            transparent=np.any(np.array(im.convert('RGBA'))[...,3]==0)
+            keys.append(np.array(fit_image(im,size,background=(0,0,0,0) if transparent else None)[0],np.float32))
     result=[]
     for i in range(frames):
         # Put the wrap in a moving portion, avoiding one-sided finite-difference
         # velocity estimates across a sampled stationary turning point.
         phase=(i/frames+(.25 if len(keys)==1 else .5/len(keys)))%1
         if len(keys)==1:
-            # Smooth periodic camera motion, no claim of generated joint paths.
-            zoom=1+.045*(1-np.cos(phase*2*np.pi))
-            matrix=cv2.getRotationMatrix2D((size[0]/2,size[1]/2),0,zoom)
-            rgba=cv2.warpAffine(keys[0],matrix,size,flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_REPLICATE)
+            # Fixed-scale sway; never inflate the character to simulate articulation.
+            alpha=keys[0][...,3];ys,xs=np.where(alpha>8)
+            mx=min(size[0]*.012, max(0,min(xs.min(),size[0]-1-xs.max())-2)) if len(xs) and np.any(alpha==0) else size[0]*.012
+            my=min(size[1]*.006, max(0,min(ys.min(),size[1]-1-ys.max())-2)) if len(ys) and np.any(alpha==0) else size[1]*.006
+            matrix=np.float32([[1,0,mx*np.sin(phase*2*np.pi)],[0,1,my*np.cos(phase*2*np.pi)]])
+            rgba=cv2.warpAffine(keys[0],matrix,size,flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_CONSTANT if np.any(alpha==0) else cv2.BORDER_REFLECT)
+
         else:
             position=phase*len(keys);index=int(position);u=position-index;u=(1-np.cos(u*np.pi))/2
             a=keys[index%len(keys)];b=keys[(index+1)%len(keys)]
@@ -112,11 +148,11 @@ def loop_keyframes(paths,out,frames=48,frame_ms=40,size=None,sprites=True,media_
             rgba=np.concatenate((rgb,alpha),axis=2)
         result.append(Image.fromarray(np.rint(np.clip(rgba,0,255)).astype('uint8')))
     result,wrap_rotation=choose_wrap(result)
-    manifest=dict(fallback='keyframe_loop',method='cyclic_cosine_dissolve' if len(keys)>1 else 'cyclic_camera_zoom',
+    manifest=dict(fallback='keyframe_loop',method='cyclic_cosine_dissolve' if len(keys)>1 else 'fixed_scale_sway',
                   ai_generated=True,ai_video_generated=False,alpha_source='keyframes',
                   derived_from=[dict(sha256=digest(p),**c2pa(p)) for p in paths],
                   discarded_frames=0,wrap_rotation_frames=wrap_rotation,visual_motion_approval='pending',
-                  note='Grok/fal AI video is a separate user-approved operation; this local loop does not invent articulated motion.')
+                  note='Single-image breathing/sway placeholder; a real idle animation requires multiple key poses (spec-14). No articulated motion is generated.')
     return deliver(result,[frame_ms]*frames,out,manifest,sprites,media_qa)
 
 
@@ -135,7 +171,7 @@ def ingest_gif(path,out,sprites=True):
     manifest=dict(feature_used='gif_ingest',durations_ms=durations,disposals=disposals,
                   source_indices=list(range(len(frames))),derived_from=dict(sha256=digest(path),**c2pa(path)),
                   alpha_source='gif_binary' if any(np.any(np.array(f)[...,3]==0) for f in frames) else 'opaque',
-                  loop=seam_qa(frames),browser_timing_note='Source delays preserved exactly; preview encoding may merge <=20 ms exposures.')
+                  loop=seam_qa(frames,durations),browser_timing_note='Source delays preserved exactly; preview encoding may merge <=20 ms exposures.')
     write(out/'manifest.json',manifest)
     if sprites and all(t>0 for t in durations):export(out/'frames',out/'manifest.json',out/'sprites',max_size=max(2048,max(frames[0].size)+4))
     return manifest
@@ -151,5 +187,9 @@ def repair_loop(paths,durations,out):
     indices=[round((len(frames)-1)*(1-np.cos(2*np.pi*(i/count+.25)))/2) for i in range(count)]
     selected=[frames[i] for i in indices]
     selected,rotation=choose_wrap(selected);indices=indices[rotation:]+indices[:rotation]
-    step=max(30,round(float(np.median(durations))/10)*10)
-    return deliver(selected,[step]*count,out,dict(fallback='loop_repair',repair='cosine_ping_pong',discarded_frames=0,source_indices=indices))
+    if len(durations)!=len(paths) or any(d<=0 for d in durations):raise ImageError('E_LOOP_TIMING','Supply a positive duration per source frame.')
+    total=sum(durations);ticks=round(total/10)
+    if ticks<count*2:raise ImageError('E_LOOP_TIMING','Cannot repair within 10% duration at the minimum 20 ms exposure.')
+    timing=[10*(ticks//count+(i<ticks%count)) for i in range(count)]
+    if abs(sum(timing)/total-1)>.10:raise ImageError('E_LOOP_TIMING','Repair would change duration by more than 10%.')
+    return deliver(selected,timing,out,dict(fallback='loop_repair',repair='cosine_ping_pong',source_duration_ms=total,duration_change_fraction=sum(timing)/total-1,discarded_frames=0,source_indices=indices))
