@@ -1,0 +1,2791 @@
+{
+  "round": 4,
+  "status": "EXPERIMENTAL; live semantic judge replay pending",
+  "identity": {
+    "fixtures": {
+      "capability": {
+        "available": true,
+        "path": "C:\\Users\\User\\.cache\\video-gif-studio\\models\\dinov2-small\\model.onnx",
+        "sha256": "f22797eabf810a75e41de68d378541ebea372122b25c4ce3ef25ff618250c20a",
+        "engine": "DINOv2-small ONNX + subject Lab a*b* 12x12",
+        "reason": null,
+        "optional": true
+      },
+      "rows": [
+        {
+          "set": "r1",
+          "name": "ref1",
+          "label": "same",
+          "structure": 0.926683783531189,
+          "colour": 0.9508164745137823,
+          "status": "pass"
+        },
+        {
+          "set": "r1",
+          "name": "ref2",
+          "label": "same",
+          "structure": 0.926683783531189,
+          "colour": 0.9508164745137823,
+          "status": "pass"
+        },
+        {
+          "set": "r1",
+          "name": "neg",
+          "label": "different",
+          "structure": 0.7609692215919495,
+          "colour": 0.5585574032043065,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r2",
+          "name": "refA",
+          "label": "same",
+          "structure": 0.8680147528648376,
+          "colour": 0.8667396452330942,
+          "status": "pass"
+        },
+        {
+          "set": "r2",
+          "name": "refB",
+          "label": "same",
+          "structure": 0.8680147528648376,
+          "colour": 0.8667396452330942,
+          "status": "pass"
+        },
+        {
+          "set": "r2",
+          "name": "neg",
+          "label": "different",
+          "structure": 0.7130664587020874,
+          "colour": 0.4011251292925174,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r2",
+          "name": "imp",
+          "label": "different",
+          "structure": 0.6521095037460327,
+          "colour": 0.6423824614490234,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r3",
+          "name": "refFront",
+          "label": "same",
+          "structure": 0.8865910768508911,
+          "colour": 0.8844185972351473,
+          "status": "pass"
+        },
+        {
+          "set": "r3",
+          "name": "refSide",
+          "label": "same",
+          "structure": 0.8865910768508911,
+          "colour": 0.8844185972351473,
+          "status": "pass"
+        },
+        {
+          "set": "r3",
+          "name": "refBack",
+          "label": "same",
+          "structure": 0.872344970703125,
+          "colour": 0.8766323966854059,
+          "status": "pass"
+        },
+        {
+          "set": "r3",
+          "name": "refAction",
+          "label": "same",
+          "structure": 0.8549607396125793,
+          "colour": 0.8187725763917767,
+          "status": "pass"
+        },
+        {
+          "set": "r3",
+          "name": "impSpecies",
+          "label": "different",
+          "structure": 0.634620189666748,
+          "colour": 0.4089294445775881,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r3",
+          "name": "impRecolor",
+          "label": "different",
+          "structure": 0.9557099342346191,
+          "colour": 0.6494698176889965,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r4",
+          "name": "refFront",
+          "label": "same",
+          "structure": 0.8839319944381714,
+          "colour": 0.8480406829222655,
+          "status": "pass"
+        },
+        {
+          "set": "r4",
+          "name": "refSide",
+          "label": "same",
+          "structure": 0.831169843673706,
+          "colour": 0.8716111660473501,
+          "status": "pass"
+        },
+        {
+          "set": "r4",
+          "name": "refBack",
+          "label": "same",
+          "structure": 0.8839319944381714,
+          "colour": 0.8716111660473501,
+          "status": "pass"
+        },
+        {
+          "set": "r4",
+          "name": "refAction",
+          "label": "same",
+          "structure": 0.7824023962020874,
+          "colour": 0.8586590122398783,
+          "status": "unassessed"
+        },
+        {
+          "set": "r4",
+          "name": "impRecolor",
+          "label": "different",
+          "structure": 0.8861298561096191,
+          "colour": 0.07283999900142532,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r4",
+          "name": "impPalette",
+          "label": "different",
+          "structure": 0.29309532046318054,
+          "colour": 0.49030541320281507,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r4",
+          "name": "impSilhouette",
+          "label": "different",
+          "structure": 0.7225939035415649,
+          "colour": 0.4715300631728127,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r4",
+          "name": "impTwin",
+          "label": "different",
+          "structure": 0.7949191927909851,
+          "colour": 0.8182219671543085,
+          "status": "unassessed"
+        },
+        {
+          "set": "r4",
+          "name": "spHose",
+          "label": "same",
+          "structure": 0.5519044399261475,
+          "colour": 0.7148183154059868,
+          "status": "unassessed"
+        }
+      ],
+      "leave_one_set_out": [
+        {
+          "held_out": "r1",
+          "validated_on": [
+            "r2",
+            "r3",
+            "r4"
+          ],
+          "limits": {
+            "structure": {
+              "fail": 0.7923,
+              "pass": 0.82363
+            },
+            "colour": {
+              "fail": 0.705904,
+              "pass": 0.762338
+            }
+          },
+          "policy": "Frozen r3 thresholds; colour-only hard rejection; both axes required for pass. No fit on held-out set.",
+          "training_false_pass": 0,
+          "training_false_reject": 0,
+          "results": [
+            {
+              "set": "r1",
+              "name": "ref1",
+              "label": "same",
+              "structure": 0.926683783531189,
+              "colour": 0.9508164745137823,
+              "status": "pass"
+            },
+            {
+              "set": "r1",
+              "name": "ref2",
+              "label": "same",
+              "structure": 0.926683783531189,
+              "colour": 0.9508164745137823,
+              "status": "pass"
+            },
+            {
+              "set": "r1",
+              "name": "neg",
+              "label": "different",
+              "structure": 0.7609692215919495,
+              "colour": 0.5585574032043065,
+              "status": "identity_fail"
+            }
+          ]
+        },
+        {
+          "held_out": "r2",
+          "validated_on": [
+            "r1",
+            "r3",
+            "r4"
+          ],
+          "limits": {
+            "structure": {
+              "fail": 0.7923,
+              "pass": 0.82363
+            },
+            "colour": {
+              "fail": 0.705904,
+              "pass": 0.762338
+            }
+          },
+          "policy": "Frozen r3 thresholds; colour-only hard rejection; both axes required for pass. No fit on held-out set.",
+          "training_false_pass": 0,
+          "training_false_reject": 0,
+          "results": [
+            {
+              "set": "r2",
+              "name": "refA",
+              "label": "same",
+              "structure": 0.8680147528648376,
+              "colour": 0.8667396452330942,
+              "status": "pass"
+            },
+            {
+              "set": "r2",
+              "name": "refB",
+              "label": "same",
+              "structure": 0.8680147528648376,
+              "colour": 0.8667396452330942,
+              "status": "pass"
+            },
+            {
+              "set": "r2",
+              "name": "neg",
+              "label": "different",
+              "structure": 0.7130664587020874,
+              "colour": 0.4011251292925174,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r2",
+              "name": "imp",
+              "label": "different",
+              "structure": 0.6521095037460327,
+              "colour": 0.6423824614490234,
+              "status": "identity_fail"
+            }
+          ]
+        },
+        {
+          "held_out": "r3",
+          "validated_on": [
+            "r1",
+            "r2",
+            "r4"
+          ],
+          "limits": {
+            "structure": {
+              "fail": 0.7923,
+              "pass": 0.82363
+            },
+            "colour": {
+              "fail": 0.705904,
+              "pass": 0.762338
+            }
+          },
+          "policy": "Frozen r3 thresholds; colour-only hard rejection; both axes required for pass. No fit on held-out set.",
+          "training_false_pass": 0,
+          "training_false_reject": 0,
+          "results": [
+            {
+              "set": "r3",
+              "name": "refFront",
+              "label": "same",
+              "structure": 0.8865910768508911,
+              "colour": 0.8844185972351473,
+              "status": "pass"
+            },
+            {
+              "set": "r3",
+              "name": "refSide",
+              "label": "same",
+              "structure": 0.8865910768508911,
+              "colour": 0.8844185972351473,
+              "status": "pass"
+            },
+            {
+              "set": "r3",
+              "name": "refBack",
+              "label": "same",
+              "structure": 0.872344970703125,
+              "colour": 0.8766323966854059,
+              "status": "pass"
+            },
+            {
+              "set": "r3",
+              "name": "refAction",
+              "label": "same",
+              "structure": 0.8549607396125793,
+              "colour": 0.8187725763917767,
+              "status": "pass"
+            },
+            {
+              "set": "r3",
+              "name": "impSpecies",
+              "label": "different",
+              "structure": 0.634620189666748,
+              "colour": 0.4089294445775881,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r3",
+              "name": "impRecolor",
+              "label": "different",
+              "structure": 0.9557099342346191,
+              "colour": 0.6494698176889965,
+              "status": "identity_fail"
+            }
+          ]
+        },
+        {
+          "held_out": "r4",
+          "validated_on": [
+            "r1",
+            "r2",
+            "r3"
+          ],
+          "limits": {
+            "structure": {
+              "fail": 0.7923,
+              "pass": 0.82363
+            },
+            "colour": {
+              "fail": 0.705904,
+              "pass": 0.762338
+            }
+          },
+          "policy": "Frozen r3 thresholds; colour-only hard rejection; both axes required for pass. No fit on held-out set.",
+          "training_false_pass": 0,
+          "training_false_reject": 0,
+          "results": [
+            {
+              "set": "r4",
+              "name": "refFront",
+              "label": "same",
+              "structure": 0.8839319944381714,
+              "colour": 0.8480406829222655,
+              "status": "pass"
+            },
+            {
+              "set": "r4",
+              "name": "refSide",
+              "label": "same",
+              "structure": 0.831169843673706,
+              "colour": 0.8716111660473501,
+              "status": "pass"
+            },
+            {
+              "set": "r4",
+              "name": "refBack",
+              "label": "same",
+              "structure": 0.8839319944381714,
+              "colour": 0.8716111660473501,
+              "status": "pass"
+            },
+            {
+              "set": "r4",
+              "name": "refAction",
+              "label": "same",
+              "structure": 0.7824023962020874,
+              "colour": 0.8586590122398783,
+              "status": "unassessed"
+            },
+            {
+              "set": "r4",
+              "name": "impRecolor",
+              "label": "different",
+              "structure": 0.8861298561096191,
+              "colour": 0.07283999900142532,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r4",
+              "name": "impPalette",
+              "label": "different",
+              "structure": 0.29309532046318054,
+              "colour": 0.49030541320281507,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r4",
+              "name": "impSilhouette",
+              "label": "different",
+              "structure": 0.7225939035415649,
+              "colour": 0.4715300631728127,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r4",
+              "name": "impTwin",
+              "label": "different",
+              "structure": 0.7949191927909851,
+              "colour": 0.8182219671543085,
+              "status": "unassessed"
+            },
+            {
+              "set": "r4",
+              "name": "spHose",
+              "label": "same",
+              "structure": 0.5519044399261475,
+              "colour": 0.7148183154059868,
+              "status": "unassessed"
+            }
+          ]
+        }
+      ],
+      "false_pass": 0,
+      "false_reject": 0,
+      "caveat": "Reviewed sets, fixed-policy leave-one-set-out validation; not a fresh blind benchmark."
+    },
+    "native": {
+      "capability": {
+        "available": true,
+        "path": "C:\\Users\\User\\.cache\\video-gif-studio\\models\\dinov2-small\\model.onnx",
+        "sha256": "f22797eabf810a75e41de68d378541ebea372122b25c4ce3ef25ff618250c20a",
+        "engine": "DINOv2-small ONNX + subject Lab a*b* 12x12",
+        "reason": null,
+        "optional": true
+      },
+      "rows": [
+        {
+          "set": "r1",
+          "name": "ref1",
+          "label": "same",
+          "structure": 0.9094053506851196,
+          "colour": 0.9492123963579089,
+          "status": "pass"
+        },
+        {
+          "set": "r1",
+          "name": "ref2",
+          "label": "same",
+          "structure": 0.9094053506851196,
+          "colour": 0.9492123963579089,
+          "status": "pass"
+        },
+        {
+          "set": "r1",
+          "name": "neg",
+          "label": "different",
+          "structure": 0.7584888935089111,
+          "colour": 0.557915197577778,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r2",
+          "name": "refA",
+          "label": "same",
+          "structure": 0.8662867546081543,
+          "colour": 0.8672434025057867,
+          "status": "pass"
+        },
+        {
+          "set": "r2",
+          "name": "refB",
+          "label": "same",
+          "structure": 0.8662867546081543,
+          "colour": 0.8672434025057867,
+          "status": "pass"
+        },
+        {
+          "set": "r2",
+          "name": "neg",
+          "label": "different",
+          "structure": 0.7110986709594727,
+          "colour": 0.39923066443890104,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r2",
+          "name": "imp",
+          "label": "different",
+          "structure": 0.6748782396316528,
+          "colour": 0.6411637237761421,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r3",
+          "name": "refFront",
+          "label": "same",
+          "structure": 0.879424512386322,
+          "colour": 0.8836312954972635,
+          "status": "pass"
+        },
+        {
+          "set": "r3",
+          "name": "refSide",
+          "label": "same",
+          "structure": 0.879424512386322,
+          "colour": 0.8836312954972635,
+          "status": "pass"
+        },
+        {
+          "set": "r3",
+          "name": "refBack",
+          "label": "same",
+          "structure": 0.8772075176239014,
+          "colour": 0.8681694549258747,
+          "status": "pass"
+        },
+        {
+          "set": "r3",
+          "name": "refAction",
+          "label": "same",
+          "structure": 0.8387022018432617,
+          "colour": 0.820099923267345,
+          "status": "pass"
+        },
+        {
+          "set": "r3",
+          "name": "impSpecies",
+          "label": "different",
+          "structure": 0.6565161943435669,
+          "colour": 0.39694167086040305,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r3",
+          "name": "impRecolor",
+          "label": "different",
+          "structure": 0.9465150833129883,
+          "colour": 0.6466134870238242,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r4",
+          "name": "refFront",
+          "label": "same",
+          "structure": 0.8787330985069275,
+          "colour": 0.8403357940770793,
+          "status": "pass"
+        },
+        {
+          "set": "r4",
+          "name": "refSide",
+          "label": "same",
+          "structure": 0.8120750784873962,
+          "colour": 0.8743696552337104,
+          "status": "unassessed"
+        },
+        {
+          "set": "r4",
+          "name": "refBack",
+          "label": "same",
+          "structure": 0.8787330985069275,
+          "colour": 0.8743696552337104,
+          "status": "pass"
+        },
+        {
+          "set": "r4",
+          "name": "refAction",
+          "label": "same",
+          "structure": 0.7606691122055054,
+          "colour": 0.8585493099008399,
+          "status": "unassessed"
+        },
+        {
+          "set": "r4",
+          "name": "impRecolor",
+          "label": "different",
+          "structure": 0.8778337240219116,
+          "colour": 0.06812195839577612,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r4",
+          "name": "impPalette",
+          "label": "different",
+          "structure": 0.32379966974258423,
+          "colour": 0.49013303689087395,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r4",
+          "name": "impSilhouette",
+          "label": "different",
+          "structure": 0.7394939064979553,
+          "colour": 0.4644638360719436,
+          "status": "identity_fail"
+        },
+        {
+          "set": "r4",
+          "name": "impTwin",
+          "label": "different",
+          "structure": 0.8046417832374573,
+          "colour": 0.8145226590428025,
+          "status": "unassessed"
+        },
+        {
+          "set": "r4",
+          "name": "spHose",
+          "label": "same",
+          "structure": 0.5516994595527649,
+          "colour": 0.7147342304937336,
+          "status": "unassessed"
+        }
+      ],
+      "leave_one_set_out": [
+        {
+          "held_out": "r1",
+          "validated_on": [
+            "r2",
+            "r3",
+            "r4"
+          ],
+          "limits": {
+            "structure": {
+              "fail": 0.7923,
+              "pass": 0.82363
+            },
+            "colour": {
+              "fail": 0.705904,
+              "pass": 0.762338
+            }
+          },
+          "policy": "Frozen r3 thresholds; colour-only hard rejection; both axes required for pass. No fit on held-out set.",
+          "training_false_pass": 0,
+          "training_false_reject": 0,
+          "results": [
+            {
+              "set": "r1",
+              "name": "ref1",
+              "label": "same",
+              "structure": 0.9094053506851196,
+              "colour": 0.9492123963579089,
+              "status": "pass"
+            },
+            {
+              "set": "r1",
+              "name": "ref2",
+              "label": "same",
+              "structure": 0.9094053506851196,
+              "colour": 0.9492123963579089,
+              "status": "pass"
+            },
+            {
+              "set": "r1",
+              "name": "neg",
+              "label": "different",
+              "structure": 0.7584888935089111,
+              "colour": 0.557915197577778,
+              "status": "identity_fail"
+            }
+          ]
+        },
+        {
+          "held_out": "r2",
+          "validated_on": [
+            "r1",
+            "r3",
+            "r4"
+          ],
+          "limits": {
+            "structure": {
+              "fail": 0.7923,
+              "pass": 0.82363
+            },
+            "colour": {
+              "fail": 0.705904,
+              "pass": 0.762338
+            }
+          },
+          "policy": "Frozen r3 thresholds; colour-only hard rejection; both axes required for pass. No fit on held-out set.",
+          "training_false_pass": 0,
+          "training_false_reject": 0,
+          "results": [
+            {
+              "set": "r2",
+              "name": "refA",
+              "label": "same",
+              "structure": 0.8662867546081543,
+              "colour": 0.8672434025057867,
+              "status": "pass"
+            },
+            {
+              "set": "r2",
+              "name": "refB",
+              "label": "same",
+              "structure": 0.8662867546081543,
+              "colour": 0.8672434025057867,
+              "status": "pass"
+            },
+            {
+              "set": "r2",
+              "name": "neg",
+              "label": "different",
+              "structure": 0.7110986709594727,
+              "colour": 0.39923066443890104,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r2",
+              "name": "imp",
+              "label": "different",
+              "structure": 0.6748782396316528,
+              "colour": 0.6411637237761421,
+              "status": "identity_fail"
+            }
+          ]
+        },
+        {
+          "held_out": "r3",
+          "validated_on": [
+            "r1",
+            "r2",
+            "r4"
+          ],
+          "limits": {
+            "structure": {
+              "fail": 0.7923,
+              "pass": 0.82363
+            },
+            "colour": {
+              "fail": 0.705904,
+              "pass": 0.762338
+            }
+          },
+          "policy": "Frozen r3 thresholds; colour-only hard rejection; both axes required for pass. No fit on held-out set.",
+          "training_false_pass": 0,
+          "training_false_reject": 0,
+          "results": [
+            {
+              "set": "r3",
+              "name": "refFront",
+              "label": "same",
+              "structure": 0.879424512386322,
+              "colour": 0.8836312954972635,
+              "status": "pass"
+            },
+            {
+              "set": "r3",
+              "name": "refSide",
+              "label": "same",
+              "structure": 0.879424512386322,
+              "colour": 0.8836312954972635,
+              "status": "pass"
+            },
+            {
+              "set": "r3",
+              "name": "refBack",
+              "label": "same",
+              "structure": 0.8772075176239014,
+              "colour": 0.8681694549258747,
+              "status": "pass"
+            },
+            {
+              "set": "r3",
+              "name": "refAction",
+              "label": "same",
+              "structure": 0.8387022018432617,
+              "colour": 0.820099923267345,
+              "status": "pass"
+            },
+            {
+              "set": "r3",
+              "name": "impSpecies",
+              "label": "different",
+              "structure": 0.6565161943435669,
+              "colour": 0.39694167086040305,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r3",
+              "name": "impRecolor",
+              "label": "different",
+              "structure": 0.9465150833129883,
+              "colour": 0.6466134870238242,
+              "status": "identity_fail"
+            }
+          ]
+        },
+        {
+          "held_out": "r4",
+          "validated_on": [
+            "r1",
+            "r2",
+            "r3"
+          ],
+          "limits": {
+            "structure": {
+              "fail": 0.7923,
+              "pass": 0.82363
+            },
+            "colour": {
+              "fail": 0.705904,
+              "pass": 0.762338
+            }
+          },
+          "policy": "Frozen r3 thresholds; colour-only hard rejection; both axes required for pass. No fit on held-out set.",
+          "training_false_pass": 0,
+          "training_false_reject": 0,
+          "results": [
+            {
+              "set": "r4",
+              "name": "refFront",
+              "label": "same",
+              "structure": 0.8787330985069275,
+              "colour": 0.8403357940770793,
+              "status": "pass"
+            },
+            {
+              "set": "r4",
+              "name": "refSide",
+              "label": "same",
+              "structure": 0.8120750784873962,
+              "colour": 0.8743696552337104,
+              "status": "unassessed"
+            },
+            {
+              "set": "r4",
+              "name": "refBack",
+              "label": "same",
+              "structure": 0.8787330985069275,
+              "colour": 0.8743696552337104,
+              "status": "pass"
+            },
+            {
+              "set": "r4",
+              "name": "refAction",
+              "label": "same",
+              "structure": 0.7606691122055054,
+              "colour": 0.8585493099008399,
+              "status": "unassessed"
+            },
+            {
+              "set": "r4",
+              "name": "impRecolor",
+              "label": "different",
+              "structure": 0.8778337240219116,
+              "colour": 0.06812195839577612,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r4",
+              "name": "impPalette",
+              "label": "different",
+              "structure": 0.32379966974258423,
+              "colour": 0.49013303689087395,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r4",
+              "name": "impSilhouette",
+              "label": "different",
+              "structure": 0.7394939064979553,
+              "colour": 0.4644638360719436,
+              "status": "identity_fail"
+            },
+            {
+              "set": "r4",
+              "name": "impTwin",
+              "label": "different",
+              "structure": 0.8046417832374573,
+              "colour": 0.8145226590428025,
+              "status": "unassessed"
+            },
+            {
+              "set": "r4",
+              "name": "spHose",
+              "label": "same",
+              "structure": 0.5516994595527649,
+              "colour": 0.7147342304937336,
+              "status": "unassessed"
+            }
+          ]
+        }
+      ],
+      "false_pass": 0,
+      "false_reject": 0,
+      "caveat": "Reviewed sets, fixed-policy leave-one-set-out validation; not a fresh blind benchmark."
+    }
+  },
+  "alpha": {
+    "injections": [
+      {
+        "name": "iconClean_center_r20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_center_r20.png",
+        "source_sha256": "6d1d7caad9431804f9a739c849e3f1657fd0e82dff52407e22191fd5e77e4bc0",
+        "tag": "iconClean",
+        "mask_pixels": 15373,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_center_r20\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_center_r20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_center_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_center_r35.png",
+        "source_sha256": "57f2bd190e20d8d27d825dd5e4b677a26a07685bae621160d724ecec1a64a7ed",
+        "tag": "iconClean",
+        "mask_pixels": 47485,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_center_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_center_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_center_r50",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_center_r50.png",
+        "source_sha256": "164c8d20825642ce0c45e9f2b65e86d25caeebb924d22f0ec1b20548174500d2",
+        "tag": "iconClean",
+        "mask_pixels": 96209,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_center_r50\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_center_r50\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_center_r70",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_center_r70.png",
+        "source_sha256": "b4fb305a96dbf47e148b9eeb9ed329bd5d762ee5f3f2ec8848719563da810e41",
+        "tag": "iconClean",
+        "mask_pixels": 190053,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_center_r70\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_center_r70\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_edge_r15_gap6",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_edge_r15_gap6.png",
+        "source_sha256": "960e5f2bd2622eaffa6a26c557a290163dba1a66153183f0d2c742e08dc0e3c9",
+        "tag": "iconClean",
+        "mask_pixels": 709,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_edge_r15_gap6\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_edge_r15_gap6\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_edge_r25_gap10",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_edge_r25_gap10.png",
+        "source_sha256": "f44a91a2182b2b1bcd9ec4b0d459790a87b274ffe0d93eab1ed837048953b39a",
+        "tag": "iconClean",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_edge_r25_gap10\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_edge_r25_gap10\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_edge_r25_gap20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_edge_r25_gap20.png",
+        "source_sha256": "438068798d52090fb52174855444ee8f268fcb99f62ddf44a04b6fb0fedd97ba",
+        "tag": "iconClean",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_edge_r25_gap20\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_edge_r25_gap20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_edge_r40_gap12",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_edge_r40_gap12.png",
+        "source_sha256": "043923e71990bd2daa3facdf5f4388c4cba52809911ba73f52d1dc55fd004317",
+        "tag": "iconClean",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_edge_r40_gap12\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_edge_r40_gap12\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_edge_r40_gap35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_edge_r40_gap35.png",
+        "source_sha256": "a4bd63e00856fef40fdb14c015fbc7987f6381f18b1143e6c909654167ffbec0",
+        "tag": "iconClean",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_edge_r40_gap35\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_edge_r40_gap35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_semi128_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_semi128_r35.png",
+        "source_sha256": "3b9302e415a8ac87233e89af6845d2a832ed4a0bfa6643d0347eca334b819a77",
+        "tag": "iconClean",
+        "mask_pixels": 47485,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_semi128_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_semi128_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_slit",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_slit.png",
+        "source_sha256": "ee2eaf71a7de53c2a251a904cf6bd8317c649a8111809ec37e4cbaf69be79162",
+        "tag": "iconClean",
+        "mask_pixels": 720,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_slit\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_slit\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "iconClean_tiny_r3",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\iconClean_tiny_r3.png",
+        "source_sha256": "ef8a488c4b9eb6c451c4bf81dcc282478e8427e22988ee605daccd9fbf08d1f8",
+        "tag": "iconClean",
+        "mask_pixels": 29,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean_tiny_r3\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean_tiny_r3\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "r3_icon_center_r20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_center_r20.png",
+        "source_sha256": "170f05678cceafce219fc2e2f3d83652b061b0e611e1c76b34dd8ba4703c6ccb",
+        "tag": "r3_icon",
+        "mask_pixels": 11681,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_center_r20\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_center_r20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_center_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_center_r35.png",
+        "source_sha256": "125e45a18d09864dbae7190a7e51788842ddeb755323787fd2160869d94ff865",
+        "tag": "r3_icon",
+        "mask_pixels": 36625,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_center_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_center_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_center_r50",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_center_r50.png",
+        "source_sha256": "ff0ab6b7f087a8287cd6f05bda09f945288cd909c6f8baa07cb493f19701cb40",
+        "tag": "r3_icon",
+        "mask_pixels": 74457,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_center_r50\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_center_r50\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_center_r70",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_center_r70.png",
+        "source_sha256": "00049d5d0aae83a134add18c3ca6237b1f60c49a9c3bb4982335f02f12c77bee",
+        "tag": "r3_icon",
+        "mask_pixels": 146505,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_center_r70\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_center_r70\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_edge_r15_gap6",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_edge_r15_gap6.png",
+        "source_sha256": "531bcc50dcfe8e7e22c0e3b3a021613ced26d3922e2132012abf6bf9936ea945",
+        "tag": "r3_icon",
+        "mask_pixels": 709,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_edge_r15_gap6\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_edge_r15_gap6\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_edge_r25_gap10",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_edge_r25_gap10.png",
+        "source_sha256": "ce6a003dfa633d4e5144bd0ed9f9d9e8f3fba4f72cbd18b6a148b0ffcc217d29",
+        "tag": "r3_icon",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_edge_r25_gap10\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_edge_r25_gap10\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_edge_r25_gap20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_edge_r25_gap20.png",
+        "source_sha256": "8751f918097d8fc7f32e74e92b7bda9536bd7e193a212a442d01574cbbd0eaae",
+        "tag": "r3_icon",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_edge_r25_gap20\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_edge_r25_gap20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_edge_r40_gap12",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_edge_r40_gap12.png",
+        "source_sha256": "3f8e3b95df37bd17347b8975bb3d2d75d1b8d0905c1525865e3f8d7e2786ff0c",
+        "tag": "r3_icon",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_edge_r40_gap12\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_edge_r40_gap12\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_edge_r40_gap35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_edge_r40_gap35.png",
+        "source_sha256": "efb8238226ec2233ced05bbbbbaf2a842373e78a2d1948166ad25e3503a77c3a",
+        "tag": "r3_icon",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_edge_r40_gap35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_edge_r40_gap35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_semi128_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_semi128_r35.png",
+        "source_sha256": "976b938cf990973d1f74df12851895d3b94df7be2812f77663d65f464dab1566",
+        "tag": "r3_icon",
+        "mask_pixels": 36625,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_semi128_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_semi128_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_slit",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_slit.png",
+        "source_sha256": "9b279345ff2f5eefdcef1cddc651117a0d83843d98f51347559ef409c3b9b35d",
+        "tag": "r3_icon",
+        "mask_pixels": 720,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_slit\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_slit\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon_tiny_r3",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_icon_tiny_r3.png",
+        "source_sha256": "84d8b9f9e7a76dec00ce6c7536ef302c51eafb2761d2aaa2e62ebc80646f7b4e",
+        "tag": "r3_icon",
+        "mask_pixels": 29,
+        "status": "FAIL",
+        "regions": 2,
+        "injected_region_detected": true,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon_tiny_r3\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon_tiny_r3\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_center_r20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_center_r20.png",
+        "source_sha256": "e5c9622680cb100902625b8d1c0385f1deace74d5642e4cfa63f0d2b9fb33099",
+        "tag": "r3_spLegs",
+        "mask_pixels": 6921,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_center_r20\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_center_r20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_center_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_center_r35.png",
+        "source_sha256": "5af16d7f177045ff61fcfbc96c2e67b0ffe2137081ac3848bba6e034d0b072bc",
+        "tag": "r3_spLegs",
+        "mask_pixels": 21101,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_center_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_center_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_center_r50",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_center_r50.png",
+        "source_sha256": "ac3488354bab743e7b4fe2a1d2c0909a537f5da1e4b93f6a78d485f758932a69",
+        "tag": "r3_spLegs",
+        "mask_pixels": 43709,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_center_r50\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_center_r50\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_center_r70",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_center_r70.png",
+        "source_sha256": "0d1a9832361d61ff29b342cee5169dd30cfa142354969b6710a4933c561860fb",
+        "tag": "r3_spLegs",
+        "mask_pixels": 85501,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_center_r70\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_center_r70\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_edge_r15_gap6",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_edge_r15_gap6.png",
+        "source_sha256": "b0efe552a815ecc37c4ef7cd7906f7e55fbb0ae308a8915c26d7041b0dd0b62f",
+        "tag": "r3_spLegs",
+        "mask_pixels": 709,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r15_gap6\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r15_gap6\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_edge_r25_gap10",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_edge_r25_gap10.png",
+        "source_sha256": "f67aa99f0af6187a1a32e356138c9c33285a47c3945b1ba57ed6d99e2bd6b989",
+        "tag": "r3_spLegs",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r25_gap10\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r25_gap10\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_edge_r25_gap20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_edge_r25_gap20.png",
+        "source_sha256": "51a32a17848d9d1a38acda312be84675a2d9edebd287f152554dc268550a6380",
+        "tag": "r3_spLegs",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r25_gap20\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r25_gap20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_edge_r40_gap12",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_edge_r40_gap12.png",
+        "source_sha256": "23e94710c6f312f51b378b04b05097f0a849179845407410e07292d1ba82495b",
+        "tag": "r3_spLegs",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r40_gap12\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r40_gap12\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_edge_r40_gap35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_edge_r40_gap35.png",
+        "source_sha256": "b4d5c15b4783f156780aff5f4b34bcc9cd10c27b1263c84645215ca09af7a704",
+        "tag": "r3_spLegs",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r40_gap35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_edge_r40_gap35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_semi128_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_semi128_r35.png",
+        "source_sha256": "ce80e7a0e5016678f1685d93afd42961446dc4e1207ed734333552721ad6b917",
+        "tag": "r3_spLegs",
+        "mask_pixels": 21101,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_semi128_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_semi128_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_slit",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_slit.png",
+        "source_sha256": "06f2bba1ee8b2d714130cc9abe7baa400889440d4fd6e4da8acd50adcbc5325d",
+        "tag": "r3_spLegs",
+        "mask_pixels": 720,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_slit\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_slit\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs_tiny_r3",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spLegs_tiny_r3.png",
+        "source_sha256": "cb69b3ad99113e8cffd57ba1361b2b4e5cdfe1ef4c824d216e7695f9c6f3fff9",
+        "tag": "r3_spLegs",
+        "mask_pixels": 29,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": true,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spLegs_tiny_r3\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spLegs_tiny_r3\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_center_r20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_center_r20.png",
+        "source_sha256": "f927bbb616cfc49363f4a09e049275f6730e9f923e52f8177477416736e1d799",
+        "tag": "r3_spRing",
+        "mask_pixels": 6077,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_center_r20\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_center_r20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_center_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_center_r35.png",
+        "source_sha256": "a8ad8c2d06aa21546fc50e5d050cbe7e31defb7e2986969d264e799f30c3b1d1",
+        "tag": "r3_spRing",
+        "mask_pixels": 18605,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_center_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_center_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_center_r50",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_center_r50.png",
+        "source_sha256": "9d014a0a79beea5adaf1099d2cca928b8c88144b0f2f837e6b50b8e1f82282aa",
+        "tag": "r3_spRing",
+        "mask_pixels": 37981,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_center_r50\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_center_r50\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_center_r70",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_center_r70.png",
+        "source_sha256": "a6dc3a05d951efddcc757d82b8fe87b2b0bb1117748cc4b103f20d52d431fd95",
+        "tag": "r3_spRing",
+        "mask_pixels": 74457,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_center_r70\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_center_r70\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_edge_r15_gap6",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_edge_r15_gap6.png",
+        "source_sha256": "787373d17d190a616ace69e0b691e8b2c99cbaceb18be421837bf1f057d87354",
+        "tag": "r3_spRing",
+        "mask_pixels": 709,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_edge_r15_gap6\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_edge_r15_gap6\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_edge_r25_gap10",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_edge_r25_gap10.png",
+        "source_sha256": "f1e992502237b7bd969fc598cf2cff1573798eaf282479997192901930d2cf4b",
+        "tag": "r3_spRing",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_edge_r25_gap10\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_edge_r25_gap10\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_edge_r25_gap20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_edge_r25_gap20.png",
+        "source_sha256": "20a22468fadd780ad0c93588bd37fa2b5a91adb35f5f5fc5f308a966d9a100aa",
+        "tag": "r3_spRing",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_edge_r25_gap20\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_edge_r25_gap20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_edge_r40_gap12",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_edge_r40_gap12.png",
+        "source_sha256": "f7f58ff84178a67f649cbfccd1f45f00d5530116df754889418ff8caf6f372e1",
+        "tag": "r3_spRing",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_edge_r40_gap12\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_edge_r40_gap12\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_edge_r40_gap35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_edge_r40_gap35.png",
+        "source_sha256": "95457db40937bea71dd4de1a4ebc024e42be29009a0ad6f626824366af9229a0",
+        "tag": "r3_spRing",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_edge_r40_gap35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_edge_r40_gap35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_semi128_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_semi128_r35.png",
+        "source_sha256": "1ecb859ce605a494021e554822c1d64d3963f10cc23f6d137ff44ec073b95432",
+        "tag": "r3_spRing",
+        "mask_pixels": 18605,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_semi128_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_semi128_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_slit",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_slit.png",
+        "source_sha256": "9495230123ed4865d34d52f19b9091d100977823e2a055383184248bbb77f459",
+        "tag": "r3_spRing",
+        "mask_pixels": 720,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_slit\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_slit\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spRing_tiny_r3",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\r3_spRing_tiny_r3.png",
+        "source_sha256": "5880ae6aabeed49d6993de57c6a28c6169aec3c3e8229f7bef180af046be625a",
+        "tag": "r3_spRing",
+        "mask_pixels": 29,
+        "status": "FAIL",
+        "regions": 3,
+        "injected_region_detected": true,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing_tiny_r3\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing_tiny_r3\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_center_r20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_center_r20.png",
+        "source_sha256": "0ce8abd1848582222df12318cac1cbedadf96949974fc4ca6a87e60d8b9fc9ec",
+        "tag": "spHipsClean",
+        "mask_pixels": 4777,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_center_r20\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_center_r20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_center_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_center_r35.png",
+        "source_sha256": "aced5927986ed111807ac2cfdfc9011ea03f045212156dea982a912640153bb7",
+        "tag": "spHipsClean",
+        "mask_pixels": 14505,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_center_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_center_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_center_r50",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_center_r50.png",
+        "source_sha256": "981a447bbf0ef24f3374b462bce102d55b000223c76e012bd142b0dc69ec00da",
+        "tag": "spHipsClean",
+        "mask_pixels": 30149,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_center_r50\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_center_r50\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_center_r70",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_center_r70.png",
+        "source_sha256": "460b4ba0de4c69411f7887205462d42c036c7ed354abfb177a96a60707d1bef1",
+        "tag": "spHipsClean",
+        "mask_pixels": 58941,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_center_r70\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_center_r70\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_edge_r15_gap6",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_edge_r15_gap6.png",
+        "source_sha256": "37c40fe99b8b6263021144d257e943871834309e08cab6ebece67e6c3775e8d1",
+        "tag": "spHipsClean",
+        "mask_pixels": 709,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_edge_r15_gap6\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_edge_r15_gap6\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_edge_r25_gap10",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_edge_r25_gap10.png",
+        "source_sha256": "240b3a0cf349345956873a68a2554dac2be9db0b150e115478aa84ca58ed9376",
+        "tag": "spHipsClean",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_edge_r25_gap10\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_edge_r25_gap10\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_edge_r25_gap20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_edge_r25_gap20.png",
+        "source_sha256": "3e7ea7f42578e9310135d6c9a612ba4b451f3cbafe918e51d91a089fde0d2014",
+        "tag": "spHipsClean",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_edge_r25_gap20\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_edge_r25_gap20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_edge_r40_gap12",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_edge_r40_gap12.png",
+        "source_sha256": "542f01692d62e9c271de268bd303591083bcf5e5990e7b308bcafb20065b2090",
+        "tag": "spHipsClean",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_edge_r40_gap12\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_edge_r40_gap12\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_edge_r40_gap35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_edge_r40_gap35.png",
+        "source_sha256": "6f574e2bc36c7b32adcb41c1c06cba8ccbd2af7c6415faf0a24e011cdc918322",
+        "tag": "spHipsClean",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_edge_r40_gap35\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_edge_r40_gap35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          1
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_semi128_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_semi128_r35.png",
+        "source_sha256": "70812b83b98d355ccc62ae8cb74666b87502630b84c47335ddacb7bd4832f11a",
+        "tag": "spHipsClean",
+        "mask_pixels": 14505,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_semi128_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_semi128_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_slit",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_slit.png",
+        "source_sha256": "abf98e2442c98274529a706b666aff408b0588867f33cf16ec6a175eabf77ced",
+        "tag": "spHipsClean",
+        "mask_pixels": 720,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_slit\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_slit\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean_tiny_r3",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHipsClean_tiny_r3.png",
+        "source_sha256": "59614f5adde5fd39041c51aad624dcca9b2d5a73eac0889a72ebef24294346ba",
+        "tag": "spHipsClean",
+        "mask_pixels": 29,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean_tiny_r3\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean_tiny_r3\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          3
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_center_r20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_center_r20.png",
+        "source_sha256": "3661a9b9ee04255cedd1e1a0eab1a590a99a2a408534dbefac345fbdaa43e302",
+        "tag": "spHose",
+        "mask_pixels": 2629,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_center_r20\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_center_r20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_center_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_center_r35.png",
+        "source_sha256": "013856a721eae576689d66a9a94ea6ec5818499168b14e50a5f81177735056ba",
+        "tag": "spHose",
+        "mask_pixels": 8497,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_center_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_center_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_center_r50",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_center_r50.png",
+        "source_sha256": "dfcbfe277fff370458590f326896c2fdfea47c24507ae28633d539f270206c9a",
+        "tag": "spHose",
+        "mask_pixels": 17193,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_center_r50\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_center_r50\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_center_r70",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_center_r70.png",
+        "source_sha256": "a9a45c06d95ac1e8bd2c3fa12e3992e0a254a3beba812d1deb8d4dde90a10e4a",
+        "tag": "spHose",
+        "mask_pixels": 33949,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_center_r70\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_center_r70\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_edge_r15_gap6",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_edge_r15_gap6.png",
+        "source_sha256": "feb78dbed359acd8b85b26da164d28ac56bed4068814a58be4d7692672336d9a",
+        "tag": "spHose",
+        "mask_pixels": 709,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_edge_r15_gap6\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_edge_r15_gap6\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_edge_r25_gap10",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_edge_r25_gap10.png",
+        "source_sha256": "ed30cfe06e7f238183be03f619f52b6e23e5cb98cb5803db16a5e0cbd2465459",
+        "tag": "spHose",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_edge_r25_gap10\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_edge_r25_gap10\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_edge_r25_gap20",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_edge_r25_gap20.png",
+        "source_sha256": "3fecd79a344046c15eb1798ceb9fcd644de9aab29a0105a25447806a245445cd",
+        "tag": "spHose",
+        "mask_pixels": 1961,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_edge_r25_gap20\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_edge_r25_gap20\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_edge_r40_gap12",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_edge_r40_gap12.png",
+        "source_sha256": "d59f06e3d6463ede3192f4b2d6df5f57ba7be04fdb9ce8901df9f01b0cf02cd0",
+        "tag": "spHose",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_edge_r40_gap12\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_edge_r40_gap12\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          2
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_edge_r40_gap35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_edge_r40_gap35.png",
+        "source_sha256": "93b67f0a1bd70e45eb71ae45dfae3d51e8421b11c1bbca67b943bb19795c1330",
+        "tag": "spHose",
+        "mask_pixels": 5025,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_edge_r40_gap35\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_edge_r40_gap35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_semi128_r35",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_semi128_r35.png",
+        "source_sha256": "3e26623b6da38f1676bfd273a0a6485f618fcd952e52d09d8d7a9c2eb0d6717d",
+        "tag": "spHose",
+        "mask_pixels": 8497,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_semi128_r35\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_semi128_r35\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_slit",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_slit.png",
+        "source_sha256": "3b7467ac7b1cd7efb65949618b155cb6dfa9c78b803afd63bd315bbf57bce5e8",
+        "tag": "spHose",
+        "mask_pixels": 720,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_slit\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_slit\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      },
+      {
+        "name": "spHose_tiny_r3",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\off\\holes\\spHose_tiny_r3.png",
+        "source_sha256": "a07436824f351b6f14ba7ff06bd6475e5987c1e0f89528c0b65515295c1671b5",
+        "tag": "spHose",
+        "mask_pixels": 29,
+        "status": "FAIL",
+        "regions": 5,
+        "injected_region_detected": true,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose_tiny_r3\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose_tiny_r3\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [
+          5
+        ],
+        "other_issues": []
+      }
+    ],
+    "designed_controls": [
+      {
+        "name": "spHose-designed",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\spHose\\asset.png",
+        "source_sha256": "1e958d4ec58535c8b389a44fecc6effeaa9cfb7db57ab4f5c9d009b3afab232a",
+        "tag": "spHose",
+        "mask_pixels": 0,
+        "status": "PASS",
+        "regions": 4,
+        "injected_region_detected": false,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHose-designed\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHose-designed\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [],
+        "other_issues": []
+      },
+      {
+        "name": "spHipsClean-designed",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\spHipsClean\\asset.png",
+        "source_sha256": "a336258d2d3d288ac368e083bec35f22827a83fd81f49f6586fab0c20758d3e6",
+        "tag": "spHipsClean",
+        "mask_pixels": 0,
+        "status": "PASS",
+        "regions": 4,
+        "injected_region_detected": false,
+        "designed_regions": 4,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\spHipsClean-designed\\full.inputs.json",
+          ".scratch\\judge-inputs\\spHipsClean-designed\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [],
+        "other_issues": []
+      },
+      {
+        "name": "iconClean-designed",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\iconClean\\asset.png",
+        "source_sha256": "71d1b912a23c83bb53e7ccf09fdfacebb668ee080fe125a83850675885c703ec",
+        "tag": "iconClean",
+        "mask_pixels": 0,
+        "status": "FAIL",
+        "regions": 1,
+        "injected_region_detected": false,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\iconClean-designed\\full.inputs.json",
+          ".scratch\\judge-inputs\\iconClean-designed\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [],
+        "other_issues": [
+          "clipped_border"
+        ]
+      },
+      {
+        "name": "r3_spRing-designed",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\r3_spRing\\asset.png",
+        "source_sha256": "055346396686b7d8569452e5cc829934744a7121ba2892fd63c34185bdc1d596",
+        "tag": "r3_spRing",
+        "mask_pixels": 0,
+        "status": "PASS",
+        "regions": 2,
+        "injected_region_detected": false,
+        "designed_regions": 2,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_spRing-designed\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_spRing-designed\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [],
+        "other_issues": []
+      },
+      {
+        "name": "r3_spLegs-designed",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\r3_spLegs\\asset.png",
+        "source_sha256": "8fa7817d1bb0b00356cdb4cf5a9e9ac1e44206ad3fd1f14fc88d44db5bed22e8",
+        "tag": "r3_spLegs",
+        "mask_pixels": 0,
+        "status": "PASS",
+        "regions": 0,
+        "injected_region_detected": false,
+        "designed_regions": 0,
+        "designed_false_alarm": 0,
+        "inputs": [],
+        "injected_region_ids": [],
+        "other_issues": []
+      },
+      {
+        "name": "r3_icon-designed",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\r3_icon\\asset.png",
+        "source_sha256": "9c31b36c5156f938020e4322c993e51fcd1e25073c29cf9e4c2515802eb4eee3",
+        "tag": "r3_icon",
+        "mask_pixels": 0,
+        "status": "PASS",
+        "regions": 1,
+        "injected_region_detected": false,
+        "designed_regions": 1,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r3_icon-designed\\full.inputs.json",
+          ".scratch\\judge-inputs\\r3_icon-designed\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [],
+        "other_issues": []
+      },
+      {
+        "name": "r2-akimbo-designed",
+        "source": ".scratch\\judge-inputs\\r2-akimbo.png",
+        "source_sha256": "f8d04d48d898f58c699df38df27fa3d80073af69dfa87701d6b723db4bfa6a07",
+        "tag": "r2_akimbo",
+        "mask_pixels": 0,
+        "status": "PASS",
+        "regions": 3,
+        "injected_region_detected": false,
+        "designed_regions": 3,
+        "designed_false_alarm": 0,
+        "inputs": [
+          ".scratch\\judge-inputs\\r2-akimbo-designed\\full.inputs.json",
+          ".scratch\\judge-inputs\\r2-akimbo-designed\\full.shuffled.inputs.json"
+        ],
+        "injected_region_ids": [],
+        "other_issues": []
+      }
+    ],
+    "fake_oracle": {
+      "recall": 1.0,
+      "false_pass": 0,
+      "designed_gap_false_alarm": 0
+    },
+    "semantic_recall": null,
+    "semantic_false_pass": null,
+    "semantic_designed_gap_false_alarm": null,
+    "judge_status": "Not run live in builder sandbox. Exact two-call inputs saved for coordinator.",
+    "warning": "Oracle labels test exposure, ID remapping and gates only; these numbers are NOT live AI accuracy."
+  },
+  "fixtures": {
+    "source": "review-s13-r4 subscription live Tinroot set; fixture resizes, native images used for 72-hole replay",
+    "records": [
+      {
+        "path": "refFront/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\refFront\\image-1.png",
+        "source_sha256": "95a6aaaaca12ee7105d65c9f97b272eed0fc74a0858c363623aba935da154874",
+        "sha256": "886fe76bbea7e5ea7282e1723cec18f2292825110c05be8ac1d5a37d67d0b744",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 284203
+      },
+      {
+        "path": "refSide/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\refSide\\image-1.png",
+        "source_sha256": "5a1345141133f10391bf8b05cb7136eeff4d0e60a864f18e84759031f82c90dc",
+        "sha256": "3afde2cca042a69d378e37898e71bf664c3fe4b9eb73c51f57e05fdacef5d00a",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 287594
+      },
+      {
+        "path": "refBack/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\refBack\\image-1.png",
+        "source_sha256": "a9cc92c149d1d1234fd6c816fb07653937e425f4f81eef02d55258a9db8403f6",
+        "sha256": "8ce83f6e6a566feb4122354f02d0e84e1105f96194ae0024518f596e914bd1ec",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 304104
+      },
+      {
+        "path": "refAction/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\refAction\\image-1.png",
+        "source_sha256": "9a94f7dce53a2752ed11005201547508f5e8b29f6074337456dc42547631db91",
+        "sha256": "536949eef68c49f1a1eda7b6cbb7b3bf107ab95a2076ad116f4c09f0b5a42fca",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 316275
+      },
+      {
+        "path": "impRecolor/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\impRecolor\\image-1.png",
+        "source_sha256": "4bbf56e60425a198491c084855973c14ce9f35c89c6991edfc523bcd40f3b7b5",
+        "sha256": "6795bceb34d13925308a7d14c50e7b451f842194038c26b48ba4edc8ddebeba3",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 291169
+      },
+      {
+        "path": "impPalette/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\impPalette\\image-1.png",
+        "source_sha256": "3044be5f14958bf547d934109ad57f11824ae9e87161cf5ff6fa8515500d8c0a",
+        "sha256": "a0aa23a3e6649f77acdb5ee5f8f8e23bde848272966a16f3270a682b666f0619",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 325306
+      },
+      {
+        "path": "impSilhouette/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\impSilhouette\\image-1.png",
+        "source_sha256": "e7d54374e915634e744013f11667dfe9dc79232fc88360624ae3c434a569f5c7",
+        "sha256": "38f07ed7f75e8b5331cb5a87f76305e6575effc3f58c6b8b13eff18632c1fa5a",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 250049
+      },
+      {
+        "path": "impTwin/image-1.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\impTwin\\image-1.png",
+        "source_sha256": "1c4f4e8e4e3f89cafc93bd934efae8e80f4584947c7c45750fc65a50da736150",
+        "sha256": "2bd3ea0dbdfb87a71d60e0b56d2b4a3da666271259d5ec57c34ce413da2864f3",
+        "original_size": [
+          1024,
+          1536
+        ],
+        "size": [
+          427,
+          640
+        ],
+        "bytes": 312582
+      },
+      {
+        "path": "spHose/asset.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\spHose\\asset.png",
+        "source_sha256": "1e958d4ec58535c8b389a44fecc6effeaa9cfb7db57ab4f5c9d009b3afab232a",
+        "sha256": "96f5cd649882206f3f208e450ee059cd8a0fafaa699090bb4d69d1bc9ab21fba",
+        "original_size": [
+          1254,
+          1254
+        ],
+        "size": [
+          640,
+          640
+        ],
+        "bytes": 258003
+      },
+      {
+        "path": "spHipsClean/asset.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\spHipsClean\\asset.png",
+        "source_sha256": "a336258d2d3d288ac368e083bec35f22827a83fd81f49f6586fab0c20758d3e6",
+        "sha256": "6aedd7176b05be3304c4161e742babfd1289b2749d67df246f5c816834f410ec",
+        "original_size": [
+          1254,
+          1254
+        ],
+        "size": [
+          640,
+          640
+        ],
+        "bytes": 291911
+      },
+      {
+        "path": "iconClean/asset.png",
+        "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s13-r4\\work\\live\\iconClean\\asset.png",
+        "source_sha256": "71d1b912a23c83bb53e7ccf09fdfacebb668ee080fe125a83850675885c703ec",
+        "sha256": "629d62950e83262d3c77fff799db440edea266c27180362843cfe4d98a08cd86",
+        "original_size": [
+          1254,
+          1254
+        ],
+        "size": [
+          640,
+          640
+        ],
+        "bytes": 417053
+      }
+    ]
+  },
+  "loops": {
+    "clean_sets": 4,
+    "two_frame_jump_cases": 32,
+    "offsets_px": [
+      6,
+      12
+    ],
+    "axes": [
+      "x",
+      "y"
+    ],
+    "starts": [
+      16,
+      31
+    ],
+    "failed_jumps": 32,
+    "clean_passes": 4
+  },
+  "validation": {
+    "focused_round4_tests": 11,
+    "focused_failures": 0,
+    "baseline_environment_errors": 2,
+    "full": {
+      "tests": 1020,
+      "failures": [],
+      "errors": [
+        [
+          "test_same_source_symlink_is_preserved (test_install.InstallTests.test_same_source_symlink_is_preserved)",
+          "Traceback (most recent call last):\n  File \"C:\\Users\\User\\src\\vgs-img\\.scratch\\r4-full\\shard-0\\tests\\test_install.py\", line 40, in test_same_source_symlink_is_preserved\n    p=Path(d);source=self.source(p/'source');skills=p/'skills';skills.mkdir();target=skills/'video-gif-studio';target.symlink_to(source,target_is_directory=True)\n                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\miniforge3\\Lib\\pathlib.py\", line 1386, in symlink_to\n    os.symlink(target, self, target_is_directory)\nOSError: [WinError 1314] \u7528\u6236\u7aef\u6c92\u6709\u9019\u9805\u7279\u6b8a\u6b0a\u9650\u3002: 'C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\tmph5z_xa8m\\\\source' -> 'C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\tmph5z_xa8m\\\\skills\\\\video-gif-studio'\n"
+        ],
+        [
+          "test_review_exports_overlay_contact_sheet_and_stability_report (test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report)",
+          "Traceback (most recent call last):\n  File \"C:\\Users\\User\\miniforge3\\Lib\\shutil.py\", line 633, in _rmtree_unsafe\n    os.unlink(fullname)\nPermissionError: [WinError 32] \u7a0b\u5e8f\u7121\u6cd5\u5b58\u53d6\u6a94\u6848\uff0c\u56e0\u70ba\u6a94\u6848\u6b63\u7531\u53e6\u4e00\u500b\u7a0b\u5e8f\u4f7f\u7528\u3002: 'C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\tmpdi1hbthj\\\\rv\\\\overlay.png'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\src\\vgs-img\\.scratch\\r4-full\\shard-2\\tests\\test_mask_review.py\", line 25, in test_review_exports_overlay_contact_sheet_and_stability_report\n    with tempfile.TemporaryDirectory() as t:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\miniforge3\\Lib\\tempfile.py\", line 946, in __exit__\n    self.cleanup()\n  File \"C:\\Users\\User\\miniforge3\\Lib\\tempfile.py\", line 950, in cleanup\n    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)\n  File \"C:\\Users\\User\\miniforge3\\Lib\\tempfile.py\", line 930, in _rmtree\n    _shutil.rmtree(name, onexc=onexc)\n  File \"C:\\Users\\User\\miniforge3\\Lib\\shutil.py\", line 781, in rmtree\n    return _rmtree_unsafe(path, onexc)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\miniforge3\\Lib\\shutil.py\", line 635, in _rmtree_unsafe\n    onexc(os.unlink, fullname, err)\n  File \"C:\\Users\\User\\miniforge3\\Lib\\tempfile.py\", line 905, in onexc\n    _os.unlink(path)\nPermissionError: [WinError 32] \u7a0b\u5e8f\u7121\u6cd5\u5b58\u53d6\u6a94\u6848\uff0c\u56e0\u70ba\u6a94\u6848\u6b63\u7531\u53e6\u4e00\u500b\u7a0b\u5e8f\u4f7f\u7528\u3002: 'C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\tmpdi1hbthj\\\\rv\\\\overlay.png'\n"
+        ]
+      ],
+      "skipped": [
+        [
+          "test_api_noise_is_reproducible (test_js_styles.JSPlugins.test_api_noise_is_reproducible)",
+          "no headless Chromium available"
+        ],
+        [
+          "test_js_plugin_draws_on_canvas_and_is_recorded (test_js_styles.JSPlugins.test_js_plugin_draws_on_canvas_and_is_recorded)",
+          "no headless Chromium available"
+        ],
+        [
+          "test_manga_action_speed_lines_only_where_motion_was_measured (test_js_styles.JSPlugins.test_manga_action_speed_lines_only_where_motion_was_measured)",
+          "no headless Chromium available"
+        ],
+        [
+          "test_math_random_and_wrong_size_are_refused (test_js_styles.JSPlugins.test_math_random_and_wrong_size_are_refused)",
+          "no headless Chromium available"
+        ],
+        [
+          "test_h264_mid_freeze_keyframe (test_fx_round2.RoundOneRegressions.test_h264_mid_freeze_keyframe)",
+          "H.264 regression needs explicit FFmpeg runtime"
+        ],
+        [
+          "test_live_subscription_judge (test_s13_r3_alpha.AlphaRound3.test_live_subscription_judge)",
+          "opt-in subscription vision test"
+        ]
+      ],
+      "supplemental": "test_s13_r4_replay: 1 passed (added after full-suite snapshot)",
+      "rerun": "Shard 3 rerun unchanged after pre-existing approval-expiry timing flake. Initial shard logs retained.",
+      "scenario_tests": 26,
+      "scenario_failures": 0
+    },
+    "baseline": {
+      "tests": 1009,
+      "failures": 0,
+      "errors": 2,
+      "skipped": 6
+    },
+    "saved_inputs": {
+      "cases": 79,
+      "manifests": 156,
+      "crops": 462,
+      "missing_files": 0,
+      "all_numberings_changed": true,
+      "fake_injection_recall": 1.0,
+      "fake_false_pass": 0,
+      "fake_designed_gap_false_alarm": 0
+    }
+  },
+  "handoff": {
+    "inputs": ".scratch/judge-inputs/alpha.json",
+    "replay": "python tests/s13_r4_judge_replay.py --inputs .scratch/judge-inputs --state .scratch/r4-live-state",
+    "caveat": "Fake-oracle recall/false-pass/false-alarm scores are not live AI semantic measurements. Native watering-can control still fails clipped_border independently of its handle gap."
+  }
+}

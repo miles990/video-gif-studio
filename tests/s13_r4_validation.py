@@ -34,6 +34,10 @@ def identity(private=None):
    scores=[compare(p/n/'image-1.png',p/r/'image-1.png') for r in refs if n!=r]
    aggregate={axis:max(s[axis] for s in scores) for axis in ('structure','colour')}
    rows.append(dict(set=name,name=n,label='same' if n in refs else 'different',**aggregate,status=verdict(aggregate)))
+  if name=='r4':
+   scores=[compare(p/'spHose/asset.png',p/r/'image-1.png') for r in refs]
+   aggregate={axis:max(s[axis] for s in scores) for axis in ('structure','colour')}
+   rows.append(dict(set=name,name='spHose',label='same',**aggregate,status=verdict(aggregate)))
  folds=[]
  for held in ('r1','r2','r3','r4'):
   train=[r for r in rows if r['set']!=held];test=[r for r in rows if r['set']==held]
@@ -57,6 +61,8 @@ def alpha(out,private):
   result=alpha_qa(im,judge=oracle,overlay_path=out/name/'full.png',description=DESCRIPTIONS[tag])
   found=[r for r in result['hole_review'].get('answers',[]) if np.any(injected&(labels==r['id']))]
   return dict(name=name,source=str(path),source_sha256=digest(path),tag=tag,mask_pixels=int(injected.sum()),
+   injected_region_ids=[r['id'] for r in regions if np.any(injected&(labels==r['label']))],
+   other_issues=[issue for issue in result['issues'] if issue!='interior_holes'],
    status=result['status'],regions=len(regions),injected_region_detected=any(r['classification']=='body_hole' for r in found),
    designed_regions=sum(not np.any(injected&(labels==r['label'])) for r in regions),
    designed_false_alarm=sum(r['classification']=='body_hole' and not np.any(injected&(labels==r['id'])) for r in result['hole_review'].get('answers',[])),
