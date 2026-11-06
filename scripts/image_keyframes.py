@@ -18,8 +18,15 @@ SHOT_WORDS = {'EWS':'extreme wide shot; entire subject <=20% of frame height',
 
 
 def fit_image(image, size, background=None):
-    """Uniform contain + padding preserves heads/edges; never anisotropically stretch."""
-    image=image.convert('RGBA'); fitted=ImageOps.contain(image,size,Image.Resampling.LANCZOS)
+    """Crop small aspect errors; refuse misleading large flat-colour padding."""
+    image=image.convert('RGBA')
+    ratio=(image.width/image.height)/(size[0]/size[1]);loss=1-min(ratio,1/ratio)
+    if loss>.20:
+        raise ImageError('E_ASPECT_UNFIXABLE','Returned aspect requires excessive padding or cropping; regenerate with the requested framing.',status='aspect_unfixable',source_size=list(image.size),target_size=list(size),padding_fraction=loss)
+    if loss<=.03:
+        fitted=ImageOps.fit(image,size,Image.Resampling.LANCZOS)
+        return fitted,dict(method='uniform_crop',source_size=list(image.size),size=list(size),scale=max(size[0]/image.width,size[1]/image.height),offset=[0,0],content_size=list(size),padding_fraction=0,crop_fraction=loss,stretched=False)
+    fitted=ImageOps.contain(image,size,Image.Resampling.LANCZOS)
     if background is None:
         corners=np.array(image)[[0,0,-1,-1],[0,-1,0,-1],:3]
         background=tuple(np.median(corners,axis=0).astype(int))+(255,)
@@ -74,12 +81,10 @@ def frame_qa(path, shot, colour=None, subject_mask=None):
     if subject_mask is not None:
         mask=np.asarray(subject_mask)>0
         if mask.shape!=a.shape[:2]:raise ImageError('E_MASK','Subject mask must match the keyframe.')
-    elif np.any(a[...,3]==0):mask=a[...,3]>127
     else:
-        border=np.concatenate((a[0,:,:3],a[-1,:,:3],a[:,0,:3],a[:,-1,:3])).astype(float)
-        background=np.median(border,axis=0)
-        if np.mean(np.linalg.norm(border-background,axis=1)<12)>.95:
-            mask=np.linalg.norm(a[...,:3].astype(float)-background,axis=2)>18
+        from image_identity import subject_region
+        mask,method=subject_region(a)
+        result['subject_method']=method
     # No opaque portrait/face detector is falsely inferred from a bounding box.
     if mask is not None and mask.any():
         y,x=np.where(mask);h=(y.max()-y.min()+1)/a.shape[0];w=(x.max()-x.min()+1)/a.shape[1]
