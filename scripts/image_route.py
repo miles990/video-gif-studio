@@ -1,5 +1,6 @@
 """Subscription-first PNG adapter with explicit paid authority and atomic cache."""
 import base64
+import hashlib
 from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
@@ -102,7 +103,7 @@ def codex_command():
 
 class Adapter:
     def __init__(self, state=DEFAULT_STATE, codex=None, timeout=300, round_id='spec-13', cap=60,
-                 run_id=None, api_base=None, prices=None):
+                 run_id=None, api_base=None, prices=None,price_table_trusted=False):
         self.state = Path(state).resolve()
         self.codex = codex or codex_command()
         if isinstance(self.codex, (str, Path)):self.codex = [str(self.codex)]
@@ -111,7 +112,11 @@ class Adapter:
         self.cap, self.round_id = cap, round_id
         self.run_id = run_id or uuid.uuid4().hex
         self.api_base = (api_base or os.environ.get('OPENAI_BASE_URL') or 'https://api.openai.com/v1').rstrip('/')
-        self.prices = read(prices) if isinstance(prices, (str, Path)) else prices
+        price_bytes=Path(prices).read_bytes() if isinstance(prices,(str,Path)) else canonical(prices).encode('utf8')
+        self.prices=json.loads(price_bytes)
+        self.price_table_sha256=hashlib.sha256(price_bytes).hexdigest()
+        self.price_content_sha=key(self.prices)
+        self.price_table_trusted=bool(price_table_trusted)
 
     def records(self):
         path = self.state/'ledger.jsonl'
@@ -147,6 +152,9 @@ class Adapter:
             return dict(route='codex', images=data['n'], cost_estimate_usd=0, subscription_images=data['n'], model='unreported')
         if not self.prices:
             raise ImageError('E_PRICE_REQUIRED', 'A dated, reviewed price table is required; no prices are guessed.', suggestion='Supply --prices with version, date, and rows of model/quality/size/unit_usd.')
+        reviewed=read(Path(__file__).resolve().parents[1]/'references/image-price-reviews.json')['sha256']
+        if key(self.prices)!=self.price_content_sha or (not self.price_table_trusted and self.price_table_sha256 not in reviewed):
+            raise ImageError('E_PRICE_UNTRUSTED','Price file SHA256 is not repository-reviewed.',suggestion='Use a repository-reviewed file or explicitly pass --price-table-trusted for your custom table.',price_table_sha256=self.price_table_sha256)
         try:
             priced_on=date.fromisoformat(self.prices['date'])
             age=(datetime.now(timezone.utc).date()-priced_on).days
@@ -157,11 +165,13 @@ class Adapter:
         quality = 'low' if data['quality']=='draft' else 'high'
         rows = [r for r in self.prices['rows'] if (r['model'],r['quality'],r['size'])==(model,quality,data['size'])]
         if len(rows)!=1:raise ImageError('E_PRICE_REQUIRED', 'No unique reviewed price for this model/quality/size.')
+        if isinstance(rows[0]['unit_usd'],bool):raise ImageError('E_PRICE_REQUIRED','Boolean is not a price.')
         unit = float(rows[0]['unit_usd'])
         if not math.isfinite(unit) or unit <= 0 or round(unit*data['n'],8)<=0:raise ImageError('E_PRICE_REQUIRED', 'Price and rounded total must be finite and strictly positive.')
         result = dict(route='api', model=model, quality=quality, size=data['size'], n=data['n'], unit_usd=unit,
                       cost_estimate_usd=round(unit*data['n'], 8), price_version=self.prices['version'], price_date=self.prices['date'],
-                      request_sha=request_key(data), endpoint=self.api_base)
+                      request_sha=request_key(data), endpoint=self.api_base,price_table_sha256=self.price_table_sha256,
+                      price_table_trusted=self.price_table_trusted,price_table_reviewed=self.price_table_sha256 in reviewed)
         result['estimate_id'] = key(result)
         return result
 
@@ -184,7 +194,7 @@ class Adapter:
         except subprocess.TimeoutExpired:
             raise ImageError('E_TIMEOUT', 'Codex timed out; no automatic retry of an ambiguous generation.') from None
         except OSError as exc:
-            raise ImageError('E_ROUTE_UNAVAILABLE', str(exc), suggestion='Install/select Codex and log in with ChatGPT, import existing images, or explicitly approve the paid API route.',alternatives=['Install/select Codex CLI and log in with ChatGPT','Import an existing local image','Explicit API route with reviewed prices and spend approval']) from None
+            raise ImageError('E_ROUTE_UNAVAILABLE', str(exc), suggestion='Install/select Codex and log in with ChatGPT, or choose an alternative.',alternatives=['Install/select Codex CLI and log in with ChatGPT','Import an existing local image','Grok route via grok_video.py with its own authorization','Local silhouette cards via animatic.py','Explicit API route with reviewed prices and spend approval']) from None
 
     def login(self):
         response = self.command(['login', 'status'], child_env())
@@ -192,7 +202,7 @@ class Adapter:
         if re.search(r'API\s*key', text, re.I):
             raise ImageError('E_ROUTE_BILLED', 'Codex is logged in using an API key.', suggestion='Log in with ChatGPT, or select the explicit api route with an approved estimate.')
         if response.returncode or not re.search(r'ChatGPT', text, re.I):
-            raise ImageError('E_AUTH', 'A ChatGPT subscription login could not be verified.',suggestion='Run codex login, import existing images, or explicitly approve the paid API route.',alternatives=['Log in with ChatGPT using codex login','Import an existing local image','Explicit API route with reviewed prices and spend approval'])
+            raise ImageError('E_AUTH', 'A ChatGPT subscription login could not be verified.',suggestion='Run codex login or choose an alternative.',alternatives=['Log in with ChatGPT using codex login','Import an existing local image','Grok route via grok_video.py with its own authorization','Local silhouette cards via animatic.py','Explicit API route with reviewed prices and spend approval'])
         return 'ChatGPT'
 
     def codex_image(self, data, stage, ordinal):

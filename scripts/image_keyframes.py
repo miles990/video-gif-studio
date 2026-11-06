@@ -144,7 +144,7 @@ def keyframes(board, adapter, out, request=None, selected=None, approval=None, m
                     try:
                         retried=adapter.generate(retry,folder/'identity-retry',approval,max_usd)
                     except ImageError as exc:
-                        if exc.error['code']!='E_CAP':raise
+                        if exc.error['code'] not in ('E_CAP','E_GENERATION'):raise
                         identity=dict(identity,retry_error=exc.error,generation_retained='first')
                     else:
                         generated=retried

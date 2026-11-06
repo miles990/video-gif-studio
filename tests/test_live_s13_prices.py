@@ -4,7 +4,7 @@ from image_common import ImageError
 from datetime import datetime,timezone,timedelta
 class PriceGuardTests(ImageCase):
  def adapter_for(self,unit=.1,when=None):
-  return Adapter(self.path/'api',prices=dict(version='offline-test',date=when or datetime.now(timezone.utc).date().isoformat(),rows=[dict(model='gpt-image-2.6-flare',quality='low',size='1024x1024',unit_usd=unit)]))
+  return Adapter(self.path/'api',price_table_trusted=True,prices=dict(version='offline-test',date=when or datetime.now(timezone.utc).date().isoformat(),rows=[dict(model='gpt-image-2.6-flare',quality='low',size='1024x1024',unit_usd=unit)]))
  def test_zero_stale_future_and_rounded_zero_refused(self):
   for unit,when in [(0,None),(1e-12,None),(.1,'2000-01-01'),(.1,(datetime.now(timezone.utc).date()+timedelta(days=1)).isoformat()),(.1,'invalid')]:
    with self.subTest(unit=unit,date=when):

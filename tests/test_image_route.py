@@ -87,7 +87,7 @@ class RouteTests(ImageCase):
         server=ThreadingHTTPServer(('127.0.0.1',0),Handler);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
         try:
             prices=dict(version='fixture-v1',date=datetime.now(timezone.utc).date().isoformat(),rows=[dict(model='gpt-image-2.6-flare',quality='low',size='1024x1024',unit_usd=.1)])
-            adapter=Adapter(self.path/'state',api_base=f'http://127.0.0.1:{server.server_port}/v1',prices=prices)
+            adapter=Adapter(self.path/'state',api_base=f'http://127.0.0.1:{server.server_port}/v1',prices=prices,price_table_trusted=True)
             req=self.request(route='api');est=adapter.estimate(req)
             with patch.dict(os.environ,{'OPENAI_API_KEY':'sk-TEST'}):
                 for approval,budget,code in [(None,0,'E_APPROVAL_REQUIRED'),('wrong',1,'E_APPROVAL_MISMATCH'),(est['estimate_id'],0,'E_BUDGET')]:
@@ -98,6 +98,8 @@ class RouteTests(ImageCase):
                 adapter.generate(req,self.path/'cached',est['estimate_id'],.1)
             self.assertEqual(len(calls),1);self.assertEqual(calls[0]['quality'],'low');self.assertEqual(calls[0]['n'],1)
             self.assertEqual(result['cost_estimate_usd'],.1)
+            self.assertTrue(result['estimate']['price_table_trusted'])
+            self.assertEqual(result['estimate']['price_table_sha256'],adapter.price_table_sha256)
         finally:server.shutdown();server.server_close();thread.join()
 
     def test_json_error_envelope(self):

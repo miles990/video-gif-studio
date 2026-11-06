@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "sha256": [],
+  "note": "No price files have been repository-reviewed. Add exact file SHA256 values only after price review; custom files require explicit --price-table-trusted."
+}

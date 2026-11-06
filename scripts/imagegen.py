@@ -28,6 +28,7 @@ def options(p):
     p.add_argument('--experimental',action='store_true')
     p.add_argument('--approve-spend');p.add_argument('--max-usd',type=float,default=0)
     p.add_argument('--prices',type=Path);p.add_argument('--api-base')
+    p.add_argument('--price-table-trusted',action='store_true',help='Explicitly trust a custom price table; recorded with its SHA256.')
     p.add_argument('--state',type=Path,default=DEFAULT_STATE)
     p.add_argument('--codex',help='Executable or Python fake-Codex script')
     p.add_argument('--timeout',type=float,default=300)
@@ -48,7 +49,7 @@ def adapter_request(a):
         from image_common import digest
         refset_sha=digest(a.refs)
     cmd=[sys.executable,a.codex] if a.codex and a.codex.endswith('.py') else a.codex
-    adapter=Adapter(state=a.state,codex=cmd,timeout=a.timeout,round_id=a.round,cap=a.cap,run_id=a.run_id,api_base=a.api_base,prices=a.prices)
+    adapter=Adapter(state=a.state,codex=cmd,timeout=a.timeout,round_id=a.round,cap=a.cap,run_id=a.run_id,api_base=a.api_base,prices=a.prices,price_table_trusted=a.price_table_trusted)
     req=Request(prompt=a.prompt,refs=refs,refset_sha=refset_sha,refset_path=str(a.refs) if a.refs else None,size=a.size,aspect=a.aspect,quality=a.quality,n=a.n,
                 route=a.route,transparent=a.transparent,format=a.format,model=a.model,seed=a.seed,experimental=a.experimental,identity_override=a.identity_override)
     return adapter,req
@@ -138,7 +139,9 @@ def main(argv=None):
             result=keyframes(read(a.storyboard),adapter,a.out,req,a.shots,a.approve_spend,a.max_usd)
             failed=[s['id'] for s in result['shots'] if s.get('keyframe_failure')]
             if failed:
-                error=ImageError('E_KEYFRAME_PARTIAL','Some keyframes failed; successful shots are retained.',location=str(a.out/'storyboard.json'),failed_shots=failed).error
+                kept=[s['id'] for s in result['shots'] if s.get('keyframe')]
+                message='Some keyframes failed; successful shots are retained.' if kept else 'All requested keyframes failed; no successful keyframes are available.'
+                error=ImageError('E_KEYFRAME_PARTIAL',message,location=str(a.out/'storyboard.json'),failed_shots=failed,kept_shots=kept).error
                 print(json.dumps(dict(ok=False,error=error,result=result),ensure_ascii=False));return 2
         elif a.command=='estimate':result=adapter.estimate(req)
         elif a.command=='generate':
