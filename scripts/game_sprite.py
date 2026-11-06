@@ -52,6 +52,10 @@ def alpha_contract(im,mode='straight',particles=False,designed_holes=None):
         black=(a[...,:3]@lum)*coverage;white=black+255*(1-coverage)
         expected_black=(deep@lum)*coverage;expected_white=expected_black+255*(1-coverage)
         bad=ring&(delta>25)&(black-expected_black>15)&(white-expected_white>15)
+        # An outside halo must connect to fractional exterior coverage. Binary
+        # pixel highlights and designed bright opaque outlines are not halos.
+        exterior_bad=bad&semi
+        bad &= cv2.dilate(exterior_bad.astype('uint8'),np.ones((5,5),np.uint8))>0
         fraction=float(bad.sum()/max(1,ring.sum()))
         rim_report=dict(contaminated_fraction=fraction,black_luminance_error=float(np.mean((black-expected_black)[ring])) if ring.any() else 0,
                         white_luminance_error=float(np.mean((white-expected_white)[ring])) if ring.any() else 0)

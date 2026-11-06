@@ -1,0 +1,3071 @@
+{
+  "protocol": "Freeze thresholds using front/side from BOTH families; back is a per-family positive holdout. Injected halo/noise controls use the same split. No held-out tuning.",
+  "thresholds": {
+    "isolated_color_fraction": 0.12,
+    "opaque_rim_contaminated_fraction": 0.15,
+    "near_identity": "refset-relative ordering, no absolute BH cutoff"
+  },
+  "characters": [
+    {
+      "family": "rimewick",
+      "view": "front",
+      "split": "calibration",
+      "subject_count": 1,
+      "old_noise": 0.1716021260440395,
+      "new_noise": 0.03363914373088685,
+      "old_noise_detected": true,
+      "new_noise_pass": true,
+      "clean_rim_false_positive": false,
+      "injected_rim_detected": true,
+      "rim_evidence": {
+        "contaminated_fraction": 0.4619105199516324,
+        "black_luminance_error": 45.58966531616757,
+        "white_luminance_error": 45.589665316167576
+      }
+    },
+    {
+      "family": "rimewick",
+      "view": "side",
+      "split": "calibration",
+      "subject_count": 1,
+      "old_noise": 0.18355065195586762,
+      "new_noise": 0.029116465863453816,
+      "old_noise_detected": true,
+      "new_noise_pass": true,
+      "clean_rim_false_positive": false,
+      "injected_rim_detected": true,
+      "rim_evidence": {
+        "contaminated_fraction": 0.5256241787122208,
+        "black_luminance_error": 52.71301381464018,
+        "white_luminance_error": 52.71301381464018
+      }
+    },
+    {
+      "family": "rimewick",
+      "view": "back",
+      "split": "held_out",
+      "subject_count": 1,
+      "old_noise": 0.17418351477449456,
+      "new_noise": 0.04073789392774789,
+      "old_noise_detected": true,
+      "new_noise_pass": true,
+      "clean_rim_false_positive": false,
+      "injected_rim_detected": true,
+      "rim_evidence": {
+        "contaminated_fraction": 0.5327455919395466,
+        "black_luminance_error": 53.89128771669876,
+        "white_luminance_error": 53.89128771669876
+      }
+    },
+    {
+      "family": "wolf",
+      "view": "front",
+      "split": "calibration",
+      "subject_count": 4,
+      "old_noise": 0.6417910447761194,
+      "new_noise": 0.0471976401179941,
+      "old_noise_detected": true,
+      "new_noise_pass": true,
+      "clean_rim_false_positive": false,
+      "injected_rim_detected": true,
+      "rim_evidence": {
+        "contaminated_fraction": 0.5787401574803149,
+        "black_luminance_error": 77.1717357480315,
+        "white_luminance_error": 77.1717357480315
+      }
+    },
+    {
+      "family": "wolf",
+      "view": "side",
+      "split": "calibration",
+      "subject_count": 4,
+      "old_noise": 0.6050420168067226,
+      "new_noise": 0.08974358974358974,
+      "old_noise_detected": true,
+      "new_noise_pass": true,
+      "clean_rim_false_positive": false,
+      "injected_rim_detected": true,
+      "rim_evidence": {
+        "contaminated_fraction": 0.6323529411764706,
+        "black_luminance_error": 81.34958437139561,
+        "white_luminance_error": 81.34958437139561
+      }
+    },
+    {
+      "family": "wolf",
+      "view": "back",
+      "split": "held_out",
+      "subject_count": 4,
+      "old_noise": 0.578125,
+      "new_noise": 0.08717948717948718,
+      "old_noise_detected": true,
+      "new_noise_pass": true,
+      "clean_rim_false_positive": false,
+      "injected_rim_detected": true,
+      "rim_evidence": {
+        "contaminated_fraction": 0.5512820512820513,
+        "black_luminance_error": 59.602364856711915,
+        "white_luminance_error": 59.602364856711915
+      }
+    }
+  ],
+  "icons": [
+    {
+      "family": "wolf",
+      "index": 0,
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.6298828125,
+            "safe_margin": 1,
+            "outline_px": 1.0,
+            "light": 136.72323045374327,
+            "light_r_squared": 0.16049364909285135,
+            "saturation": 78.55365622032289,
+            "value": 140.60493827160494
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "size_or_margin",
+            "value": 0.6298828125
+          },
+          {
+            "index": 0,
+            "kind": "outline",
+            "value": 1.0
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": -1.0,
+          "padding_shortfall_px": 3,
+          "light_deg": 1.7232304537432697,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "wolf",
+      "index": 1,
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.6513671875,
+            "safe_margin": 3,
+            "outline_px": 1.0,
+            "light": 260.397456795676,
+            "light_r_squared": 0.286243299207395,
+            "saturation": 115.06630434782609,
+            "value": 119.22282608695652
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "size_or_margin",
+            "value": 0.6513671875
+          },
+          {
+            "index": 0,
+            "kind": "outline",
+            "value": 1.0
+          },
+          {
+            "index": 0,
+            "kind": "light",
+            "delta_degrees": 125.39745679567602
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": -1.0,
+          "padding_shortfall_px": 1,
+          "light_deg": 125.39745679567602,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "wolf",
+      "index": 2,
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.69580078125,
+            "safe_margin": 3,
+            "outline_px": 1.0,
+            "light": 167.38691005697902,
+            "light_r_squared": 0.13206790654518485,
+            "saturation": 142.50619834710744,
+            "value": 140.71849173553719
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "size_or_margin",
+            "value": 0.69580078125
+          },
+          {
+            "index": 0,
+            "kind": "outline",
+            "value": 1.0
+          },
+          {
+            "index": 0,
+            "kind": "light",
+            "delta_degrees": 32.38691005697902
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": -1.0,
+          "padding_shortfall_px": 1,
+          "light_deg": 32.38691005697902,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "wolf",
+      "index": 3,
+      "split": "held_out",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.7119140625,
+            "safe_margin": 4,
+            "outline_px": 1.0,
+            "light": 136.7254771197981,
+            "light_r_squared": 0.10602571264407101,
+            "saturation": 83.41438703140831,
+            "value": 122.95440729483283
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "outline",
+            "value": 1.0
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": -1.0,
+          "padding_shortfall_px": 0,
+          "light_deg": 1.7254771197980858,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "rimewick",
+      "index": 0,
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.66015625,
+            "safe_margin": 6,
+            "outline_px": 2.0,
+            "light": 206.30059224543285,
+            "light_r_squared": 0.39410612312574855,
+            "saturation": 96.1685288640596,
+            "value": 128.7756052141527
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "light",
+            "delta_degrees": 71.30059224543285
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": 0.0,
+          "padding_shortfall_px": 0,
+          "light_deg": 71.30059224543285,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "rimewick",
+      "index": 1,
+      "split": "calibration",
+      "qa": {
+        "status": "PASS",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.66015625,
+            "safe_margin": 6,
+            "outline_px": 2.0,
+            "light": "n/a",
+            "light_r_squared": 0.025974920891745135,
+            "saturation": 130.35320197044334,
+            "value": 118.61083743842364
+          }
+        ],
+        "issues": [],
+        "outlier_indices": [],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": 0.0,
+          "padding_shortfall_px": 0,
+          "light_deg": null,
+          "light_assessed_items": 0,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "rimewick",
+      "index": 2,
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.66015625,
+            "safe_margin": 6,
+            "outline_px": 3.0,
+            "light": "n/a",
+            "light_r_squared": 0.016285775520188617,
+            "saturation": 107.03630705394191,
+            "value": 144.80964730290455
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "outline",
+            "value": 3.0
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": 1.0,
+          "padding_shortfall_px": 0,
+          "light_deg": null,
+          "light_assessed_items": 0,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "rimewick",
+      "index": 3,
+      "split": "calibration",
+      "qa": {
+        "status": "PASS",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.66015625,
+            "safe_margin": 6,
+            "outline_px": 2.0,
+            "light": "n/a",
+            "light_r_squared": 0.03749384023156799,
+            "saturation": 114.48845166809238,
+            "value": 133.21727972626175
+          }
+        ],
+        "issues": [],
+        "outlier_indices": [],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": 0.0,
+          "padding_shortfall_px": 0,
+          "light_deg": null,
+          "light_assessed_items": 0,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "rimewick",
+      "index": 4,
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.66015625,
+            "safe_margin": 6,
+            "outline_px": 3.0,
+            "light": 90.13992451568595,
+            "light_r_squared": 0.18957868057960325,
+            "saturation": 107.84529771841959,
+            "value": 147.11797440178074
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "outline",
+            "value": 3.0
+          },
+          {
+            "index": 0,
+            "kind": "light",
+            "delta_degrees": 44.86007548431405
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": 1.0,
+          "padding_shortfall_px": 0,
+          "light_deg": 44.86007548431405,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "rimewick",
+      "index": 5,
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.66015625,
+            "safe_margin": 6,
+            "outline_px": 3.0,
+            "light": 127.09171002224392,
+            "light_r_squared": 0.1853142025420388,
+            "saturation": 93.94502314814815,
+            "value": 163.34895833333334
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "outline",
+            "value": 3.0
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": 1.0,
+          "padding_shortfall_px": 0,
+          "light_deg": 7.908289977756084,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "rimewick",
+      "index": 6,
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.66015625,
+            "safe_margin": 6,
+            "outline_px": 2.0,
+            "light": 324.28360038999926,
+            "light_r_squared": 0.45030207667475697,
+            "saturation": 108.68351063829788,
+            "value": 99.40248226950355
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "light",
+            "delta_degrees": 170.71639961000074
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": 0.0,
+          "padding_shortfall_px": 0,
+          "light_deg": 170.71639961000074,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    },
+    {
+      "family": "rimewick",
+      "index": 7,
+      "split": "held_out",
+      "qa": {
+        "status": "FAIL",
+        "icons": [
+          {
+            "index": 0,
+            "canvas": [
+              64,
+              64
+            ],
+            "bbox_area_fraction": 0.66015625,
+            "safe_margin": 6,
+            "outline_px": 3.0,
+            "light": 113.3021923557733,
+            "light_r_squared": 0.17143525461354425,
+            "saturation": 124.48421052631579,
+            "value": 95.47052631578947
+          }
+        ],
+        "issues": [
+          {
+            "index": 0,
+            "kind": "outline",
+            "value": 3.0
+          }
+        ],
+        "outlier_indices": [
+          0
+        ],
+        "light_circular_std_deg": null,
+        "set_drift": {
+          "outline_px": 1.0,
+          "padding_shortfall_px": 0,
+          "light_deg": 21.697807644226714,
+          "light_assessed_items": 1,
+          "comparison": "whole-set median/circular mean versus style token"
+        }
+      }
+    }
+  ],
+  "textures": [
+    {
+      "family": "rimewick",
+      "split": "held_out",
+      "qa": {
+        "status": "FAIL",
+        "issues": [
+          {
+            "kind": "wrap_seam",
+            "axis": "y",
+            "ratio": 1.6259514641353987
+          }
+        ],
+        "axes": {
+          "x": {
+            "wrap_difference": 7.512369791666667,
+            "ordinary_difference": 7.017578125,
+            "ratio": 1.070507468225253
+          },
+          "y": {
+            "wrap_difference": 11.820963541666666,
+            "ordinary_difference": 7.270182291666667,
+            "ratio": 1.6259514641353987
+          }
+        },
+        "sobel_ratio": 0.918111092212945,
+        "spectral_cross_ratio": 1.164997138576954,
+        "half_luma_difference": {
+          "x": 0.3463222076415917,
+          "y": 0.10752819213867326
+        },
+        "high_frequency_energy": 765.7484690550322
+      }
+    },
+    {
+      "family": "wolf",
+      "split": "held_out",
+      "qa": {
+        "status": "PASS",
+        "issues": [],
+        "axes": {
+          "x": {
+            "wrap_difference": 32.73828125,
+            "ordinary_difference": 25.37109375,
+            "ratio": 1.2903772132409546
+          },
+          "y": {
+            "wrap_difference": 37.138020833333336,
+            "ordinary_difference": 26.94010416666667,
+            "ratio": 1.3785403576607056
+          }
+        },
+        "sobel_ratio": 1.2600673071887416,
+        "spectral_cross_ratio": 1.0023132180925942,
+        "half_luma_difference": {
+          "x": 1.3390094421387033,
+          "y": 0.7241009460449135
+        },
+        "high_frequency_energy": 13270.948855879598
+      }
+    }
+  ],
+  "rimewick_identity": {
+    "status": "pass",
+    "method": {
+      "name": "ORB + masked HSV histogram, refset-relative controls",
+      "opencv_version": "5.0.0",
+      "lowe_ratio": 0.75,
+      "embedding": "unavailable: no local weights plus permissive licence and runtime verified; no model downloads"
+    },
+    "views": {
+      "front": {
+        "bhattacharyya": 0.0,
+        "orb_good_matches": 1600,
+        "view_palette_distance": 0.0,
+        "relative_palette_rank": -0.16913116022347263,
+        "expectation": "face and asymmetric features",
+        "status": "pass"
+      },
+      "side": {
+        "bhattacharyya": 0.4620889892364658,
+        "orb_good_matches": 92,
+        "view_palette_distance": 0.06552426214830318,
+        "relative_palette_rank": 0.0,
+        "expectation": "profile; visible-side features only",
+        "status": "pass"
+      }
+    },
+    "controls": {
+      "valid": true,
+      "contradicted": false,
+      "positive": [
+        {
+          "bhattacharyya": 0.4620889892364658,
+          "orb_good_matches": 92
+        }
+      ],
+      "negative": [
+        {
+          "bhattacharyya": 0.8724393409217231,
+          "orb_good_matches": 16
+        },
+        {
+          "bhattacharyya": 0.8724393409217231,
+          "orb_good_matches": 16
+        },
+        {
+          "bhattacharyya": 0.8646312990611698,
+          "orb_good_matches": 15
+        },
+        {
+          "bhattacharyya": 0.8646312990611698,
+          "orb_good_matches": 15
+        }
+      ],
+      "positive_spread": 0.4620889892364658,
+      "negative_distance": 0.8646312990611698,
+      "positive_matches_min": 92,
+      "negative_matches_max": 16,
+      "histogram_separation": 0.40254230982470396,
+      "method": {
+        "name": "ORB + masked HSV histogram, refset-relative controls",
+        "opencv_version": "5.0.0",
+        "lowe_ratio": 0.75,
+        "embedding": "unavailable: no local weights plus permissive licence and runtime verified; no model downloads"
+      },
+      "reason": null
+    },
+    "controls_valid": true,
+    "view_palette_controls": {
+      "valid": true,
+      "refset_spread": 0.06552426214830318,
+      "nearest_negative": 0.4529411169828949,
+      "method": "saturation-weighted circular hue; relative refset spread versus negatives; no absolute cutoff",
+      "limitation": "ranking evidence only; no scar/anatomy recognition"
+    },
+    "negative_controls": [
+      {
+        "bhattacharyya": 0.8724393409217231,
+        "orb_good_matches": 16,
+        "view_palette_distance": 0.4564700689710269,
+        "relative_palette_rank": 1.0091089273584617
+      }
+    ],
+    "near_control": {
+      "bhattacharyya": 0.8724393409217231,
+      "orb_good_matches": 16,
+      "view_palette_distance": 0.4564700689710269,
+      "relative_palette_rank": 1.0091089273584617
+    },
+    "reason": null,
+    "visual_review": "pending",
+    "held_out_back": {
+      "view_palette_distance": 0.06631990232632509,
+      "below_training_negative": true,
+      "semantic_status": "unassessed"
+    }
+  },
+  "wolf_identity": {
+    "status": "unassessed",
+    "method": {
+      "name": "ORB + masked HSV histogram, refset-relative controls",
+      "opencv_version": "5.0.0",
+      "lowe_ratio": 0.75,
+      "embedding": "unavailable: no local weights plus permissive licence and runtime verified; no model downloads"
+    },
+    "views": {
+      "front": {
+        "bhattacharyya": 0.0,
+        "orb_good_matches": 1599,
+        "view_palette_distance": 0.0,
+        "relative_palette_rank": -0.20726881069496447,
+        "expectation": "face and asymmetric features",
+        "status": "unassessed"
+      },
+      "side": {
+        "bhattacharyya": 0.6411897718343824,
+        "orb_good_matches": 18,
+        "view_palette_distance": 0.1300545344102609,
+        "relative_palette_rank": 0.0,
+        "expectation": "profile; visible-side features only",
+        "status": "unassessed"
+      }
+    },
+    "controls": {
+      "valid": false,
+      "contradicted": true,
+      "positive": [
+        {
+          "bhattacharyya": 0.6411897718343824,
+          "orb_good_matches": 18
+        }
+      ],
+      "negative": [
+        {
+          "bhattacharyya": 0.9842834425272274,
+          "orb_good_matches": 49
+        },
+        {
+          "bhattacharyya": 0.5328294313874259,
+          "orb_good_matches": 1022
+        },
+        {
+          "bhattacharyya": 0.982609202963826,
+          "orb_good_matches": 29
+        },
+        {
+          "bhattacharyya": 0.7846955121332408,
+          "orb_good_matches": 18
+        }
+      ],
+      "positive_spread": 0.6411897718343824,
+      "negative_distance": 0.5328294313874259,
+      "positive_matches_min": 18,
+      "negative_matches_max": 1022,
+      "histogram_separation": -0.10836034044695653,
+      "method": {
+        "name": "ORB + masked HSV histogram, refset-relative controls",
+        "opencv_version": "5.0.0",
+        "lowe_ratio": 0.75,
+        "embedding": "unavailable: no local weights plus permissive licence and runtime verified; no model downloads"
+      },
+      "reason": "Positive and negative controls overlap; identity is unassessed."
+    },
+    "controls_valid": false,
+    "view_palette_controls": {
+      "valid": true,
+      "refset_spread": 0.1300545344102609,
+      "nearest_negative": 0.7575224779671954,
+      "method": "saturation-weighted circular hue; relative refset spread versus negatives; no absolute cutoff",
+      "limitation": "ranking evidence only; no scar/anatomy recognition"
+    },
+    "negative_controls": [
+      {
+        "bhattacharyya": 0.9842834425272274,
+        "orb_good_matches": 49,
+        "view_palette_distance": 0.8162245367681243,
+        "relative_palette_rank": 1.0935538769808126
+      }
+    ],
+    "near_control": {
+      "bhattacharyya": 0.5328294313874259,
+      "orb_good_matches": 1022,
+      "view_palette_distance": 0.7595249187804642,
+      "relative_palette_rank": 1.0031913037691098
+    },
+    "reason": "Positive and negative controls overlap; identity is unassessed.",
+    "visual_review": "pending",
+    "held_out_back": {
+      "view_palette_distance": 0.16497476476542505,
+      "below_training_negative": true,
+      "semantic_status": "unassessed"
+    }
+  },
+  "motion": [
+    {
+      "family": "rimewick",
+      "state": "run",
+      "split": "calibration",
+      "qa": {
+        "status": "PASS",
+        "issues": [],
+        "unassessed": [],
+        "contacts": {
+          "status": "PASS",
+          "contacts": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                0
+              ],
+              "samples": [
+                [
+                  0,
+                  24.0,
+                  59.0
+                ]
+              ]
+            },
+            {
+              "foot": "left",
+              "frames": [
+                4,
+                4
+              ],
+              "samples": [
+                [
+                  4,
+                  22.0,
+                  59.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                0,
+                0
+              ],
+              "samples": [
+                [
+                  0,
+                  24.0,
+                  59.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                4
+              ],
+              "samples": [
+                [
+                  4,
+                  22.0,
+                  59.0
+                ]
+              ]
+            }
+          ],
+          "issues": [],
+          "measured_intervals": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                0
+              ],
+              "box": [
+                15,
+                52,
+                20,
+                11
+              ],
+              "measured": true
+            },
+            {
+              "foot": "left",
+              "frames": [
+                4,
+                4
+              ],
+              "box": [
+                15,
+                52,
+                20,
+                11
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                0,
+                0
+              ],
+              "box": [
+                15,
+                52,
+                20,
+                11
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                4
+              ],
+              "box": [
+                15,
+                52,
+                20,
+                11
+              ],
+              "measured": true
+            }
+          ],
+          "trajectories": {
+            "left": [
+              [
+                24.0,
+                59.0
+              ],
+              [
+                23.0,
+                57.0
+              ],
+              null,
+              [
+                26.0,
+                54.0
+              ],
+              [
+                22.0,
+                59.0
+              ],
+              [
+                24.0,
+                58.0
+              ],
+              null,
+              [
+                30.0,
+                55.0
+              ]
+            ],
+            "right": [
+              [
+                24.0,
+                59.0
+              ],
+              [
+                23.0,
+                57.0
+              ],
+              null,
+              [
+                26.0,
+                54.0
+              ],
+              [
+                22.0,
+                59.0
+              ],
+              [
+                24.0,
+                58.0
+              ],
+              null,
+              [
+                30.0,
+                55.0
+              ]
+            ]
+          }
+        },
+        "grounded": [
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false
+        ],
+        "vertical_amplitude_px": 4.538085749001908,
+        "bob_cycles": 2,
+        "jump": null,
+        "seam_ratio": 0.7196658355430059,
+        "seam": {
+          "status": "PASS",
+          "issues": [],
+          "colour_seam_delta_e2000": 0.7762525130781355,
+          "speed_ratio": 0.9748356956554536,
+          "longest_hold_ms": 0.0,
+          "non_extremum_holds_ms": [],
+          "extremum_holds_ms": [],
+          "clipped_frames": 0,
+          "seam_ratio": 0.7001512972336889,
+          "seam_difference": 13.72705078125,
+          "ordinary_step": 19.6058349609375,
+          "seam_frames": [
+            7,
+            0
+          ],
+          "moving": true,
+          "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+        },
+        "stride": {
+          "contact_ms": [
+            160,
+            160
+          ],
+          "stride_px": [
+            8.0,
+            8.0
+          ],
+          "duration_ratio": 1.0,
+          "length_ratio": 1.0
+        },
+        "centers": [
+          [
+            34.06514285714286,
+            37.53371428571428
+          ],
+          [
+            31.23329129886507,
+            35.068095838587645
+          ],
+          [
+            31.19059107358263,
+            33.39445114595899
+          ],
+          [
+            30.757177033492823,
+            35.473684210526315
+          ],
+          [
+            30.390857142857143,
+            37.84914285714286
+          ],
+          [
+            29.954712362301102,
+            35.38310893512852
+          ],
+          [
+            30.36573511543135,
+            33.31105710814095
+          ],
+          [
+            34.36604189636163,
+            36.25909592061742
+          ]
+        ],
+        "visual_review": "pending"
+      },
+      "limitation": "Legacy run boxes overlap; same-foot left/right attribution remains unassessed. Do not count this as anatomical validation."
+    },
+    {
+      "family": "rimewick",
+      "state": "idle",
+      "split": "held_out",
+      "qa": {
+        "status": "PASS",
+        "issues": [],
+        "unassessed": [],
+        "contacts": {
+          "status": "PASS",
+          "contacts": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                7
+              ],
+              "samples": [
+                [
+                  0,
+                  23.0,
+                  59.0
+                ],
+                [
+                  1,
+                  23.0,
+                  59.0
+                ],
+                [
+                  2,
+                  23.0,
+                  59.0
+                ],
+                [
+                  3,
+                  23.0,
+                  59.0
+                ],
+                [
+                  4,
+                  23.0,
+                  59.0
+                ],
+                [
+                  5,
+                  23.0,
+                  59.0
+                ],
+                [
+                  6,
+                  23.0,
+                  59.0
+                ],
+                [
+                  7,
+                  23.0,
+                  59.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                0,
+                7
+              ],
+              "samples": [
+                [
+                  0,
+                  35.0,
+                  59.0
+                ],
+                [
+                  1,
+                  35.0,
+                  59.0
+                ],
+                [
+                  2,
+                  35.0,
+                  59.0
+                ],
+                [
+                  3,
+                  35.0,
+                  59.0
+                ],
+                [
+                  4,
+                  35.0,
+                  59.0
+                ],
+                [
+                  5,
+                  35.0,
+                  59.0
+                ],
+                [
+                  6,
+                  35.0,
+                  59.0
+                ],
+                [
+                  7,
+                  35.0,
+                  59.0
+                ]
+              ]
+            }
+          ],
+          "issues": [],
+          "measured_intervals": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                7
+              ],
+              "box": [
+                20,
+                53,
+                10,
+                10
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                0,
+                7
+              ],
+              "box": [
+                31,
+                53,
+                12,
+                10
+              ],
+              "measured": true
+            }
+          ],
+          "trajectories": {
+            "left": [
+              [
+                23.0,
+                59.0
+              ],
+              [
+                23.0,
+                59.0
+              ],
+              [
+                23.0,
+                59.0
+              ],
+              [
+                23.0,
+                59.0
+              ],
+              [
+                23.0,
+                59.0
+              ],
+              [
+                23.0,
+                59.0
+              ],
+              [
+                23.0,
+                59.0
+              ],
+              [
+                23.0,
+                59.0
+              ]
+            ],
+            "right": [
+              [
+                35.0,
+                59.0
+              ],
+              [
+                35.0,
+                59.0
+              ],
+              [
+                35.0,
+                59.0
+              ],
+              [
+                35.0,
+                59.0
+              ],
+              [
+                35.0,
+                59.0
+              ],
+              [
+                35.0,
+                59.0
+              ],
+              [
+                35.0,
+                59.0
+              ],
+              [
+                35.0,
+                59.0
+              ]
+            ]
+          }
+        },
+        "grounded": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vertical_amplitude_px": 1.2368612499756892,
+        "bob_cycles": 1,
+        "jump": null,
+        "seam_ratio": 1.0127566113962354,
+        "seam": {
+          "status": "PASS",
+          "issues": [],
+          "colour_seam_delta_e2000": 0.30591064674978086,
+          "speed_ratio": 0.8857694217257828,
+          "longest_hold_ms": 0.0,
+          "non_extremum_holds_ms": [],
+          "extremum_holds_ms": [],
+          "clipped_frames": 0,
+          "seam_ratio": 0.9874173936029607,
+          "seam_difference": 6.8397216796875,
+          "ordinary_step": 6.9268798828125,
+          "seam_frames": [
+            7,
+            0
+          ],
+          "moving": true,
+          "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+        },
+        "stride": null,
+        "centers": [
+          [
+            34.46856581532416,
+            35.155206286836936
+          ],
+          [
+            34.28243512974052,
+            35.27644710578842
+          ],
+          [
+            34.26031434184676,
+            34.90373280943025
+          ],
+          [
+            34.42069632495164,
+            35.02321083172147
+          ],
+          [
+            34.45731108930324,
+            35.41118743866536
+          ],
+          [
+            34.64237775647172,
+            35.757430488974116
+          ],
+          [
+            34.55346534653465,
+            36.14059405940594
+          ],
+          [
+            34.46975806451613,
+            35.484879032258064
+          ]
+        ],
+        "visual_review": "pending"
+      },
+      "limitation": "Legacy run boxes overlap; same-foot left/right attribution remains unassessed. Do not count this as anatomical validation."
+    },
+    {
+      "family": "reviewer_control",
+      "state": "WALK-8",
+      "split": "calibration",
+      "qa": {
+        "status": "PASS",
+        "issues": [],
+        "unassessed": [],
+        "contacts": {
+          "status": "PASS",
+          "contacts": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "samples": [
+                [
+                  0,
+                  24.0,
+                  60.0
+                ],
+                [
+                  1,
+                  24.0,
+                  60.0
+                ],
+                [
+                  2,
+                  24.0,
+                  60.0
+                ],
+                [
+                  3,
+                  24.0,
+                  60.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                7
+              ],
+              "samples": [
+                [
+                  4,
+                  36.0,
+                  60.0
+                ],
+                [
+                  5,
+                  36.0,
+                  60.0
+                ],
+                [
+                  6,
+                  36.0,
+                  60.0
+                ],
+                [
+                  7,
+                  36.0,
+                  60.0
+                ]
+              ]
+            }
+          ],
+          "issues": [],
+          "measured_intervals": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "box": [
+                18,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                7
+              ],
+              "box": [
+                33,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            }
+          ],
+          "trajectories": {
+            "left": [
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                25.0,
+                58.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                58.0
+              ]
+            ],
+            "right": [
+              [
+                35.0,
+                58.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                58.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ]
+            ]
+          }
+        },
+        "grounded": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vertical_amplitude_px": 1.5647751539914339,
+        "bob_cycles": 2,
+        "jump": null,
+        "seam_ratio": 1.2426338331509095,
+        "seam": {
+          "status": "PASS",
+          "issues": [],
+          "colour_seam_delta_e2000": 0.7169457107352427,
+          "speed_ratio": 1.0,
+          "longest_hold_ms": 0.0,
+          "non_extremum_holds_ms": [],
+          "extremum_holds_ms": [],
+          "clipped_frames": 0,
+          "seam_ratio": 1.315285508543848,
+          "seam_difference": 2.06243896484375,
+          "ordinary_step": 1.56805419921875,
+          "seam_frames": [
+            7,
+            0
+          ],
+          "moving": true,
+          "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+        },
+        "stride": {
+          "contact_ms": [
+            400,
+            400
+          ],
+          "stride_px": [
+            1.0,
+            1.0
+          ],
+          "duration_ratio": 1.0,
+          "length_ratio": 1.0
+        },
+        "centers": [
+          [
+            31.895705521472394,
+            32.71165644171779
+          ],
+          [
+            31.83400809716599,
+            31.910931174089068
+          ],
+          [
+            31.824949698189133,
+            31.14688128772636
+          ],
+          [
+            31.884,
+            32.234
+          ],
+          [
+            32.104294478527606,
+            32.71165644171779
+          ],
+          [
+            32.16599190283401,
+            31.910931174089068
+          ],
+          [
+            32.17505030181086,
+            31.14688128772636
+          ],
+          [
+            32.116,
+            32.234
+          ]
+        ],
+        "visual_review": "pending"
+      }
+    },
+    {
+      "family": "reviewer_control",
+      "state": "WALK-LIMP",
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "issues": [
+          {
+            "kind": "stride_asymmetry",
+            "contact_ms": [
+              500,
+              300
+            ],
+            "stride_px": [
+              1.0,
+              1.0
+            ],
+            "duration_ratio": 1.6666666666666667,
+            "length_ratio": 1.0
+          }
+        ],
+        "unassessed": [],
+        "contacts": {
+          "status": "PASS",
+          "contacts": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                4
+              ],
+              "samples": [
+                [
+                  0,
+                  24.0,
+                  60.0
+                ],
+                [
+                  1,
+                  24.0,
+                  60.0
+                ],
+                [
+                  2,
+                  24.0,
+                  60.0
+                ],
+                [
+                  3,
+                  24.0,
+                  60.0
+                ],
+                [
+                  4,
+                  24.0,
+                  60.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                5,
+                7
+              ],
+              "samples": [
+                [
+                  5,
+                  36.0,
+                  60.0
+                ],
+                [
+                  6,
+                  36.0,
+                  60.0
+                ],
+                [
+                  7,
+                  36.0,
+                  60.0
+                ]
+              ]
+            }
+          ],
+          "issues": [],
+          "measured_intervals": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                4
+              ],
+              "box": [
+                18,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                5,
+                7
+              ],
+              "box": [
+                33,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            }
+          ],
+          "trajectories": {
+            "left": [
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                25.0,
+                58.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                58.0
+              ]
+            ],
+            "right": [
+              [
+                35.0,
+                58.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                58.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ]
+            ]
+          }
+        },
+        "grounded": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vertical_amplitude_px": 1.5647751539914339,
+        "bob_cycles": 2,
+        "jump": null,
+        "seam_ratio": 1.2426338331509095,
+        "seam": {
+          "status": "PASS",
+          "issues": [],
+          "colour_seam_delta_e2000": 0.7169457107352427,
+          "speed_ratio": 1.3488788355213712,
+          "longest_hold_ms": 0.0,
+          "non_extremum_holds_ms": [],
+          "extremum_holds_ms": [],
+          "clipped_frames": 0,
+          "seam_ratio": 1.315285508543848,
+          "seam_difference": 2.06243896484375,
+          "ordinary_step": 1.56805419921875,
+          "seam_frames": [
+            7,
+            0
+          ],
+          "moving": true,
+          "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+        },
+        "stride": {
+          "contact_ms": [
+            500,
+            300
+          ],
+          "stride_px": [
+            1.0,
+            1.0
+          ],
+          "duration_ratio": 1.6666666666666667,
+          "length_ratio": 1.0
+        },
+        "centers": [
+          [
+            31.895705521472394,
+            32.71165644171779
+          ],
+          [
+            31.83400809716599,
+            31.910931174089068
+          ],
+          [
+            31.824949698189133,
+            31.14688128772636
+          ],
+          [
+            31.83400809716599,
+            31.910931174089068
+          ],
+          [
+            31.895705521472394,
+            32.71165644171779
+          ],
+          [
+            32.116,
+            32.234
+          ],
+          [
+            32.17505030181086,
+            31.14688128772636
+          ],
+          [
+            32.116,
+            32.234
+          ]
+        ],
+        "visual_review": "pending"
+      }
+    },
+    {
+      "family": "reviewer_control",
+      "state": "WALK-JUMPSEAM",
+      "split": "calibration",
+      "qa": {
+        "status": "FAIL",
+        "issues": [
+          {
+            "kind": "stride_asymmetry",
+            "contact_ms": [
+              400,
+              200
+            ],
+            "stride_px": [
+              1.0,
+              1.0
+            ],
+            "duration_ratio": 2.0,
+            "length_ratio": 1.0
+          }
+        ],
+        "unassessed": [],
+        "contacts": {
+          "status": "PASS",
+          "contacts": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "samples": [
+                [
+                  0,
+                  24.0,
+                  60.0
+                ],
+                [
+                  1,
+                  24.0,
+                  60.0
+                ],
+                [
+                  2,
+                  24.0,
+                  60.0
+                ],
+                [
+                  3,
+                  24.0,
+                  60.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                5
+              ],
+              "samples": [
+                [
+                  4,
+                  36.0,
+                  60.0
+                ],
+                [
+                  5,
+                  36.0,
+                  60.0
+                ]
+              ]
+            }
+          ],
+          "issues": [],
+          "measured_intervals": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "box": [
+                18,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                5
+              ],
+              "box": [
+                33,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            }
+          ],
+          "trajectories": {
+            "left": [
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                25.0,
+                58.0
+              ],
+              [
+                25.0,
+                56.0
+              ]
+            ],
+            "right": [
+              [
+                35.0,
+                58.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                58.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ]
+            ]
+          }
+        },
+        "grounded": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vertical_amplitude_px": 1.5647751539914339,
+        "bob_cycles": 2,
+        "jump": null,
+        "seam_ratio": 1.3025434890643184,
+        "seam": {
+          "status": "PASS",
+          "issues": [],
+          "colour_seam_delta_e2000": 0.360436113865168,
+          "speed_ratio": 1.0,
+          "longest_hold_ms": 0.0,
+          "non_extremum_holds_ms": [],
+          "extremum_holds_ms": [],
+          "clipped_frames": 0,
+          "seam_ratio": 1.3493830524308124,
+          "seam_difference": 2.11590576171875,
+          "ordinary_step": 1.56805419921875,
+          "seam_frames": [
+            5,
+            0
+          ],
+          "moving": true,
+          "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+        },
+        "stride": {
+          "contact_ms": [
+            400,
+            200
+          ],
+          "stride_px": [
+            1.0,
+            1.0
+          ],
+          "duration_ratio": 2.0,
+          "length_ratio": 1.0
+        },
+        "centers": [
+          [
+            31.895705521472394,
+            32.71165644171779
+          ],
+          [
+            31.83400809716599,
+            31.910931174089068
+          ],
+          [
+            31.824949698189133,
+            31.14688128772636
+          ],
+          [
+            31.884,
+            32.234
+          ],
+          [
+            32.104294478527606,
+            32.71165644171779
+          ],
+          [
+            32.16599190283401,
+            31.910931174089068
+          ]
+        ],
+        "visual_review": "pending"
+      }
+    },
+    {
+      "family": "reviewer_control",
+      "state": "WALK-SLIDE",
+      "split": "held_out",
+      "qa": {
+        "status": "FAIL",
+        "issues": [
+          {
+            "kind": "foot_slide",
+            "frame": 2,
+            "foot": "left",
+            "slide_px": -2.0
+          },
+          {
+            "kind": "foot_slide",
+            "frame": 3,
+            "foot": "left",
+            "slide_px": -3.0
+          },
+          {
+            "kind": "stride_asymmetry",
+            "contact_ms": [
+              400,
+              400
+            ],
+            "stride_px": [
+              4.0,
+              1.0
+            ],
+            "duration_ratio": 1.0,
+            "length_ratio": 4.0
+          }
+        ],
+        "unassessed": [],
+        "contacts": {
+          "status": "FAIL",
+          "contacts": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "samples": [
+                [
+                  0,
+                  24.0,
+                  60.0
+                ],
+                [
+                  1,
+                  23.0,
+                  60.0
+                ],
+                [
+                  2,
+                  22.0,
+                  60.0
+                ],
+                [
+                  3,
+                  21.0,
+                  60.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                7
+              ],
+              "samples": [
+                [
+                  4,
+                  36.0,
+                  60.0
+                ],
+                [
+                  5,
+                  36.0,
+                  60.0
+                ],
+                [
+                  6,
+                  36.0,
+                  60.0
+                ],
+                [
+                  7,
+                  36.0,
+                  60.0
+                ]
+              ]
+            }
+          ],
+          "issues": [
+            {
+              "kind": "foot_slide",
+              "frame": 2,
+              "foot": "left",
+              "slide_px": -2.0
+            },
+            {
+              "kind": "foot_slide",
+              "frame": 3,
+              "foot": "left",
+              "slide_px": -3.0
+            }
+          ],
+          "measured_intervals": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "box": [
+                18,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                7
+              ],
+              "box": [
+                33,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            }
+          ],
+          "trajectories": {
+            "left": [
+              [
+                24.0,
+                60.0
+              ],
+              [
+                23.0,
+                60.0
+              ],
+              [
+                22.0,
+                60.0
+              ],
+              [
+                21.0,
+                60.0
+              ],
+              [
+                25.0,
+                58.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                58.0
+              ]
+            ],
+            "right": [
+              [
+                35.0,
+                58.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                58.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ]
+            ]
+          }
+        },
+        "grounded": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vertical_amplitude_px": 1.7177416344155603,
+        "bob_cycles": 2,
+        "jump": null,
+        "seam_ratio": 1.1719266877464474,
+        "seam": {
+          "status": "PASS",
+          "issues": [],
+          "colour_seam_delta_e2000": 0.7169457107352427,
+          "speed_ratio": 0.8318428346973107,
+          "longest_hold_ms": 0.0,
+          "non_extremum_holds_ms": [],
+          "extremum_holds_ms": [],
+          "clipped_frames": 0,
+          "seam_ratio": 1.274987737237294,
+          "seam_difference": 2.06243896484375,
+          "ordinary_step": 1.61761474609375,
+          "seam_frames": [
+            7,
+            0
+          ],
+          "moving": true,
+          "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+        },
+        "stride": {
+          "contact_ms": [
+            400,
+            400
+          ],
+          "stride_px": [
+            4.0,
+            1.0
+          ],
+          "duration_ratio": 1.0,
+          "length_ratio": 4.0
+        },
+        "centers": [
+          [
+            31.895705521472394,
+            32.71165644171779
+          ],
+          [
+            31.765182186234817,
+            31.910931174089068
+          ],
+          [
+            31.726166328600407,
+            30.993914807302232
+          ],
+          [
+            31.68,
+            32.234
+          ],
+          [
+            32.104294478527606,
+            32.71165644171779
+          ],
+          [
+            32.16599190283401,
+            31.910931174089068
+          ],
+          [
+            32.17505030181086,
+            31.14688128772636
+          ],
+          [
+            32.116,
+            32.234
+          ]
+        ],
+        "visual_review": "pending"
+      }
+    },
+    {
+      "family": "reviewer_control",
+      "state": "WALK-AIR",
+      "split": "held_out",
+      "qa": {
+        "status": "FAIL",
+        "issues": [
+          {
+            "kind": "walk_airborne",
+            "frames": [
+              6
+            ]
+          }
+        ],
+        "unassessed": [],
+        "contacts": {
+          "status": "PASS",
+          "contacts": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "samples": [
+                [
+                  0,
+                  24.0,
+                  60.0
+                ],
+                [
+                  1,
+                  24.0,
+                  60.0
+                ],
+                [
+                  2,
+                  24.0,
+                  60.0
+                ],
+                [
+                  3,
+                  24.0,
+                  60.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                5
+              ],
+              "samples": [
+                [
+                  4,
+                  36.0,
+                  60.0
+                ],
+                [
+                  5,
+                  36.0,
+                  60.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                7,
+                7
+              ],
+              "samples": [
+                [
+                  7,
+                  36.0,
+                  60.0
+                ]
+              ]
+            }
+          ],
+          "issues": [],
+          "measured_intervals": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "box": [
+                18,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                5
+              ],
+              "box": [
+                33,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                7,
+                7
+              ],
+              "box": [
+                33,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            }
+          ],
+          "trajectories": {
+            "left": [
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                25.0,
+                58.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                58.0
+              ]
+            ],
+            "right": [
+              [
+                35.0,
+                58.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                58.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                56.0
+              ],
+              [
+                36.0,
+                60.0
+              ]
+            ]
+          }
+        },
+        "grounded": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          false,
+          true
+        ],
+        "vertical_amplitude_px": 2.2704193283157323,
+        "bob_cycles": 2,
+        "jump": null,
+        "seam_ratio": 1.231649931243636,
+        "seam": {
+          "status": "PASS",
+          "issues": [],
+          "colour_seam_delta_e2000": 0.7169457107352427,
+          "speed_ratio": 1.1493815989806355,
+          "longest_hold_ms": 0.0,
+          "non_extremum_holds_ms": [],
+          "extremum_holds_ms": [],
+          "clipped_frames": 0,
+          "seam_ratio": 1.315285508543848,
+          "seam_difference": 2.06243896484375,
+          "ordinary_step": 1.56805419921875,
+          "seam_frames": [
+            7,
+            0
+          ],
+          "moving": true,
+          "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+        },
+        "stride": {
+          "contact_ms": [
+            400,
+            300
+          ],
+          "stride_px": [
+            1.0,
+            1.0
+          ],
+          "duration_ratio": 1.3333333333333333,
+          "length_ratio": 1.0
+        },
+        "centers": [
+          [
+            31.895705521472394,
+            32.71165644171779
+          ],
+          [
+            31.83400809716599,
+            31.910931174089068
+          ],
+          [
+            31.824949698189133,
+            31.14688128772636
+          ],
+          [
+            31.884,
+            32.234
+          ],
+          [
+            32.104294478527606,
+            32.71165644171779
+          ],
+          [
+            32.16599190283401,
+            31.910931174089068
+          ],
+          [
+            32.068041237113405,
+            30.44123711340206
+          ],
+          [
+            32.116,
+            32.234
+          ]
+        ],
+        "visual_review": "pending"
+      }
+    },
+    {
+      "family": "reviewer_control",
+      "state": "WALK-DUPSEAM",
+      "split": "held_out",
+      "qa": {
+        "status": "FAIL",
+        "issues": [
+          {
+            "kind": "loop_seam",
+            "ratio": 0.0,
+            "frames": [
+              8,
+              0
+            ]
+          }
+        ],
+        "unassessed": [],
+        "contacts": {
+          "status": "PASS",
+          "contacts": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "samples": [
+                [
+                  0,
+                  24.0,
+                  60.0
+                ],
+                [
+                  1,
+                  24.0,
+                  60.0
+                ],
+                [
+                  2,
+                  24.0,
+                  60.0
+                ],
+                [
+                  3,
+                  24.0,
+                  60.0
+                ]
+              ]
+            },
+            {
+              "foot": "left",
+              "frames": [
+                8,
+                8
+              ],
+              "samples": [
+                [
+                  8,
+                  24.0,
+                  60.0
+                ]
+              ]
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                7
+              ],
+              "samples": [
+                [
+                  4,
+                  36.0,
+                  60.0
+                ],
+                [
+                  5,
+                  36.0,
+                  60.0
+                ],
+                [
+                  6,
+                  36.0,
+                  60.0
+                ],
+                [
+                  7,
+                  36.0,
+                  60.0
+                ]
+              ]
+            }
+          ],
+          "issues": [],
+          "measured_intervals": [
+            {
+              "foot": "left",
+              "frames": [
+                0,
+                3
+              ],
+              "box": [
+                18,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            },
+            {
+              "foot": "left",
+              "frames": [
+                8,
+                8
+              ],
+              "box": [
+                18,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            },
+            {
+              "foot": "right",
+              "frames": [
+                4,
+                7
+              ],
+              "box": [
+                33,
+                50,
+                14,
+                14
+              ],
+              "measured": true
+            }
+          ],
+          "trajectories": {
+            "left": [
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                24.0,
+                60.0
+              ],
+              [
+                25.0,
+                58.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                56.0
+              ],
+              [
+                25.0,
+                58.0
+              ],
+              [
+                24.0,
+                60.0
+              ]
+            ],
+            "right": [
+              [
+                35.0,
+                58.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                56.0
+              ],
+              [
+                35.0,
+                58.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                36.0,
+                60.0
+              ],
+              [
+                35.0,
+                58.0
+              ]
+            ]
+          }
+        },
+        "grounded": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vertical_amplitude_px": 1.5647751539914339,
+        "bob_cycles": 2,
+        "jump": null,
+        "seam_ratio": 0.0,
+        "seam": {
+          "status": "PASS",
+          "issues": [],
+          "colour_seam_delta_e2000": 0.0,
+          "speed_ratio": 1.0,
+          "longest_hold_ms": 100.0,
+          "non_extremum_holds_ms": [],
+          "extremum_holds_ms": [],
+          "clipped_frames": 0,
+          "seam_ratio": 0.0,
+          "seam_difference": 0.0,
+          "ordinary_step": 1.56805419921875,
+          "seam_frames": [
+            8,
+            0
+          ],
+          "moving": true,
+          "note": "Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review."
+        },
+        "stride": {
+          "contact_ms": [
+            500,
+            400
+          ],
+          "stride_px": [
+            1.0,
+            1.0
+          ],
+          "duration_ratio": 1.25,
+          "length_ratio": 1.0
+        },
+        "centers": [
+          [
+            31.895705521472394,
+            32.71165644171779
+          ],
+          [
+            31.83400809716599,
+            31.910931174089068
+          ],
+          [
+            31.824949698189133,
+            31.14688128772636
+          ],
+          [
+            31.884,
+            32.234
+          ],
+          [
+            32.104294478527606,
+            32.71165644171779
+          ],
+          [
+            32.16599190283401,
+            31.910931174089068
+          ],
+          [
+            32.17505030181086,
+            31.14688128772636
+          ],
+          [
+            32.116,
+            32.234
+          ],
+          [
+            31.895705521472394,
+            32.71165644171779
+          ]
+        ],
+        "visual_review": "pending"
+      }
+    }
+  ]
+}

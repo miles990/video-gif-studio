@@ -1,0 +1,106 @@
+{
+  "grid": 64,
+  "light_deg": 135,
+  "outline_px": 2,
+  "outline_hex": "#281B20",
+  "palette": [
+    {
+      "name": "color-1",
+      "hex": "#281B20",
+      "role": "main",
+      "area_pct": 23.479816044966785
+    },
+    {
+      "name": "color-2",
+      "hex": "#573021",
+      "role": "shade",
+      "area_pct": 9.453244762391416
+    },
+    {
+      "name": "color-3",
+      "hex": "#81462E",
+      "role": "main",
+      "area_pct": 9.248850281042412
+    },
+    {
+      "name": "color-4",
+      "hex": "#B0734C",
+      "role": "shade",
+      "area_pct": 1.3796627491057742
+    },
+    {
+      "name": "color-5",
+      "hex": "#DC761E",
+      "role": "main",
+      "area_pct": 21.691364333163005
+    },
+    {
+      "name": "color-6",
+      "hex": "#F5A32D",
+      "role": "main",
+      "area_pct": 0.2554931016862545
+    },
+    {
+      "name": "color-7",
+      "hex": "#FFE0B1",
+      "role": "main",
+      "area_pct": 11.420541645375575
+    },
+    {
+      "name": "color-8",
+      "hex": "#A12268",
+      "role": "face",
+      "area_pct": 0.17884517118037813
+    },
+    {
+      "name": "color-9",
+      "hex": "#E2B75B",
+      "role": "main",
+      "area_pct": 3.6024527337761882
+    },
+    {
+      "name": "color-10",
+      "hex": "#142D38",
+      "role": "shade",
+      "area_pct": 2.043944813490036
+    },
+    {
+      "name": "color-11",
+      "hex": "#1B5964",
+      "role": "shade",
+      "area_pct": 0.2554931016862545
+    },
+    {
+      "name": "color-12",
+      "hex": "#2B8990",
+      "role": "main",
+      "area_pct": 4.675523760858457
+    },
+    {
+      "name": "color-13",
+      "hex": "#292E46",
+      "role": "main",
+      "area_pct": 9.964230965763925
+    },
+    {
+      "name": "color-14",
+      "hex": "#484865",
+      "role": "shade",
+      "area_pct": 0.1532958610117527
+    },
+    {
+      "name": "color-15",
+      "hex": "#8FC1D7",
+      "role": "main",
+      "area_pct": 0.740929994890138
+    },
+    {
+      "name": "color-16",
+      "hex": "#D0EFFF",
+      "role": "main",
+      "area_pct": 1.4563106796116505
+    }
+  ],
+  "safe_margin": 4,
+  "shading": "cel"
+}

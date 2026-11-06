@@ -289,10 +289,11 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
             if contract.get('pixel'):im=quantize(im,palette)
             im.save(folder/'keys'/f'{j:02d}.png');keys.append(im)
             from image_identity import compare
-            metrics=[compare(source,ref) for ref in refs]
+            identity_source=Path(key.get('identity_source',source))
+            metrics=[compare(identity_source,ref) for ref in refs]
             from image_identity import check,override_record
-            identity=check(source,charsheet.parent/'refset.json',request.identity_override) if (charsheet.parent/'refset.json').exists() else dict(status='unassessed',reason='Source identity refset unavailable')
-            identity.update(measurement_stage='source_before_downscale',source_size=list(rgba(source).size),source_sha256=digest(source),measurements=metrics)
+            identity=check(identity_source,charsheet.parent/'refset.json',request.identity_override) if (charsheet.parent/'refset.json').exists() else dict(status='unassessed',reason='Source identity refset unavailable')
+            identity.update(measurement_stage='source_before_downscale',source_size=list(rgba(identity_source).size),source_sha256=digest(identity_source),measurements=metrics)
             key_records.append(dict(frame=index,file=f'keys/{j:02d}.png',refs_sent=sent,source_sha=digest(source),points=key.get('points') or silhouette_points(im),guide_source='annotated' if key.get('points') else 'silhouette_preview',
                 identity=identity,registration=registration))
         frames=[];records=[];durations=spec.get('durations_ms',[round(1000/rate/10)*10]*count)

@@ -178,5 +178,245 @@
       256
     ],
     "split": "held_out"
+  },
+  {
+    "name": "rimewick-icon-0",
+    "source": ".scratch\\s14-demo-v8\\icons\\00.png",
+    "source_sha256": "667e16ef983fea4a1ee06db7c85a468702a85fc6d859132d8dfaa03c8f4cd8ed",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-icon-1",
+    "source": ".scratch\\s14-demo-v8\\icons\\01.png",
+    "source_sha256": "a6d102727a82c292595b0fe30b34fcf22de8df93e8c7499ddacb6fffafde14b5",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-icon-2",
+    "source": ".scratch\\s14-demo-v8\\icons\\02.png",
+    "source_sha256": "d003e657a43fa6caf7ff52807b6e9186ffd033c7a2140c37cc6e4dd82c01f535",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-icon-3",
+    "source": ".scratch\\s14-demo-v8\\icons\\03.png",
+    "source_sha256": "3c6d56ec99d27fd77278577f52de9c6f358b42d4c05977b026464b6f556a7b1b",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-icon-4",
+    "source": ".scratch\\s14-demo-v8\\icons\\04.png",
+    "source_sha256": "92d8b28ae8726c6312526c2d78832d996d7957ca32ea3e0ee64a1c75f8e6a5a0",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-icon-5",
+    "source": ".scratch\\s14-demo-v8\\icons\\05.png",
+    "source_sha256": "5486e7aeacb87728e6c682343f2798560a83013b5b6337ce61e8c095caec5b5b",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-icon-6",
+    "source": ".scratch\\s14-demo-v8\\icons\\06.png",
+    "source_sha256": "8a34ff196a61fc355bd08d9bde2c2881670e84379e8161dc359744a819305151",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-icon-7",
+    "source": ".scratch\\s14-demo-v8\\icons\\07.png",
+    "source_sha256": "4567a61d6412a48415187a94a0be8bb931c40c8dcc36ff5684964bd4bfcc8049",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "motion/rimewick-run-00.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\run\\frames\\00000.png",
+    "source_sha256": "b01c265c81b2f8c2166c06def4123367c97a903ed7fde9f62d7f00d93ebf0bb1",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "motion/rimewick-run-01.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\run\\frames\\00001.png",
+    "source_sha256": "6617fbc74032dcd117e315e80d1798b272a8e0c14e2fdbf1f1c369edae7d3abc",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "motion/rimewick-run-02.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\run\\frames\\00002.png",
+    "source_sha256": "f93c2e6b74f3ae7d15dc9df4aa3cce78a3d96bc560266a5dae56e7e68e46ef8a",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "motion/rimewick-run-03.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\run\\frames\\00003.png",
+    "source_sha256": "9fdae77a842dcf5c3b5a8553e176c456703d47cc057be0ee0971b0e60a4c976f",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "motion/rimewick-run-04.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\run\\frames\\00004.png",
+    "source_sha256": "9547db4a93734f9ff87ce355b108293f6323f9b0d9a9fadfd9ce4faec45c12e0",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "motion/rimewick-run-05.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\run\\frames\\00005.png",
+    "source_sha256": "67718d1a080d6bd3e95371bffbac813b8f0acce0d431677c216743fc08d65889",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "motion/rimewick-run-06.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\run\\frames\\00006.png",
+    "source_sha256": "0f719aae502f40fc6ddb937ae6b33c61be0dfed554da71641fd457cc61672719",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "motion/rimewick-run-07.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\run\\frames\\00007.png",
+    "source_sha256": "391e0eb904b8de8e197cfd979250e67702488697e0c08e224c334fc7d38c54ee",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "motion/rimewick-idle-00.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\idle\\frames\\00000.png",
+    "source_sha256": "9549e7b456b3974e5476efcd214754bf1fa30eba839337a982475e2c1d2a0c62",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "motion/rimewick-idle-01.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\idle\\frames\\00001.png",
+    "source_sha256": "bbf675a9f5e0429c1a567f3377981a6389c350823cccd96524df0ebc4639721c",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "motion/rimewick-idle-02.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\idle\\frames\\00002.png",
+    "source_sha256": "212f8b8b8224c765d32017f2f0654430f3dc4e75ec2e6fcbe734a4f16d0f737a",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "motion/rimewick-idle-03.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\idle\\frames\\00003.png",
+    "source_sha256": "6af1429b12de89f5b9f581ab33f50e118d6d328ad6a0b5f16c8dafc7a11f4889",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "motion/rimewick-idle-04.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\idle\\frames\\00004.png",
+    "source_sha256": "0e2f0bbf624c28fc1e15f5d72ca20a34292373b5ada61f52c65186c111a86605",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "motion/rimewick-idle-05.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\idle\\frames\\00005.png",
+    "source_sha256": "25523270a69b0af8b5d08182d1165a4bf24fd97cb0ddca5d67ff6fef5efb0229",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "motion/rimewick-idle-06.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\idle\\frames\\00006.png",
+    "source_sha256": "9e317e29b21a60fcf5317614c1bf9afba432eb39603f414d072c6427c64ba19d",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "motion/rimewick-idle-07.png",
+    "source": ".scratch\\s14-demo-v8\\anim\\idle\\frames\\00007.png",
+    "source_sha256": "7b27c2da952585f46963d4566ee173a59580b2a34c5540cfd8d8e30b42d28c23",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
   }
 ]

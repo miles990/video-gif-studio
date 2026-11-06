@@ -132,3 +132,194 @@ and native texture-size provenance received final refinements. The final
 focused game run has **29 tests, zero failures/errors**
 (`.scratch/s14-final-targeted.json`); the patch replay reruns those final tests.
 No baseline error is counted as a new failure or relabeled as passing.
+
+## Fix round — independent spec-14 review (2026-11-06)
+
+Base: `a03d1e1c807e82edfba0cab4902131ddaebd815c` (s14-fix/main, including
+spec-13 fix round 2). Read the independent `review-s14/report.md` in full.
+All work stayed in this checkout. No spec, acceptance, process or threshold
+policy document was edited; no Git index/commit was written. The initially
+absent `.scratch/commits` directory now contains incremental patches and paired
+commit messages. The feature remains EXPERIMENTAL.
+
+### Changes and regression evidence
+
+1. Character identity uses spec-13 reference-set spread and negative controls,
+   with front/profile/back expectations. Overlapping evidence is unassessed;
+   the existing explicit human override is recorded. Added pose-tolerant,
+   saturation-weighted circular hue ranking, without an absolute BH gate or a
+   palette-only identity pass. The reviewer's actual **single** wolf front is
+   used, not just the easier front extracted from the turnaround. Its side
+   distance is 0.1301, held-out back 0.1650, recoloured/scar-removed near negative
+   0.7595. Raw BH/ORB still prefer that lookalike; they remain visible evidence,
+   and overall semantic identity stays unassessed. Hue ranking cannot verify
+   scars, anatomy or an achromatic copy.
+2. CLI character generation detects large subject components, isolates the
+   requested canonical cell, and matches echoed reference cells when a model
+   reorders its sheet. Ambiguous layouts retry once. `isolate_single_subject`
+   is on the actual generation path. A live attack exposed wide weapons being
+   mistaken for a ground rule; a failing regression now ensures a horizontal
+   weapon cannot sever the head. Only near-ground rules can be removed.
+3. Isolated source images are retained under `identity/`; comparisons happen
+   before 64-pixel conversion. Source size, SHA256 and measurement stage are
+   recorded for sheets and animation keys. A generated pose grid keeps each
+   high-resolution source cell separately from its converted key.
+4. Standing keys register to a common ground and body height. The prompt demo
+   uses one camera transform across each pose strip, preserving intended flight
+   and crouch. Contact intervals are scanned across all frames, with left/right
+   stride and contact-duration comparison. Reviewer WALK-LIMP and the two-frame
+   WALK-JUMPSEAM fail; WALK-8 passes with measured intervals [0,3] and [4,7].
+   Export blocks recorded QA FAIL unless `--allow-qa-fail` records the override.
+   Automatic screen-side foot boxes and silhouette guides are proxies, not
+   anatomical tracking or a physical-motion solver.
+5. Pixel conversion integrates area, applies median color cleanup, quantizes a
+   palette, maps to nearest palette entries and cleans small color islands.
+   Dithering is off. Nearest sampling is reserved for established grids and
+   enlargement. The isolated-color metric catches the old raw-NEAREST output.
+6. Named franchise characters, common Chinese variants and targeted game-style
+   requests are guarded. Alternatives vary by the request and preserve intent
+   while changing species, silhouette, palette and prop. Review original
+   controls (e), (f), (g) are not refused. This remains a bounded named-entity
+   guard, not exhaustive legal/IP recognition.
+7. A generated style-token anchor references the first icon; accepted output
+   references later icons. Padding, outline width and light are checked, with
+   a whole-set deviation report. A live first sword returned a shield: that
+   rejected source was retained and one replacement consumed the spare slot.
+8. Halo QA compares black/white composites and contaminated opaque-rim pixels
+   connected to outside haze; clean internal highlights are not treated as an
+   outside halo. Uniform white inputs take the matting path. Trimmed frames need
+   explicit valid offsets and are padded before packing; errors name the file.
+   Chinese state names, including 攻擊, map to engine state names.
+9. Video estimates have independent route/input-bound files. Tileset colors
+   follow explicit hex colors or supported English/Chinese color terms. No
+   paid-video request was made.
+
+Every item began with a failing regression before implementation. The final
+integration also tests direct prompt orchestration, texture-panel recovery and
+resuming an existing export. Resumed exports retain earlier versions under
+`export-history/`, and preserve original transport reference receipts.
+
+### Calibration and held-out results
+
+Small original images from both sets, reviewer motion controls, original icon
+style tokens and source hashes live in `tests/fixtures/live-s14/`. Every PNG is
+under 0.6 MB (largest 469,078 bytes). Reproduce measurements with
+`python scripts/calibrate_game_assets.py`; its intermediate images stay under
+`.scratch/s14-calibration/`. `calibration.json` preserves failures and limitations.
+
+Character front/side samples from BOTH families form calibration inputs; each
+back is held out. Identity boundaries come from reference spread and negatives,
+not a tuned absolute BH value. Noise uses isolated-color fraction 0.12; halo
+uses contaminated-rim fraction 0.15 with outside-haze topology. The held-out
+backs were not used to tune these thresholds.
+
+| Held-out class | Rimewick | Reviewer wolf/control |
+| --- | --- | --- |
+| Back identity ranking | 0.0663 < training negative 0.4529 | 0.1650 < training negative 0.7575 |
+| Old/new pixel noise | 0.1742 / 0.0407: old FAIL, new PASS | 0.5781 / 0.0872: old FAIL, new PASS |
+| Clean / injected rim halo | no false positive / detected | no false positive / detected |
+| Final icon (7 / 3) | FAIL, outline +1 px | FAIL, outline -1 px |
+| Original texture | FAIL, y wrap ratio 1.626 | slate PASS |
+| Motion | original idle PASS | SLIDE, AIR, DUPSEAM all FAIL as expected |
+
+Reviewer good walking and damaged limp/jump-seam controls were calibration
+checks. The builder's old run also passes numeric checks, but its overlapping
+legacy foot boxes do **not** validate anatomical left/right identity. This
+limitation is recorded rather than relabelled as successful foot tracking.
+Existing style/texture gates were evaluated without retuning them to the
+held-out outputs. All six front/side/back noise/halo pairs produce the expected
+clean-versus-damaged result. These are small regression samples, not population
+accuracy claims or independent taste votes.
+
+### One-line live CLI and delivered pack
+
+The active built-in image-tool host uses the explicit queue transport because
+native nested Codex appserver initialization is denied in this sandbox. Login
+status succeeded; the failure was not presented as missing entitlement. Set
+`VGS_IMAGE_TOOL_QUEUE` to `.scratch/s14-tool-queue` and put the supplied static
+FFmpeg directory on PATH. The actual one-line CLI is:
+
+```powershell
+& C:\Users\User\.codex\skills\video-gif-studio\.venv\Scripts\python.exe scripts/imagegen.py demo game --prompt 'Original Rimewick fox swordsman with amber fur, teal scarf, ice sword and one magenta scar above the character-left eye. Crisp readable pixel clusters, original fantasy adventure assets.' --out .scratch/s14-fix-live --state .scratch/s14-fix-live-state --round s14-fix-live-complete --cap 20 --timeout 1800 --codex C:/Users/User/src/vgs-fx/scripts/image_tool_bridge.py --godot C:/Users/User/src/vgs-fx-private/tools/godot4/Godot_v4.7.2-stable_win64_console.exe --vendor .scratch/s14-vendor --allow-qa-fail --resume --experimental
+```
+
+The CLI owns generation, slicing, registration, conversion, QA and export. No
+hand-assembled source pack or authored crop/pose plan is an input. A live host
+must service the bridge; an unattended native-Codex run remains unverified in
+this sandbox. Local correction/resume runs reused source receipts and generated
+zero additional images. Original transmitted hashes remain in those receipts
+when local preprocessing changes the derived reference pixels.
+
+Actual use: **20 subscription images total**, including one rejected shield;
+**$0**, **zero AI video calls**. Accepted sources comprise four views, one
+six-expression atlas, four pose grids, one style anchor, eight icons and one
+texture source. The last source was a whole presentation board instead of a
+full-frame texture. A measured rectangle detector recovered the largest framed
+slate swatch; original source and crop coordinates remain in its manifest.
+The final texture passes numeric seam QA; semantic material review is pending.
+
+Open `.scratch/s14-fix-live/export/project.godot`. Godot 4.7.2 actually loaded
+and traversed every exported frame, producing `S14_GODOT_PASS`. The local root
+certificate-store warning remains in the log; it did not prevent playback.
+Other engine adapters are emitted but this round does not claim their runtimes
+were tested. The portable ZIP excludes Godot caches/userdata and prior exports.
+
+The **measured overall QA is FAIL**, and the explicit override is retained:
+
+- Character height registration passes; expression differentiation fails.
+  Identity/asymmetry remain unassessed.
+- Idle fails its loop seam. Run fails left/right contact duration (240/80 ms,
+  ratio 3.0). Attack has two-pixel late foot sliding, unassessed weapon/target
+  contact and double-silhouette warnings. Hurt has measured foot sliding.
+- Icons fail some outlines, light angles and cross-item value consistency.
+  Whole-set median outline delta is 0 px, padding shortfall 0 px, and light
+  deviation about 27.99 degrees (7 items assessed). Passing medians do not
+  erase per-item failures.
+- The cropped/repaired slate texture passes numeric QA.
+
+The contact sheets were visually inspected. The head-severing preprocessing
+bug is fixed, but mesh inbetweens still distort some poses. This is a usable
+engine preview for review, **not an artistically accepted production pack**.
+
+### Validation and patch replay
+
+Validation completion and patch replay results are appended below.
+
+Final broad suite: **992 tests, zero failures, the same two baseline environment
+errors, 5 skips** (`.scratch/s14-fix-full-delivery.log`). The unchanged errors are
+`test_install.InstallTests.test_same_source_symlink_is_preserved` (Windows
+symlink privilege) and
+`test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report`
+(locked overlay PNG during cleanup). The full run was collected before the
+last wide-weapon regression and resume-export refinement; those final changes
+were covered by the subsequent **38-test spec-14 suite** and **29-test game
+suite**, both green. Final scenario suites: **26 tests**, green. Earlier full
+runs (988 and 990 tests) also had zero failures and only those two errors.
+
+Live export without the override returned `E_QA_FAIL` and created no directory
+(`.scratch/s14-fix-export-gate.log`). The exported ZIP was unpacked to a different
+scratch directory and passed actual Godot playback again
+(`.scratch/s14-fix-portable-check.json`). There are exactly 20 distinct generated
+source hashes, including the rejected image; the final resume generated zero.
+
+Incremental patch order (each has a matching `.txt` commit message):
+
+1. `01-relative-identity.patch`
+2. `02-single-subject.patch`
+3. `03-source-identity.patch`
+4. `04-motion-registration.patch`
+5. `05-pixel-conversion.patch`
+6. `06-originality.patch`
+7. `07-icon-anchor.patch`
+8. `08-alpha-trim-states.patch`
+9. `09-estimates-tiles.patch`
+10. `10-prompt-demo-live-validation.patch`
+
+The first nine were applied in order to an archived base under
+`.scratch/s14-fix-replay`, with game/spec-14 tests green after each patch. The
+final integration patch receives the same replay checks; the machine-readable
+latest results are in `.scratch/s14-fix-validation.json`, with complete replay
+history in `.scratch/s14-fix-replay.json`. An initial patch-08 path/newline
+packaging error was corrected before delivery and its successful replay is
+recorded. These patch files are ready for the owner to commit; no commit was
+attempted from this sandbox.

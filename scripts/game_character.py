@@ -71,7 +71,7 @@ def ensure_sprite_alpha(im):
     return im,source
 
 
-def prepare_subject(im, view='front'):
+def prepare_subject(im, view='front', reference_paths=()):
     """Separate large full-height components; keep a recorded canonical sheet cell.
 
     Four horizontally ordered turnaround cells use the requested front/side/back/
@@ -84,8 +84,10 @@ def prepare_subject(im, view='front'):
     a=np.array(im);mask=(a[...,3]>127).astype('uint8')
     # Model-drawn ground rules can connect all four figures. Remove only long
     # horizontal rules before counting; retain the original source on disk.
-    rule=cv2.morphologyEx(mask,cv2.MORPH_OPEN,np.ones((1,max(3,im.width//2)),np.uint8))
-    if rule.any() and np.count_nonzero(rule.any(axis=1))<=max(2,im.height*.02):
+    rule=cv2.morphologyEx(mask,cv2.MORPH_OPEN,np.ones((1,max(3,round(im.width*.85))),np.uint8))
+    occupied_rows=np.where(mask.any(axis=1))[0];rule_rows=np.where(rule.any(axis=1))[0]
+    near_ground=bool(len(rule_rows) and len(occupied_rows) and rule_rows.min()>=occupied_rows.min()+.85*np.ptp(occupied_rows))
+    if near_ground and len(rule_rows)<=max(2,im.height*.02):
         mask[rule>0]=0;a[rule>0]=0;im=Image.fromarray(a)
     n,labels,stats,_=cv2.connectedComponentsWithStats(mask,8)
     biggest=max(stats[1:,cv2.CC_STAT_AREA],default=0)
@@ -93,9 +95,28 @@ def prepare_subject(im, view='front'):
     candidates.sort(key=lambda s:int(s[0]))
     count=len(candidates);index=0;crop=im
     if count>1:
-        if count!=4 or max(s[1] for s in candidates)-min(s[1] for s in candidates)>im.height*.2:
+        if count not in (2,3,4) or list(VIEWS).index(view)>=count or max(s[1] for s in candidates)-min(s[1] for s in candidates)>im.height*.2:
             raise ImageError('E_SUBJECT_COUNT','Ambiguous multiple subjects; regenerate ONE requested view.',subject_count=count)
-        index=list(VIEWS).index(view);x,y,w,h,_=candidates[index]
+        index=list(VIEWS).index(view)
+        selection='canonical left-to-right turnaround; unassessed semantic view'
+        if reference_paths and count==len(reference_paths)+1:
+            # A model often echoes all references alongside the new view, and
+            # may reorder them. Match the echoed sources, then select the novel
+            # cell, rather than assuming the new view occupies the last column.
+            from itertools import permutations
+            import tempfile
+            from image_common import ROOT
+            with tempfile.TemporaryDirectory(dir=ROOT/'.scratch',prefix='view-select-') as tmp:
+                cell_paths=[]
+                for j,(cx,cy,cw,ch,_) in enumerate(candidates):
+                    cell=im.crop((int(cx)-2,int(cy)-2,int(cx+cw)+2,int(cy+ch)+2));p=Path(tmp)/f'{j}.png';cell.save(p);cell_paths.append(p)
+                metrics=[[compare(ref,p) for p in cell_paths] for ref in reference_paths]
+                scores=[[m['orb_good_matches']/max(1,max(v['orb_good_matches'] for v in row))+1-m['bhattacharyya'] for m in row] for row in metrics]
+                assignments=list(permutations(range(count),len(reference_paths)))
+                best=max(assignments,key=lambda assignment:sum(scores[k][j] for k,j in enumerate(assignment)))
+                index=next(j for j in range(count) if j not in best)
+                selection='novel cell after matching echoed source references; semantic review pending'
+        x,y,w,h,_=candidates[index]
         crop=Image.new('RGBA',im.size)
         # Midpoints between subjects exclude neighboring contour/support pixels.
         left=0 if index==0 else (int(candidates[index-1][0]+candidates[index-1][2])+int(x))//2
@@ -103,7 +124,7 @@ def prepare_subject(im, view='front'):
         crop.paste(im.crop((left,0,right,im.height)),(left,0))
     crop=isolate_single_subject(crop)
     return crop,dict(subject_count=count,selected_index=index,requested_view=view,alpha_source=alpha_source,
-                     selection='canonical left-to-right turnaround' if count>1 else 'single subject',visual_review='pending')
+                     selection=selection if count>1 else 'single subject',visual_review='pending')
 
 
 def palette_of(images, limit=16, minimum=.005):
@@ -182,6 +203,24 @@ def palette_image(palette):
     return image
 
 
+def view_palette_signature(path):
+    """Pose-tolerant hue evidence; saturation weighting discounts metal/shadows.
+
+    Circular smoothing tolerates lighting shifts. This cannot recognize scars,
+    anatomy or an achromatic lookalike, and must never establish identity alone.
+    """
+    import cv2
+    a=np.array(rgba(path));hsv=cv2.cvtColor(a[...,:3],cv2.COLOR_RGB2HSV).astype(float);visible=a[...,3]>127
+    hist=np.bincount((hsv[...,0][visible]//10).astype(int),
+                    weights=(hsv[...,1][visible]/255)**2*(hsv[...,2][visible]/255),minlength=18)
+    hist=hist+.5*np.roll(hist,1)+.5*np.roll(hist,-1)
+    return hist/max(float(hist.sum()),1e-9)
+
+
+def view_palette_distance(a,b):
+    return float(np.sqrt(max(0,1-np.sqrt(a*b).sum())))
+
+
 def identity_report(paths, negatives=(), near=None, palette=None, identity_override=None):
     """Use spec-13 refset spread/negatives; a hidden face is not a failed identity.
 
@@ -195,13 +234,25 @@ def identity_report(paths, negatives=(), near=None, palette=None, identity_overr
                     controls_valid=False, method=METHOD, views={}, visual_review='user override')
     paths={n:Path(p) for n,p in paths.items()};front=paths['front']
     controls=relative_controls(list(paths.values()),[*negatives,*([near] if near else [])])
+    signatures={n:view_palette_signature(p) for n,p in paths.items()}
+    positive=list(signatures.values());negative=[view_palette_signature(p) for p in [*negatives,*([near] if near else [])]]
+    spread=max((view_palette_distance(a,b) for i,a in enumerate(positive) for b in positive[i+1:]),default=0.)
+    separation=min((view_palette_distance(a,b) for a in positive for b in negative),default=None)
+    palette_controls=dict(valid=bool(len(positive)>1 and separation is not None and separation>spread),
+                          refset_spread=spread,nearest_negative=separation,
+                          method='saturation-weighted circular hue; relative refset spread versus negatives; no absolute cutoff',
+                          limitation='ranking evidence only; no scar/anatomy recognition')
+    def evidence(p,signature=None):
+        row=compare(front,p);row['view_palette_distance']=view_palette_distance(signatures['front'],signature if signature is not None else view_palette_signature(p))
+        row['relative_palette_rank']=(row['view_palette_distance']-spread)/(separation-spread) if palette_controls['valid'] else None
+        return row
     expectations={'front':'face and asymmetric features','side':'profile; visible-side features only',
                   'back':'hidden face; costume and silhouette','three_quarter':'partial face and visible-side features'}
-    rows={n:dict(**compare(front,p),expectation=expectations.get(n,'pose-dependent'),
+    rows={n:dict(**evidence(p,signatures[n]),expectation=expectations.get(n,'pose-dependent'),
                  status='pass' if controls['valid'] else 'unassessed') for n,p in paths.items()}
     return dict(status='pass' if controls['valid'] else 'unassessed',method=METHOD,views=rows,
-                controls=controls,controls_valid=controls['valid'],negative_controls=[compare(front,p) for p in negatives],
-                near_control=compare(front,near) if near else None,
+                controls=controls,controls_valid=controls['valid'],view_palette_controls=palette_controls,negative_controls=[evidence(p) for p in negatives],
+                near_control=evidence(near) if near else None,
                 reason=controls.get('reason'),visual_review='pending')
 
 
@@ -247,7 +298,7 @@ def asymmetry_qa(images,features):
     return dict(status='FAIL' if issues else 'PASS' if assessed else 'unassessed',issues=issues,measurements=measurements)
 
 
-def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None, asymmetric_features=None, reference_licence='original'):
+def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None, asymmetric_features=None, reference_licence='original',expression_atlas=False):
     out=Path(out);original=originality(request.prompt+(' '+Path(image).stem if image else ''),reference_licence if image else None)
     size=(pixel,pixel) if pixel else tuple(map(int,request.size.split('x')))
     if pixel and not 16<=pixel<=512:raise ImageError('E_GRID','Logical grid must be 16..512.')
@@ -257,12 +308,12 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
         prompt=f'{request.prompt}\nOriginal character turnaround. ONE {facing} view. Same scale, ground line at 90% canvas height, shared camera, outfit and palette. No text. Do not mirror asymmetric features. Canvas {size[0]}x{size[1]}.'
         req=replace(request,prompt=prompt,refs=refs[-3:],transparent=True,n=1)
         result=adapter.generate(req,out/'generation'/name);source=Path(result['assets'][0]['path'])
-        try:im,subject=prepare_subject(rgba(source),name)
+        try:im,subject=prepare_subject(rgba(source),name,req.refs)
         except ImageError as exc:
             if exc.error['code']!='E_SUBJECT_COUNT':raise
             req=replace(req,prompt=prompt+' IMPORTANT: a single isolated character only; NOT a turnaround sheet or multiple poses.')
             result=adapter.generate(req,out/'generation'/(name+'-single'),no_cache=True);source=Path(result['assets'][0]['path'])
-            im,subject=prepare_subject(rgba(source),name)
+            im,subject=prepare_subject(rgba(source),name,req.refs)
         actual[name]=list(im.size)
         (out/'identity').mkdir(parents=True,exist_ok=True);identity_file=out/'identity'/f'{name}.png';im.save(identity_file)
         im,registration=register_subject(im,size,round(size[1]*.9))
@@ -275,17 +326,25 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
         for n,im in views.items():im.save(out/'views'/f'{n}.png')
     write(out/'palette.json',palette);palette_image(palette).save(out/'palette.png')
     front=views['front'];face=(size[0]//4,size[1]//8,size[0]//2,size[1]//3);expressions={};exp_records=[]
-    for name in EXPRESSIONS:
+    atlas=None
+    if expression_atlas:
+        atlas_req=replace(request,refs=[str((out/'identity/front.png').resolve())],transparent=True,n=1,
+            prompt=f'{request.prompt}. Six full-body front views of exactly this original character in a 3 columns by 2 rows equal-cell grid, row-major expressions: {", ".join(EXPRESSIONS)}. Each cell has one centered character at identical scale, feet at 90% cell height. Transparent gaps between cells. No labels, no lines, no extra figures.')
+        atlas_result=adapter.generate(atlas_req,out/'generation/expressions-atlas');atlas=rgba(atlas_result['assets'][0]['path']);manifests.append(atlas_result)
+    for expression_index,name in enumerate(EXPRESSIONS):
         req=replace(request,refs=[str((out/'identity/front.png').resolve())],transparent=True,n=1,
                     prompt=f'{request.prompt}\nSame front view, ONLY change eyes, eyebrows and mouth to expression {name}. Keep ears, scarf and outfit unchanged. Canvas {size[0]}x{size[1]}.')
-        generated=adapter.generate(req,out/'generation'/name);im,_=prepare_subject(rgba(generated['assets'][0]['path']))
+        if atlas is None:
+            generated=adapter.generate(req,out/'generation'/name);raw=rgba(generated['assets'][0]['path']);manifests.append(generated)
+        else:
+            x=expression_index%3;y=expression_index//3;raw=atlas.crop((round(x*atlas.width/3),round(y*atlas.height/2),round((x+1)*atlas.width/3),round((y+1)*atlas.height/2)))
+        im,_=prepare_subject(raw)
         im,registration=register_subject(im,size,round(size[1]*.9))
         if pixel:im=quantize(im,palette)
         # Explicit local face composite protects everything outside the reviewed face box.
         fixed=front.copy();x,y,w,h=face;fixed.paste(im.crop((x,y,x+w,y+h)),(x,y))
         (out/'expressions').mkdir(exist_ok=True);fixed.save(out/'expressions'/f'{name}.png');expressions[name]=fixed
         exp_records.append(dict(name=name,file=f'expressions/{name}.png',refs_sent=[digest(p) for p in req.refs],fallback='local_face_composite',face_box=list(face)))
-        manifests.append(generated)
     paths={n:out/'identity'/f'{n}.png' for n in views};identity=identity_report(paths,negatives,near,palette,request.identity_override)
     identity.update(measurement_stage='source_before_downscale',source_sizes=actual,source_sha256={n:digest(p) for n,p in paths.items()})
     refset=dict(version=1,name=request.prompt,images=[dict(path=f'identity/{n}.png',sha256=digest(p),role='identity',source='generated',licence='original generated artwork') for n,p in paths.items()],

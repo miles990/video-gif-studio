@@ -10,6 +10,12 @@ from test_game_engines import EngineTests
 from game_engines import export_engines
 
 class AlphaFixTests(unittest.TestCase):
+    def test_original_pixel_highlights_are_not_outside_halo(self):
+        from game_character import palette_of,quantize
+        with Image.open('tests/fixtures/live-s14/rimewick-side.png') as raw:im,_=prepare_subject(raw.convert('RGBA'),'side')
+        im=quantize(im,palette_of([im]),(64,64))
+        self.assertNotIn('opaque_rim_halo',alpha_contract(im)['issues'])
+
     def test_opaque_rim_halo(self):
         yy,xx=np.mgrid[:256,:256];d=np.hypot(xx-128,yy-128)
         a=np.zeros((256,256,4),np.uint8);a[...,:3]=(224,122,46);a[...,3]=np.rint(np.clip((90-d)/2+.5,0,1)*255);a[a[...,3]==0]=0

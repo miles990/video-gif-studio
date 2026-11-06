@@ -59,15 +59,35 @@ def preview(im,out):
     result.save(out)
 
 
+def texture_subject(im):
+    """Recover a large framed swatch when a model returns a presentation sheet.
+
+    Geometric inference only: retain the original and the measured crop, and
+    never call this proof that the region depicts the requested material.
+    """
+    rgb=im.convert('RGB');edges=cv2.Canny(np.array(rgb),60,140)
+    contours,_=cv2.findContours(edges,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE);candidates=[]
+    for contour in contours:
+        x,y,w,h=cv2.boundingRect(contour);area=w*h
+        if not .12*im.width*im.height<area<.85*im.width*im.height:continue
+        poly=cv2.approxPolyDP(contour,.01*cv2.arcLength(contour,True),True)
+        if len(poly)==4 and cv2.isContourConvex(poly) and cv2.contourArea(contour)>.94*area:
+            candidates.append((area,x,y,w,h))
+    if not candidates:return rgb,None
+    _,x,y,w,h=max(candidates);inset=max(3,round(min(w,h)*.008));box=[x+inset,y+inset,x+w-inset,y+h-inset]
+    return rgb.crop(box),dict(method='largest framed texture panel; semantic review pending',source_box=box,source_size=list(im.size))
+
+
 def texture(adapter,request,out,size=256,repair=True):
     out=Path(out);originality(request.prompt)
     result=adapter.generate(replace(request,prompt=request.prompt+f'. Seamless tileable texture, uniform exposure, no directional light gradient, {size}x{size} canvas.',transparent=False,n=1),out/'generation')
     raw=rgba(result['assets'][0]['path']);actual=list(raw.size)
-    im=raw.convert('RGB').resize((size,size),Image.Resampling.NEAREST)
+    subject,selection=texture_subject(raw)
+    im=subject.resize((size,size),Image.Resampling.BOX)
     source=im.copy();qa=tile_qa(im);correction=None
     if repair and qa['status']=='FAIL':im,correction=repair_periodic(im);qa=correction['after']
     im.save(out/'texture.png');source.save(out/'source.png');preview(im,out/'preview-3x3.png')
-    manifest=dict(status='experimental',size_actual=actual,size_delivered=list(source.size),size_requested=f'{size}x{size} (prompt only)',qa=qa,repair=correction,generation=result,originality=originality(request.prompt))
+    manifest=dict(status='experimental',size_actual=actual,size_delivered=list(source.size),size_requested=f'{size}x{size} (prompt only)',source_selection=selection,qa=qa,repair=correction,generation=result,originality=originality(request.prompt))
     write(out/'gen-manifest.json',manifest);return manifest
 
 

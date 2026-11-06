@@ -1,0 +1,22 @@
+{
+  "grid": 64,
+  "outline_hex": "#1B1426",
+  "outline_px": 2,
+  "light_deg": 135,
+  "safe_margin": 4,
+  "palette": [
+    "#1B1426",
+    "#5A6E8C",
+    "#9FB4C8",
+    "#E0E6EC",
+    "#B5652B",
+    "#E8A04A",
+    "#7A3FB0",
+    "#3C8C5A",
+    "#C8324A",
+    "#F2D27A",
+    "#6B4A2E",
+    "#2E3A4A"
+  ],
+  "shading": "cel"
+}

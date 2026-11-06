@@ -37,7 +37,8 @@ def main(argv):
         # Override the generic image route choices; video never shares API authority.
         next(a for a in kv._actions if a.dest=='route').choices=['grok','fal','local'];kv.set_defaults(route='local')
         dm=sub.add_parser('demo');ds=dm.add_subparsers(dest='action',required=True);game=ds.add_parser('game');options(game)
-        game.add_argument('--source-pack',required=True,type=Path);game.add_argument('--vendor',type=Path);game.add_argument('--godot',type=Path)
+        game.add_argument('--source-pack',type=Path);game.add_argument('--vendor',type=Path);game.add_argument('--godot',type=Path)
+        game.add_argument('--allow-qa-fail',action='store_true');game.add_argument('--resume',action='store_true');game.set_defaults(round='spec-14-fix',cap=20)
         a=p.parse_args(argv)
         if not a.experimental:raise ImageError('E_EXPERIMENTAL','Game assets are experimental.',suggestion='Pass --experimental.')
         if a.command=='sprite-check':
@@ -50,8 +51,11 @@ def main(argv):
             raise ImageError('E_APPROVAL_REQUIRED','Continuous model-video animation requires explicit consent after its input-bound estimate.',network_requests=0,
                              estimate=dict(duration_seconds=5,cost_estimate_usd=None),suggestion='Prepare first/last key poses and use kf-video to obtain an estimate; local pose interpolation is available without approval.')
         if a.command=='demo':
-            from game_demo import demo
-            result=demo(a.source_pack,a.out,a.vendor,a.godot)
+            from game_demo import demo,demo_from_prompt
+            if a.source_pack:result=demo(a.source_pack,a.out,a.vendor,a.godot,allow_qa_fail=a.allow_qa_fail)
+            else:
+                adapter,req=adapter_request(a)
+                result=demo_from_prompt(adapter,req,a.out,a.vendor,a.godot,allow_qa_fail=a.allow_qa_fail,resume=a.resume)
             print(json.dumps(dict(ok=True,result=result)));return 0
         if a.command=='kf-video':
             from game_video import keyframes_video

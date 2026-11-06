@@ -18,9 +18,14 @@ IP recognition model: reference art must be original, owned or licensed, and
 the operator must reject official art. Never use mirrored assets when
 `mirror_ok` is false. Side/back views derived from one reference are inferred.
 
-Identity uses the existing ORB/HSV fallback at the stricter game histogram
-threshold, with a palette exception only for side/back. Missing independent
-positive, negative, or near-negative evidence means **unassessed**, not pass.
+Identity uses spec-13 relative reference-set spread versus negatives, with
+view-specific expectations, and is measured on isolated source-resolution
+images before pixel conversion. There is no absolute game BH cutoff. Circular,
+saturation-weighted hue evidence ranks recoloured lookalikes against side views;
+it cannot recognize scars and cannot override ambiguous ORB evidence. Missing
+or overlapping controls mean **unassessed**, not abort. `--identity-override
+same|different` records an explicit human decision. Source size/hash and stage
+are in the manifests; multi-subject outputs are isolated or retried once.
 Generated views and expressions retain measured QA and pending human review.
 
 `animate --charsheet DIR/charsheet.json --states idle,run,attack,hurt --out DIR
@@ -34,8 +39,11 @@ annotations the silhouette mesh is a preview fallback, not a joint detector.
 No alpha crossfades or horizontal mirroring are used. Pixel interpolation is
 nearest piecewise-affine pixel displacement and cannot introduce new colors.
 
-Contact QA samples actual lowest opaque foot pixels, adding declared root
-motion for world-space checks. Attack QA finds the first overlap of annotated
+Contact QA measures full-sequence intervals from actual lowest opaque foot
+pixels, adding declared root motion for world-space checks. Left/right duration
+and stride asymmetry are compared. Generated standing keys share ground/height
+registration; authored motion plans retain intentional crouch and flight.
+Attack QA finds the first overlap of annotated
 weapon colors with the target rectangle; trails must use different colors.
 The phase names are anticipation, swing, contact, follow_through, recovery.
 Jump QA measures airborne center-of-alpha parabolas and requires preparation
@@ -49,6 +57,11 @@ shared canvas, exact integer grid and new colors. Cleanup preserves opaque
 silhouette pixels and intentional gaps. `--particles` exempts deliberate
 detached VFX; it does not exempt malformed alpha. Internal holes require an
 annotated intended-negative-space mask for semantic classification.
+Pixel conversion uses area integration, median cleanup, a quantized palette,
+nearest-palette mapping and small color-island cleanup, without dithering.
+Isolated-color noise catches raw nearest-neighbor reduction of illustrations.
+Halo QA compares black/white composites and detects contaminated opaque rim
+pixels connected to outside alpha haze. Uniform white inputs use matting.
 
 Engine export: `sprite_export.py anim/ --anim-manifest anim/idle/anim.json
 anim/attack/anim.json --out export/ --engine godot4,unity,phaser-hash,phaser-array,pixi,aseprite
@@ -57,6 +70,10 @@ and each crop compared byte-for-byte with its source. Sidecars retain all
 per-state timing, event and pivot data, including cross-page state sequences.
 Godot resources use format=3 and relative res:// textures. A real Godot test
 project and playback checker are included; Unity remains format-only/untested.
+Recorded QA FAIL blocks export unless `--allow-qa-fail` explicitly records the
+preview override. Trimmed inputs need a valid `trim_offset`; errors name the
+file and required canvas, and explicit offsets restore padding before packing.
+Chinese state names (including 攻擊) are normalized to engine state names.
 Phaser 3.90 durations are full frame periods, as implemented in its pinned
 [Animation.getNextTick source](https://github.com/phaserjs/phaser/blob/v3.90.0/src/animations/Animation.js).
 Pixi uses the [Spritesheet format](https://github.com/pixijs/pixijs-skills/blob/main/skills/pixijs-assets/references/spritesheet.md).
@@ -68,14 +85,20 @@ Pixi uses the [Spritesheet format](https://github.com/pixijs/pixijs-skills/blob/
 outlier indices against an accepted icon, and verifies other files keep their
 SHA256. A light direction is n/a for genuinely flat shading. Material-color
 variation can confound the brightness-plane proxy; inspect retained failures.
+A generated token anchor references the first icon; subsequent icons reference
+an accepted item. QA includes whole-set outline/padding/light drift from the
+token, alongside per-item failures.
 
 `tile texture --prompt "original mossy stone" --size 256 --out DIR --experimental`
 uses a referenced subscription image followed by recorded periodic repair.
 Wrap differences, Sobel seam ratios, FFT axes, half-image illumination and
 retained high-frequency energy are reported. `tile tileset --grid 16 --set
 wang16 --out DIR --experimental` builds a procedural terrain transition set;
-`blob47` and `min13` are also supported. This first implementation uses a fixed
-grass/soil palette; it does not interpret an arbitrary tileset art prompt.
+`blob47` and `min13` are also supported. Tileset colors use explicit hex colors
+or recognized English/Chinese color words from `--prompt`; other art semantics
+remain procedural. A framed texture swatch returned inside a presentation sheet
+can be isolated geometrically, with the original source and crop retained for
+semantic review. This does not prove the material matches the request.
 
 `vfx --kind explosion --oneshot --frames 12 --size 96 --blend add --out DIR
 --experimental` produces local original procedural sprites and scene previews.
@@ -96,6 +119,8 @@ the hashes of both endpoints, every reference, prompt, route, duration,
 prices and driver, and expires after 30 minutes. After explicit conversation
 consent, `--approve-video ID` authorizes that one estimate. Environment keys
 never confer approval. A submission receipt prevents automatic duplicates.
+Each route/input binding keeps its own estimate under `estimates/`; creating a
+second estimate does not overwrite the first.
 
 The bundled video routes currently cannot transmit first+last+identity refs
 together, so approved calls without a verified `--video-driver` fail with
@@ -106,6 +131,24 @@ JSON containing local `video`, `first_frame_sha`, `last_frame_sha`, ordered
 `refs_sent` SHA256 values, and `network_calls`. A receipt is evidence of
 transport only: returned media is decoded, screened, and retained as pending
 identity/motion review. No live paid-video validation has been performed.
+
+`demo game --prompt "original amber fox swordsman, teal scarf, ice sword"
+--out DIR --cap 20 --godot GODOT4_EXE --experimental` generates and assembles a
+pack directly. It requests 19 subscription images: four views, one expression
+atlas, four pose grids, one style anchor, eight icons and one texture. It makes
+no AI video call. The last image slot can accommodate a rejected source.
+`--resume` reuses matching-prompt, hash-verified generation receipts when local
+preprocessing is repaired; original transmitted reference hashes remain in the
+receipts. The total image count includes rejected sources across resumes.
+The default blocks failed QA; `--allow-qa-fail` creates a labelled preview.
+
+Native Codex remains the default transport. Hosts with the built-in image tool
+may explicitly use `--codex scripts/image_tool_bridge.py` and set
+`VGS_IMAGE_TOOL_QUEUE` to a workspace queue with `host.json` (including an image
+budget). A live host must consume `request.json`, invoke the built-in image
+tool, and return `response.json` with image paths. This bridge is not an
+unattended generator or an API fallback. The fix-round live run used it because
+this sandbox denied native Codex appserver initialization.
 
 `demo game --source-pack source-pack.json --out DIR --vendor LOCAL_VENDOR
 --godot GODOT4_EXE --experimental` assembles an existing original source pack

@@ -1,0 +1,72 @@
+{
+  "state": "idle",
+  "pivot": [
+    32,
+    60
+  ],
+  "ground_line": 60,
+  "pixel": true,
+  "loop": true,
+  "contacts": [
+    {
+      "foot": "left",
+      "frames": [
+        0,
+        7
+      ],
+      "box": [
+        20,
+        53,
+        10,
+        10
+      ]
+    },
+    {
+      "foot": "right",
+      "frames": [
+        0,
+        7
+      ],
+      "box": [
+        31,
+        53,
+        12,
+        10
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "file": "rimewick-idle-00.png",
+      "duration_ms": 120
+    },
+    {
+      "file": "rimewick-idle-01.png",
+      "duration_ms": 120
+    },
+    {
+      "file": "rimewick-idle-02.png",
+      "duration_ms": 120
+    },
+    {
+      "file": "rimewick-idle-03.png",
+      "duration_ms": 120
+    },
+    {
+      "file": "rimewick-idle-04.png",
+      "duration_ms": 120
+    },
+    {
+      "file": "rimewick-idle-05.png",
+      "duration_ms": 120
+    },
+    {
+      "file": "rimewick-idle-06.png",
+      "duration_ms": 120
+    },
+    {
+      "file": "rimewick-idle-07.png",
+      "duration_ms": 120
+    }
+  ]
+}

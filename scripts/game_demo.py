@@ -23,6 +23,11 @@ from game_engines import export_engines
 PALETTE=['#281B20','#573021','#81462E','#B0734C','#DC761E','#F5A32D','#FFE0B1','#A12268','#E2B75B','#142D38','#1B5964','#2B8990','#292E46','#484865','#8FC1D7','#D0EFFF']
 
 
+def demo_from_prompt(adapter,request,out,vendor=None,godot=None,allow_qa_fail=False,resume=False):
+    from game_prompt_demo import build
+    return build(adapter,request,out,vendor,godot,allow_qa_fail,resume)
+
+
 def isolate_single_subject(im):
     """Reviewed single-subject source cells: exclude neighbors and exterior specks.
 
@@ -123,7 +128,7 @@ window.addEventListener('error',e=>window.S14.errors.push(e.message));
 ''',encoding='utf-8')
 
 
-def demo(source_pack,out,vendor=None,godot=None):
+def demo(source_pack,out,vendor=None,godot=None,allow_qa_fail=False):
     source_pack=Path(source_pack);pack=read(source_pack);out=Path(out)
     if out.exists():raise ImageError('E_OUTPUT','Use a new demo directory; source-pack replay is deterministic.')
     if pack.get('originality',{}).get('action')!='proceed':raise ImageError('E_ORIGINAL_REQUIRED','Demo source pack must declare original artwork.')
@@ -181,7 +186,7 @@ def demo(source_pack,out,vendor=None,godot=None):
         file=out/'anim'/state/'anim.json';m=read(file)
         for i,r in enumerate(m.get('keys',[])):r['image']=f'../../pose-keys/{state}/{i:02d}.png'
         write(file,m)
-    packed=export_engines(sorted((out/'anim').glob('*/anim.json')),out/'export',['godot4','unity','phaser-hash','phaser-array','pixi','aseprite'],pixel=True)
+    packed=export_engines(sorted((out/'anim').glob('*/anim.json')),out/'export',['godot4','unity','phaser-hash','phaser-array','pixi','aseprite'],pixel=True,allow_qa_fail=allow_qa_fail)
     shutil.copytree(out/'export',out/'godot-project',ignore=shutil.ignore_patterns('frames','*.meta','*phaser*','*pixi*','*aseprite*','unity*'))
     browser_demo(out/'phaser-demo',packed,vendor)
     icons=out/'icons';icons.mkdir();raw=rgba(sources['icons']);icon_images=[];icon_records=[]

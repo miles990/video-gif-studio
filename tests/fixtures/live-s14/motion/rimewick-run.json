@@ -1,0 +1,72 @@
+{
+  "state": "run",
+  "pivot": [
+    32,
+    60
+  ],
+  "ground_line": 60,
+  "pixel": true,
+  "loop": true,
+  "contacts": [
+    {
+      "foot": "left",
+      "frames": [
+        0,
+        0
+      ],
+      "box": [
+        15,
+        52,
+        20,
+        11
+      ]
+    },
+    {
+      "foot": "right",
+      "frames": [
+        4,
+        4
+      ],
+      "box": [
+        15,
+        52,
+        20,
+        11
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "file": "rimewick-run-00.png",
+      "duration_ms": 80
+    },
+    {
+      "file": "rimewick-run-01.png",
+      "duration_ms": 80
+    },
+    {
+      "file": "rimewick-run-02.png",
+      "duration_ms": 80
+    },
+    {
+      "file": "rimewick-run-03.png",
+      "duration_ms": 80
+    },
+    {
+      "file": "rimewick-run-04.png",
+      "duration_ms": 80
+    },
+    {
+      "file": "rimewick-run-05.png",
+      "duration_ms": 80
+    },
+    {
+      "file": "rimewick-run-06.png",
+      "duration_ms": 80
+    },
+    {
+      "file": "rimewick-run-07.png",
+      "duration_ms": 80
+    }
+  ]
+}

@@ -9,5 +9,5 @@ class SourceIdentityTests(ImageCase):
         result=sheet(self.adapter,self.request(),self.path/'sheet',pixel=64)
         self.assertEqual(result['identity']['measurement_stage'],'source_before_downscale')
         self.assertEqual(result['identity']['source_sizes']['front'],[256,256])
-        self.assertEqual(Image.open(self.path/'sheet/views/front.png').size,(64,64))
-        self.assertEqual(Image.open(self.path/'sheet/identity/front.png').size,(256,256))
+        with Image.open(self.path/'sheet/views/front.png') as im:self.assertEqual(im.size,(64,64))
+        with Image.open(self.path/'sheet/identity/front.png') as im:self.assertEqual(im.size,(256,256))

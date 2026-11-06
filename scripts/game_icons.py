@@ -100,6 +100,9 @@ def fit_icon(im,token,pixel=False):
     palette=[p if isinstance(p,dict) else dict(hex=p) for p in token['palette']]
     crop=quantize(crop,palette,size) if pixel else crop.resize(size,Image.Resampling.LANCZOS)
     canvas=Image.new('RGBA',(grid,grid));canvas.paste(crop,((grid-size[0])//2,(grid-size[1])//2))
+    if pixel:
+        a=np.array(canvas);mask=(a[...,3]>127).astype('uint8');inside=cv2.erode(mask,np.ones((3,3),np.uint8),iterations=int(token['outline_px']))
+        a[(mask>0)&(inside==0),:3]=tuple(bytes.fromhex(token['outline_hex'].lstrip('#')));canvas=Image.fromarray(a)
     return canvas
 
 
@@ -123,7 +126,8 @@ def iconset(adapter,request,items,token,out,pixel=False,fix=False):
     else:anchor_record=previous.get('style_anchor',{})
     for i in indices:
         refs=[str(accepted.resolve())] if accepted else [str(anchor.resolve())] if anchor.exists() else []
-        prompt=f'Original game item icon: {items[i]}. {request.prompt}. Same exact style token: {token}. Single icon, transparent, {grid}x{grid} grid, safe margin {token["safe_margin"]} pixels, no text.'
+        spec={k:v for k,v in token.items() if k!='palette'};spec['palette']=[p['hex'] if isinstance(p,dict) else p for p in token['palette']]
+        prompt=f'ONE isolated {items[i]} inventory object, clearly recognizable as a {items[i]}. Reference images supply ONLY palette, outline and lighting, never their subject or enclosing shape. No character, portrait, badge, frame or emblem. Original design. Exact style token: {spec}. Pixel art at {grid}x{grid}, transparent background, safe margin {token["safe_margin"]} pixels, no text. The ONLY depicted object is a {items[i]}.'
         result=adapter.generate(replace(request,prompt=prompt,refs=refs,transparent=True,n=1),out/'generation'/f'{i:02d}-{len(previous.get("repairs",[])) if previous else 0}',no_cache=fix)
         im,alpha_source=ensure_sprite_alpha(rgba(result['assets'][0]['path']))
         im=fit_icon(im,token,pixel)

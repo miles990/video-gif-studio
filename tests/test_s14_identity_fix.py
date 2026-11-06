@@ -5,6 +5,19 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from game_character import identity_report
 
 class IdentityFixTests(unittest.TestCase):
+    def test_reviewer_single_front_relative_palette_ranks_side_above_recolour(self):
+        from game_character import prepare_subject
+        from PIL import Image
+        import tempfile
+        p=Path('tests/fixtures/live-s14')
+        with tempfile.TemporaryDirectory(dir='.scratch') as folder:
+            with Image.open(p/'wolf-side.png') as im:side,_=prepare_subject(im.convert('RGBA'),'side')
+            side_path=Path(folder)/'side.png';side.save(side_path)
+            result=identity_report({'front':p/'wolf-front-single.png','side':side_path},[p/'wolf-negative.png'],p/'wolf-near.png')
+            self.assertLess(result['views']['side']['view_palette_distance'],result['near_control']['view_palette_distance'])
+            self.assertTrue(result['view_palette_controls']['valid'])
+            self.assertEqual(result['status'],'unassessed') # ORB overlaps: palette alone is not identity.
+
     def test_live_near_lookalike_ranks_below_isolated_side(self):
         from game_character import prepare_subject
         from image_identity import compare
