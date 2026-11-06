@@ -85,3 +85,4 @@
 - 05:30 spec-7 第五次驗證：單位不一致已修好；剩平台型設計（帶平台的乾淨片被判修訂，峰中心只取 2% 帶）。另記：導演對差異很大的 3 個 brief 給出完全相同結構（同質化來自導演，留給 spec-11 的 brief 擴寫與 P3 處理）。派修正六（平台感知峰偏移＋雜訊校準容忍＋情境套件補真實平台片）。
 - 07:55 spec-7 第六次驗證通過，squash 合回 main 8cf8f9d 並 push（安裝目錄全套只剩 2 個環境錯誤、doctor 通過）。下一片 spec-11 吸收 blank-page（分支 s11-brief），並處理導演同質化。
 - 08:05 使用者：「這個專案是trunk based」→ 承認 spec-7 長命分支＋squash 偏離；process.md 改為：測試全綠即當天以 experimental 合回 main，審查與修正在 main 上以小提交進行，旗標升級，不再 squash 大包。spec-11 起照此執行。
+- 09:20 spec-11 依 trunk-based 當天以 experimental 合回 main（一般 merge 033128b，保留歷史）：安裝目錄 doctor 通過、全套只剩 2 個環境錯誤、乾淨狀態實跑 brief→lint→分鏡→算繪成功。push。接著在 main 上派獨立審查＋保留題驗收。
