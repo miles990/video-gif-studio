@@ -75,6 +75,11 @@ def frame_qa(path, shot, colour=None, subject_mask=None):
         mask=np.asarray(subject_mask)>0
         if mask.shape!=a.shape[:2]:raise ImageError('E_MASK','Subject mask must match the keyframe.')
     elif np.any(a[...,3]==0):mask=a[...,3]>127
+    else:
+        border=np.concatenate((a[0,:,:3],a[-1,:,:3],a[:,0,:3],a[:,-1,:3])).astype(float)
+        background=np.median(border,axis=0)
+        if np.mean(np.linalg.norm(border-background,axis=1)<12)>.95:
+            mask=np.linalg.norm(a[...,:3].astype(float)-background,axis=2)>18
     # No opaque portrait/face detector is falsely inferred from a bounding box.
     if mask is not None and mask.any():
         y,x=np.where(mask);h=(y.max()-y.min()+1)/a.shape[0];w=(x.max()-x.min()+1)/a.shape[1]
@@ -128,7 +133,25 @@ def keyframes(board, adapter, out, request=None, selected=None, approval=None, m
             shot['keyframe_failure']=exc.error if isinstance(exc,ImageError) else dict(code='E_KEYFRAME',message=str(exc))
         rows.append(dict(shot=shot['id'],keyframe=shot.get('keyframe'),error=shot.get('keyframe_failure')))
     write(out/'storyboard.json',b);write(out/'keyframes.json',dict(shots=rows,visual_review='pending',ai_generated=True))
+    contact_sheet(b,out,req.refs)
     return b
+
+
+def contact_sheet(board,out,refs=()):
+    """Reference/shot comparison for human identity and framing review."""
+    from PIL import ImageDraw
+    cells=[(f'reference {i+1}',str(p)) for i,p in enumerate(refs)]
+    cells += [(f"{s['id']} / {s['size']}",s.get('keyframe',{}).get('path')) for s in board['shots']]
+    columns=min(4,len(cells));tile=(240,440)
+    canvas=Image.new('RGB',(columns*tile[0],((len(cells)+columns-1)//columns)*tile[1]),'#142027')
+    draw=ImageDraw.Draw(canvas)
+    for i,(label,path) in enumerate(cells):
+        x=i%columns*tile[0];y=i//columns*tile[1]
+        if path and Path(path).is_file():
+            with Image.open(path) as im:thumbnail=ImageOps.contain(im.convert('RGB'),(224,398))
+            canvas.paste(thumbnail,(x+(240-thumbnail.width)//2,y+28))
+        draw.text((x+8,y+8),label,fill='white')
+    canvas.save(Path(out)/'contact-sheet.jpg',quality=92)
 
 
 def attach_keyframes(board, directory):

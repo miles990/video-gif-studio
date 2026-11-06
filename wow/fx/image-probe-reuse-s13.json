@@ -1,0 +1,158 @@
+{
+  "status": "offline reuse of frozen live probes",
+  "new_live_images": 0,
+  "api_requests": 0,
+  "fixtures": [
+    {
+      "path": "C:\\Users\\User\\src\\vgs-fx-private\\imagegen-test\\cafe-keyframe.png",
+      "sha256": "f93afa34df67f841bdf46bc771640bd40669aa695210f96a7e6af6e9a1308362",
+      "c2pa_present": true,
+      "c2pa_claim_generator": null,
+      "c2pa_validation": "container presence only; signature not verified"
+    },
+    {
+      "path": "C:\\Users\\User\\src\\vgs-fx-private\\imagegen-probe\\probe-edit.png",
+      "sha256": "e168328965b6ac00e41d00bd5b2ca54acb075888f418b1dc2c04355b3df88a84",
+      "c2pa_present": true,
+      "c2pa_claim_generator": null,
+      "c2pa_validation": "container presence only; signature not verified"
+    },
+    {
+      "path": "C:\\Users\\User\\src\\vgs-fx-private\\imagegen-probe\\probe-alpha.png",
+      "sha256": "fe1a8a054c84090571ae2d82ed2297efe265bbda14164cadb7cc16560c95a3df",
+      "c2pa_present": true,
+      "c2pa_claim_generator": null,
+      "c2pa_validation": "container presence only; signature not verified"
+    }
+  ],
+  "alpha": {
+    "before": {
+      "status": "FAIL",
+      "issues": [
+        "isolated_specks",
+        "halo"
+      ],
+      "fake_transparency": false,
+      "transparent_fraction": 0.48591051485994424,
+      "clear_border_fraction": 0.9994016753091344,
+      "speck_ratio": 0.002382292206359555,
+      "interior_hole_ratio": 0.00017228856227054015,
+      "halo_good_fraction": 0.9656707317073171,
+      "black_outer_luma": 12.739328030785492,
+      "fractional_alpha_pixels": 808287,
+      "visual_review": "pending"
+    },
+    "after": {
+      "status": "PASS",
+      "issues": [],
+      "fake_transparency": false,
+      "transparent_fraction": 0.5031282420309607,
+      "clear_border_fraction": 1.0,
+      "speck_ratio": 0.0,
+      "interior_hole_ratio": 0.0,
+      "halo_good_fraction": 1.0,
+      "black_outer_luma": 3.1749330924228256,
+      "fractional_alpha_pixels": 781623,
+      "visual_review": "pending"
+    },
+    "removed_speck_pixels": 1922,
+    "despilled_pixels": 0,
+    "hard_sticker_edge_cleanup": true,
+    "alpha_policy": "preserve graded alpha except isolated components; straight RGB edge despill"
+  },
+  "local_edit": {
+    "outside_mean": 0.0,
+    "outside_p999": 0.0,
+    "outside_fraction_over10": 0.0,
+    "outside_identical": true,
+    "inside_delta_e2000": 15.745534665027348,
+    "raw_outside_mean": 6.42263271254643,
+    "registration": {
+      "method": "ORB_RANSAC",
+      "residual_px": 0.20419124129212937,
+      "inliers": 753,
+      "transform": [
+        [
+          0.9998678076927349,
+          -2.5312187711800796e-05,
+          0.04156994702435363
+        ],
+        [
+          2.5312187711800796e-05,
+          0.9998678076927349,
+          -0.11579089958688629
+        ]
+      ]
+    },
+    "margin_px": 19,
+    "feather_px": 8,
+    "visual_review": "pending: semantic change and composite seam"
+  },
+  "loop": {
+    "source": "cafe-keyframe.png",
+    "method": "cyclic_camera_zoom",
+    "decoded_qa": {
+      "name": "loop",
+      "level": "PASS",
+      "message": "Loop position and speed",
+      "events": [
+        {
+          "frame": 31,
+          "seconds": 2.560000000000001,
+          "to_frame": 0
+        }
+      ],
+      "seam": 7.007595539093018,
+      "median_step": 4.870514869689941,
+      "seam_ratio": 1.438779210531211,
+      "speed_ratio": 1.0330614334491204,
+      "position_pass": true,
+      "speed_pass": true,
+      "speed_applicable": true
+    },
+    "gif_qc": {
+      "decoded_frames": 32,
+      "source_output_frames": 32,
+      "duration_ms": 2560,
+      "alpha_mismatch_pixels": 0,
+      "mean_visible_rgb_error": 2.9653891104239003,
+      "technical_pass": true,
+      "visual_motion_approval": "not assessed by script"
+    },
+    "path": ".scratch\\probe-reuse\\cafe-loop-final\\preview.gif"
+  },
+  "vector": {
+    "fallback": "raster_contour_trace",
+    "svg_source": "traced",
+    "feature_used": "local_vectorization",
+    "renderer": "local polygon renderer v1",
+    "trace": {
+      "backend": "OpenCV 5.0.0",
+      "colors": 3,
+      "tolerance_px": 0.3,
+      "vertices": 529
+    },
+    "safety": {
+      "status": "PASS",
+      "nodes": 2,
+      "parser": "stdlib Expat with DTD/entity/external/PI rejection",
+      "embedded_raster": false
+    },
+    "bytes": 5421,
+    "path": "C:\\Users\\User\\src\\vgs-img\\.scratch\\probe-reuse\\title.svg",
+    "derived_from": {
+      "sha256": "18db18794ec7afd809fe0e3d334426f5d6cacacf6cc156c37d86b21764320521",
+      "c2pa_present": false,
+      "c2pa_claim_generator": null,
+      "c2pa_validation": "container presence only; signature not verified"
+    },
+    "note": "Best for flat keyframe graphics; tracing is not semantic font reconstruction. Inspect lettering and fine details."
+  },
+  "human_review": "pending",
+  "preview": ".scratch\\probe-reuse\\index.html",
+  "vector_resolution_qa": {
+    "ssim_4096_downsample_vs_512": 0.9952254532341884,
+    "mean_abs_rgb_difference": 0.39703557905534015,
+    "method": "11x11 Gaussian sigma1.5 SSIM, premultiplied RGB, C1=(.01*255)^2 C2=(.03*255)^2"
+  }
+}

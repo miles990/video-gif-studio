@@ -183,3 +183,15 @@ near-binary sticker (>90% of visible alpha >=240), opens/erodes the silhouette b
 1–3 pixels and applies a narrow 0.4 px antialias envelope. Soft artwork skips this
 silhouette step. The original probe's black outer-band luma decreased from 12.74
 to 3.17, with zero remaining speck ratio; the source remains untouched.
+
+Keyframe runs also emit `contact-sheet.jpg`, with supplied identity references
+beside generated shots. Flat uniform-background subjects can be measured locally;
+unsegmentable photos retain an explicit unassessed framing label in the animatic.
+Image feedback such as `第 2 格的杯子改成拿鐵` resolves its shot using the existing
+contact-sheet timestamp sidecar, then uses the supplied markup/object region.
+
+Motion delivery chooses its wrap using the decoded GIF's premultiplied visual
+steps and durations, rotates the full cycle without dropping poses, and requires
+the existing qa_media position AND velocity loop check to pass. A failure leaves
+an explicitly rejected preview (`E_LOOP_QA`), not an accepted delivery.
+Roundtrip tests include real separate CLI processes sharing one cache entry.

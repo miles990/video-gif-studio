@@ -37,3 +37,10 @@ class EditTests(ImageCase):
         self.assertGreater(mask[160,80],0)
         with self.assertRaises(ImageError):composite(self.base,self.candidate.resize((80,120)),mask)
         with self.assertRaises(ImageError):composite(self.base,self.base,mask)
+
+    def test_image_feedback_resolves_frame_and_object(self):
+        from image_common import write
+        sheet=self.path/'contact.png';write(sheet.with_suffix('.json'),dict(frames_at_s=[.2,1.2],source='unused for a region edit'))
+        board=dict(shots=[dict(id='s1',start=0,end=1),dict(id='s2',start=1,end=2)])
+        parsed=parse('第 2 格的杯子改成拿鐵',board,image=sheet)
+        self.assertEqual(parsed['changes'][0]['change'],'image_edit');self.assertEqual(parsed['changes'][0]['target']['shots'],['s2'])

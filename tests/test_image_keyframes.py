@@ -49,7 +49,8 @@ class KeyframeTests(ImageCase):
         b=keyframes(board(),self.adapter,self.path/'kf',self.request())
         shot=b['shots'][0];actual=source_frame(shot,self.path,(90,160))
         with Image.open(shot['keyframe']['path']) as im:expected=np.array(fit_image(im,(90,160))[0])
-        self.assertTrue(np.array_equal(actual,expected))
+        # QA annotations occupy only the label band; remaining pixels are the keyframe.
+        self.assertTrue(np.array_equal(actual[25:],expected[25:]))
         to_plan(b,self.path/'plan',size=(90,160))
         self.assertEqual(read(self.path/'plan/shot-1/manifest.json')['durations_ms'],[40]*5)
 

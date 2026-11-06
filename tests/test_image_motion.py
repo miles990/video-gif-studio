@@ -22,6 +22,7 @@ class MotionTests(ImageCase):
             p=folder/f'{i:05d}.png';f.save(p);paths.append(p)
         result=repair_loop(paths,[40]*len(paths),self.path/'repaired')
         self.assertEqual(result['loop']['status'],'PASS')
+        self.assertEqual(result['media_qa_loop']['level'],'PASS')
 
     def test_disposal_and_variable_delays_decode_exactly(self):
         frames=self.circle(12);durations=[20,40,100,2000]*3;file=self.path/'input.gif'

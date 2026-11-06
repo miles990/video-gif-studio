@@ -87,11 +87,20 @@ def child_env():
     return {k:v for k,v in os.environ.items() if not k.upper().startswith(('OPENAI_', 'CODEX_API_KEY'))}
 
 
+def codex_command():
+    binary=shutil.which('codex.exe') or shutil.which('codex') or 'codex'
+    # Prefer npm's native executable to avoid shell/Node wrapper quoting issues.
+    if os.name=='nt' and Path(binary).suffix.lower() in ('.cmd','.ps1'):
+        native=Path(binary).parent/'node_modules/@openai/codex-win32-x64/vendor/x86_64-pc-windows-msvc/bin/codex.exe'
+        if native.is_file():binary=str(native)
+    return [binary]
+
+
 class Adapter:
     def __init__(self, state=DEFAULT_STATE, codex=None, timeout=300, round_id='spec-13', cap=60,
                  run_id=None, api_base=None, prices=None):
         self.state = Path(state).resolve()
-        self.codex = codex or [shutil.which('codex.exe') or shutil.which('codex') or 'codex']
+        self.codex = codex or codex_command()
         if isinstance(self.codex, (str, Path)):self.codex = [str(self.codex)]
         self.timeout = timeout
         if not 1 <= cap <= 60:raise ImageError('E_CAP', 'Round cap must be 1..60; larger rounds need a separate authorization policy.')
@@ -103,6 +112,13 @@ class Adapter:
     def records(self):
         path = self.state/'ledger.jsonl'
         return [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines()] if path.exists() else []
+
+    def invalidate(self,cache_key,reason):
+        if not re.fullmatch('[0-9a-f]{64}',cache_key):raise ImageError('E_CACHE_KEY','Invalid cache key.')
+        with locked(self.state/'locks'/(cache_key+'.lock')):
+            marker=self.state/'cache'/cache_key/'record.json'
+            marker.unlink(missing_ok=True)
+        self.event(dict(event='qa_invalidation',cache_key=cache_key,reason=reason))
 
     def event(self, record):
         record = dict(record, timestamp=utc(), run_id=self.run_id, round_id=self.round_id)
@@ -180,7 +196,7 @@ class Adapter:
                        'Use these tool parameters: '+canonical(parameters))
         if data['seed'] is not None:instruction += f"\nCreative seed cue (prompt only): {data['seed']}."
         args = ['exec', '--ephemeral', '--skip-git-repo-check', '--sandbox', 'read-only', '--json',
-                '-c', 'approval_policy="never"', '-c', 'forced_login_method="chatgpt"']
+                '-c', 'approval_policy="never"', '-c', 'forced_login_method="chatgpt"', '-c', 'model_provider="openai"']
         for ref in data['refs']:args.extend(['--image', ref['path']])
         args.append('-')
         for attempt in range(3):
@@ -311,11 +327,16 @@ def saved_paths(stdout):
             except (ValueError,RecursionError):
                 # Actual CLI final replies may be Markdown links or a saved-path sentence.
                 candidates.extend(re.findall(r'(?:[A-Za-z]:[\\/]|/)[^\r\n"<>|]*?\.png',value))
+    messages=[];direct=[]
     for line in stdout.splitlines():
         try:
             event=json.loads(line)
-            if event.get('type')=='item.completed' and event.get('item',{}).get('type')=='agent_message':visit(event['item'])
-            elif 'image_paths' in event:visit(event)
+            if event.get('type')=='item.completed' and event.get('item',{}).get('type')=='agent_message':messages.append(event['item'])
+            elif 'image_paths' in event:direct.append(event)
         except (ValueError,AttributeError):pass
-    if not candidates:visit(stdout)
+    # Initial commentary can mention input reference paths. Only the final agent
+    # message is an output receipt, never an earlier message or a tool transcript.
+    if messages:visit(messages[-1])
+    elif direct:visit(direct[-1])
+    else:visit(stdout)
     return list(dict.fromkeys(str(Path(p).expanduser().resolve()) for p in candidates if isinstance(p,str) and Path(p).expanduser().is_file()))

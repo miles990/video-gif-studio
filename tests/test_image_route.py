@@ -32,6 +32,16 @@ class RouteTests(ImageCase):
             rows=list(pool.map(lambda i:self.adapter.generate(self.request(),self.path/str(i)),range(4)))
         self.assertEqual(len(self.calls()),1);self.assertEqual(sum(r['cache_hit'] for r in rows),3)
 
+    def test_concurrent_cli_processes_share_cache(self):
+        self.configure(delay=.3)
+        cmd=[sys.executable,str(ROOT/'scripts/imagegen.py'),'generate','--experimental','--prompt','one process request',
+             '--codex',str(self.fake),'--state',str(self.path/'state'),'--json']
+        processes=[subprocess.Popen([*cmd,'--out',str(self.path/f'process-{i}')],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True) for i in range(3)]
+        rows=[]
+        for process in processes:
+            stdout,stderr=process.communicate(timeout=30);self.assertEqual(process.returncode,0,stderr+stdout);rows.append(json.loads(stdout)['result'])
+        self.assertEqual(len(self.calls()),1);self.assertEqual(sum(r['cache_hit'] for r in rows),2)
+
     def test_cache_normalization_and_field_changes(self):
         def k(**kw):return request_key(Request(experimental=True,**kw).normalized())
         self.assertEqual(k(prompt='a  cafe\u0301'),k(prompt='a café'))
@@ -94,6 +104,12 @@ class RouteTests(ImageCase):
         result=subprocess.run(cmd,capture_output=True,text=True)
         self.assertEqual(result.returncode,2);self.assertEqual(json.loads(result.stdout)['error']['code'],'E_EXPERIMENTAL')
         self.assertNotIn('Traceback',result.stderr)
+
+    def test_final_receipt_ignores_commentary_reference_paths(self):
+        first=json.dumps(dict(type='item.completed',item=dict(type='agent_message',text='Inspecting '+str(self.fixture))))
+        output=self.path/'result.png';output.write_bytes(self.fixture.read_bytes())
+        last=json.dumps(dict(type='item.completed',item=dict(type='agent_message',text=json.dumps(dict(image_paths=[str(output)])))))
+        self.assertEqual(saved_paths(first+'\n'+last),[str(output)])
 
 
 if __name__=='__main__':unittest.main()

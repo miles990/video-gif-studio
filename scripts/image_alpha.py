@@ -132,6 +132,7 @@ def transparent_asset(adapter,req,out,approval=None,max_usd=0,no_cache=False):
         native=im.convert('RGBA');report=alpha_qa(native)
     alpha_source='native';fallback=None;backing=None
     if report['fake_transparency'] or np.all(np.array(native)[...,3]==255):
+        adapter.invalidate(raw['cache_key'],'native transparency QA failed')
         backing,separation=choose_backing(native);hexcolor='#'+''.join(f'{c:02X}' for c in backing)
         retry=replace(req,transparent=False,prompt=req.prompt+f'\nUse a perfectly uniform {hexcolor} background, no checkerboard, no shadows on the background.')
         raw=adapter.generate(retry,out/'matting-source',approval,max_usd)
@@ -140,6 +141,7 @@ def transparent_asset(adapter,req,out,approval=None,max_usd=0,no_cache=False):
         alpha_source='matted';fallback='solid_background_chroma_matte'
     cleaned,clean_report=cleanup(native)
     if clean_report['after']['status']!='PASS':
+        adapter.invalidate(raw['cache_key'],'final alpha QA failed')
         write(out/'alpha-qa.json',clean_report)
         raise ImageError('E_ALPHA','Transparent asset did not pass alpha QA; no final asset delivered.',report=clean_report)
     cleaned.save(out/'asset.png');binary=np.array(cleaned);binary[...,3]=np.where(binary[...,3]<128,0,255)

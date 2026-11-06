@@ -72,7 +72,7 @@ def source_frame(shot,base,size):
         path=base/keyframe['path']
         if path.is_file() and (not keyframe.get('sha256') or digest(path)==keyframe['sha256']):
             with Image.open(path) as im:frame=np.array(fit_image(im,size)[0])
-            if keyframe.get('status') in ('size_mismatch','identity_fail'):
+            if keyframe.get('status') in ('size_mismatch','identity_fail','unassessed'):
                 im=Image.fromarray(frame);ImageDraw.Draw(im).text((7,7),keyframe['status'],fill='#ff5555');frame=np.array(im)
             return frame
         shot['keyframe_failure']=dict(code='E_KEYFRAME',message='missing or changed keyframe')

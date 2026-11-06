@@ -61,12 +61,16 @@ def parse(draft,previous,image=None):
         shot_match=re.search(r'第([一二三四五六七八九十\d]+)鏡|shot\s*(\d+)|\bmake\s+(\d+)\b',line,re.I)
         beat_match=re.search(r'第([一二三四五六七八九十\d]+)拍|beat\s*(\d+)',line,re.I)
         frame_match=re.search(r'第\s*(\d+)\s*格|frame\s*(\d+)',line,re.I)
+        image_replacement=re.search(r'(?:第\s*\d+\s*格(?:的)?|frame\s*\d+\s*(?:the\s+)?)(.+?)(?:換成|改成|換為|改為|replace with|change to)\s*(.+)',line,re.I)
         if image and (frame_match or metadata.get('screenshot')):
             frame=int(next(g for g in frame_match.groups() if g)) if frame_match else 1;times=metadata.get('frames_at_s',[])
             if not 1<=frame<=len(times):raise ValueError('E_FEEDBACK frame: outside contact-sheet metadata')
             time=times[frame-1];target['shots']=[s['id'] for s in shots if s['start']<=time<s['end']]
             extra.update(frame=frame,time=time,observation=line.strip())
-            if '暗' in line or 'dark' in line.lower():
+            if image_replacement:
+                change='image_edit';target['element']=image_replacement[1].strip();magnitude=1
+                direction=dict(axis='image',sense='replace selected region');extra['instruction']=image_replacement[2].strip()
+            elif '暗' in line or 'dark' in line.lower():
                 import cv2
                 import numpy as np
                 source=metadata.get('source')
