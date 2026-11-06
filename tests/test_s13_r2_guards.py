@@ -14,8 +14,10 @@ class GuardsRound2(ImageCase):
    if 'identity-retry' in str(out):raise ImageError('E_GENERATION','retry unavailable')
    return original(req,out,*args,**kw)
   b=board();b['shots']=b['shots'][:1]
-  with patch.object(self.adapter,'generate',side_effect=generate),patch('image_identity.check',return_value=dict(status='identity_fail')):
+  self.configure(image=str(self.fixture))  # exact 9:16; no aspect failure before QA
+  with patch.object(self.adapter,'generate',side_effect=generate) as dispatch,patch('image_identity.check',return_value=dict(status='identity_fail')) as identity:
    result=keyframes(b,self.adapter,self.path/'kf',self.request(refset_path='fake'))
+  self.assertEqual(dispatch.call_count,2);self.assertIn('identity-retry',str(dispatch.call_args_list[1].args[1]));identity.assert_called_once()
   self.assertIn('keyframe',result['shots'][0])
   qa=read(result['shots'][0]['keyframe']['gen_manifest'])['qa']['identity']
   self.assertEqual(qa['retry_error']['code'],'E_GENERATION');self.assertEqual(qa['generation_retained'],'first')
