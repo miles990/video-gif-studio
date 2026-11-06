@@ -99,6 +99,21 @@ def seam_qa(frames,durations=None):
         offset=float(np.linalg.norm(centers[i]-(centers[(i-1)%len(frames)]+centers[(i+1)%len(frames)])/2))
         if offset>max(1.,3*ordinary_motion) and np.dot(before,after)<-.5*np.linalg.norm(before)*np.linalg.norm(after):jump_frames.append(i)
     if jump_frames:issues.append('single_frame_position_jump')
+    # A two-frame offset plateau has no immediate reversal at either frame.
+    # Compare its two boundaries and both residuals against the surrounding
+    # trajectory; wrap indices so the same defect at the seam is also caught.
+    jump_spans=[];count=len(frames)
+    if count>=6:
+        for start in range(count):
+            before=motion[(start-1)%count];after=motion[(start+1)%count]
+            left=centers[(start-1)%count];right=centers[(start+2)%count]
+            residuals=[centers[(start+j)%count]-(left+(j+1)*(right-left)/3) for j in range(2)]
+            threshold=max(1.,3*ordinary_motion)
+            if (min(np.linalg.norm(r) for r in residuals)>threshold and
+                np.dot(before,after)<-.5*np.linalg.norm(before)*np.linalg.norm(after) and
+                np.linalg.norm(residuals[0]-residuals[1])<=max(1.,ordinary_motion)):
+                jump_spans.append([start,(start+1)%count])
+    if jump_spans:issues.append('short_position_jump')
     if typical>.1 and excessive_endpoint:issues.append('endpoint_hold')
     if ratio>3:issues.append('position_seam')
     if colour_seam>10 and colour_seam>3*max(colour_normal,.1):issues.append('colour_seam')
@@ -106,7 +121,7 @@ def seam_qa(frames,durations=None):
     if clipped:issues.append('canvas_edge_clipping')
     return dict(status='PASS' if not issues else 'FAIL',issues=issues,colour_seam_delta_e2000=colour_seam,
                 speed_ratio=speed_ratio,longest_hold_ms=min(longest,float(durations.sum())),non_extremum_holds_ms=bad_holds,extremum_holds_ms=extrema_holds,clipped_frames=clipped,seam_ratio=ratio,seam_difference=seam,
-                endpoint_hold_cap_ms=endpoint_cap,reversal_hysteresis_px=.5,jump_frames=jump_frames,ordinary_position_step_px=ordinary_motion,
+                endpoint_hold_cap_ms=endpoint_cap,reversal_hysteresis_px=.5,jump_frames=jump_frames,jump_spans=jump_spans,ordinary_position_step_px=ordinary_motion,
                 ordinary_step=normal,seam_frames=[len(frames)-1,0],moving=bool(np.any(steps>.01)),
                 note='Pixel continuity proxy; existing qa_media adds position/velocity checks; articulation requires human review.')
 

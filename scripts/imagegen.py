@@ -109,7 +109,8 @@ def main(argv=None):
             from PIL import Image
             from image_alpha import alpha_qa,cleanup
             from image_hole_judge import SubscriptionHoleJudge
-            folder=(a.out.parent if a.out else Path('.scratch/alpha-reviews')).resolve()
+            import tempfile
+            folder=(a.out.parent if a.out else Path(tempfile.mkdtemp(prefix='vgs-alpha-review-'))).resolve()
             folder.mkdir(parents=True,exist_ok=True)
             cmd=[sys.executable,a.codex] if a.codex and a.codex.endswith('.py') else a.codex
             judge=SubscriptionHoleJudge(Adapter(folder/'judge-state',codex=cmd,timeout=a.timeout))

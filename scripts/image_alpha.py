@@ -109,8 +109,8 @@ def alpha_qa(image,judge=None,overlay_path=None,description=''):
     if regions:
         from image_hole_judge import consistent_review
         if overlay_path is None:
-            import hashlib
-            overlay_path=Path(__file__).resolve().parents[1]/'.scratch/alpha-reviews'/(hashlib.sha256(a.tobytes()).hexdigest()+'.png')
+            import tempfile
+            overlay_path=Path(tempfile.mkdtemp(prefix='vgs-alpha-review-'))/'holes.png'
         target=Path(overlay_path).resolve()
         review=dict(status='needs_review',overlay_path=str(target),regions=regions,
                     inputs=[str(target.with_suffix('.inputs.json')),str(target.with_name(target.stem+'.shuffled.inputs.json'))])

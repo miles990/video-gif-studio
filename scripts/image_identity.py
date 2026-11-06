@@ -86,6 +86,18 @@ def build(name,images,out,role='identity',source='user',licence=None,negative=No
                 negative_images=[dict(path=str(Path(p).resolve()),sha256=digest(p)) for p in (negative or [])],
                 identity_override=override,visual_review=dict(status='accepted' if identity_override=='same' else 'pending',question='Are these the same character/product?',chooser='user' if override else None))
     result['controls']=prior
+    # A near-match can be an impostor with the same silhouette and palette.
+    # Warnings are advisory and independent of supplied negative controls.
+    from identity_engine import verdict
+    ambiguous=[]
+    if role in ('identity','product') and engine()[0] is not None:
+        for i in range(len(images)):
+            neighbours=[p for p in pairs if i in (p['a'],p['b'])]
+            if not neighbours:continue
+            best={axis:max(p[axis] for p in neighbours) for axis in ('structure','colour')}
+            if verdict(best)=='unassessed':
+                ambiguous.append(dict(index=i+1,path=records[i]['path'],aggregate=best))
+    result['warnings']=([dict(code='W_REFSET_AMBIGUOUS',reason='Candidate references have ambiguous identity evidence; visually confirm same-character membership.',candidates=ambiguous)] if ambiguous else [])
     write(out,result);return result
 
 
