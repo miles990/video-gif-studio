@@ -44,3 +44,32 @@ Protocol references: [noninteractive Codex](https://learn.chatgpt.com/docs/non-i
 [PNG generation endpoint](https://developers.openai.com/api/reference/resources/images/methods/generate).
 Delivery lineage marks AI-generated images. C2PA detection reads PNG caBX/JPEG APP11
 containers only; signature validity and SynthID are not locally verified.
+
+Storyboard and identity commands:
+
+```text
+python scripts/imagegen.py refset build --name mia --images pose1.png pose2.png --negative other.png --out .scratch/mia.json --json
+python scripts/storyboard.py keyframes storyboard.json --refs .scratch/mia.json --experimental --out .scratch/kf --json
+python scripts/animatic.py storyboard.json --keyframes .scratch/kf --out .scratch/animatic
+python scripts/imagegen.py refset check --refs .scratch/mia.json --image keyframe.png --json
+python scripts/imagegen.py refset review --refs .scratch/mia.json --same yes --comment "user response" --json
+```
+
+Every shot prompt includes shot size, composition, light, colour swatch and aesthetic.
+`--shots 2 4` upgrades only those shots. Keyframes retain original timing, failed
+shots retain labelled cards, and `brief_render` fingerprints the generated pixels.
+Aspect fitting uses uniform contain/padding, never stretching or silently cropping
+heads. Final short edge is at least 1080; draft at least 720. Palette ΔE2000 and
+subject-mask framing metrics are recorded. Opaque images without a supplied subject
+mask are framing-unassessed, not automatically declared correct. Human framing,
+composition and aesthetic review remain required.
+
+The identity library records up to 16 actual ordered paths/hashes/roles/sources.
+The local CLIP cache contains tokenizer/config files, not usable model weights, and
+the skill runtime has no torch/transformers. No embedding model is downloaded.
+The fallback uses masked HSV Bhattacharyya distance plus ORB Lowe-ratio matches.
+Every verdict reruns distinct-pose positive and different-identity negative controls;
+failed controls stop assessment. Mixed libraries are refused. A library without
+controls can still supply references but cannot claim measured identity consistency.
+Failed keyframe identity gets one corrective generation, then a visible
+`identity_fail` label. Human review is recorded separately and never auto-approved.

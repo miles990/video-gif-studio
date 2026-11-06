@@ -38,13 +38,14 @@ def options(p):
 def adapter_request(a):
     refs=[];refset_sha=None
     if a.refs:
-        data=read(a.refs)
-        refs=[str((a.refs.parent/r['path']).resolve()) for r in data['images']]
+        from image_identity import load
+        data=load(a.refs)
+        refs=[r['path'] for r in data['images']]
         from image_common import digest
         refset_sha=digest(a.refs)
     cmd=[sys.executable,a.codex] if a.codex and a.codex.endswith('.py') else a.codex
     adapter=Adapter(state=a.state,codex=cmd,timeout=a.timeout,round_id=a.round,cap=a.cap,run_id=a.run_id,api_base=a.api_base,prices=a.prices)
-    req=Request(prompt=a.prompt,refs=refs,refset_sha=refset_sha,size=a.size,aspect=a.aspect,quality=a.quality,n=a.n,
+    req=Request(prompt=a.prompt,refs=refs,refset_sha=refset_sha,refset_path=str(a.refs) if a.refs else None,size=a.size,aspect=a.aspect,quality=a.quality,n=a.n,
                 route=a.route,transparent=a.transparent,format=a.format,model=a.model,seed=a.seed,experimental=a.experimental)
     return adapter,req
 
@@ -54,7 +55,20 @@ def main(argv=None):
         p=Parser(description=__doc__);sub=p.add_subparsers(dest='command',required=True)
         for name in ('generate','estimate','probe','usage'):options(sub.add_parser(name))
         k=sub.add_parser('keyframes');options(k);k.add_argument('storyboard',type=Path);k.add_argument('--shots',nargs='+')
-        a=p.parse_args(argv);adapter,req=adapter_request(a)
+        r=sub.add_parser('refset');rs=r.add_subparsers(dest='ref_command',required=True)
+        rb=rs.add_parser('build');rb.add_argument('--name',required=True);rb.add_argument('--images',nargs='+',type=Path,required=True)
+        rb.add_argument('--out',type=Path,required=True);rb.add_argument('--role',default='identity');rb.add_argument('--source',default='user');rb.add_argument('--licence')
+        rb.add_argument('--negative',nargs='+',type=Path);rb.add_argument('--json',action='store_true')
+        rc=rs.add_parser('check');rc.add_argument('--refs',type=Path,required=True);rc.add_argument('--image',type=Path,required=True);rc.add_argument('--json',action='store_true')
+        rr=rs.add_parser('review');rr.add_argument('--refs',type=Path,required=True);rr.add_argument('--same',choices=['yes','no'],required=True);rr.add_argument('--comment',default='');rr.add_argument('--json',action='store_true')
+        a=p.parse_args(argv)
+        if a.command=='refset':
+            from image_identity import build,check,review
+            if a.ref_command=='build':result=build(a.name,a.images,a.out,a.role,a.source,a.licence,a.negative)
+            elif a.ref_command=='check':result=check(a.image,a.refs)
+            else:result=review(a.refs,a.same=='yes',a.comment)
+            print(json.dumps(dict(ok=True,result=result),ensure_ascii=False));return 0
+        adapter,req=adapter_request(a)
         if a.command=='keyframes':
             if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
             from image_keyframes import keyframes

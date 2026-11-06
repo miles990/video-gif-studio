@@ -104,15 +104,24 @@ def keyframes(board, adapter, out, request=None, selected=None, approval=None, m
         try:
             generated=adapter.generate(current,folder/'generation',approval,max_usd)
             source=Path(generated['assets'][0]['path'])
+            identity=None
+            if req.refset_path:
+                from image_identity import check
+                identity=check(source,req.refset_path)
+                if identity['status']=='identity_fail':
+                    retry=replace(current,prompt=current.prompt+'\nIdentity correction: match all supplied identity details exactly. Preserve face, markings and costume.')
+                    generated=adapter.generate(retry,folder/'identity-retry',approval,max_usd)
+                    source=Path(generated['assets'][0]['path']);identity=check(source,req.refset_path)
             with Image.open(source) as image:frame,fit=fit_image(image,size)
             path=folder/'keyframe.png';frame.save(path)
             qa=frame_qa(path,shot,swatch(b,shot))
+            if identity:qa['identity']=identity
             manifest=dict(generated,derived_from=dict(sha256=digest(source),**c2pa(source)),
                           fallback='aspect_contain' if fit['padding_fraction']>.005 else 'uniform_resize',fit=fit,qa=qa,
                           size_actual=[list(size)],aspect_actual=[size[0]/size[1]],ai_generated=True)
             write(folder/'gen-manifest.json',manifest)
             shot['keyframe']=dict(path=str(path),sha256=digest(path),gen_manifest=str(folder/'gen-manifest.json'),
-                                  status=qa['size_status'],colour_pass=qa.get('colour_pass'),ai_generated=True)
+                                  status='identity_fail' if identity and identity['status']=='identity_fail' else qa['size_status'],colour_pass=qa.get('colour_pass'),ai_generated=True)
             shot.pop('keyframe_failure',None)
         except (ImageError,OSError,ValueError) as exc:
             shot.pop('keyframe',None)

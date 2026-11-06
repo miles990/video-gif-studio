@@ -37,7 +37,7 @@ class ImageCase(unittest.TestCase):
         self.configure()
         self.adapter=Adapter(self.path/'state',codex=[sys.executable,str(self.fake)])
     def tearDown(self):self.tmp.cleanup()
-    def configure(self,**kwargs):write(self.path/'fake-config.json',dict(image=str(self.fixture),**kwargs))
+    def configure(self,**kwargs):write(self.path/'fake-config.json',{'image':str(self.fixture),**kwargs})
     def calls(self):
         path=self.path/'calls.jsonl'
         return [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []

@@ -35,6 +35,7 @@ class Request:
     seed: int | None = None
     markup_sha: str | None = None
     refset_sha: str | None = None
+    refset_path: str | None = None
     experimental: bool = False
 
     def normalized(self):
