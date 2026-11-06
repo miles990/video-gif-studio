@@ -23,6 +23,8 @@ def main(argv):
         sp=sub.add_parser('sprite-check');sp.add_argument('images',nargs='+',type=Path);sp.add_argument('--experimental',action='store_true');sp.add_argument('--json',action='store_true')
         sp.add_argument('--out',type=Path);sp.add_argument('--cleanup',action='store_true');sp.add_argument('--pixel',type=int);sp.add_argument('--palette',type=Path)
         sp.add_argument('--scale',type=int,default=1);sp.add_argument('--alpha-mode',choices=['straight','premultiplied'],default='straight');sp.add_argument('--particles',action='store_true')
+        icons=sub.add_parser('iconset');options(icons);icons.add_argument('--items',required=True);icons.add_argument('--style-token',type=Path,required=True)
+        icons.add_argument('--pixel',action='store_true');icons.add_argument('--fix',action='store_true');icons.set_defaults(round='spec-14',cap=40)
         a=p.parse_args(argv)
         if not a.experimental:raise ImageError('E_EXPERIMENTAL','Game assets are experimental.',suggestion='Pass --experimental.')
         if a.command=='sprite-check':
@@ -35,6 +37,9 @@ def main(argv):
         if a.command=='character':
             from game_character import sheet
             result=sheet(adapter,req,a.out,a.image,a.pixel,a.negative,a.near_negative,a.asymmetric_feature,a.reference_licence)
+        elif a.command=='iconset':
+            from game_icons import iconset
+            result=iconset(adapter,req,a.items.split(','),a.style_token,a.out,a.pixel,a.fix)
         else:
             from game_animation import animate
             rates={k:float(v) for k,v in (item.split('=') for item in a.fps)}
