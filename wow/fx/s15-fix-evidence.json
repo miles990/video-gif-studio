@@ -1,0 +1,1049 @@
+{
+  "status": "EXPERIMENTAL_PARTIAL_REGENERATE_NEEDED",
+  "experimental": true,
+  "base_commit": "6fb6dbe37a684844a232bc1f8f390af13c160ae4",
+  "song_credits_spent": 0,
+  "download_credits_spent": 0,
+  "loops": {
+    "explore": {
+      "before": {
+        "status": "FAIL",
+        "seamless": false,
+        "calibration": "experimental:live-listening-pending",
+        "samples": 384000,
+        "sample_rate": 48000,
+        "bpm": 120,
+        "meter": "4/4",
+        "bar_count": 4,
+        "checks": {
+          "length": {
+            "pass_": true,
+            "error_samples": 0.0,
+            "at_ms": 8000.0
+          },
+          "bpm": {
+            "pass_": false,
+            "measured": 149.96340942382812,
+            "requested": 120
+          },
+          "format": {
+            "pass_": true,
+            "format": "wav"
+          },
+          "clicks": {
+            "pass_": true,
+            "events_ms": [],
+            "seam_difference": 0.002838134765625,
+            "internal_difference_p999": 0.0374755859375,
+            "highpass_peak_db": 11.478763287622524
+          },
+          "spectrum": {
+            "pass_": true,
+            "distance": 5.393406628912755,
+            "internal_p95": 5.72020961840976,
+            "at_ms": 0
+          },
+          "correlation": {
+            "pass_": false,
+            "lag_ms": 13.604166666666666,
+            "at_ms": 0
+          },
+          "phase": {
+            "pass_": false,
+            "error_ms": 6.0,
+            "at_ms": 0
+          },
+          "loudness": {
+            "pass_": false,
+            "head_tail_lu": 0.7999999999999989,
+            "seam_drop_lu": 3.599999999999998,
+            "lufs": -16.0,
+            "true_peak": -5.5,
+            "at_ms": 0
+          }
+        }
+      },
+      "after": {
+        "wav": {
+          "status": "PASS",
+          "seamless": true,
+          "calibration": "experimental:live-listening-pending",
+          "samples": 192000,
+          "sample_rate": 48000,
+          "bpm": 120,
+          "meter": "4/4",
+          "bar_count": 2,
+          "checks": {
+            "length": {
+              "pass_": true,
+              "error_samples": 0.0,
+              "at_ms": 4000.0
+            },
+            "bpm": {
+              "pass_": true,
+              "measured": 120.01070301323497,
+              "requested": 120
+            },
+            "format": {
+              "pass_": true,
+              "format": "wav"
+            },
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.0123291015625,
+              "internal_difference_p999": 0.036865295410156484,
+              "highpass_peak_db": 10.08216108842178
+            },
+            "spectrum": {
+              "pass_": true,
+              "distance": 3.3726108154845633,
+              "internal_p95": 3.4539923693835957,
+              "at_ms": 0
+            },
+            "correlation": {
+              "pass_": true,
+              "lag_ms": 0.625,
+              "at_ms": 0
+            },
+            "phase": {
+              "pass_": true,
+              "error_ms": 0.0,
+              "at_ms": 0
+            },
+            "loudness": {
+              "pass_": true,
+              "head_tail_lu": 0.0,
+              "seam_drop_lu": 2.25,
+              "lufs": -16.0,
+              "true_peak": -6.1,
+              "at_ms": 0
+            }
+          },
+          "sample_count_matches": true
+        },
+        "ogg": {
+          "status": "PASS",
+          "seamless": true,
+          "calibration": "experimental:live-listening-pending",
+          "samples": 192000,
+          "sample_rate": 48000,
+          "bpm": 120,
+          "meter": "4/4",
+          "bar_count": 2,
+          "checks": {
+            "length": {
+              "pass_": true,
+              "error_samples": 0.0,
+              "at_ms": 4000.0
+            },
+            "bpm": {
+              "pass_": true,
+              "measured": 120.01070301323497,
+              "requested": 120
+            },
+            "format": {
+              "pass_": true,
+              "format": "ogg"
+            },
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.019028184935450554,
+              "internal_difference_p999": 0.03639563460648084,
+              "highpass_peak_db": 9.873369612870365
+            },
+            "spectrum": {
+              "pass_": true,
+              "distance": 3.341299415387488,
+              "internal_p95": 3.5322174774276722,
+              "at_ms": 0
+            },
+            "correlation": {
+              "pass_": true,
+              "lag_ms": 0.625,
+              "at_ms": 0
+            },
+            "phase": {
+              "pass_": true,
+              "error_ms": 0.0,
+              "at_ms": 0
+            },
+            "loudness": {
+              "pass_": true,
+              "head_tail_lu": 0.0,
+              "seam_drop_lu": 2.25,
+              "lufs": -16.0,
+              "true_peak": -5.9,
+              "at_ms": 0
+            }
+          },
+          "sample_count_matches": true
+        }
+      },
+      "cut": {
+        "start_sample": 365578,
+        "end_sample": 557578,
+        "bar_count": 2,
+        "zero_crossing_offset_samples": -17,
+        "crossfade_samples": 12000,
+        "correlation_lag_ms": 0.625,
+        "spectral_distance": 3.3726436209592157,
+        "head_tail_rms_db": 1.3706987810369493,
+        "seam_jump": 0.01519775390625,
+        "score": 6.8881177926211645
+      },
+      "source_grid": {
+        "bpm": 120.06093482561296,
+        "beat_samples": 23987.819220158202,
+        "downbeat_sample": 77595,
+        "beat_phase_sample": 5632,
+        "bar_samples": 95951.27688063281,
+        "meter": "4/4",
+        "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+        "downbeat_source": "local_estimate",
+        "listening_review": "pending",
+        "tempo_candidates": [
+          {
+            "bpm": 120.0,
+            "strength": 130024.92824484379
+          },
+          {
+            "bpm": 80.0,
+            "strength": 110647.76775123188
+          },
+          {
+            "bpm": 160.0,
+            "strength": 67623.85725044661
+          },
+          {
+            "bpm": 176.47058823529412,
+            "strength": 57137.60338414425
+          },
+          {
+            "bpm": 181.8181818181818,
+            "strength": 57087.002115962954
+          }
+        ],
+        "accent_strength": [
+          34.79608128802213,
+          24.190502924726886,
+          29.405523791551307,
+          35.40756444345144
+        ]
+      },
+      "output_measurements": {
+        "spectral_flux": {
+          "bpm": 120.01070301323497,
+          "beat_samples": 23997.859588260133,
+          "downbeat_sample": 95818,
+          "beat_phase_sample": 23824,
+          "bar_samples": 95991.43835304053,
+          "meter": "4/4",
+          "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+          "downbeat_source": "local_estimate",
+          "listening_review": "pending",
+          "tempo_candidates": [
+            {
+              "bpm": 120.0,
+              "strength": 18419.92422493678
+            },
+            {
+              "bpm": 80.0,
+              "strength": 15529.406491170343
+            },
+            {
+              "bpm": 68.57142857142857,
+              "strength": -721.1283355923856
+            },
+            {
+              "bpm": 160.0,
+              "strength": -1029.561072499662
+            },
+            {
+              "bpm": 96.0,
+              "strength": -1066.725200162555
+            }
+          ],
+          "accent_strength": [
+            36.94230642099466,
+            29.893330342990236,
+            37.4902918025239,
+            49.39842589231569
+          ]
+        },
+        "legacy_rms_chroma": {
+          "bpm": 76.63253021240234,
+          "key": "A",
+          "key_source": "local_estimate",
+          "key_confidence_margin": 0.007948378515770904,
+          "method": "1ms RMS periodicity; chroma profile correlation",
+          "downbeat": null,
+          "downbeat_reason": "Requires provided bar_position or Beat This!; onset is not a downbeat"
+        }
+      },
+      "stretch": null,
+      "metadata": {
+        "samples": 192000,
+        "smpl_inclusive_end": 191999,
+        "ogg_loopstart": 0,
+        "ogg_looplength": 192000,
+        "godot_loop_offset": 0
+      }
+    },
+    "battle": {
+      "before": {
+        "status": "FAIL",
+        "seamless": false,
+        "calibration": "experimental:live-listening-pending",
+        "samples": 384000,
+        "sample_rate": 48000,
+        "bpm": 120,
+        "meter": "4/4",
+        "bar_count": 4,
+        "checks": {
+          "length": {
+            "pass_": true,
+            "error_samples": 0.0,
+            "at_ms": 8000.0
+          },
+          "bpm": {
+            "pass_": false,
+            "measured": 99.99442291259766,
+            "requested": 120
+          },
+          "format": {
+            "pass_": true,
+            "format": "wav"
+          },
+          "clicks": {
+            "pass_": true,
+            "events_ms": [],
+            "seam_difference": 0.079925537109375,
+            "internal_difference_p999": 0.13552868652343975,
+            "highpass_peak_db": 11.229400920268942
+          },
+          "spectrum": {
+            "pass_": true,
+            "distance": 4.401000324603177,
+            "internal_p95": 5.3103304745686755,
+            "at_ms": 0
+          },
+          "correlation": {
+            "pass_": false,
+            "lag_ms": -11.645833333333334,
+            "at_ms": 0
+          },
+          "phase": {
+            "pass_": true,
+            "error_ms": 0.0,
+            "at_ms": 0
+          },
+          "loudness": {
+            "pass_": true,
+            "head_tail_lu": 0.1999999999999993,
+            "seam_drop_lu": -1.1499999999999986,
+            "lufs": -16.0,
+            "true_peak": -4.8,
+            "at_ms": 0
+          }
+        }
+      },
+      "after": {
+        "wav": {
+          "status": "PASS",
+          "seamless": true,
+          "calibration": "experimental:live-listening-pending",
+          "samples": 192000,
+          "sample_rate": 48000,
+          "bpm": 120,
+          "meter": "4/4",
+          "bar_count": 2,
+          "checks": {
+            "length": {
+              "pass_": true,
+              "error_samples": 0.0,
+              "at_ms": 4000.0
+            },
+            "bpm": {
+              "pass_": true,
+              "measured": 120.16167754672254,
+              "requested": 120
+            },
+            "format": {
+              "pass_": true,
+              "format": "wav"
+            },
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.03802490234375,
+              "internal_difference_p999": 0.11981207275390648,
+              "highpass_peak_db": 8.391684273277553
+            },
+            "spectrum": {
+              "pass_": true,
+              "distance": 3.690032299599707,
+              "internal_p95": 4.021418416661617,
+              "at_ms": 0
+            },
+            "correlation": {
+              "pass_": true,
+              "lag_ms": 0.4791666666666667,
+              "at_ms": 0
+            },
+            "phase": {
+              "pass_": true,
+              "error_ms": 0.0,
+              "at_ms": 0
+            },
+            "loudness": {
+              "pass_": true,
+              "head_tail_lu": 0.3000000000000007,
+              "seam_drop_lu": -1.0,
+              "lufs": -16.0,
+              "true_peak": -3.9,
+              "at_ms": 0
+            }
+          },
+          "sample_count_matches": true
+        },
+        "ogg": {
+          "status": "PASS",
+          "seamless": true,
+          "calibration": "experimental:live-listening-pending",
+          "samples": 192000,
+          "sample_rate": 48000,
+          "bpm": 120,
+          "meter": "4/4",
+          "bar_count": 2,
+          "checks": {
+            "length": {
+              "pass_": true,
+              "error_samples": 0.0,
+              "at_ms": 4000.0
+            },
+            "bpm": {
+              "pass_": true,
+              "measured": 120.16167754672254,
+              "requested": 120
+            },
+            "format": {
+              "pass_": true,
+              "format": "ogg"
+            },
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.029482021927833557,
+              "internal_difference_p999": 0.11480926191061754,
+              "highpass_peak_db": 8.468114813797374
+            },
+            "spectrum": {
+              "pass_": true,
+              "distance": 3.7450722050988605,
+              "internal_p95": 3.9529403634962925,
+              "at_ms": 0
+            },
+            "correlation": {
+              "pass_": true,
+              "lag_ms": 0.4791666666666667,
+              "at_ms": 0
+            },
+            "phase": {
+              "pass_": true,
+              "error_ms": 0.0,
+              "at_ms": 0
+            },
+            "loudness": {
+              "pass_": true,
+              "head_tail_lu": 0.29999999999999893,
+              "seam_drop_lu": -1.0,
+              "lufs": -16.1,
+              "true_peak": -3.7,
+              "at_ms": 0
+            }
+          },
+          "sample_count_matches": true
+        }
+      },
+      "cut": {
+        "start_sample": 408945,
+        "end_sample": 600945,
+        "bar_count": 2,
+        "zero_crossing_offset_samples": 17,
+        "crossfade_samples": 1920,
+        "correlation_lag_ms": 0.4791666666666667,
+        "spectral_distance": 3.690033949425474,
+        "head_tail_rms_db": 1.8415359479720925,
+        "seam_jump": 0.03717041015625,
+        "score": 9.727777579689233,
+        "initial_phase_lag_ms": -51,
+        "grid_refinement_samples": 2472,
+        "residual_phase_ms": 1
+      },
+      "source_grid": {
+        "bpm": 120.19319250938358,
+        "beat_samples": 23961.423603713298,
+        "downbeat_sample": 22456,
+        "beat_phase_sample": 22456,
+        "bar_samples": 95845.69441485319,
+        "meter": "4/4",
+        "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+        "downbeat_source": "local_estimate",
+        "listening_review": "pending",
+        "tempo_candidates": [
+          {
+            "bpm": 120.0,
+            "strength": 553769.2471296024
+          },
+          {
+            "bpm": 160.0,
+            "strength": 501148.5997993165
+          },
+          {
+            "bpm": 80.0,
+            "strength": 494232.99992349953
+          },
+          {
+            "bpm": 96.0,
+            "strength": 238032.27324471128
+          },
+          {
+            "bpm": 68.57142857142857,
+            "strength": 187399.93713237986
+          }
+        ],
+        "accent_strength": [
+          74.7077666532227,
+          29.777510157228864,
+          31.783037026352723,
+          60.40601770164884
+        ]
+      },
+      "output_measurements": {
+        "spectral_flux": {
+          "bpm": 120.16167754672254,
+          "beat_samples": 23967.707998085894,
+          "downbeat_sample": 92559,
+          "beat_phase_sample": 20656,
+          "bar_samples": 95870.83199234358,
+          "meter": "4/4",
+          "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+          "downbeat_source": "local_estimate",
+          "listening_review": "pending",
+          "tempo_candidates": [
+            {
+              "bpm": 120.0,
+              "strength": 93945.08990174426
+            },
+            {
+              "bpm": 80.0,
+              "strength": 92146.14017745988
+            },
+            {
+              "bpm": 160.0,
+              "strength": 46135.063714437514
+            },
+            {
+              "bpm": 68.57142857142857,
+              "strength": 29268.533533090576
+            },
+            {
+              "bpm": 96.0,
+              "strength": 23288.1087265467
+            }
+          ],
+          "accent_strength": [
+            37.333350291992794,
+            45.16202492304182,
+            83.74003403686098,
+            104.43807265947703
+          ]
+        },
+        "legacy_rms_chroma": {
+          "bpm": 118.86204528808594,
+          "key": "E",
+          "key_source": "local_estimate",
+          "key_confidence_margin": 0.09850482467556498,
+          "method": "1ms RMS periodicity; chroma profile correlation",
+          "downbeat": null,
+          "downbeat_reason": "Requires provided bar_position or Beat This!; onset is not a downbeat"
+        }
+      },
+      "stretch": null,
+      "metadata": {
+        "samples": 192000,
+        "smpl_inclusive_end": 191999,
+        "ogg_loopstart": 0,
+        "ogg_looplength": 192000,
+        "godot_loop_offset": 0
+      }
+    }
+  },
+  "transitions": {
+    "before_phase_ms_range": [
+      36,
+      55
+    ],
+    "after": {
+      "wav": {
+        "status": "PASS",
+        "transitions": [
+          {
+            "pair": "A->B",
+            "mode": "hard",
+            "at_samples": 96000,
+            "at_ms": 2000.0,
+            "phase_error_ms": 1,
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.195709228515625,
+              "internal_difference_p999": 0.10916162109375094,
+              "highpass_peak_db": 16.353665717760265,
+              "switch_difference": 0.086944580078125
+            },
+            "momentary_drop_lu": 0.0,
+            "pass_": true
+          },
+          {
+            "pair": "A->B",
+            "mode": "equal_power",
+            "at_samples": 96000,
+            "at_ms": 2000.0,
+            "phase_error_ms": 1,
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.195709228515625,
+              "internal_difference_p999": 0.10907000732421945,
+              "highpass_peak_db": 17.50848205257761,
+              "switch_difference": 0.00567626953125
+            },
+            "momentary_drop_lu": 0.34999999999999787,
+            "pass_": true
+          },
+          {
+            "pair": "B->A",
+            "mode": "hard",
+            "at_samples": 96000,
+            "at_ms": 2000.0,
+            "phase_error_ms": 1,
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.21466064453125,
+              "internal_difference_p999": 0.11199993896484539,
+              "highpass_peak_db": 13.705541190029308,
+              "switch_difference": 0.077362060546875
+            },
+            "momentary_drop_lu": 0.5999999999999996,
+            "pass_": true
+          },
+          {
+            "pair": "B->A",
+            "mode": "equal_power",
+            "at_samples": 96000,
+            "at_ms": 2000.0,
+            "phase_error_ms": 1,
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.21466064453125,
+              "internal_difference_p999": 0.11221319580078148,
+              "highpass_peak_db": 12.033408123758552,
+              "switch_difference": 0.00604248046875
+            },
+            "momentary_drop_lu": 0.049999999999998934,
+            "pass_": true
+          }
+        ],
+        "switch_points_ms": [
+          2000.0
+        ]
+      },
+      "ogg": {
+        "status": "PASS",
+        "transitions": [
+          {
+            "pair": "A->B",
+            "mode": "hard",
+            "at_samples": 96000,
+            "at_ms": 2000.0,
+            "phase_error_ms": 1,
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.19785459339618683,
+              "internal_difference_p999": 0.10399144288897536,
+              "highpass_peak_db": 16.282935336789876,
+              "switch_difference": 0.09191194921731949
+            },
+            "momentary_drop_lu": 0.09999999999999787,
+            "pass_": true
+          },
+          {
+            "pair": "A->B",
+            "mode": "equal_power",
+            "at_samples": 96000,
+            "at_ms": 2000.0,
+            "phase_error_ms": 1,
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.19785459339618683,
+              "internal_difference_p999": 0.10389716434478832,
+              "highpass_peak_db": 17.370292039727637,
+              "switch_difference": 0.006475314497947693
+            },
+            "momentary_drop_lu": 0.34999999999999787,
+            "pass_": true
+          },
+          {
+            "pair": "B->A",
+            "mode": "hard",
+            "at_samples": 96000,
+            "at_ms": 2000.0,
+            "phase_error_ms": 1,
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.21412400901317596,
+              "internal_difference_p999": 0.10749929895997161,
+              "highpass_peak_db": 13.780134470749655,
+              "switch_difference": 0.08360489457845688
+            },
+            "momentary_drop_lu": 0.5500000000000007,
+            "pass_": true
+          },
+          {
+            "pair": "B->A",
+            "mode": "equal_power",
+            "at_samples": 96000,
+            "at_ms": 2000.0,
+            "phase_error_ms": 1,
+            "clicks": {
+              "pass_": true,
+              "events_ms": [],
+              "seam_difference": 0.21412400901317596,
+              "internal_difference_p999": 0.10749929895997161,
+              "highpass_peak_db": 12.150027008381564,
+              "switch_difference": 0.008506685495376587
+            },
+            "momentary_drop_lu": 0.05000000000000071,
+            "pass_": true
+          }
+        ],
+        "switch_points_ms": [
+          2000.0
+        ]
+      }
+    },
+    "schedule": {
+      "cycle_ms": 4000.0,
+      "verified_phases_ms": [
+        2000.0
+      ],
+      "scheduled_switch_ms": 6000.0,
+      "cycle_wrap_verified": false,
+      "observed_switch_ms": 6005.9137175293,
+      "runtime_switch_lateness_ms": 5.913717529299902
+    },
+    "first_downbeat_difference_ms": 1
+  },
+  "cues": {
+    "level-up": {
+      "before": {
+        "bpm": 122.68315887451172,
+        "key": "Am",
+        "key_source": "local_estimate",
+        "key_confidence_margin": 0.2858885325144275,
+        "method": "1ms RMS periodicity; chroma profile correlation",
+        "downbeat": null,
+        "downbeat_reason": "Requires provided bar_position or Beat This!; onset is not a downbeat"
+      },
+      "theme_relation": "same",
+      "pitch_semitones": 0,
+      "status": "PASS",
+      "after": {
+        "bpm": 122.68321458232052,
+        "key": "Am",
+        "key_source": "local_estimate",
+        "key_confidence_margin": 0.2858896920936562,
+        "method": "1ms RMS periodicity; chroma profile correlation",
+        "downbeat": null,
+        "downbeat_reason": "Requires provided bar_position or Beat This!; onset is not a downbeat"
+      },
+      "quality": {
+        "duration_error_ms": 0.0,
+        "key_match": true,
+        "true_peak": -2.4,
+        "lufs": -12.0,
+        "dc": 5.357820154650545e-07,
+        "release_peak": 0.0
+      }
+    },
+    "victory": {
+      "before": {
+        "bpm": 192.8155059814453,
+        "key": "A",
+        "key_source": "local_estimate",
+        "key_confidence_margin": 0.11867305352596058,
+        "method": "1ms RMS periodicity; chroma profile correlation",
+        "downbeat": null,
+        "downbeat_reason": "Requires provided bar_position or Beat This!; onset is not a downbeat"
+      },
+      "theme_relation": "parallel",
+      "pitch_semitones": 0,
+      "status": "regenerate_needed",
+      "reason": "Unknown key or mode mismatch; transposition cannot change mode",
+      "inspection_only": true,
+      "regeneration_request": {
+        "tool": "sounds_create",
+        "params": {
+          "description": "One isolated 3-second victory jingle: triumphant A C E A motif resolving to a minor triad. In Am at 120 BPM. Preserve a natural reverb decay, then silence. No repeats, no background music, no voice.",
+          "key": "Am",
+          "tempo": 120,
+          "loop": false,
+          "title": "Rime Glass Ridge victory fix",
+          "idempotency_key": "s15-fix-victory-Am-120-v1"
+        },
+        "submitted": false
+      }
+    },
+    "confirm": {
+      "before": {
+        "bpm": 196.727783203125,
+        "key": "E",
+        "key_source": "local_estimate",
+        "key_confidence_margin": 0.16180043581734127,
+        "method": "1ms RMS periodicity; chroma profile correlation",
+        "downbeat": null,
+        "downbeat_reason": "Requires provided bar_position or Beat This!; onset is not a downbeat"
+      },
+      "theme_relation": "conflict",
+      "pitch_semitones": 0,
+      "status": "regenerate_needed",
+      "reason": "Unknown key or mode mismatch; transposition cannot change mode",
+      "inspection_only": true,
+      "regeneration_request": {
+        "tool": "sounds_create",
+        "params": {
+          "description": "One isolated 0.4-second confirmation UI sound: soft plucked A C E minor chord, crisp instant onset. In Am at 120 BPM. Preserve a natural reverb decay, then silence. No repeats, no background music, no voice.",
+          "key": "Am",
+          "tempo": 120,
+          "loop": false,
+          "title": "Rime Glass Ridge confirm fix",
+          "idempotency_key": "s15-fix-confirm-Am-120-v1"
+        },
+        "submitted": false
+      }
+    },
+    "failure": {
+      "status": "regenerate_needed",
+      "reason": "Never delivered; no local audio exists",
+      "regeneration_request": {
+        "tool": "sounds_create",
+        "params": {
+          "description": "One isolated 2-second failure jingle: descending E D C A bell motif, soft low strings. In Am at 120 BPM. Preserve a natural reverb decay, then silence. No repeats, no background music, no voice.",
+          "key": "Am",
+          "tempo": 120,
+          "loop": false,
+          "title": "Rime Glass Ridge failure fix",
+          "idempotency_key": "s15-fix-failure-Am-120-v1"
+        },
+        "submitted": false
+      }
+    },
+    "pickup": {
+      "status": "regenerate_needed",
+      "reason": "Never delivered; no local audio exists",
+      "regeneration_request": {
+        "tool": "sounds_create",
+        "params": {
+          "description": "One isolated 0.5-second item pickup UI sound: two sparkling plucked notes E A, crisp instant onset. In Am at 120 BPM. Preserve a natural reverb decay, then silence. No repeats, no background music, no voice.",
+          "key": "Am",
+          "tempo": 120,
+          "loop": false,
+          "title": "Rime Glass Ridge pickup fix",
+          "idempotency_key": "s15-fix-pickup-Am-120-v1"
+        },
+        "submitted": false
+      }
+    }
+  },
+  "preview": {
+    "status": "BLOCKED_LIVE",
+    "provider_encoding": "1.0.0",
+    "evidence": {
+      "status": "BLOCKED",
+      "files_received": 16,
+      "encoding": "1.0.0",
+      "http_status": 200,
+      "decoder_error": "FFprobe moov atom not found; payload has no MP4 header",
+      "legacy_audio_url_status": 403,
+      "api_stream_anonymous_status": 401,
+      "preview_only": true,
+      "bytes_in_delivery": false
+    },
+    "reason": "Supplied artifacts do not contain stream payload or an identifiable standard container; HLS/AAC/Opus decoder verified separately"
+  },
+  "engine": {
+    "engine_load": "tested:4.7.2",
+    "play_cycles": 2,
+    "environment_diagnostics": [
+      "Windows root certificate store unavailable"
+    ],
+    "runtime": {
+      "events": [
+        {
+          "audio_ms": 4006.3395763855,
+          "offset_ms": 6.33957638549828,
+          "target_ms": 4000.0
+        },
+        {
+          "audio_ms": 16004.4870705719,
+          "offset_ms": 4.48707057189858,
+          "target_ms": 16000.0
+        }
+      ],
+      "jingle": true,
+      "runtime_av_sync": "tested",
+      "seconds": 30.0077990000011,
+      "switched": true,
+      "sync_pass": true,
+      "exit_code": 0,
+      "audio_errors": false
+    }
+  },
+  "controls": {
+    "status": "PASS",
+    "cases": {
+      "LOOP-OK": {
+        "expected": "PASS",
+        "actual": "PASS"
+      },
+      "LOOP-CUT": {
+        "expected": "FAIL",
+        "actual": "FAIL"
+      },
+      "LOOP-CUTBAR-phase-negative": {
+        "expected": "FAIL",
+        "actual": "FAIL"
+      },
+      "LOOP-CLICK-SEAM": {
+        "expected": "FAIL",
+        "actual": "FAIL"
+      },
+      "LOOP-CLICK-MID": {
+        "expected": "FAIL",
+        "actual": "FAIL"
+      },
+      "LOOP-FADE": {
+        "expected": "FAIL",
+        "actual": "FAIL"
+      },
+      "LOOP-DRIFT": {
+        "expected": "FAIL",
+        "actual": "FAIL"
+      },
+      "LOOP-MP3-format-guard": {
+        "expected": "FAIL",
+        "actual": "FAIL"
+      },
+      "LOOP-OGG": {
+        "expected": "PASS",
+        "actual": "PASS"
+      },
+      "LOOP-78": {
+        "expected": "PASS",
+        "actual": "PASS"
+      }
+    },
+    "current_verifier_regression": "test_audio_loop.LoopTest: all three positive and seven damaged/format controls rerun"
+  },
+  "provenance": {
+    "status": "PASS",
+    "audio_files": 16,
+    "covered": 16,
+    "issues": []
+  },
+  "tests": {
+    "focused-final": {
+      "tests": 42,
+      "failures": [],
+      "errors": [],
+      "skipped": 0,
+      "seconds": 21.95
+    },
+    "scenarios": {
+      "tests": 30,
+      "failures": [],
+      "errors": [],
+      "skipped": 0,
+      "seconds": 331.33
+    },
+    "final-full": {
+      "tests": 1061,
+      "failures": [],
+      "errors": [
+        "test_install.InstallTests.test_same_source_symlink_is_preserved",
+        "test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report"
+      ],
+      "skipped": 6,
+      "seconds": 1095.91
+    }
+  },
+  "archive": {
+    "path": ".scratch/s15-fix/pack-verified.zip",
+    "sha256": "82864849f46d06559222763a01fea446793610dac6204013b2bda7e83ad61a90"
+  },
+  "patch_replay": [
+    {
+      "patch": "01-loop-maker.patch",
+      "exit_code": 0
+    },
+    {
+      "patch": "02-variant-alignment.patch",
+      "exit_code": 0
+    },
+    {
+      "patch": "03-jingle-key.patch",
+      "exit_code": 0
+    },
+    {
+      "patch": "04-preview-decoder.patch",
+      "exit_code": 0
+    },
+    {
+      "patch": "05-godot-pack.patch",
+      "exit_code": 0
+    }
+  ],
+  "limitations": [
+    "Two undelivered cues",
+    "Victory and confirm exact-key mismatches",
+    "Live preview encoding unresolved",
+    "Independent listening and motif acceptance pending"
+  ],
+  "baseline": {
+    "tests": 1052,
+    "failures": 0,
+    "errors": [
+      "test_install.InstallTests.test_same_source_symlink_is_preserved",
+      "test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report"
+    ],
+    "skipped": 6,
+    "seconds": 1094.691
+  },
+  "patch_byte_match": {
+    "files": 22,
+    "mismatches": []
+  },
+  "regression": {
+    "new_failures": [],
+    "new_errors": [],
+    "late_schedule_regression": "covered by 42-test final focused suite and amended patch replay"
+  }
+}

@@ -124,3 +124,147 @@ failures or errors relative to the measured baseline**. Three late fake/ledger
 checks and the corresponding ledger settlement fix are additionally covered by
 the final 40-test focused run and the final per-slice patch replay. No protected
 specification, acceptance, process or threshold file changed.
+
+## Fix round — 2026-11-07
+
+**EXPERIMENTAL / partial S-178**, built only from the five existing licensed
+downloads. No Suno calls, song credits or download credits this round. Branch
+`s15-fix` started at `6fb6dbe37a684844a232bc1f8f390af13c160ae4` (`origin/main`).
+No specification, acceptance, process or threshold file changed. Six short
+regression WAVs are in `tests/fixtures/live-s15/`; each is <=960,078 bytes, with
+source/excerpt SHA-256 and sample offsets in the adjacent JSON files.
+
+### Loop making and measured transitions
+
+The provider loop flag is not trusted. A separate local 5ms log-spectral-flux
+autocorrelation estimator finds tempo and estimates bar accent phase; searches
+consider 2/4/8/16 whole bars when source length permits. Candidate scoring uses
+waveform correlation/jump, spectral continuity and head/tail RMS, followed by the
+unchanged verifier's actual EBU R128, click, spectrum and phase gates. Cuts use
+nearby zero crossings and real incoming preroll, with equal-power crossfades
+from 5ms to one beat. There is no fade to silence, padded/repeated substitute or
+relaxed verifier threshold. The existing three positive and seven negative
+instrument controls remain green. Independent listening remains pending.
+
+Both selected loops are now **two bars / 4.000 seconds / 192,000 samples**,
+instead of the old four-bar 8-second cuts. Exploration uses source samples
+365,578–557,578 and a 250ms crossfade. Aligned battle uses 408,945–600,945 and a
+40ms crossfade; all sample ends here are exclusive. Both cuts fall on zero
+crossings within 1ms of their selected/refined bar lines. WAV smpl end=191,999;
+JSON/Godot exclusive end=192,000; OGG LOOPSTART=0 / LOOPLENGTH=192,000. Godot
+WAV import mode=2; OGG loop=true / loop_offset=0.
+
+| Loop / format | Before xcorr ms | After xcorr ms | Before seam drop LU | After seam drop LU | Head/tail LU | LUFS / dBTP | Result |
+|---|---:|---:|---:|---:|---:|---|---|
+| explore/wav | 13.604 | 0.625 | 3.60 | 2.25 | 0.00 | -16.0 / -6.1 | PASS |
+| explore/ogg | 13.604 | 0.625 | 3.60 | 2.25 | 0.00 | -16.0 / -5.9 | PASS |
+| battle/wav | -11.646 | 0.479 | -1.15 | -1.00 | 0.30 | -16.0 / -3.9 | PASS |
+| battle/ogg | -11.646 | 0.479 | -1.15 | -1.00 | 0.30 | -16.1 / -3.7 | PASS |
+
+All decoded loop phase errors are 0ms. The before columns are the old delivered
+WAV measurements (the historical OGG values differ slightly in loudness; see
+the supplied live README). Both formats are independently verified after repair.
+
+| Measurement | Before | After |
+|---|---|---|
+| Exploration spectral-flux BPM | raw 120.061 | processed 120.011 |
+| Battle spectral-flux BPM | raw 120.193 | processed 120.162 |
+| Older RMS estimator | old cuts 149.963 / 99.994 | new cuts 76.633 / 118.862; disagreement retained |
+| Variant phase error | 36–55ms, 12/12 old tests failed | 1ms; 4/4 tests PASS per encoded format |
+| First aligned onset-grid difference | unaligned | 1ms (<=2ms) |
+| Switch points | nominal unverified bars | 2,000ms in each repeating 4,000ms cycle |
+
+The measured raw tempos already differ by <0.5 BPM, so these live fixes need no
+stretch. The <=±4% stretch guard remains; it is not bypassed. Variant alignment
+refines the spectral accent estimate with onset correlation, searches near the
+refined grid and re-cuts real source audio. Both directions pass hard cut and
+one-beat equal-power transition checks at every declared point in WAV and OGG.
+A 37ms shifted negative control fails. The 1ms correlation result is a local
+onset-grid estimate, not independent confirmation of musical downbeat labels.
+
+The declared switch phase is 2,000ms in each 4,000ms cycle (one allowed point
+every two bars), not every bar. Additional cycle-boundary hard-cut controls fail
+the click gate, so wrap switching is explicitly **not verified or enabled**.
+The demo now derives its absolute switch from these declared phases: 6 seconds,
+not the old hard-coded 8-second wrap. A regression test checks this scheduling
+constraint. No verifier threshold was changed to accept the failed wrap control.
+
+### All five cue statuses
+
+| Cue | Locally measured key | Fix-round status | Action |
+|---|---|---|---|
+| level-up | Am | PASS | Cleanup; no pitch shift needed |
+| victory | A major | regenerate_needed | Parallel mode is musically related, but exact requested Am is unmet; pitch shifting cannot change mode |
+| confirm | E major | regenerate_needed | Mode conflict; transposition alone cannot make Am |
+| failure | unavailable | regenerate_needed | Never delivered; no local audio to measure |
+| pickup | unavailable | regenerate_needed | Never delivered; no local audio to measure |
+
+One of five meets the exact requested key. Three audio cues exist; victory and
+confirm remain explicitly inspection-only. The sprite contains exactly those
+three, reports `INCOMPLETE` / required_count=5, and never fabricates the two missing
+cues. Chroma is an estimate and retains confidence margins; the historical
+independent victory estimate also disagreed on its root. No unverified key is
+reported as measured for missing audio.
+
+Local correction permits at most two semitones with rubberband, preserves mode,
+and rechecks the key, duration, loudness, true peak, DC and release. A real
+level-up cue detuned +2 semitones to Bm is repaired to Am in the positive control.
+All four `regenerate_needed` entries include exact, **unsubmitted** sounds_create
+requests in `audio/sfx/cue-status.json` and `s15-fix-evidence.json`. They contain
+valid key/tempo/loop/description/title/idempotency_key fields; no unsupported
+duration parameter and no paid retry was sent.
+
+### Preview transport and Godot pack
+
+The supplied `preview-fetch-report.json` says encoding `1.0.0`, HTTP 200 and
+"moov atom not found; payload has no MP4 header"; anonymous API stream was 401
+and legacy URL 403. It includes neither original stream bytes nor a codec or
+container identification. Therefore it cannot establish HLS, AAC, fMP4 or Opus.
+Live preview decoding stays **BLOCKED_LIVE**, rather than inventing an encoding.
+The new analysis fetcher probes real containers and decodes playlists directly
+through FFmpeg. Offline generated HLS MPEG-TS/AAC, HLS fMP4/AAC and Opus pass;
+unknown provider bytes fail explicitly. Remote protocol whitelists exclude
+local files; local fixture whitelists exclude networking. All decoded preview
+PCM is analysis-only and cannot enter the provenance-checked delivery pack.
+
+The final pack is `.scratch/s15-fix/pack-verified.zip`; persistent compact evidence
+is [s15-fix-evidence.json](s15-fix-evidence.json). Godot 4.7.2 headless import,
+loop property/duration assertions and two-cycle playback PASS. The final
+30-second scene switches at 6 seconds on a verified bar phase, triggers confirm (still
+inspection-only) and records two attack offsets of 6.340 ms, 4.487 ms, both <=16.7ms.
+There are zero audio/resource/script errors or warnings. The Windows root
+certificate-store diagnostic is retained separately. Provenance is **16/16**
+delivered audio files with source SHA/parent lineage. Unity/FMOD/Wwise remain
+untested. Source motion, shared motif and independent listening are not newly
+certified by this repair round.
+
+Reproduce from an unpacked original pack and its existing downloads:
+
+```text
+python scripts/audio_fix_pack.py --original .scratch/s15-fix/original --sources C:\Users\User\src\vgs-fx-private\suno-live\final-sources --out .scratch/s15-fix/new-pack --godot C:\Users\User\src\vgs-fx-private\tools\godot4\Godot_v4.7.2-stable_win64_console.exe --experimental
+```
+
+### Validation and patch delivery
+
+- `focused-final`: 42 tests, 0 failures, 0 errors, 0 skips.
+- `scenarios`: 30 tests, 0 failures, 0 errors, 0 skips.
+- `final-full`: 1061 tests, 0 failures, 2 errors, 6 skips.
+
+Measured baseline: **1,052 tests, 0 failures, 2 existing environment errors,
+6 skips** (1,094.691 seconds). The two errors are Windows symlink privilege
+(`test_install.InstallTests.test_same_source_symlink_is_preserved`) and the
+pre-existing mask-review PNG cleanup lock
+(`test_mask_review.Review.test_review_exports_overlay_contact_sheet_and_stability_report`).
+All five fix patches passed their cumulative audio tests when applied to a clean
+HEAD archive. Replay matched all 22 implementation/fixture files byte-for-byte
+after normalizing the fixture JSON line endings to LF.
+The final full run was already underway when the additional switch-schedule
+regression was added. The final 42-test focused run covers that late integration
+fix; the full-run count does not pretend to include the extra test. There are
+**zero new failures or errors** relative to the baseline.
+
+Full logs/JSON, generated local HLS test evidence, per-item tests and cumulative
+patch replay logs are under `.scratch/s15-fix/`. Each numbered fix patch has a
+matching commit-message `.txt` in `.scratch/commits/`. Git history/index was not
+modified. Apply in order: 01 loop-maker, 02 variant-alignment, 03 jingle-key,
+04 preview-decoder, 05 godot-pack, 06 fix-evidence.
