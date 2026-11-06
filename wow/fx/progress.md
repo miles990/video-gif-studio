@@ -86,3 +86,4 @@
 - 07:55 spec-7 第六次驗證通過，squash 合回 main 8cf8f9d 並 push（安裝目錄全套只剩 2 個環境錯誤、doctor 通過）。下一片 spec-11 吸收 blank-page（分支 s11-brief），並處理導演同質化。
 - 08:05 使用者：「這個專案是trunk based」→ 承認 spec-7 長命分支＋squash 偏離；process.md 改為：測試全綠即當天以 experimental 合回 main，審查與修正在 main 上以小提交進行，旗標升級，不再 squash 大包。spec-11 起照此執行。
 - 09:20 spec-11 依 trunk-based 當天以 experimental 合回 main（一般 merge 033128b，保留歷史）：安裝目錄 doctor 通過、全套只剩 2 個環境錯誤、乾淨狀態實跑 brief→lint→分鏡→算繪成功。push。接著在 main 上派獨立審查＋保留題驗收。
+- 11:10 spec-11 在 main 上獨立審查：未可升 stable（提案像模板、轉折寫死、草稿轉化與硬限制遺失、WAV 抓不到 drop 而巧合過關、同質化 14 類 11 類相同且畫面幾乎一樣、修改語法誤解、stable 導演行為被改未加旗標）。依 trunk-based 派修正：每項一個小 commit，驗證後快轉進 main。
