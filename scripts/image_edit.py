@@ -141,17 +141,20 @@ def register(base,candidate,region):
 
 def composite(base,candidate,mask,feather=8):
     from shot_match import lab,delta_e
+    from image_edit_seam import refine_band,graphcut_weights,ghosting
     if not 0<=feather<=8:raise ImageError('E_FEATHER','Feather must be between 0 and 8 pixels.')
     a=np.array(base.convert('RGBA'));b=np.array(candidate.convert('RGBA'))
-    margin=round(min(base.size)*.02)
+    margin=max(3,round(min(base.size)*.02))
     expanded=cv2.dilate(mask,np.ones((2*margin+1,2*margin+1),np.uint8))
     aligned,registration=register(a,b,expanded)
+    aligned,band,flow=refine_band(a,aligned,mask,margin)
+    registration['dense_flow']=flow
+    registration['global_residual_px']=registration['residual_px']
+    if flow['after']:registration.update(flow['after'])
+    registration['acceptance']='pass' if flow['after'] and registration['residual_px']<=1 else 'needs_review'
     outside=expanded==0;rawdiff=np.abs(a.astype(float)-aligned.astype(float))
-    if feather:
-        distance=cv2.distanceTransform((expanded>0).astype('uint8'),cv2.DIST_L2,5)
-        weights=np.clip(distance/feather,0,1)
-        weights=weights*weights*(3-2*weights)
-    else:weights=(expanded>0).astype(float)
+    weights,cut=graphcut_weights(a,aligned,mask,expanded,feather)
+    ghosts=ghosting(a,aligned,band,weights)
     result=np.rint(a*(1-weights[...,None])+aligned*weights[...,None]).astype('uint8')
     result[outside]=a[outside]
     diff=np.abs(result.astype(float)-a.astype(float))
@@ -159,8 +162,9 @@ def composite(base,candidate,mask,feather=8):
     metrics=dict(outside_mean=float(diff[outside].mean()),outside_p999=float(np.percentile(diff[outside],99.9)),
                  outside_fraction_over10=float(np.mean(np.any(diff[outside]>10,axis=1))),
                  outside_identical=bool(np.array_equal(a[outside],result[outside])),inside_delta_e2000=inside_de,
-                 raw_outside_mean=float(rawdiff[outside].mean()),registration=registration,margin_px=margin,feather_px=feather,
-                 seam=seam_metrics(a,result,expanded),acceptance=registration['acceptance'],
+                 raw_outside_mean=float(rawdiff[outside].mean()),registration=registration,margin_px=margin,feather_px=cut['feather_px'],requested_feather_px=feather,
+                 seam=dict(seam_metrics(a,result,expanded),cut=cut,ghosting=ghosts),
+                 acceptance='needs_review' if ghosts['flagged'] else registration['acceptance'],
                  visual_review='pending: semantic change and composite seam')
     if inside_de<8:raise ImageError('E_EDIT_NO_CHANGE','Selected region did not materially change (mean ΔE2000 <8).',metrics=metrics)
     return Image.fromarray(result),metrics,expanded
@@ -174,16 +178,31 @@ def edit(adapter,request,image,out,instruction,region=None,markup=None,feather=8
     refs=[str(image),*[str(p) for p in request.refs if Path(p).resolve()!=image]]
     if len(refs)>16:raise ImageError('E_REFSET_LIMIT','Source image plus identity references exceed 16; select at most 15 identity references.')
     bbox=Image.fromarray(mask).getbbox()
-    req=replace(request,prompt=f'{instruction}\nEdit only the object inside pixel bbox {bbox}. Preserve framing and every other detail.',
-                refs=refs,size=f'{base.width}x{base.height}',n=1,format='png',markup_sha=digest(out/'mask.png'))
+    context=max(32,round(min(base.size)*.10))
+    cropbox=(max(0,bbox[0]-context),max(0,bbox[1]-context),min(base.width,bbox[2]+context),min(base.height,bbox[3]+context))
+    crop=base.crop(cropbox);crop.save(out/'reference-crop.png')
+    local_mask=mask[cropbox[1]:cropbox[3],cropbox[0]:cropbox[2]]
+    local_bbox=Image.fromarray(local_mask).getbbox()
+    refs[0]=str(out/'reference-crop.png')
+    req=replace(request,prompt=f'{instruction}\nThe first reference is the exact crop to edit. Return ONLY this crop with the SAME framing, scale and perspective. Edit only pixel bbox {local_bbox}. Preserve all surrounding details.',
+                refs=refs,size=f'{crop.width}x{crop.height}',aspect=f'{crop.width}:{crop.height}',n=1,format='png',markup_sha=digest(out/'mask.png'))
     generation=adapter.generate(req,out/'regeneration',approval,max_usd)
     source=Path(generation['assets'][0]['path'])
-    with Image.open(source) as candidate:result,metrics,expanded=composite(base,candidate,mask,feather)
-    result.save(out/'edited.png');Image.fromarray(expanded).save(out/'composite-region.png')
+    with Image.open(source) as candidate:
+        if abs((candidate.width/candidate.height)/(crop.width/crop.height)-1)>.03:
+            raise ImageError('E_REGISTRATION','Regeneration did not retain the reference crop framing; retry with the same crop.')
+        candidate=candidate.convert('RGBA').resize(crop.size,Image.Resampling.LANCZOS)
+        local_result,metrics,local_expanded=composite(crop,candidate,local_mask,feather)
+    result=base.copy();result.paste(local_result,(cropbox[0],cropbox[1]))
+    expanded=np.zeros_like(mask);expanded[cropbox[1]:cropbox[3],cropbox[0]:cropbox[2]]=local_expanded
+    metrics.update(crop_bbox=list(cropbox),crop_reference=str(out/'reference-crop.png'),same_framing_required=True)
+    output=out/('edited.png' if metrics['acceptance']=='pass' else 'edited.needs-review.png')
+    result.save(output);Image.fromarray(expanded).save(out/'composite-region.png')
     manifest=dict(generation,fallback='mask_composite',feature_used=['references'],edit=metrics,
                   edit_acceptance=metrics['acceptance'],
+                  status='ok' if metrics['acceptance']=='pass' else 'needs_review',ok=metrics['acceptance']=='pass',
                   derived_from=[dict(sha256=digest(image),**c2pa(image)),dict(sha256=digest(source),**c2pa(source))],
-                  path=str(out/'edited.png'),sha256=digest(out/'edited.png'),ai_generated=True)
+                  path=str(output),sha256=digest(output),ai_generated=True)
     write(out/'gen-manifest.json',manifest);return manifest
 
 
@@ -205,4 +224,5 @@ def apply_delta(board,draft,adapter,request,out,markup=None,approval=None,max_us
             shot['keyframe']=dict(path=result['path'],sha256=result['sha256'],gen_manifest=str(out/shot['id']/'gen-manifest.json'),status='edited' if result['edit_acceptance']=='pass' else 'edit_needs_review',ai_generated=True)
             changed.append(shot['id'])
     b['revision']=dict(changed_shots=changed,previous_sha=key(board),keep=['all pixels outside selected regions','all other shots'])
+    if any(s.get('keyframe',{}).get('status')=='edit_needs_review' for s in b['shots']):b['status']='needs_review'
     write(out/'storyboard.json',b);write(out/'delta.json',parsed);return b

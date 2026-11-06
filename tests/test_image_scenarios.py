@@ -32,7 +32,9 @@ class ImageScenarios(ImageCase):
         before=render_version(generated,self.path/'v1',size=(90,160),formats=('png','mp4'))
         shot=generated['shots'][1];source=Path(shot['keyframe']['path'])
         with Image.open(source) as original:
-            edited=original.copy();ImageDraw.Draw(edited).rectangle((340,1150,700,1630),fill='#e9c7a2');edited.save(self.fixture)
+            edited=original.copy();ImageDraw.Draw(edited).rectangle((340,1150,700,1630),fill='#e9c7a2')
+            # Provider cassette must return the requested mask + context crop.
+            edited.crop((230,1040,811,1741)).save(self.fixture)
         generated['shots'][1]['image_regions']={'杯子':[338,1148,365,485]}
         revised=apply_delta(generated,'第二鏡的杯子改成拿鐵',self.adapter,self.request(),self.path/'edit')
         after=render_version(revised,self.path/'v2',previous=self.path/'v1',size=(90,160),formats=('png','mp4'))

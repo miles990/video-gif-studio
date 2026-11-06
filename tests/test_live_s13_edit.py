@@ -13,7 +13,7 @@ class LiveEditTests(ImageCase):
   result,qa,region=composite(base,candidate,mask)
   self.assertTrue(np.array_equal(np.array(result)[region==0],np.array(base)[region==0]))
   self.assertEqual(qa['registration']['residual_tolerance_px'],1)
-  self.assertEqual(qa['acceptance'],'pass' if qa['registration']['residual_px']<=1 else 'needs_review')
+  self.assertEqual(qa['acceptance'],'pass' if qa['registration']['residual_px']<=1 and not qa['seam']['ghosting']['flagged'] else 'needs_review')
   self.assertIn('boundary_gradient_excess_mean',qa['seam'])
   self.assertGreaterEqual(qa['registration']['inliers'],8)
  def test_unrelated_regeneration_refused(self):
@@ -30,5 +30,5 @@ class LiveEditTests(ImageCase):
   result,qa,region=composite(base,candidate,mask)
   self.assertTrue(np.array_equal(np.array(result)[region==0],np.array(base)[region==0]))
   self.assertEqual(qa['registration']['residual_tolerance_px'],1)
-  self.assertEqual(qa['acceptance'],'pass' if qa['registration']['residual_px']<=1 else 'needs_review')
+  self.assertEqual(qa['acceptance'],'pass' if qa['registration']['residual_px']<=1 and not qa['seam']['ghosting']['flagged'] else 'needs_review')
   self.assertGreaterEqual(qa['registration']['inlier_fraction'],.25)

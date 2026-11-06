@@ -15,7 +15,8 @@ class EditTests(ImageCase):
         self.original=self.path/'original.png';self.base.save(self.original)
         self.candidate=self.base.copy();d=ImageDraw.Draw(self.candidate);d.rectangle((55,130,100,190),fill='#dec69d')
         a=np.array(self.candidate);a[...,:3]=np.minimum(a[...,:3].astype(int)+5,255).astype('uint8');self.candidate=Image.fromarray(a)
-        self.candidate.save(self.fixture)
+        # Fake provider returns the requested crop, as the real route must.
+        self.candidate.crop((21,96,135,225)).save(self.fixture)
 
     def test_full_redraw_preserves_outside_exactly(self):
         result=edit(self.adapter,self.request(),self.original,self.path/'edit','latte',region=[53,128,50,65])
