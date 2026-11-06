@@ -13,24 +13,53 @@ from storyboard import validate,lint,design_curve,fingerprint,shot_table
 def card(shot,size=(320,180)):
     w,h=size; im=Image.new('RGBA',size,shot.get('background','#556578'));d=ImageDraw.Draw(im)
     scale={'EWS':.08,'WS':.18,'MS':.34,'CU':.65,'ECU':.9}[shot['size']]
+    scale=max(scale,shot.get('hero_height',0)/1.92)
     radius=max(2,round(h*scale*.32));cx=w//2;cy=int(h*.46)
-    d.ellipse((cx-radius,cy-radius,cx+radius,cy+radius),fill='#18232e')
-    d.polygon([(cx-radius,cy+radius),(cx-2*radius,cy+5*radius),(cx+2*radius,cy+5*radius),(cx+radius,cy+radius)],fill='#18232e')
-    d.text((7,7),f"{shot['id']} / {shot['size']} / {shot['duration']:.3f}s",fill='white')
+    if shot.get('hero_height')!=0:
+        d.ellipse((cx-radius,cy-radius,cx+radius,cy+radius),fill='#18232e')
+        d.polygon([(cx-radius,cy+radius),(cx-2*radius,cy+5*radius),(cx+2*radius,cy+5*radius),(cx+radius,cy+radius)],fill='#18232e')
+    else:
+        d.ellipse((-w//3,h//3,w//2,h*2),fill='#687b8d')
+        d.ellipse((w//2,-h//2,w*2,h//2),fill='#8294a3')
+    if shot.get('beat'):
+        from PIL import ImageFont
+        import math
+        font=ImageFont.load_default(size=max(8,math.ceil(24*min(w,h)/1080)))
+        lines=[f"{shot['id']} {shot['size']} {shot['duration']:.2f}s",f"beat {shot['beat']}"]
+        row=''
+        for handle in shot.get('refs',[]):
+            candidate=(row+' '+handle).strip()
+            if row and d.textbbox((0,0),candidate,font=font)[2]>w-14:lines.append(row);row=handle
+            else:row=candidate
+        if row:lines.append(row)
+        for i,line in enumerate(lines):d.text((7,5+i*(font.size+2)),line,font=font,fill='white')
+    else:d.text((7,7),f"{shot['id']} / {shot['size']} / {shot['duration']:.3f}s",fill='white')
     d.text((7,h-18),f"{shot['motion']} {'-->' if shot['motion']!='static' else '-'}",fill='white')
     return np.asarray(im)
 
 
 def moved(frame,shot,t):
-    h,w=frame.shape[:2];motion=shot['motion'];u=np.clip(t/shot['duration'],0,1);zoom=1.;dx=dy=0.
+    h,w=frame.shape[:2];motion=shot['motion'];u=np.clip(t/shot['duration']*shot.get('motion_speed',1),0,1);zoom=1.;dx=dy=0.
+    if shot.get('motion_peak_speed'):
+        # Symmetric ease with unchanged endpoints; multiplier changes peak phase.
+        power=max(.1,shot['motion_peak_speed']);a=u**power;b=(1-u)**power;u=a/(a+b)
     if motion in ('push','dolly','smooth_in','expo_in','crash_in','spring_in','punch'):zoom=1+.2*u
     elif motion in ('pull','crash_out'):zoom=1.2-.2*u
     elif motion in ('pan','whip'):dx=.12*w*u
     elif motion in ('tilt','crane'):dy=.12*h*u
     elif motion=='drift':dx=.04*w*u;zoom=1+.05*u
     elif motion=='handheld':dx=np.sin(t*5)*w*.008;dy=np.sin(t*7)*h*.008
+    if shot.get('yaw_degrees'):
+        dx=w*.25*np.tan(np.deg2rad(np.clip(shot['yaw_degrees'],-75,75)))*u;dy=0
     matrix=np.array([[zoom,0,(1-zoom)*w/2+dx],[0,zoom,(1-zoom)*h/2+dy]],np.float32)
-    return cv2.warpAffine(frame,matrix,(w,h),flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_REPLICATE)
+    if shot.get('rotation_degrees'):
+        rotation=cv2.getRotationMatrix2D((w/2,h/2),-shot['rotation_degrees']*u,1)
+        matrix=(np.vstack([rotation,[0,0,1]])@np.vstack([matrix,[0,0,1]]))[:2].astype(np.float32)
+    if shot.get('direction') in ('right-to-left','screen-left'):matrix[0,2]=-matrix[0,2]
+    result=cv2.warpAffine(frame,matrix,(w,h),flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_REPLICATE)
+    if shot.get('brightness_delta'):
+        result=result.copy();result[:,:,:3]=np.clip(result[:,:,:3].astype(float)+shot['brightness_delta'],0,255).astype(np.uint8)
+    return result
 
 
 def source_frame(shot,base,size):
@@ -48,6 +77,20 @@ def source_frame(shot,base,size):
             shot['asset_fallback']=dict(path=str(path),reason='undecodable footage')
             return card(shot,size)
         return cv2.cvtColor(cv2.resize(bgr,size),cv2.COLOR_BGR2RGBA)
+
+
+def shot_labels(frame,shot):
+    """Authored title/card text for brief previews; references never become labels."""
+    from PIL import ImageFont
+    items=[*shot.get('elements',[]),*shot.get('captions',[])]
+    items=[item for item in items if isinstance(item,dict) and item.get('text')]
+    if not items:return frame
+    im=Image.fromarray(frame);draw=ImageDraw.Draw(im)
+    for i,item in enumerate(items):
+        pixels=max(1,round(shot.get('min_text_px',24)*min(im.size)/1080))
+        font=ImageFont.load_default(size=pixels)
+        draw.text((im.width*.08,im.height*(.72+.10*i)),item['text'],font=font,fill='white',stroke_width=1,stroke_fill='black')
+    return np.asarray(im)
 
 
 def audio_mix(board,base,out,music=None):
@@ -104,7 +147,21 @@ def to_plan(board,out,base=Path('.'),size=(320,180),music=None):
         if len(edges)>2 and edges[-1]-edges[-2]<20:edges=np.delete(edges,-2)
         durations=np.diff(edges).astype(int).tolist()
         if min(durations)<20:raise ValueError('Shot too short for the existing timeline (minimum 20 ms)')
-        for j,t in enumerate(edges[:-1]):Image.fromarray(moved(frame,s,t/1000)).save(folder/f'{j:05d}.png')
+        filename=s.get('footage',s.get('image',''));capture=None
+        if b.get('preserve_footage_motion') and filename and Path(filename).suffix.lower() in ('.mp4','.mov','.webm','.avi','.gif'):
+            capture=cv2.VideoCapture(str(base/filename))
+        last_video_frame=frame
+        try:
+            for j,t in enumerate(edges[:-1]):
+                source=frame
+                if capture is not None:
+                    capture.set(cv2.CAP_PROP_POS_MSEC,s.get('in_ms',0)+t*s.get('motion_speed',1))
+                    ok,bgr=capture.read()
+                    if ok:last_video_frame=cv2.cvtColor(cv2.resize(bgr,size),cv2.COLOR_BGR2RGBA)
+                    source=last_video_frame
+                Image.fromarray(shot_labels(moved(source,s,t/1000),s)).save(folder/f'{j:05d}.png')
+        finally:
+            if capture is not None:capture.release()
         write(folder.parent/'manifest.json',dict(durations_ms=durations))
         segment=dict(type='animation',manifest=str((folder.parent/'manifest.json').resolve()))
         transition=s.get('transition')

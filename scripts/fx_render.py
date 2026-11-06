@@ -16,7 +16,7 @@ from compose_timeline import compose, resolve_plan, export_timeline, FORMATS
 from fx import Context, EFFECTS, TRANSITIONS, evaluate
 from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers, audio_peaks
 
-TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model','experimental','source_audio','keep_audio','duck','loudnorm','captions','sfx','cut_density','reframe','sections','fx_checks','recipe_events','director_choices'}
+TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','interpolate','rife_model','experimental','source_audio','keep_audio','duck','loudnorm','captions','sfx','cut_density','reframe','sections','fx_checks','recipe_events','director_choices','assets'}
 SEGMENT = {'type','manifest','image','previous','frame','duration_ms','in_ms','out_ms','speed','ramp','ending','end_beat','end_downbeat','transition','review'}
 META = {'name','start_ms','end_ms','start_beat','end_beat','review','stage','director_mix','recipe_name','recipe_event_id'}
 
@@ -85,6 +85,9 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
     if os.environ.get('VIDEO_GIF_INTERPOLATE'):plan['interpolate']=os.environ['VIDEO_GIF_INTERPOLATE']
     if interpolate is not None: plan['interpolate']=interpolate
     keys(plan,TOP,'plan')
+    if 'assets' in plan:
+        from brief_refs import validate_assets
+        validate_assets(plan['assets'])
     if type(plan.get('experimental',False)) is not bool: raise ValueError('experimental: expected boolean')
     if type(plan.get('fx_checks',False)) is not bool: raise ValueError('fx_checks: expected boolean')
     experimental = experimental or plan.get('experimental',False)

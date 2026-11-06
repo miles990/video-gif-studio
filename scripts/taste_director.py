@@ -47,7 +47,15 @@ def brief_curve(core,duration,music=None,brief=None):
 def treatment(images,duration,core,profile=None,target=None,music=None,brief=None):
     if not images:raise ValueError('Supply at least one user-owned image/footage source')
     profile=profile or load();defaults=profile['defaults']
-    calibration=target or {};target=calibration.get('target',target) or dict(asl=2.,cv=.5)
+    from brief_structure import structure,stable_choices,recipe_camera
+    editorial=stable_choices(structure(core,brief,profile,target))
+    neutral_legacy=brief is None and editorial['profile']=='graphic'
+    if neutral_legacy:
+        # Preserve the calibrated neutral preview when the caller supplied no
+        # aesthetic/pace at all. Expressive briefs and expanded briefs use the
+        # new grammar; reference-stat-only callers retain their proven cut readout.
+        editorial.update(asl=2.,cv=.5,sizes=['WS','MS','CU'],moves=['static'],recipes=['impact'])
+    calibration=target or {};target=calibration.get('target',target) or {k:editorial[k] for k in ('asl','cv')}
     curve,origin=brief_curve(core,duration,music,brief)
     timing=plan_timing(duration,target);shots=[];cursor=0.;density=defaults['density']
     from fx import TRANSITIONS
@@ -56,10 +64,14 @@ def treatment(images,duration,core,profile=None,target=None,music=None,brief=Non
     preferred_names=sorted((name for name,score in scores.items() if score>0),key=lambda name:(-scores[name],name))
     cards=read(Path(__file__).resolve().parents[1]/'references/fx-cards.json')
     eligible=[name for name in preferred_names if TRANSITIONS[name]['status']=='stable']
+    if editorial['profile'] in ('kinetic','fresh','precision','warm'):
+        # Rank user favourites inside the requested editorial family. A global
+        # spot-check preference is not a command to make every genre identical.
+        eligible=[name for name in eligible if transition_family(name)==editorial['family']]
     family_choices=sorted(name for name,card in TRANSITIONS.items() if card['status']=='stable' and scores[name]>=0 and cards.get('transition:'+name,{}).get('family')==defaults['transition_family'])
-    transition=(eligible or family_choices or ['crossfade'])[0]
+    transition=(eligible or (family_choices if neutral_legacy else editorial['transitions']) or ['crossfade'])[0]
     tokens=default_tokens(profile=profile)
-    if eligible:tokens['transitions']['primary']=transition_family(transition)
+    tokens['transitions']['primary']=transition_family(transition)
     count=len(timing['durations']);event_count=max(1,round(count*.3*density))
     ambient=origin=='level intensity requested by brief' or (origin=='explicit design curve from brief' and np.ptp(np.asarray(curve)[:,1])<.02)
     if ambient:event_count=0
@@ -73,17 +85,21 @@ def treatment(images,duration,core,profile=None,target=None,music=None,brief=Non
         duration_s=round(duration_s*100)/100
         if i==count-1:duration_s=round((duration-cursor)*100)/100
         energy=float(np.interp(cursor+duration_s/2,*np.asarray(curve).T))
-        shot=dict(id=f'shot-{i+1}',start=round(cursor,3),end=round(cursor+duration_s,3),size=('WS','MS','CU')[i%3],angle=(i%3)*35,
+        shot=dict(id=f'shot-{i+1}',start=round(cursor,3),end=round(cursor+duration_s,3),size=editorial['sizes'][i%len(editorial['sizes'])],angle=(i%3)*35,
                   lens='standard',motion='static',composition='subject on thirds',direction='neutral',axis='main',lighting='preserve supplied material',
                   color_script='user palette',image=str(Path(images[i%len(images)]).resolve()),action='Show the supplied subject',subject='subject',
                   intent='hold' if np.ptp(np.asarray(curve)[:,1])<.02 else 'follow design',sound=dict(section=f'part-{i+1}',energy=energy),why='Reveal the next detail of the core concept',
                   serves_core='Make the supplied subject and its next detail readable',transition=transition if i else 'cut')
         if i in accented:
-            shot['recipe']=dict(name='impact',perceived=min(.7,energy*.5*defaults['flashiness']),serves_core='Underline the newly revealed detail')
+            name=editorial['recipes'][i%len(editorial['recipes'])]
+            strength=min(.7,energy*.5*defaults['flashiness']) if neutral_legacy else min(.15,energy*.2*defaults['flashiness'])
+            shot['recipe']=dict(name=name,perceived=strength,serves_core='Underline the newly revealed detail')
+        if not shot.get('recipe') or not recipe_camera(shot['recipe']['name']):
+            shot['motion']=editorial['moves'][i%len(editorial['moves'])]
         shots.append(shot);cursor+=duration_s
     board=dict(core=core,fps=30,shots=shots,tokens=tokens,design_curve=curve,design_origin=origin,weights=profile.get('weights',[.35,.25,.30,.10]),
                taste_applied=dict(defaults=defaults,note='According to your taste profile; only recommendations change',choices=len(profile['choices'])),
-               target_timing=timing)
+               target_timing=timing,editorial_structure=editorial)
     board['target_warnings']=[]
     if brief is not None:board['brief']=brief
     if ambient:board['style']='ambient'
