@@ -70,7 +70,7 @@ class BriefScenarios(unittest.TestCase):
             if not ok:break
             means.append(float(frame.mean()))
         cap.release();jump=np.argmax(np.diff(means))+1;self.assertAlmostEqual(jump/30,2,delta=1/30)
-        with self.assertRaisesRegex(ValueError,'E_FINGERPRINT_RESOLUTION'):audit(movie,[ref])
+        self.assertTrue(audit(movie,[ref])['pass_nonembedding'])
 
     def test_music_edit_keeps_unaffected_frames_and_colours(self):
         source=self.path/'asset.png';Image.new('RGB',(96,64),(140,100,70)).save(source)

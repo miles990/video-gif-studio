@@ -199,3 +199,69 @@ Claude-authored spec-13 commit. It adds only `wow/fx/spec-13.md`; no source, tes
 file touched by these fixes changed. It was preserved and is not counted as a
 builder fix commit. `origin/main` was also externally advanced to `b185890`.
 The final test evidence remains applicable because the external commit is spec-only.
+
+## Fix round 2
+
+2026-11-06. Builder worktree: `s11-fix2`, HEAD `61204201468394f46bc3c9b2f03fab55bb6c9d23`.
+Spec-11 remains **EXPERIMENTAL**. All implementation and scratch work stayed in
+this worktree; Git metadata and protected specs/acceptance/process/threshold files
+were not changed. No paid generation or external messages were used.
+
+| Item | Implemented fix |
+| --- | --- |
+| 1 | Preserve agent-authored turns and beats; check result complements with a zh/en surface grammar. Strip duration tokens from scaffold subjects/turns and keep transformation beats in one continuous shot. |
+| 2 | Read directional quantities from the previous shot, offer one absolute-direction question for ambiguity, invert a single quantity, parse half/twice/slower and explicit pan directions, and measure dark contact-sheet frames without requiring an index. |
+| 3 | Match footage using beat/card content and retain the explicit hero. Remove cafe-specific routing and grounding vocabulary. Add horror, game trailer, VFX showcase and icon-set treatments. |
+| 4 | Emit size, sheet/frame/state/transparency/icon-count/style intent as `asset_spec`. Preserve pixel art even without size hints. Route asset briefs to an explicit `asset pipeline pending` record; icon sets do not require a turn. |
+| 5 | Preserve exact required subject names. Check named products, the final beat and final shot for logo constraints, and positive face descriptions against no-faces constraints. Enforce these contracts at conversion and render preflight. |
+| 6 | Use aesthetic-family aliases and format/px/fps/frame-count fork rules. Decode AVI/MP4 references into sheets, retain failure reasons, remove invented motion ranges, normalize small fingerprints, match mirrors, and audit decoded renders in QA. Exact repeated decoded frames reuse comparisons while every frame remains counted. |
+
+Regression-first receipts: `.scratch/round2/01-red.log` through `06-red.log`,
+plus `06-render-red.log` and `edges-red.log`. New fixtures use game characters,
+sprites, rune VFX and item icons; the exact named-product case requested in the
+review is retained as a constraint regression.
+
+Final validation:
+
+- Full suite: **835 tests, 0 failures, the same 2 environment errors,
+  4 skipped**, 1123.969 seconds. This is 15 new tests over the
+  supplied 820-test baseline. Receipts: `.scratch/round2/full-final.log` / `.json`.
+  The unchanged errors are Windows symlink privilege (`test_install`) and an
+  open-image cleanup lock (`test_mask_review`).
+- Scenario suites: **19 tests passed** (5 brief + 14 taste), with independent
+  receipts in `.scratch/round2/scenarios-final.log` / `.json`.
+- The six ordered patch stages passed **38 / 41 / 43 / 45 / 47 / 51 tests**,
+  265 total executions, in fresh Python processes against reconstructed HEAD
+  sources. Receipt: `.scratch/round2/stages-final.json`; logs are
+  `stage-corrected-01.log` through `stage-corrected-06.log`.
+- Six decoded genre sheets use a recognizable pixel knight. All 15 pairwise
+  frame differences exceed 1; minimum mean absolute difference is **14.588**
+  on the 0..255 scale. All six sheets were visually inspected and the hero is
+  visible. Evidence: `.scratch/round2/evidence/`. The icon-set sheet here compares
+  editorial previs only; it does not claim that the pending asset pipeline exists.
+- The asset CLI expand/render smoke test returns the intact 64x64, eight-frame,
+  idle/attack/run transparent pixel-art specification with pending status, without
+  invoking video rendering: `.scratch/round2/asset-cli-render/asset-pending.json`.
+- Ordered patch application, whitespace checks, final source equality and SHA-256
+  receipts: `.scratch/round2/patch-validation-final.json`. The final documentation
+  addition does not change the source code tested by the reconstructed stages.
+
+Deliverables are one patch and one commit message per item in
+`.scratch/commits/01-*` through `06-*`. These are based on the specified HEAD;
+no commits, rebase or push were performed by this builder.
+
+External trunk movement: `origin/main` was observed at `a1450996a6c3c87365df774846ef03a1c794c963` during final
+verification. It includes independently authored S13 image-edit dispatch and
+keyframe QA/cache changes. Primary patch 02 conflicts with that newer dispatch;
+do not discard its image replacement branches. A resolved alternative is
+`.scratch/round2/02-delta-grammar-trunk.patch` (with its `.txt` commit message),
+tested on pinned trunk `a1450996a6c3c87365df774846ef03a1c794c963` after patch 01 and before patches 03-06.
+The integrated brief, image-edit and image-keyframe suites passed **60
+tests**. Receipt: `.scratch/round2/trunk-integration.json`. This alternative is
+only for the newer trunk; use the normal patch 02 on the specified builder HEAD.
+
+The grammar and hard-constraint checks verify written contracts, not semantic
+understanding of pixels. Fingerprints cannot establish copying for textureless
+imagery. Asset generation remains pending spec-14, and these regressions make no
+claim of human aesthetic acceptance. Earlier exploratory/interrupted receipts
+are superseded by the final receipts named above.

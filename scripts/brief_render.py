@@ -136,9 +136,19 @@ def render_version(board,out,previous=None,size=None,formats=('png','mp4')):
     render(out/'plan.json',out/'render',formats,fps=b['fps'])
     movies=list((out/'render').glob('*.mp4'))
     if movies:b['render_source']=str(movies[0].resolve());write(out/'storyboard.json',b)
+    from brief_guard import audit
+    decoded=movies[0] if movies else out/'render'/'frames'
+    reference_audit=audit(decoded,b.get('reference_paths',[]),fps=b['fps'])
+    write(out/'reference-audit.json',reference_audit)
+    qc_path=out/'render'/'qc.json'
+    qc=json.loads(qc_path.read_text(encoding='utf-8')) if qc_path.is_file() else {}
+    qc['reference_audit']=reference_audit;write(qc_path,qc)
+    if not reference_audit['pass_nonembedding']:
+        raise ValueError('E_REF_EMBED: decoded render contains reference imagery; inspect reference-audit.json')
     report=dict(version=1,shots=records,transitions=boundaries,rerendered_shots=[r['id'] for r in records if r['status']=='rendered'],
                 reused_shots=[r['id'] for r in records if r['status']=='cache'],duration=b['duration'],
                 no_visible_effect=[r['id'] for r in records if r['status']=='rendered' and r['id'] in old and r['sha256']==old[r['id']]['sha256']],
+                reference_audit=reference_audit,
                 note='Local shot frames are immutable; final assembly recomposites transition windows and encodes the delivery.')
     write(out/'version.json',report);return report
 

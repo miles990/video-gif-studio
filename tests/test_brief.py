@@ -101,7 +101,12 @@ class BriefTests(unittest.TestCase):
         class Blocked:
             def search(self,*args,**kwargs):raise OSError('NET-BLOCK')
         a=brief.expand(TOPICS[5],offline=True);b=brief.expand(TOPICS[5],provider=Blocked())
-        a.pop('meta');meta=b.pop('meta');self.assertTrue(meta['offline']);self.assertIn('NET-BLOCK',meta['attempts'][0]['error']);self.assertEqual(a,b)
+        a.pop('meta');meta=b.pop('meta');self.assertTrue(meta['offline']);self.assertIn('NET-BLOCK',meta['attempts'][0]['error'])
+        self.assertIn('NET-BLOCK',b['prompt'])
+        # The creative structure is identical; failure provenance is distinct.
+        self.assertEqual(a['beats'],b['beats'])
+        self.assertTrue(all('offline' in r['failure_reason'] for r in a['refs']))
+        self.assertTrue(all('NET-BLOCK' in r['failure_reason'] for r in b['refs']))
 
     def test_refstat_timing_and_contrasting_structures(self):
         b=brief.expand('coffee 10s',refstat=dict(target=dict(asl=1.25,cv=.35)));s=skeleton_board(b)['shots'];lengths=np.array([x['duration'] for x in s])

@@ -205,3 +205,65 @@ class HardConstraintTests(unittest.TestCase):
         self.assertIn('hard_constraint',[f['rule'] for f in lint(bad)['findings']])
         board['shots'][-1]['action']='Frostblade settles'
         with self.assertRaisesRegex(ValueError,'E_HARD_CONSTRAINT'):preflight(board)
+
+
+class ReferenceQATests(unittest.TestCase):
+    def test_aesthetic_families_and_routine_formats(self):
+        b=brief.expand('knight reveal')
+        for name in ('cyberpunk neon watercolor','賽博龐克霓虹水彩'):
+            b['aesthetic']=name
+            self.assertIn('one_aesthetic',[f['rule'] for f in lint(b)['findings']])
+        b['aesthetic']='rock and roll poster'
+        self.assertNotIn('one_aesthetic',[f['rule'] for f in lint(b)['findings']])
+        for routine in ('GIF','MP4','PNG','64 px','12 fps','8 frames','八幀'):
+            b['forks']=[dict(choice_made=routine,alternative='ink rune')]
+            self.assertIn('routine_fork',[f['rule'] for f in lint(b)['findings']],routine)
+
+    def test_video_still_slots_and_missing_reasons(self):
+        import tempfile,cv2
+        import numpy as np
+        from brief_refs import reference_sheets
+        with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
+            for suffix,codec in (('.avi','MJPG'),('.mp4','mp4v')):
+                source=Path(tmp)/('hero'+suffix)
+                out=cv2.VideoWriter(str(source),cv2.VideoWriter_fourcc(*codec),10,(96,64))
+                for i in range(10):out.write(np.full((64,96,3),i*20,np.uint8))
+                out.release();refs=[dict(path=str(source),handle='a1')]
+                self.assertTrue(reference_sheets(refs,Path(tmp)/suffix[1:]))
+                self.assertNotEqual(refs[0].get('status'),'ref_missing')
+            class Blocked:
+                def search(self,*args,**kwargs):raise OSError('test provider unavailable')
+            b=brief.expand('rune spell',provider=Blocked())
+            for ref in b['refs']:
+                self.assertTrue(ref.get('failure_reason'))
+                self.assertNotIn('time_range',ref)
+                self.assertNotIn('0–1.6',ref['use'])
+            self.assertIn('provider unavailable',b['prompt'])
+
+    def test_small_and_mirrored_reference_fingerprints(self):
+        import cv2,numpy as np
+        from brief_guard import signature,matches
+        rng=np.random.default_rng(81)
+        pixels=rng.integers(0,256,(96,128,3),dtype=np.uint8)
+        self.assertTrue(matches(signature(pixels),signature(cv2.flip(pixels,1)))['embedded'])
+        other=rng.integers(0,256,pixels.shape,dtype=np.uint8)
+        self.assertFalse(matches(signature(pixels),signature(other))['embedded'])
+
+    def test_render_qa_audits_decoded_output(self):
+        import tempfile,json,cv2,numpy as np
+        from brief_render import render_version
+        with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
+            root=Path(tmp);rng=np.random.default_rng(23)
+            pixels=rng.integers(0,256,(96,128,3),dtype=np.uint8)
+            ref=root/'read-only-rune.png';asset=root/'copied-rune.png'
+            cv2.imwrite(str(ref),pixels);cv2.imwrite(str(asset),cv2.flip(pixels,1))
+            b=brief.to_storyboard(brief.expand('rune reveal 1s',project=[dict(path=str(asset))]),allow_skeleton=True)
+            b['fps']=24;b['reference_paths']=[str(ref)]
+            for shot in b['shots']:
+                shot.pop('recipe',None);shot.update(motion='static',apply_framing=False,transition='cut')
+            with self.assertRaisesRegex(ValueError,'E_REF_EMBED'):
+                render_version(b,root/'rendered',size=(128,96),formats=('png',))
+            report=json.loads((root/'rendered/reference-audit.json').read_text())
+            self.assertFalse(report['pass_nonembedding'])
+            self.assertGreater(report['frames_checked'],0)
+            self.assertEqual(len(report['hits']),report['frames_checked'])

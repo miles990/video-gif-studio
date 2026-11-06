@@ -13,6 +13,17 @@ from threshold_registry import value
 ROOT=Path(__file__).resolve().parents[1]
 NONEXEMPT={'licence','ref_provenance','refs_in_output','schema','hard_constraint'}
 
+# Aliases map to families, so two names for one family are not a mixed look.
+AESTHETIC_FAMILIES={
+    'cyberpunk':r'cyberpunk|賽博龐克|赛博朋克',
+    'watercolor':r'watercolou?r|水彩', 'vaporwave':r'vaporwave|蒸氣波',
+    'swiss':r'swiss|瑞士', 'bauhaus':r'bauhaus|包浩斯',
+    'brutalism':r'brutalis\w*|粗獷主義', 'aero':r'frutiger\s*aero',
+    'baroque':r'baroque|巴洛克', 'deco':r'art\s*deco|裝飾藝術',
+    'risograph':r'risograph|riso|孔版', 'pixel':r'pixel[ -]?art|像素藝術',
+    'minimalism':r'minimalism|極簡',
+}
+
 
 def meaningful_reason(text):
     text=text.strip()
@@ -84,8 +95,8 @@ def lint(brief):
     aesthetic=brief.get('aesthetic')
     generic={'modern','clean','minimal','simple','warm','cozy','cool','sleek','professional','現代','簡約','溫暖','質感','高級','專業'}
     first_line=prompt.splitlines()[0] if prompt else ''
-    named=re.findall(r'vaporwave|swiss|bauhaus|brutalis\w*|frutiger\s*aero|cyberpunk|baroque|art\s*deco|risograph|riso|蒸氣波|瑞士|包浩斯|賽博龐克|巴洛克|極簡',str(aesthetic),re.I)
-    if not isinstance(aesthetic,str) or not aesthetic.strip() or len(set(n.lower() for n in named))>1 or re.search(r'\s(?:and|&|\+)\s|[×,，+&]|混搭|融合',aesthetic+' '+first_line,re.I) or set(aesthetic.lower().split())<=generic or not re.sub(r'現代|簡約|溫暖|質感|高級|專業|\s','',aesthetic):
+    named={family for family,pattern in AESTHETIC_FAMILIES.items() if re.search(pattern,str(aesthetic),re.I)}
+    if not isinstance(aesthetic,str) or not aesthetic.strip() or len(named)>1 or set(aesthetic.lower().split())<=generic or not re.sub(r'現代|簡約|溫暖|質感|高級|專業|\s','',aesthetic):
         add('one_aesthetic','aesthetic','Commit to one named aesthetic','Name one child of the fence, e.g. morning-window warm film')
     beats=brief.get('beats',[]);refs=brief.get('refs',[])
     from brief_language import transformation, results
@@ -151,7 +162,7 @@ def lint(brief):
     markers=[m for m in re.findall(r'\[\?\s*([^]]+)\]',prompt.split('refs:')[0]) if m not in ('visual ref','motion ref','download')]
     if max(len(forks),len(markers))>limits['forks.max']:add('forks_max','forks','More than three creative forks','Keep only the three choices that change the idea')
     for i,f in enumerate(forks):
-        if re.search(r'\b(?:duration|loop|aspect|filename|fps|resolution|square)\b|\d+(?:\.\d+)?\s*(?:s\b|seconds?\b|秒)|\d+\s*:\s*\d+|直式|橫式|解析度|檔名|正方形',json.dumps(f,ensure_ascii=False),re.I):
+        if re.search(r'\b(?:duration|loop|aspect|filename|fps|resolution|square|gif|mp4|png|apng|webm|px)\b|\d+(?:\.\d+)?\s*(?:s\b|seconds?\b|秒|frames?\b|px\b|fps\b)|[\d一二兩三四五六七八九十]+\s*(?:幀|格)|\d+\s*:\s*\d+|直式|橫式|解析度|檔名|正方形',json.dumps(f,ensure_ascii=False),re.I):
             add('routine_fork',f'forks[{i}]','Routine choice presented as a creative fork','Set the routine default inline')
     for i,a in enumerate(brief.get('assets',[])):
         status=licence_status(a)

@@ -190,12 +190,12 @@ class FixTests(unittest.TestCase):
         self.assertEqual(next(f['severity'] for f in lint(b)['findings'] if f['rule']=='end_hold'),'error')
         self.assertIn('exemption_reason',[f['rule'] for f in lint(b)['findings']])
 
-    def test_fingerprint_requires_720_and_detects_embedding(self):
+    def test_fingerprint_normalizes_720_and_detects_embedding(self):
         import cv2,tempfile
         import numpy as np
         from brief_guard import signature,audit
         from PIL import Image
-        with self.assertRaisesRegex(ValueError,'E_FINGERPRINT_RESOLUTION'):signature(np.zeros((180,320,3),np.uint8))
+        self.assertEqual(len(signature(np.zeros((180,320,3),np.uint8))[0]),64)
         with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
             root=Path(tmp);ref=root/'ref.png';other=root/'other.png'
             rng=np.random.default_rng(8);base=rng.integers(0,256,(720,960,3),dtype=np.uint8)

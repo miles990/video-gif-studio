@@ -206,7 +206,8 @@ def ground(aesthetic, cards=(), taste=None, refstat=None, library=(), provider=N
             except (OSError,TimeoutError) as exc:
                 failed=True;attempts.append(dict(role=role,query=query,provider=type(provider).__name__,error=str(exc)))
         if chosen is None:
-            chosen=dict(placeholder='[? motion ref]' if moving else '[? visual ref]',status='ref_missing',queries_tried=[query],licence='unknown')
+            reason=next((a['error'] for a in attempts if a.get('error')),None) or ('offline: no eligible local reference' if offline else 'no reference provider configured' if provider is None else 'no vetted candidate for this role')
+            chosen=dict(placeholder='[? motion ref]' if moving else '[? visual ref]',status='ref_missing',queries_tried=[query],licence='unknown',failure_reason=reason)
         else:used.add(identity(chosen))
         chosen.update(handle=handle,role=role,source=source,read_only=True)
         chosen.setdefault('licence','unknown');refs.append(chosen)
@@ -220,14 +221,16 @@ def reference_sheets(refs,root):
     for ref in refs:
         path=Path(ref.get('path',''))
         if not path.is_file():
-            ref['status']='ref_missing';continue
+            ref['status']='ref_missing';ref.setdefault('failure_reason','reference file is missing: '+str(path));continue
         try:
-            if ref['handle'].startswith('m'):
-                out=root/(ref['handle']+'.png');contact_sheet(path,out);outputs.append(str(out))
+            if ref['handle'].startswith('m') or path.suffix.lower() in ('.avi','.mp4','.mov','.webm','.mkv','.gif'):
+                out=root/(ref['handle']+'.png');meta=contact_sheet(path,out);outputs.append(str(out))
+                ref['decoded_duration_s']=meta['duration_s']
             else:
                 with Image.open(path) as im:tile=im.convert('RGB');tile.thumbnail((240,150))
                 still.append((ref['handle'],tile))
-        except (OSError,ValueError):ref['status']='ref_missing'
+        except (OSError,ValueError) as exc:
+            ref['status']='ref_missing';ref['failure_reason']='decode failed: '+str(exc)
     if still:
         root.mkdir(parents=True,exist_ok=True);sheet=Image.new('RGB',(240*len(still),180),'white')
         for i,(handle,tile) in enumerate(still):

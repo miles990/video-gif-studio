@@ -240,8 +240,8 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         r['use']=authored_use or r.get('use') or f'beat {b}: '+r.get('take',takes[role])
         if role=='turn' and not authored_use:r['use']=f'beat {b}: '+copy['turn']
         if r['handle'].startswith('m'):
-            r.setdefault('time_range',[0.,1.6]);r.setdefault('speed_scale',1.)
-            r['use']+=f'; {r["time_range"][0]:g}–{r["time_range"][1]:g} s at {r["speed_scale"]:g}x'
+            if r.get('time_range') and not r.get('placeholder'):
+                r['use']+=f'; {r["time_range"][0]:g}–{r["time_range"][1]:g} s at {r.get("speed_scale",1):g}x'
         if r['handle']=='m2':r['is_turn']=True;r['use']+=' (the turn)'
     vertical=platform in ('ig_reels','tiktok','shorts') or bool(re.search(r'直式|vertical|9:16',draft,re.I))
     assets=[dict(deepcopy(c),licence=c.get('licence','user-owned'),owned=c.get('owned',True),role=c.get('role','asset'),title=c.get('title',c.get('id','user footage'))) for c in cards if c.get('path')]
@@ -292,7 +292,8 @@ def prompt(brief):
     lines.append('refs:')
     for r in brief['refs']:
         provenance=r.get('source_url',r.get('path',r.get('origin_handle',r.get('placeholder','local statistics'))))
-        lines.append(f'- {r["handle"]} {provenance}: {r["role"]}, {r["use"]}')
+        failure='; ref_missing: '+r['failure_reason'] if r.get('failure_reason') else ''
+        lines.append(f'- {r["handle"]} {provenance}: {r["role"]}, {r["use"]}'+failure)
     lines.append('assets:')
     for a in brief.get('assets',[]):lines.append(f'- {a.get("path",a.get("source_url",""))}: use as-is; {a.get("licence","unknown")}')
     if not brief.get('assets'):lines.append('- silhouette stand-in; replace with the real subject')
