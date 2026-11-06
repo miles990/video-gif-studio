@@ -20,11 +20,11 @@ tightening, never a beat or the turn.
 
 Files in `references/`:
 
-- `finding-references.md`: roles, the fence, are.na seeds and loop, Pinterest,
+- `blank-page-finding-references.md`: roles, the fence, are.na seeds and loop, Pinterest,
   Sketchfab, vetting. Read before step 2.
-- `vocabulary.md`: the author's own words, per slot. Borrow while writing.
-- `examples.md`: before / after pairs from real sessions. Read when unsure of the shape.
-- `patterns.md`: corpus evidence and past failures behind the rules. Optional.
+- `blank-page-vocabulary.md`: the author's own words, per slot. Borrow while writing.
+- `blank-page-examples.md`: before / after pairs from real sessions. Read when unsure of the shape.
+- `blank-page-patterns.md`: corpus evidence and past failures behind the rules. Optional.
 
 ## Procedure — 改寫自 blank-page SKILL.md §Procedure（MIT）
 
@@ -56,7 +56,7 @@ Files in `references/`:
      palette, material, type and components, not layout, scale, camera or the move.
      The first line names a child of the user's word (`in stripe-gradient dark`).
      How to decode and query it, and what to do when the queries come back as junk:
-     "The fence" in `finding-references.md`.
+     "The fence" in `blank-page-finding-references.md`.
 
 3. **Ground the motion: three moving references.** gif / mp4 from the motion channels,
    each a move worth copying ("would he put this in mo-graph?"), covering three jobs:
@@ -89,7 +89,7 @@ Files in `references/`:
    an attachment or the conversation: silently. Missing and creative: a
    `[? best default]` placeholder in the prompt. Missing and routine (duration,
    aspect, file): default it inline, no marker; no file named means
-   `in stewdio, new file <topic>,`.
+   `in the current vgs-fx project, new file <topic>,`.
 
 7. **Rewrite in the house shape** (templates below), keeping the author's wording
    where it exists.
@@ -108,7 +108,7 @@ Opener slots first; they decide the result. Edit-loop slots after.
 
 | slot | ask | house form |
 |---|---|---|
-| where | tool, file, comp; for sequences the time or beat it attaches to | `in stewdio, <file>, <comp>, at 3.5s:` / `after the sticker exits:` |
+| where | tool, file, comp; for sequences the time or beat it attaches to | `in the current vgs-fx project, <file>, <comp>, at 3.5s:` / `after the sticker exits:` |
 | look | one aesthetic, named, from a1; a child of the user's word when there is one | `in frutiger aero style` / `everything in riso` |
 | medium / technique | photo or footage, 3D rebuild, vector, shader, real model | `using threejs or 3d framework` / `real 3d texture and train models` |
 | move | the mechanic from the motion ref, subject swapped | `recreate this animation, but make it nyc subway` |
@@ -137,7 +137,7 @@ that belongs to the look (raking light across paper) is not a drop shadow.
 **Brief**
 
 ```
-in stewdio, <file>, [<comp>,] [at <N>s / after <beat>,] create the following, in <aesthetic from a1>[, using <technique>]:
+in the current vgs-fx project, <file>, [<comp>,] [at <N>s / after <beat>,] create the following, in <aesthetic from a1>[, using <technique>]:
 
 1. <subject (c1 / asset), its state at 0s> <enters like m1: mechanic>
 2. <main action from m1, subject swapped> [at ~<N>s]
@@ -223,6 +223,5 @@ line each.
 
 ## Scripts — 改寫自 blank-page SKILL.md §Scripts（MIT）
 
-`scripts/find_refs.py`: are.na channels / umbrellas / contact sheets, Pinterest pins,
-Sketchfab search + download, file downloads, video contact sheets. Run it with no
-arguments for the command list.
+`scripts/brief_refs.py`: are.na channels / umbrellas / contact sheets, Pinterest pins,
+Sketchfab search + download, file downloads, video contact sheets. Use its `ReferenceFinder` adapter from the calling agent; this module has no standalone search CLI.

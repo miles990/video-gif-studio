@@ -12,14 +12,14 @@ conversation. One example per lesson; the voice stays the author's.
 
 ## 1. Medium unstated (four rounds) — 改寫自 blank-page references/examples.md §1. Medium unstated (four rounds)（MIT）
 
-Before (2026-10-21): `in stewdio, file-a, create a realistic eye blinking in front of a klein blue background, everything is in resolgraph texture`
+Before (2026-10-21): `in the current vgs-fx project, file-a, create a realistic eye blinking in front of a klein blue background, everything is in resolgraph texture`
 
 Follow-ups: `make the eye an illustrator vector animation` / `actually revert back to the real eye` / `around the eye, add china porcelain vase's organic yet geometric patterns in white <img>` / `give the pattern a boil effect and have it grow out organically in the beginning` / `have the camera start zoomed out by 1x then a steep quadratic ease-out zoom in that is 2s long`.
 
 After:
 
 ```
-in stewdio, file-a, create the following, everything in riso (3-ink halftone, grain, slight misregistration):
+in the current vgs-fx project, file-a, create the following, everything in riso (3-ink halftone, grain, slight misregistration):
 
 1. a realistic eye (photo/footage based, not vector) centered on a klein blue #002FA7 field, blinking naturally [? 2 blinks over the comp]
 2. around the eye, white porcelain-vase patterns <img: shape + motif only, not the colour>; the ring around the iris turns clockwise, the field outside it counter-clockwise; the whole pattern boils slightly and grows out bottom-up from 0s
@@ -85,14 +85,14 @@ keep my plumpness and texture param edits
 
 ## 6. Batch without a dedupe rule — 改寫自 blank-page references/examples.md §6. Batch without a dedupe rule（MIT）
 
-Before (2026-10-05): `in stewdio's carousel project, create the following 25 variations based on the existing comps / keep the new comps tight, around 5-7s / for all of them use white bg and 3 place holder images @a.jpg @b.jpg @c.jpg`
+Before (2026-10-05): `in the current project's carousel project, create the following 25 variations based on the existing comps / keep the new comps tight, around 5-7s / for all of them use white bg and 3 place holder images @a.jpg @b.jpg @c.jpg`
 
 Follow-ups: `the variations doesn't have to be 1-to-1, just create new ideas based on the existing ones` / `no need to do backward directions, they are not a valid variation` / `mirror are not valid either` / `rename everything in the following format (Carousel: [5 word max description])`.
 
 After:
 
 ```
-in stewdio's carousel project, create 25 new carousel comps as variations of the existing ones:
+in the current project's carousel project, create 25 new carousel comps as variations of the existing ones:
 - not 1-to-1: a valid variation changes the mechanic, orientation, layout or treatment; reversing direction or mirroring is not a variation
 - stay within the current sensibilities (flat, white bg, no fade, no drop shadow, no rounded corners, no UI chrome)
 - each ~5-7s, white bg, the same 3 placeholder images @a.jpg @b.jpg @c.jpg
@@ -114,14 +114,14 @@ keep the orb and camera as they are
 
 ## 8. Sequence beat mid-timeline — 改寫自 blank-page references/examples.md §8. Sequence beat mid-timeline（MIT）
 
-Before (2026-10-26): `in stewdio file-b, create the following on main comp / at 3.5s mark, have many small jack-o-latern version of clawd <img> crawl from the bottom of the screen up all over the skeleton covering it, / then, they crawl down and back to exit, leaving one bone dropping on the ground`
+Before (2026-10-26): `in vgs-fx file-b, create the following on main comp / at 3.5s mark, have many small jack-o-latern version of clawd <img> crawl from the bottom of the screen up all over the skeleton covering it, / then, they crawl down and back to exit, leaving one bone dropping on the ground`
 
 Follow-ups: `make clawd still look like clawd except for the pumpkin texture` / `still make the eyes glow`.
 
 After:
 
 ```
-in stewdio file-b, main comp, at 3.5s:
+in vgs-fx file-b, main comp, at 3.5s:
 1. many small clawds (the clawd silhouette as-is <img>, pumpkin texture + glowing eyes, same 16bit quantisation as the scene) crawl in from the bottom edge and up over the skeleton until it is covered [? ~1.5s]
 2. they crawl back down and exit the bottom edge, leaving one bone that drops to the ground and stays
 keep the sigil, skeleton dance and flames as they are; the beat ends by [? 7s] so the inventory scene can start
@@ -129,7 +129,7 @@ keep the sigil, skeleton dance and flames as they are; the beat ends by [? 7s] s
 
 ## 9. Bare brief: the first skill version versus the opener shape — 改寫自 blank-page references/examples.md §9. Bare brief: the first skill version versus the opener shape（MIT）
 
-Before (2026-11-02 test set): `in stewdio file-d, make a video of our issue tracker app where the tasks show up nicely`
+Before (2026-11-02 test set): `in vgs-fx file-d, make a video of our issue tracker app where the tasks show up nicely`
 
 What the first skill version produced: a dark linear-style list, "rows stagger in top-down 60ms apart, each rises 8px with opacity 0→1 over 400ms", a 20° tilt, "no fade, no drop shadow", "check sub-pixel smooth at pixelRatio 0.4–2", fill-ins about duration and loop. The unassisted agent built the same thing. Nothing in it was a decision.
 
@@ -138,7 +138,7 @@ After (references chosen first; the motion ref is a stop-motion paper gif from m
 ```
 the brief says "our issue tracker app" and nothing is attached: attach a screenshot of the real issues list, or it gets rebuilt from u1 below.
 
-in stewdio, file-d, create the following, in the look of printed matter (riso-ish ink on uncoated stock, two spot colours, visible grain), the ui rebuilt as paper:
+in the current vgs-fx project, file-d, create the following, in the look of printed matter (riso-ish ink on uncoated stock, two spot colours, visible grain), the ui rebuilt as paper:
 
 1. an empty issues list on a sheet of paper, camera top-down. each task slides in from the right edge as its own paper slip and lands with a stop-motion snap, one after another like m1, the stack getting thicker as they land
 2. at ~2.5s a hand (real footage cutout, c1) reaches in and ticks the top three with a marker; each tick is one stroke, the slip turns from the dark ink to the accent ink as it is done
@@ -176,7 +176,7 @@ Search (run 2026-11-02): are.na `sticker bomb` / `stickers stop motion`, Pintere
 After:
 
 ```
-in stewdio file-b, main comp, at 7s, ~3.5s total:
+in vgs-fx file-b, main comp, at 7s, ~3.5s total:
 
 1. an inventory/equipment interface slides in as stone blocks (a1), ~0.5s
 2. the inventory is for a macbook: laptop open by default, then closes; a highlighted cursor adds stickers to the lid one at a time, each landing exactly under the cursor with a hit impact (slight screen shake on the first ~4)

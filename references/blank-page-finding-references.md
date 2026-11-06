@@ -6,7 +6,7 @@ This is the complete absorbed authoring method, vocabulary and evidence, not a c
 
 # Finding references and assets — 改寫自 blank-page references/finding-references.md §Finding references and assets（MIT）
 
-The roles a reference may play, where to search, and how to vet. `scripts/find_refs.py`
+The roles a reference may play, where to search, and how to vet. `scripts/brief_refs.py`
 does the fetching; run it with no arguments for the command list. Output is one JSON
 object per line.
 
@@ -46,7 +46,7 @@ written in words, try `channels "camera move"`, `"zoom"`, `"transitions"`.
 
 Blake names niche aesthetics himself; other users name mainstream ones in plain words
 (`clean and minimal, lots of white`, `like stripe's style`, `like claymation`). Both
-past failures (overriding the word, screenshotting it; see `patterns.md`) treated the
+past failures (overriding the word, screenshotting it; see `blank-page-patterns.md`) treated the
 fence as a place to copy from, not as a query. So:
 
 1. **Decode the word** in one line: what the user pictures when they say it. `minimal,
@@ -246,13 +246,7 @@ vehicles, products with recognisable detail, mechanical assemblies, sculptures,
 interiors. The hand-coded brain was "very bad"; a real GLB fixed it. Keep procedural
 geometry for orbs, blobs, primitives, extruded logos, lathe objects, noise fields.
 
-```
-find_refs.py sketchfab "<object> [style word]" .scratch/brief-refs/<topic>/3d [n] [max_faces]
-# rows: n, name, author, license, faces, animations, glb_mb, textures, tex_max, free_download, page — 改寫自 blank-page references/finding-references.md §rows: n, name, author, license, faces, animations, glb_mb, textures, tex_max, free_download, page（MIT）
-# tiles in .scratch/brief-refs/<topic>/3d/sketchfab-sheet.png, row-major = n — 改寫自 blank-page references/finding-references.md §tiles in .scratch/brief-refs/<topic>/3d/sketchfab-sheet.png, row-major = n（MIT）
-find_refs.py sketchfab-get <uid> .scratch/brief-refs/<topic>/3d/<name>.glb
-npx -y @gltf-transform/cli inspect <file>    # meshes, animations, bounds
-```
+Use `ReferenceFinder.sketchfab(query, max_faces)` from `scripts/brief_refs.py`. Select a vetted record, then use `model_route(uid, mirror_paths, authenticated_url)` with an explicitly supplied mirror index or authenticated URL. Missing downloads remain placeholders. Inspect meshes and animation channels with an available local glTF viewer before promising articulated motion.
 
 - **Search broad.** Sketchfab matches every word: `R46 subway car` → 0, `nyc subway
   car` → 24. Object plus one style or era word, then narrow by eye.
@@ -263,7 +257,7 @@ npx -y @gltf-transform/cli inspect <file>    # meshes, animations, bounds
 - **Parts must match the motion.** A lid, arm or door that moves must be its own mesh;
   say which parts move in the take, confirm with `inspect` after download.
 - **Whole object, not a scan fragment or fan variant.** Pick from the sheet.
-- **Download routes**, tried in order by `sketchfab-get`: the Objaverse mirror
+- **Download routes**, tried in order by `ReferenceFinder.model_route`: the Objaverse mirror
   (allenai/objaverse on Hugging Face, 2022 snapshot, ~800k models, no login, rigs
   survive; `free_download: true` marks these, so prefer them when candidates are
   close); the Sketchfab API with `SKETCHFAB_TOKEN`; else it prints the page, which goes
@@ -276,8 +270,8 @@ npx -y @gltf-transform/cli inspect <file>    # meshes, animations, bounds
 Matching titles are not references. Pinterest's top `sticker peel animation` pins were
 tutorial thumbnails.
 
-1. Download each candidate to `.scratch/brief-refs/<topic>/` with `get`, named
-   `<role-letter><n>.<ext>` (`m1.mp4`, `a1.jpg`). `get` fixes the extension to the
+1. Download each candidate to `.scratch/brief-refs/<topic>/` with `ReferenceFinder.download`, named
+   `<role-letter><n>.<ext>` (`m1.mp4`, `a1.jpg`). `download` fixes the extension to the
    real type (a png served as `.jpg` is saved as `a1.png`); cite the `saved` path.
 2. Look at it. Stills: Read the file. Moving: `sheet <file> <out.png>` makes a 3x3
    contact sheet with timestamps and duration; `sheet <file> <out.png> 16` (or 25)

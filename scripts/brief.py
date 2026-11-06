@@ -225,10 +225,10 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
     for r in refs:
         r['cited_by']=[b['id'] for b in beats if re.search(r'(?<!\w)'+r['handle']+r'(?!\w)',b['text'])]
         role=r['role'];b=r['cited_by'][0] if r['cited_by'] else 1
-        takes={'look':'overall finish and ground','palette':'warm ink and shadow colours','material':'paper grain on the surface',
-               'composition':'hero centred with breathing room','detail':'legible small mark on subject','main mechanic':'lower-edge entrance, subject swapped',
-               'turn':'pull out to expose the larger whole, subject swapped','exit':'continuous drift to the final pose, subject swapped'}
-        r['use']=f'beat {b}: '+r.get('take',takes[role])
+        takes={role:copy['aesthetic']+'; '+role+' for '+copy['subject']}
+        authored_use=content.get('ref_uses',{}).get(r['handle'])
+        r['use']=authored_use or r.get('use') or f'beat {b}: '+r.get('take',takes[role])
+        if role=='turn' and not authored_use:r['use']=f'beat {b}: '+copy['turn']
         if r['handle'].startswith('m'):
             r.setdefault('time_range',[0.,1.6]);r.setdefault('speed_scale',1.)
             r['use']+=f'; {r["time_range"][0]:g}–{r["time_range"][1]:g} s at {r["speed_scale"]:g}x'
@@ -240,7 +240,7 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
                 subject=copy['subject'],hard_constraints=constraints,pace=copy['pace'],duration=duration,fps=fps,width=1080,height=1920 if vertical else 1080,
                 beats=beats,refs=refs,assets=assets,structure=design,taste=taste,refstat=refstat or {},music=grid,
                 end_hold=0.,hero_height=.5,min_text_px=24,forks=content.get('forks') or [dict(choice_made='主體在原場景轉化' if copy['zh'] else 'transform in place',alternative='以材質細節帶出轉化' if copy['zh'] else 'reveal the transformation through material detail')],
-                camera=content.get('camera','拉遠：減速落在完整主體' if copy['zh'] else 'pull: ease out into the full assembly'),meta=meta,
+                camera=content.get('camera',('固定鏡頭，讓轉化清楚可見' if copy['zh'] else 'static camera; keep the transformation readable') if preserved_turn else ('拉遠：減速落在完整主體' if copy['zh'] else 'pull: ease out into the complete outline')),meta=meta,
                 contact_sheets='.scratch/brief-refs/',status='proposal' if authored else 'skeleton',text_origin='agent-authored' if authored else 'skeleton')
     if not cards:result['missing_asset']='未提供真實素材；預覽使用剪影卡片。' if copy['zh'] else 'Real subject media is missing; the preview uses silhouette cards.'
     if copy['zh'] and not content.get('pace'):result['pace']='動作連續，轉折前留呼吸，細節清楚落定'
@@ -255,6 +255,11 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         result['items']=[dict(id=i+1,mechanic=mechanics[i%6],layout=['centred','thirds','diagonal'][i//6%3],treatment=['paper','glass'][i//18],
                               text=f'{mechanics[i%6]} to expose the subject; composition {i//6+1}') for i in range(n)]
         result['dedupe']='Change mechanism, layout or material; reverse direction and mirror alone are not variations.'
+    from brief_refs import reference_sheets
+    import hashlib
+    key=hashlib.sha256(json.dumps(refs,sort_keys=True,ensure_ascii=False).encode()).hexdigest()[:16]
+    sheets=reference_sheets(refs,ROOT/'.scratch'/'brief-refs'/key)
+    result['contact_sheets']='; '.join(sheets) if sheets else 'ref_missing: no decodable local reference media'
     result['prompt']=prompt(result);return result
 
 

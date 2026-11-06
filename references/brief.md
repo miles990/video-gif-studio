@@ -40,13 +40,13 @@ retains its attribution. Those files retain the complete worthwhile method rathe
 than reducing it to keywords. Numerical advice is class C in `thresholds.json`,
 not an external standard. The author corpus statistics are not our measurements.
 
-Classification order: attachment → image feedback; export/rename/QA → housekeeping;
+Edits and housekeeping require a previous version with shots or beats. Incidental requests for later variations remain brief. Classification order: attachment → image feedback; export/rename/QA → housekeeping;
 variations → batch; targeted modifications → delta; timeline anchor → sequence;
 otherwise brief. Edits skip reference acquisition. Housekeeping describes the exact
 operation and never invents an aesthetic. The caller executes export/QA separately.
 
 Agent JSON `--content` can supply aesthetic, fence, subject, turn, pace, camera,
-duration, fps, forks, assets, structure and fully authored beats. Beats carry
+duration, fps, forks, assets, structure, `ref_uses` (handle to specific use text) and fully authored beats. Without an authored turn or beats the output is `skeleton`, with a creative fork. Conversion refuses skeletons unless `--allow-skeleton` explicitly requests previs. Beats carry
 `id,t_start,t_end,text,is_turn,refs,anchor,mechanism`; cite every ref inline.
 The deterministic starting treatment is editable, not a claim of a newly researched
 look. Missing reference slots and real subjects remain visible placeholders.
@@ -141,3 +141,5 @@ renderer receipts, all topics, >=8 moving pairs and hidden positive/negative con
 it creates a blind HTML review and separate private key. `score` consumes actual
 user answers, reports Wilson intervals and panel agreement, and keeps “未證明更好”
 unless technical evidence, controls and user evidence all support the claim.
+
+Reference sheets are generated from actual local media under `.scratch/brief-refs/`. Missing or undecodable files report `ref_missing`; a directory name alone is not a contact sheet. Each role receives a distinct file. Author `ref_uses` to describe the selected aesthetic and the exact quality taken, rather than accepting a generic material.

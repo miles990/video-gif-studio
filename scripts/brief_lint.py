@@ -110,6 +110,8 @@ def lint(brief):
     seen=set()
     for i,r in enumerate(refs):
         handle=r.get('handle','');loc=f'refs[{i}]({handle})'
+        if r.get('placeholder') or r.get('status')=='ref_missing':
+            add('ref_missing',loc,'Reference media is missing','Supply a vetted local file for this role','warning')
         if handle in seen:add('schema',loc,'Duplicate handle','Give each scoped role its own handle')
         seen.add(handle)
         cited=[b['id'] for b in beats if re.search(r'(?<!\w)'+re.escape(handle)+r'(?!\w)',b.get('text',''))] if handle else []

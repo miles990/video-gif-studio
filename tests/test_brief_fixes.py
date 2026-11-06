@@ -62,3 +62,19 @@ class FixTests(unittest.TestCase):
         self.assertIn('hard_constraint',[f['rule'] for f in lint(b)['findings']])
         authored=brief.expand('Acme kettle',content={'turn':'the lid opens to reveal the brewing chamber'})
         self.assertEqual(authored['status'],'proposal');brief.to_storyboard(authored)
+
+    def test_distinct_references_authored_uses_and_sheets(self):
+        import tempfile
+        from PIL import Image
+        from brief_lint import lint
+        with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
+            library=[]
+            for i in range(5):
+                p=Path(tmp)/f'{i}.png';Image.new('RGB',(64,64),(30*i,20,70)).save(p)
+                library.append(dict(path=str(p),aesthetic_tag='obsidian macro atelier',vetted=True))
+            b=brief.expand('precision watch',library=library,content={'ref_uses':{'a3':'beat 1: polished obsidian specular edges'}})
+            self.assertEqual(len({r['path'] for r in b['refs'][:5]}),5)
+            self.assertEqual(b['refs'][2]['use'],'beat 1: polished obsidian specular edges')
+            self.assertTrue(Path(b['contact_sheets']).is_file())
+            self.assertIn('ref_missing',[f['rule'] for f in lint(b)['findings']])
+            self.assertNotIn('paper grain',b['prompt'])

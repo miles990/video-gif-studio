@@ -176,32 +176,60 @@ def ground(aesthetic, cards=(), taste=None, refstat=None, library=(), provider=N
     Statistics alone never pretend to be a visual reference. Missing slots remain
     explicit local placeholders, with attempted queries, in both offline paths.
     """
-    refs=[];attempts=[];failed=False
+    refs=[];attempts=[];failed=False;used=set()
+    def identity(row):
+        path=row.get('path')
+        return str(Path(path).resolve()).casefold() if path else row.get('source_url',row.get('id',str(row)))
+    def available(row):return identity(row) not in used
     for i,(handle,role) in enumerate(zip(HANDLES,ROLES)):
         moving=i>=5;query=role+' animation' if moving else aesthetic
         chosen=None;source='local_lib'
         if not moving and cards:
             terms={'look':['light','window','cup','光','杯'],'palette':['light','orange','光','橘'],
                    'material':['menu','paper','菜單','紙'],'composition':['cup','杯'],'detail':['open','text','字','店']}[role]
-            ranked=sorted(enumerate(cards),key=lambda pair:(-sum(t in json.dumps(pair[1],ensure_ascii=False).lower() for t in terms),pair[0]))
-            chosen=deepcopy(ranked[0][1]);source='user';chosen['origin_handle']='u'+str(ranked[0][0]+1)
+            ranked=sorted(((j,c) for j,c in enumerate(cards) if available(c)),key=lambda pair:(-sum(t in json.dumps(pair[1],ensure_ascii=False).lower() for t in terms),pair[0]))
+            if ranked:chosen=deepcopy(ranked[0][1]);source='user';chosen['origin_handle']='u'+str(ranked[0][0]+1)
         for origin,data in (('taste',taste),('refstat',refstat)):
             if chosen is None:
-                chosen=next((deepcopy(r) for r in (data or {}).get('refs',[]) if r.get('role')==role),None)
+                chosen=next((deepcopy(r) for r in (data or {}).get('refs',[]) if r.get('role')==role and available(r)),None)
                 if chosen: source=origin
         if chosen is None:
-            chosen=next((deepcopy(r) for r in library if r.get('vetted') and bool(r.get('moving'))==moving and (moving or r.get('aesthetic_tag')==aesthetic)),None)
+            chosen=next((deepcopy(r) for r in library if available(r) and r.get('vetted') and bool(r.get('moving'))==moving and (moving or r.get('aesthetic_tag')==aesthetic)),None)
             if chosen: source='local_lib'
         if chosen is None and provider and not offline and not failed:
             try:
                 candidates=provider.search(role,query,moving=moving)
-                chosen=next((deepcopy(r) for r in candidates if r.get('vetted') and bool(r.get('moving'))==moving and (moving or r.get('aesthetic_tag')==aesthetic)),None)
+                chosen=next((deepcopy(r) for r in candidates if available(r) and r.get('vetted') and bool(r.get('moving'))==moving and (moving or r.get('aesthetic_tag')==aesthetic)),None)
                 attempts.append(dict(role=role,query=query,provider=type(provider).__name__,result='selected' if chosen else 'no vetted candidate'))
                 if chosen: source='web'
             except (OSError,TimeoutError) as exc:
                 failed=True;attempts.append(dict(role=role,query=query,provider=type(provider).__name__,error=str(exc)))
         if chosen is None:
-            chosen=dict(placeholder='[? motion ref]' if moving else '[? visual ref]',queries_tried=[query],licence='unknown')
+            chosen=dict(placeholder='[? motion ref]' if moving else '[? visual ref]',status='ref_missing',queries_tried=[query],licence='unknown')
+        else:used.add(identity(chosen))
         chosen.update(handle=handle,role=role,source=source,read_only=True)
         chosen.setdefault('licence','unknown');refs.append(chosen)
     return refs,dict(offline=offline or failed or provider is None,attempts=attempts)
+
+
+def reference_sheets(refs,root):
+    """Create inspectable local sheets; absent media never gets a fictitious path."""
+    from PIL import Image,ImageDraw
+    root=Path(root);still=[];outputs=[]
+    for ref in refs:
+        path=Path(ref.get('path',''))
+        if not path.is_file():
+            ref['status']='ref_missing';continue
+        try:
+            if ref['handle'].startswith('m'):
+                out=root/(ref['handle']+'.png');contact_sheet(path,out);outputs.append(str(out))
+            else:
+                with Image.open(path) as im:tile=im.convert('RGB');tile.thumbnail((240,150))
+                still.append((ref['handle'],tile))
+        except (OSError,ValueError):ref['status']='ref_missing'
+    if still:
+        root.mkdir(parents=True,exist_ok=True);sheet=Image.new('RGB',(240*len(still),180),'white')
+        for i,(handle,tile) in enumerate(still):
+            sheet.paste(tile,(i*240,0));ImageDraw.Draw(sheet).text((i*240+5,155),handle,fill='black')
+        out=root/'aesthetic.png';sheet.save(out);outputs.insert(0,str(out))
+    return outputs

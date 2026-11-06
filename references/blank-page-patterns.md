@@ -57,9 +57,9 @@ and add a turn.
 Real openers, all the same skeleton (location, style, numbered beats with inline
 refs, globals after the list, params, realism demand):
 
-- `in stewdio file-b, in the style of a 16bit dungeon crawler game, create the following:` + three numbered beats, each with a reference.
-- `in stewdio file-c, create the following: a text animation where each letter is an individual silver balloon with this type of texture <img>, and each of them animate in from by inflating from a deflated state, and animate out by reversing that process, the inflation and deflation should be very snappy, ease-in-out` + `expose params to edit the text and the texture and color of the balloon, and the inflation extent and timing` + `it should be very realistic`.
-- `in stewdio's carousel project, create the following comps` + five one-liners + `for all of them use white bg and 3 place holder images <three files>`.
+- `in vgs-fx file-b, in the style of a 16bit dungeon crawler game, create the following:` + three numbered beats, each with a reference.
+- `in vgs-fx file-c, create the following: a text animation where each letter is an individual silver balloon with this type of texture <img>, and each of them animate in from by inflating from a deflated state, and animate out by reversing that process, the inflation and deflation should be very snappy, ease-in-out` + `expose params to edit the text and the texture and color of the balloon, and the inflation extent and timing` + `it should be very realistic`.
+- `in the current project's carousel project, create the following comps` + five one-liners + `for all of them use white bg and 3 place holder images <three files>`.
 - `in the stewdio file-b, for the main comp, do the following at 7s:` (sequence mode: the location line carries the time anchor).
 
 ## Deltas that landed in one round — 改寫自 blank-page references/patterns.md §Deltas that landed in one round（MIT）
