@@ -94,3 +94,4 @@
 - 12:45 使用者：「這個專案主要是給影像 影片 遊戲資源 為主的」→ 記入記憶；新增 spec-14 遊戲資源與角色動畫管線（設定稿／轉面、動作影格不靠影片模型、透明 sprite、sprite sheet 與 Godot/Unity/Phaser/Aseprite 匯出、道具圖示組、可平鋪材質與 tileset、VFX sprite、關鍵格→影片先問）。路線重排：spec-13 → spec-14 優先，短影音社群類功能降為次要。
 - 12:55 使用者：「視硬體來動態調整」→ dispatch.sh 改為每次派工時依當下硬體決定並行數：預留 max(15% RAM, 2.5 GB)；重工作 slots = floor((可用-預留)/重工作峰值)，上限 CPU/4；輕工作 Codex = floor((可用-預留)/輕工作峰值)，上限 4；峰值預設 2.0/0.5 GB，之後以實際量到的歷史峰值中位數修正（dispatch-history.tsv）；每次決策寫入 decisions log；wow-agent 啟動前仍再檢查可用記憶體並排隊。目前（16 GB、6 核、可用 5.8 GB）→ 重 1、輕 4。
 - 13:00 spec-11 複審（含遊戲題）：WAV drop、骨架拒收、stable 導演旗標過；未過：轉折被覆寫、delta 預設加速、遊戲類 4 種畫面相同、遊戲素材未分流、硬限制不可驗、lint 漏報。派修正二（排在 s13 後，依硬體動態排程自動開跑）。
+- 13:45 使用者給 Suno MCP 存取權 → Codex 已 OAuth 連線、Claude Code 已註冊待 /mcp 登入；實測 35 個工具、Premier、歌曲點數 8,510、下載點數 67（稀缺）。spec-15：遊戲 BGM 無縫循環（sounds_create loop/tempo/key）、jingle／音效、影片配樂、同主題變奏、歌詞逐字對齊→字幕、節拍驅動 sprite 動畫、下載點數防呆。spec-13 重建 10 個小提交、解 2 處與 spec-11 的衝突後全套通過，快轉進 main 12c1715。
