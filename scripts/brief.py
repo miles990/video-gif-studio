@@ -68,14 +68,25 @@ def music_grid(source):
     # Beginning of the leading onset, not its RMS maximum.
     first=int(np.argmax(onset[:lag]));offset=max(0,first-1)*10
     if offset<=30:offset=0
-    beat_ms=lag*10;down=np.arange(offset,len(energy)*10,beat_ms*4).tolist()
+    # Fit onset positions across the song instead of repeating a rounded 10 ms
+    # lag: at 123 BPM a rounded lag otherwise drifts on every bar.
+    peaks=np.array([i for i in range(1,len(onset)-1) if onset[i]>.25*onset.max() and onset[i]>=onset[i-1] and onset[i]>onset[i+1]])
+    beat_ms=lag*10
+    if len(peaks)>4:
+        slots=np.rint((peaks*10-offset)/beat_ms).astype(int)
+        good=np.abs(peaks*10-(offset+slots*beat_ms))<beat_ms*.22
+        if len(set(slots[good]))>4:
+            fitted,phase=np.polyfit(slots[good],peaks[good]*10,1)
+            if abs(fitted-beat_ms)<15:beat_ms=float(fitted);offset=max(0.,float(phase)-10)
+    if offset<=30:offset=0.
+    down=np.round(np.arange(offset,len(energy)*10,beat_ms*4),6).tolist()
     changes=[]
     for t in down:
         idx=round(t/10)
         if idx<20 or idx+20>len(energy):continue
         before=float(np.mean(energy[max(0,idx-lag*2):idx]));after=float(np.mean(energy[idx:min(len(energy),idx+lag*2)]))
-        changes.append((after-before,t))
-    drop=max(changes)[1] if changes and max(changes)[0]>.10 else None
+        changes.append(((after-before)/max(before,1e-6),t))
+    drop=max(changes)[1] if changes and max(changes)[0]>.35 else None
     return dict(beats_ms=np.arange(offset,len(energy)*10,beat_ms).tolist(),downbeats_ms=down,drop_ms=drop,
                 duration_ms=len(energy)*10,method='local RMS periodicity; 4/4 assumption',review='unreviewed candidates; supply beat JSON for authored meter')
 
@@ -160,7 +171,10 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         if drop is None:
             drop=next((s.get('start_ms',s.get('start',0)*1000) for s in grid.get('sections',[]) if s.get('label',s.get('name','')).lower()=='drop'),None)
         turn_time=min(edges[:-1],key=lambda t:abs(t-(drop/1000 if drop is not None else duration*.6)))
-        anchor='downbeat';shot_groups=[]
+        bar=min(range(len(grid['downbeats_ms'])),key=lambda i:abs(grid['downbeats_ms'][i]/1000-turn_time))+1
+        grid['turn_anchor']=dict(bar=bar,time_s=turn_time)
+        grid['drop_status']='drop candidate' if drop is not None else 'no drop detected'
+        anchor=f'downbeat, bar {bar}' if drop is None else 'drop downbeat';shot_groups=[]
         for a,b in zip(edges,edges[1:]):shot_groups.append(plan_timing(b-a,dict(asl=design['asl'],cv=design['cv']))['durations'])
     elif mode=='sequence':
         anchor_match=re.search(r'(?:at\s*|在\s*)(\d+(?:\.\d+)?)\s*(?:s|秒)',draft,re.I)
@@ -243,6 +257,8 @@ def prompt(brief):
     lines=[('以' if zh else 'in ')+brief['aesthetic']+('：' if zh else ':')]
     for b in brief['beats']:lines.append(f'{b["id"]}. {b["t_start"]:g}–{b["t_end"]:g}s: {b["text"]}')
     lines.append(brief['pace']+'; '+brief['camera'])
+    if brief.get('music',{}).get('drop_status')=='no drop detected':
+        anchor=brief['music']['turn_anchor'];lines.append(f'No drop detected; turn anchored to bar {anchor["bar"]} at {anchor["time_s"]:g}s.')
     lines.append(f'{brief["width"]}:{brief["height"]}; ~{brief["duration"]:g}s')
     for f in brief.get('forks',[]):lines.append('[? '+f['choice_made']+' / '+f['alternative']+']')
     lines.append('refs:')
@@ -312,7 +328,7 @@ def to_storyboard(brief,variant=1):
                       intent='reveal_subject' if turn else 'breathe',perceived=.15 if turn else .04,
                       recipe=dict(name=name,perceived=.15 if turn else .04,serves_core='Make this beat legible in the chosen aesthetic'),
                       transition='cut' if i==0 or turn else design['transitions'][i%len(design['transitions'])],
-                      transition_serves_core='Join the same gesture across framings',sound=dict(section='drop' if turn else 'phrase',energy=.8 if turn else .25),
+                      transition_serves_core='Join the same gesture across framings',sound=dict(section='drop' if turn and brief.get('music',{}).get('drop_ms') is not None else 'phrase' if brief.get('music') else 'silent',energy=.8 if turn else .25),
                       why=why+'; '+refs['a5']['use']+' (a5)',serves_core='Give the subject its specific action and payoff',
                       background='#d2ad7f' if design['profile']=='warm' else '#dce7de' if design['profile']=='fresh' else '#263444')
             for field in ('elements','captions','min_text_px'):
