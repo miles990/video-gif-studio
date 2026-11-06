@@ -13,10 +13,12 @@ from image_common import ROOT,ImageError,digest,read,write
 ENGINES={'godot4','unity','phaser-hash','phaser-array','pixi','aseprite'}
 
 
-def validated_states(manifests):
+def validated_states(manifests,allow_qa_fail=False):
     states=[];contract=None;names=set()
     for path in manifests:
         path=Path(path);m=read(path);name=m['state']
+        if m.get('qa',{}).get('status')=='FAIL' and not allow_qa_fail:
+            raise ImageError('E_QA_FAIL','QA FAIL blocks engine export: '+str(path),file=str(path),suggestion='Repair the motion or explicitly pass --allow-qa-fail for a recorded preview export.')
         if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',name) or name in names:raise ImageError('E_STATE','State names must be unique safe identifiers.')
         names.add(name);identity=(m['canvas'],m['pivot'],m['alpha_mode'],m.get('pixel_scale',1))
         if contract is not None and identity!=contract:raise ImageError('E_CONTRACT','All states must share canvas, pivot, alpha convention and pixel scale.')
@@ -213,11 +215,11 @@ def aseprite(out,packed,states,sidecar):
     write(out/'aseprite.animations.json',dict(states=sidecar,engine_load='untested'))
 
 
-def export_engines(manifests,out,engines=('godot4','phaser-hash'),max_size=2048,padding=2,extrude=1,pixel=False):
+def export_engines(manifests,out,engines=('godot4','phaser-hash'),max_size=2048,padding=2,extrude=1,pixel=False,allow_qa_fail=False):
     from sprite_export import export
     if set(engines)-ENGINES:raise ImageError('E_ENGINE','Unknown engine: '+','.join(set(engines)-ENGINES))
     if padding<2 or extrude<0 or extrude>padding:raise ImageError('E_PADDING','Padding >=2 and 0<=extrude<=padding are required.')
-    states=validated_states(manifests);out=Path(out);scratch=ROOT/'.scratch';scratch.mkdir(exist_ok=True)
+    states=validated_states(manifests,allow_qa_fail);out=Path(out);scratch=ROOT/'.scratch';scratch.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(dir=scratch,prefix='game-pack-') as temp:
         temp=Path(temp);(temp/'frames').mkdir();rows=[r for m in states for r in m['frames']]
         for i,r in enumerate(rows):shutil.copyfile(r['source'],temp/'frames'/f'{i:05d}.png')
@@ -229,6 +231,8 @@ def export_engines(manifests,out,engines=('godot4','phaser-hash'),max_size=2048,
         with Image.open(out/f['page']) as page,Image.open(rows[i]['source']) as frame:
             if page.crop((x,y,x+w,y+h)).tobytes()!=frame.convert('RGBA').tobytes():raise ImageError('E_CROP','Engine atlas differs from source RGBA.')
     packed.update(states=sidecar,alpha=states[0]['alpha_mode'],alpha_mode=states[0]['alpha_mode'],extrusion=extrude,engines={e:dict(engine_load='untested') for e in engines})
+    packed['qa_override']=dict(allow_qa_fail=bool(allow_qa_fail),failed_states=[m['state'] for m in states if m.get('qa',{}).get('status')=='FAIL'])
+    packed['source_qa']={m['state']:m.get('qa',{'status':'unassessed'}) for m in states}
     if 'godot4' in engines:godot4(out,packed,states,sidecar)
     if 'unity' in engines:unity(out,packed,states,sidecar,pixel)
     for e in ('phaser-hash','phaser-array','pixi'):

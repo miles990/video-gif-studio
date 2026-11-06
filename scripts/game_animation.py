@@ -51,7 +51,21 @@ def contact_qa(frames,manifest):
     tolerance=1 if manifest.get('pixel') else h*.005
     root=manifest.get('root_motion',[[0,0] for _ in frames])
     if len(root)!=len(frames):raise ImageError('E_ROOT_MOTION','Root motion needs one sample per frame.')
+    # Scan the full sequence, not only claimed contact frames. Anatomical boxes
+    # supplied by a plan identify feet; without them the result stays a proxy.
+    measured=[];trajectories={};boxes_by_foot=manifest.get('foot_boxes',{}).copy()
     for contact in manifest.get('contacts',[]):
+        boxes_by_foot.setdefault(contact['foot'],[contact.get('box',[0 if contact['foot']=='left' else w//2,int(h*.7),w//2,h-int(h*.7)])]*len(frames))
+    for foot,boxes in boxes_by_foot.items():
+        if len(boxes)!=len(frames):raise ImageError('E_CONTACT','Foot boxes need one sample per frame: '+foot)
+        positions=[foot_position(im,box) for im,box in zip(frames,boxes)];trajectories[foot]=positions
+        active=[p is not None and abs(p[1]-ground)<=1 for p in positions];start=None
+        for i,value in enumerate([*active,False]):
+            if value and start is None:start=i
+            if not value and start is not None:
+                measured.append(dict(foot=foot,frames=[start,i-1],box=boxes[start],measured=True));start=None
+    contacts=measured or manifest.get('contacts',[])
+    for contact in contacts:
         first,last=contact['frames'];foot=contact['foot'];samples=[]
         if first<0 or last>=len(frames) or first>last:raise ImageError('E_CONTACT','Invalid contact interval.')
         boxes=manifest.get('foot_boxes',{}).get(foot)
@@ -67,7 +81,8 @@ def contact_qa(frames,manifest):
                 if abs(x-origin)>tolerance:issues.append(dict(kind='foot_slide',frame=i,foot=foot,slide_px=x-origin))
         rows.append(dict(foot=foot,frames=[first,last],samples=samples))
     if abs(manifest['pivot'][1]-ground)>1:issues.append(dict(kind='pivot_ground_mismatch'))
-    return dict(status='FAIL' if issues else 'PASS' if rows else 'unassessed',contacts=rows,issues=issues)
+    return dict(status='FAIL' if issues else 'PASS' if rows else 'unassessed',contacts=rows,issues=issues,
+                measured_intervals=measured,trajectories=trajectories)
 
 
 def attack_contact(frames,weapon_colors,target):
@@ -87,6 +102,16 @@ def motion_qa(frames,manifest):
     if any(not isinstance(r.get('duration_ms'),(int,float)) or not math.isfinite(r['duration_ms']) or r['duration_ms']<=0 for r in manifest['frames']):raise ImageError('E_TIMING','Frame durations must be finite positive milliseconds.')
     w,h=frames[0].size;state=manifest.get('state','');c=centers(frames);issues=[]
     contact=contact_qa(frames,manifest);issues.extend(contact['issues'])
+    stride=None
+    if state in ('walk','run') and all(foot in contact['trajectories'] for foot in ('left','right')):
+        times=[];lengths=[]
+        for foot in ('left','right'):
+            intervals=[r for r in contact['measured_intervals'] if r['foot']==foot]
+            times.append(sum(sum(manifest['frames'][i]['duration_ms'] for i in range(r['frames'][0],r['frames'][1]+1)) for r in intervals))
+            xs=[p[0] for p in contact['trajectories'][foot] if p is not None];lengths.append(float(np.ptp(xs)) if xs else 0.)
+        duration_ratio=max(times)/max(1,min(times));length_ratio=max(lengths)/max(1,min(lengths))
+        stride=dict(contact_ms=times,stride_px=lengths,duration_ratio=duration_ratio,length_ratio=length_ratio)
+        if duration_ratio>1.5 or (length_ratio>1.5 and abs(lengths[0]-lengths[1])>2):issues.append(dict(kind='stride_asymmetry',**stride))
     alpha=[np.array(im)[...,3] for im in frames]
     heights=[im.getbbox()[3]-im.getbbox()[1] if im.getbbox() else 0 for im in frames]
     ground=manifest.get('ground_line',manifest['pivot'][1]);grounded=[]
@@ -141,7 +166,7 @@ def motion_qa(frames,manifest):
             if np.count_nonzero(alpha[i])>limit:issues.append(dict(kind='double_silhouette',frame=i))
     missing_contact=state in ('idle','walk','run','attack','hurt') and contact['status']=='unassessed'
     return dict(status='FAIL' if issues else 'unassessed' if missing_contact else 'PASS',issues=issues,unassessed=['semantic foot contact intervals'] if missing_contact else [],contacts=contact,grounded=grounded,vertical_amplitude_px=amplitude,bob_cycles=frequency,jump=jump,
-                seam_ratio=ratio,seam=seam_report,centers=c.tolist(),visual_review='pending')
+                seam_ratio=ratio,seam=seam_report,stride=stride,centers=c.tolist(),visual_review='pending')
 
 
 def silhouette_points(im):
@@ -251,7 +276,12 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
                 description=key.get('prompt',KEY_POSES[state][min(j,3)])
                 req=replace(request,refs=refs,prompt=f'{request.prompt or "Same original reference character"}. State {state}: {description}. ONE full-body key pose. Use front reference for identity and three-quarter reference for orientation. Same fixed camera, scale and {size[0]}x{size[1]} canvas, ground line y={contract["pivot"][1]}. Preserve all accessories and handedness. No text, no ghosting, transparent.',transparent=True,n=1)
                 generation=adapter.generate(req,folder/'generation'/str(j));source=Path(generation['assets'][0]['path']);sent=[digest(p) for p in refs];generations.append(generation)
-            im=rgba(source);require_alpha(im);im=im.resize(size,Image.Resampling.NEAREST)
+            im=rgba(source);require_alpha(im);registration=None
+            if generation:
+                from game_character import prepare_subject,register_subject
+                im,subject=prepare_subject(im)
+                im,registration=register_subject(im,size,contract['pivot'][1],contract.get('body_height'))
+            else:im=im.resize(size,Image.Resampling.NEAREST)
             if contract.get('pixel'):im=quantize(im,palette)
             im.save(folder/'keys'/f'{j:02d}.png');keys.append(im)
             from image_identity import compare
@@ -260,7 +290,7 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
             identity=check(source,charsheet.parent/'refset.json',request.identity_override) if (charsheet.parent/'refset.json').exists() else dict(status='unassessed',reason='Source identity refset unavailable')
             identity.update(measurement_stage='source_before_downscale',source_size=list(rgba(source).size),source_sha256=digest(source),measurements=metrics)
             key_records.append(dict(frame=index,file=f'keys/{j:02d}.png',refs_sent=sent,source_sha=digest(source),points=key.get('points') or silhouette_points(im),guide_source='annotated' if key.get('points') else 'silhouette_preview',
-                identity=identity))
+                identity=identity,registration=registration))
         frames=[];records=[];durations=spec.get('durations_ms',[round(1000/rate/10)*10]*count)
         if len(durations)!=count or any(not isinstance(v,(float,int)) or not math.isfinite(v) or v<20 for v in durations):raise ImageError('E_TIMING','Supply one finite duration >=20 ms per frame.')
         phases=spec.get('phases',[])

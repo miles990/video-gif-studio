@@ -86,6 +86,7 @@ def main():
     ap.add_argument('--extrude',type=int,default=1)
     ap.add_argument('--pixel',action='store_true')
     ap.add_argument('--experimental',action='store_true')
+    ap.add_argument('--allow-qa-fail',action='store_true',help='Explicit preview export; failed QA is retained.')
     ap.add_argument('--out', required=True, type=Path)
     ap.add_argument('--max-size', type=int, default=2048)
     ap.add_argument('--padding', type=int, default=2)
@@ -97,7 +98,7 @@ def main():
         try:
             if not a.experimental:raise ImageError('E_EXPERIMENTAL','Engine exports require --experimental.')
             from game_engines import export_engines
-            r=export_engines(a.anim_manifest or sorted(a.frames.glob('*/anim.json')),a.out,a.engine.split(','),a.max_size,a.padding,a.extrude,a.pixel)
+            r=export_engines(a.anim_manifest or sorted(a.frames.glob('*/anim.json')),a.out,a.engine.split(','),a.max_size,a.padding,a.extrude,a.pixel,a.allow_qa_fail)
             print(json.dumps(dict(ok=True,result=r)));return
         except (ImageError,ValueError,OSError,KeyError) as exc:
             print(json.dumps(dict(ok=False,error=exc.error if isinstance(exc,ImageError) else dict(code='E_EXPORT',message=str(exc)))))

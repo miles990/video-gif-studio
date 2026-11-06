@@ -93,6 +93,24 @@ def palette_of(images, limit=16, minimum=.005):
     return [dict(name=f'color-{i+1}',hex='#%02X%02X%02X'%c,role='outline' if i==0 else 'main',area_pct=round(100*counts[c]/max(total,1),5)) for i,c in enumerate(ordered)]
 
 
+def register_subject(im, canvas, ground, height=None):
+    """Register a generated standing key to one explicit ground/height contract.
+
+    Supplied animation plans retain their authored travel and crouching. This
+    fallback normalizes unregistered model stills, and records the transform.
+    """
+    a=np.array(im);ys,xs=np.where(a[...,3]>127)
+    if not len(xs):raise ImageError('E_SUBJECT','No opaque body for registration.')
+    box=(int(xs.min()),int(ys.min()),int(xs.max()+1),int(ys.max()+1))
+    target_height=height or round(canvas[1]*.80);scale=min(target_height/(box[3]-box[1]),(canvas[0]-4)/(box[2]-box[0]))
+    crop=im.crop(box);size=(max(1,round(crop.width*scale)),max(1,round(crop.height*scale)))
+    crop=crop.resize(size,Image.Resampling.BOX if scale<1 else Image.Resampling.NEAREST)
+    x=(canvas[0]-size[0])//2;y=round(ground)-size[1]+1
+    if y<1:raise ImageError('E_REGISTRATION','Body exceeds padded canvas; enlarge canvas or reduce target height.')
+    result=Image.new('RGBA',canvas);result.paste(crop,(x,y))
+    return result,dict(source_box=list(box),scale=scale,offset=[x,y],ground_line=ground,body_height=size[1],method='standing body bbox; inferred camera; review pending')
+
+
 def quantize(im, palette, size=None):
     """One fixed logical grid and shared palette. No dither or soft character alpha."""
     if size:im=im.resize(size,Image.Resampling.NEAREST)
@@ -194,9 +212,9 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
             im,subject=prepare_subject(rgba(source),name)
         actual[name]=list(im.size)
         (out/'identity').mkdir(parents=True,exist_ok=True);identity_file=out/'identity'/f'{name}.png';im.save(identity_file)
-        im=im.resize(size,Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
+        im,registration=register_subject(im,size,round(size[1]*.9))
         (out/'views').mkdir(parents=True,exist_ok=True);file=out/'views'/f'{name}.png';im.save(file)
-        records.append(dict(name=name,facing=facing,file=f'views/{name}.png',refs_sent=[digest(p) for p in req.refs],size_actual=actual[name],subject=subject))
+        records.append(dict(name=name,facing=facing,file=f'views/{name}.png',refs_sent=[digest(p) for p in req.refs],size_actual=actual[name],subject=subject,registration=registration))
         views[name]=im;refs.append(str(identity_file.resolve()));manifests.append(result)
     palette=palette_of(list(views.values()),16 if pixel else 12)
     if pixel:
@@ -221,7 +239,7 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
     write(out/'refset.json',refset)
     heights=[im.getbbox()[3]-im.getbbox()[1] if im.getbbox() else 0 for im in views.values()]
     scale_spread=(max(heights)-min(heights))/max(1,np.mean(heights))
-    manifest=dict(version=1,status='experimental',originality=original,canvas=list(size),pivot=[size[0]/2,round(size[1]*.9)],alpha_mode='straight',pixel=bool(pixel),pixel_scale=1,
+    manifest=dict(version=1,status='experimental',originality=original,canvas=list(size),pivot=[size[0]/2,round(size[1]*.9)],body_height=round(size[1]*.8),alpha_mode='straight',pixel=bool(pixel),pixel_scale=1,
                   palette='palette.json',views=records,expressions=exp_records,face_box=list(face),asymmetric_features=asym,mirror_ok=not bool(asym),
                   inferred_views=['side','back'] if image else [],identity=identity,expressions_qa=expressions_qa(front,expressions,face),height_spread=float(scale_spread),
                   fallback='pixel_quantize' if pixel else None,size_requested=f'{size[0]}x{size[1]} (prompt only)',size_actual=actual,review='pending')
