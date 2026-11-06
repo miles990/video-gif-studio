@@ -76,36 +76,27 @@ def palette_image(palette):
     return image
 
 
-def identity_report(paths, negatives=(), near=None, palette=None):
-    paths={name:Path(p) for name,p in paths.items()};front=paths['front'];rows={}
-    for name,path in paths.items():
-        metrics=[compare(path,other) for n,other in paths.items() if n!=name]
-        metric=compare(front,path)
-        hist=float(np.median([m['bhattacharyya'] for m in metrics])) if metrics else metric['bhattacharyya']
-        matches=float(np.median([m['orb_good_matches'] for m in metrics])) if metrics else metric['orb_good_matches']
-        cross=name in ('side','back')
-        color_presence=[]
-        if cross and palette:
-            from shot_match import lab,delta_e
-            a=np.array(rgba(path));colors=a[...,:3][a[...,3]>127]
-            for c in palette:
-                if c.get('role') in ('shade','accent'):continue
-                if c.get('role')=='face' and name=='back':continue
-                ref=np.array(tuple(bytes.fromhex(c['hex'][1:])),np.uint8)
-                color_presence.append(bool(np.any(delta_e(lab(colors[:,None,:]),lab(ref[None,None,:]))<=6)))
-        passed=hist<=.35 and (all(color_presence) if cross and palette else matches>=25)
-        rows[name]=dict(bhattacharyya=hist,orb_good_matches=matches,cross_view_palette_exception=cross,
-                        palette_present=color_presence,passes_threshold=bool(passed))
-    neg=[compare(front,p) for p in negatives]
-    separation=min((m['bhattacharyya'] for m in neg),default=0)-max(m['bhattacharyya'] for m in rows.values())
-    calibrated=bool(neg) and all(m['different'] for m in neg) and separation>=.10
-    near_result=compare(front,near) if near else None
-    if near_result:
-        calibrated=calibrated and near_result['bhattacharyya']>max(m['bhattacharyya'] for m in rows.values())
-    else:calibrated=False
-    return dict(status=('pass' if all(m['passes_threshold'] for m in rows.values()) else 'fail') if calibrated else 'unassessed',
-                method={**METHOD,'same_hist_max':.35},views=rows,negative_controls=neg,near_control=near_result,
-                controls_valid=bool(calibrated),histogram_separation=float(separation),visual_review='pending')
+def identity_report(paths, negatives=(), near=None, palette=None, identity_override=None):
+    """Use spec-13 refset spread/negatives; a hidden face is not a failed identity.
+
+    Histogram and ORB disagree on close lookalikes. Preserve that uncertainty;
+    only separated controls or an explicit human decision establish identity.
+    """
+    from image_identity import relative_controls, override_record
+    override=override_record(identity_override)
+    if override:
+        return dict(status='pass' if identity_override=='same' else 'fail', identity_override=override,
+                    controls_valid=False, method=METHOD, views={}, visual_review='user override')
+    paths={n:Path(p) for n,p in paths.items()};front=paths['front']
+    controls=relative_controls(list(paths.values()),[*negatives,*([near] if near else [])])
+    expectations={'front':'face and asymmetric features','side':'profile; visible-side features only',
+                  'back':'hidden face; costume and silhouette','three_quarter':'partial face and visible-side features'}
+    rows={n:dict(**compare(front,p),expectation=expectations.get(n,'pose-dependent'),
+                 status='pass' if controls['valid'] else 'unassessed') for n,p in paths.items()}
+    return dict(status='pass' if controls['valid'] else 'unassessed',method=METHOD,views=rows,
+                controls=controls,controls_valid=controls['valid'],negative_controls=[compare(front,p) for p in negatives],
+                near_control=compare(front,near) if near else None,
+                reason=controls.get('reason'),visual_review='pending')
 
 
 def expressions_qa(front, expressions, face_box):
@@ -162,9 +153,6 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
         result=adapter.generate(req,out/'generation'/name);source=Path(result['assets'][0]['path']);im=rgba(source);require_alpha(im)
         actual[name]=list(im.size);im=im.resize(size,Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
         (out/'views').mkdir(parents=True,exist_ok=True);file=out/'views'/f'{name}.png';im.save(file)
-        if views:
-            evidence=compare(out/'views/front.png',file)
-            if evidence['bhattacharyya']>.50:raise ImageError('E_IDENTITY_FAIL','Turnaround changed the character palette; rejected view is retained but not used as a reference.',view=name,measurement=evidence)
         records.append(dict(name=name,facing=facing,file=f'views/{name}.png',refs_sent=[digest(p) for p in req.refs],size_actual=actual[name]))
         views[name]=im;refs.append(str(file.resolve()));manifests.append(result)
     palette=palette_of(list(views.values()),16 if pixel else 12)
@@ -183,7 +171,7 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
         (out/'expressions').mkdir(exist_ok=True);fixed.save(out/'expressions'/f'{name}.png');expressions[name]=fixed
         exp_records.append(dict(name=name,file=f'expressions/{name}.png',refs_sent=[digest(p) for p in req.refs],fallback='local_face_composite',face_box=list(face)))
         manifests.append(generated)
-    paths={n:out/'views'/f'{n}.png' for n in views};identity=identity_report(paths,negatives,near,palette)
+    paths={n:out/'views'/f'{n}.png' for n in views};identity=identity_report(paths,negatives,near,palette,request.identity_override)
     refset=dict(version=1,name=request.prompt,images=[dict(path=f'views/{n}.png',sha256=digest(p),role='identity',source='generated',licence='original generated artwork') for n,p in paths.items()],
                 negative_images=[dict(path=str(Path(p).resolve()),sha256=digest(p)) for p in negatives],controls={'valid':identity['controls_valid']},visual_review={'status':'pending'})
     write(out/'refset.json',refset)

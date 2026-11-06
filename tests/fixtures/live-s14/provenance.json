@@ -1,0 +1,182 @@
+[
+  {
+    "name": "rimewick-front",
+    "source": ".scratch\\s14-live\\front.png",
+    "source_sha256": "0fb12e3f5c8901de0b10eba86dc3284b060077f74e7552297b5e35d70cfe0a05",
+    "size": [
+      512,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-side",
+    "source": ".scratch\\s14-live\\side.png",
+    "source_sha256": "f756f8f27629b88a8123ab8858faab7fc6ae0230e6bf479c36c5d7d26f842568",
+    "size": [
+      512,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-back",
+    "source": ".scratch\\s14-live\\back.png",
+    "source_sha256": "d9e094b64f4f07caa966435e29c83c6a21686942ce741af88888e3607bce15e0",
+    "size": [
+      512,
+      512
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "rimewick-three_quarter",
+    "source": ".scratch\\s14-live\\three_quarter.png",
+    "source_sha256": "beb9b7cb9c575839fd94e078e5e8af59dfca93cc34a663b3aed81020cd4ca5e2",
+    "size": [
+      512,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-negative",
+    "source": ".scratch\\s14-live\\negative.png",
+    "source_sha256": "751da8d7bdd89fd0603e560d18fa2762034e98507c415f3da029783ba29f8a9d",
+    "size": [
+      471,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-icons",
+    "source": ".scratch\\s14-live\\icons.png",
+    "source_sha256": "afa33375108e993ca554ab61159787ad0a8a23deaccc75e4a065f161841797e4",
+    "size": [
+      512,
+      256
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "rimewick-texture",
+    "source": ".scratch\\s14-live\\texture.png",
+    "source_sha256": "2ce04567a554bec9c300e04ec1e7fe189be6ff2908487717b08279035f295898",
+    "size": [
+      512,
+      512
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "wolf-front",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\charsheet\\generation\\front\\image-1.png",
+    "source_sha256": "c67166032345789f8e29cd332ed3656d05414283821b0a30a461194976a56937",
+    "size": [
+      512,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "wolf-side",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\charsheet\\generation\\side\\image-1.png",
+    "source_sha256": "0dcf20107034e7b29e6354c6e0658b3c53c41fdd073d3a1f341c02ab2f6133ce",
+    "size": [
+      512,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "wolf-back",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\charsheet\\generation\\back\\image-1.png",
+    "source_sha256": "c927f3b73e5cdca915dc93d2eeeca841ae0c294de64c0429daee705177ee343e",
+    "size": [
+      512,
+      512
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "wolf-front-single",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\charsheet2\\generation\\front\\image-1.png",
+    "source_sha256": "489357d5e7e0e212c513137af5cf5fa306ee3c73f86219674f68c21f47123103",
+    "size": [
+      512,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "wolf-near",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\fixtures\\near_live.png",
+    "source_sha256": "11cd6c5306222e99c7e0b19941dd4efac521a6fef0f62c998400ab983e417c58",
+    "size": [
+      512,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "wolf-negative",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\fixtures\\neg_chrB.png",
+    "source_sha256": "f5426fd247ad343443cce0244dfe4222b00d581d98ffd1198f0b46c12bcd0a93",
+    "size": [
+      512,
+      512
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "wolf-icon-0",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\icons\\00.png",
+    "source_sha256": "b77978601872f68e9e6f47017d9252ef9f5d257bb55c90da04a577eb31fd50be",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "wolf-icon-1",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\icons\\01.png",
+    "source_sha256": "e53eecd7bdb15476823fb75026f2898e0c5470a67cfb792ab702215728c3c42e",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "wolf-icon-2",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\icons\\02.png",
+    "source_sha256": "fc5864090e77779ba8257af5f51a417172359d6c41128d4421426cd4fa141820",
+    "size": [
+      64,
+      64
+    ],
+    "split": "calibration"
+  },
+  {
+    "name": "wolf-icon-3",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\icons\\03.png",
+    "source_sha256": "87c450ddfa57f69e03121b99daa08b4c2938bc38f2840b282dec4318e4449de0",
+    "size": [
+      64,
+      64
+    ],
+    "split": "held_out"
+  },
+  {
+    "name": "wolf-slate",
+    "source": "C:\\Users\\User\\src\\vgs-fx-private\\reviews\\review-s14\\live\\tex\\texture.png",
+    "source_sha256": "5216ed4c9955338a62a4175f749f45dd783ea1c21d5261c02dd32f7a009cf151",
+    "size": [
+      256,
+      256
+    ],
+    "split": "held_out"
+  }
+]
