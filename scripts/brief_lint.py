@@ -116,7 +116,8 @@ def lint(brief):
         font=b.get('min_text_px',brief.get('min_text_px',24))
         if short<=0 or font*1080/max(1,short)<limits['text_px.min']: add('min_text',loc+'.min_text_px','Text below 24 px at short side 1080','Increase the smallest text to 24 × short_side / 1080',obj=b)
     if abs(cursor-duration)>.034:add('schema','duration','Beat coverage differs from duration','End the last beat at duration')
-    if not turns:add('no_turn','beats','No turn','Give one beat a reveal or transformation and is_turn=true')
+    icons=brief.get('asset_spec',{}).get('kind')=='icon_set'
+    if not turns and not icons:add('no_turn','beats','No turn','Give one beat a reveal or transformation and is_turn=true')
     if len(turns)>math.ceil(duration/5):add('one_idea','beats','Too many transformations','Keep one main idea per five seconds')
     hold=brief.get('end_hold',duration-max((b['t_end'] for b in beats if b.get('action',True)),default=0))
     if hold>=limits['end_hold.max']: add('end_hold','end_hold','Ending hold is at least one second','Continue the final action; reduce hold below 1 second')
@@ -141,7 +142,7 @@ def lint(brief):
         if r.get('embed') or r.get('in_output'):add('refs_in_output',loc,'Reference is marked for embedding','Move an explicitly licensed usable asset to assets; never embed reference media')
     if set(HANDLES)-seen:add('schema','refs','Missing 5+3 reference slots','Use a1–a5 and m1–m3; mark unavailable slots with placeholders')
     turn_refs=[r for r in refs if r.get('is_turn') and r.get('handle','').startswith('m')]
-    if len(turn_refs)!=1 or not any(b.get('is_turn') and b['id'] in turn_refs[0].get('cited_by',[]) for b in beats):
+    if not icons and (len(turn_refs)!=1 or not any(b.get('is_turn') and b['id'] in turn_refs[0].get('cited_by',[]) for b in beats)):
         add('turn_reference','refs','Exactly one motion reference must feed the turn','Mark the turn motion handle and cite it in the turn beat')
     forks=brief.get('forks',[])
     markers=[m for m in re.findall(r'\[\?\s*([^]]+)\]',prompt.split('refs:')[0]) if m not in ('visual ref','motion ref','download')]

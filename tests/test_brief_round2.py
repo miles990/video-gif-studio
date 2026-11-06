@@ -131,7 +131,12 @@ class FootageTests(unittest.TestCase):
         try:
             for i,genre in enumerate(genres):
                 b=brief.expand(genre+' knight 3s',project=cards)
-                # Explicit previs still permits comparing pending icon-set design.
+                # Compare editorial treatments only; asset routing has separate
+                # tests and must never pretend that this video is an icon set.
+                b.pop('asset_spec',None)
+                if genre=='icon set':
+                    b['beats'][-1]['is_turn']=True
+                    b['beats'][-1]['text']='reveal the knight icons ('+', '.join(b['beats'][-1]['refs'])+')'
                 board=brief.to_storyboard(b,allow_skeleton=True)
                 self.assertIn(str(hero),[s.get('image') for s in board['shots']])
                 profiles.append(board['editorial_structure']['profile'])
@@ -147,3 +152,34 @@ class FootageTests(unittest.TestCase):
             self.assertTrue(all(d['mean_abs']>1 for d in differences),differences)
             (folder/'evidence.json').write_text(json.dumps(dict(genres=records,frame_differences=differences),indent=2),encoding='utf-8')
         finally:cv2.setNumThreads(old)
+
+
+class AssetRoutingTests(unittest.TestCase):
+    def test_sprite_spec_and_pending_route(self):
+        from brief_render import compile_plan,render_version
+        import tempfile
+        b=brief.expand('pixel art knight 64×64 sprite sheet, 8 frames per state, idle attack run, transparent background')
+        spec=b.get('asset_spec',{})
+        self.assertEqual(spec.get('size'),[64,64])
+        self.assertEqual(spec.get('kind'),'sprite_sheet')
+        self.assertEqual(spec.get('frame_count'),8)
+        self.assertEqual(spec.get('states'),['idle','attack','run'])
+        self.assertTrue(spec.get('transparent'))
+        self.assertIn('pixel art',b['aesthetic'])
+        self.assertIn('pixel art',brief.expand('pixel art knight reveal')['aesthetic'])
+        self.assertIn('asset pipeline pending',b['prompt'])
+        board=brief.to_storyboard(b)
+        self.assertEqual(board['asset_spec'],spec)
+        with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
+            for fn in (compile_plan,render_version):
+                result=fn(board,Path(tmp)/fn.__name__)
+                self.assertEqual(result['status'],'asset pipeline pending')
+                self.assertEqual(result['asset_spec'],spec)
+
+    def test_icon_sets_do_not_need_a_turn(self):
+        b=brief.expand('12 item icons, icon set, 64x64 PNG, pixel art, transparent background')
+        self.assertEqual(b.get('asset_spec',{}).get('kind'),'icon_set')
+        self.assertEqual(b['asset_spec']['count'],12)
+        self.assertFalse(any(v['is_turn'] for v in b['beats']))
+        self.assertFalse({'no_turn','turn_reference'} & {f['rule'] for f in lint(b)['findings']})
+        self.assertEqual(lint(b)['errors'],0,lint(b))

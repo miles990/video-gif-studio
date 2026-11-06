@@ -45,6 +45,9 @@ def proxy_size(board):
 
 
 def compile_plan(board,out,size=None,music=None):
+    if board.get('asset_spec'):
+        from brief_assets import pending_asset
+        return pending_asset(board,out)
     from animatic import to_plan
     b,credits=preflight(board);out=Path(out);size=size or proxy_size(b)
     plan=to_plan(b,out,size=size,music=music or b.get('music_source'))
@@ -82,6 +85,9 @@ def render_version(board,out,previous=None,size=None,formats=('png','mp4')):
     invalidate later local frames. Renderer/source/recipe changes invalidate cache.
     Transition windows depend on both neighbor hashes and are explicitly logged.
     """
+    if board.get('asset_spec'):
+        from brief_assets import pending_asset
+        return pending_asset(board,out)
     from fx_render import render
     from review_shots import reuse_file
     b,credits=preflight(board);out=Path(out);size=size or proxy_size(b)

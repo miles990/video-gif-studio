@@ -151,11 +151,14 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         return parse(draft,previous or {},image=image)
     from taste_pick import load as load_taste
     content=deepcopy(content or {});taste=load_taste() if taste is None else taste;cards=load_project(project);grid=music_grid(music)
+    from brief_assets import asset_spec
+    asset_intent=asset_spec(draft)
     authored=bool(content.get('beats') or content.get('turn'))
     design=stable_choices(structure(draft,content,taste,refstat));copy=creative(draft,design);copy.update({k:v for k,v in content.items() if k in copy})
     preserved_turn=transformation(draft);constraints=hard_constraints(draft)
     grounded_look=next((c.get('aesthetic_tag') for c in cards if c.get('aesthetic_tag')),None)
     if grounded_look and not content.get('aesthetic'):copy['aesthetic']=grounded_look
+    if re.search(r'pixel[ -]?art|像素',draft,re.I) and not content.get('aesthetic'):copy['aesthetic']='pixel art'
     # Grounding precedes beat construction. Attachment slots never go to web.
     refs,meta=ground(copy['aesthetic'],cards,taste,refstat,library,provider,offline)
     match=re.search(r'(\d+(?:\.\d+)?)\s*(?:seconds?|secs?|s\b|秒)',draft,re.I)
@@ -219,6 +222,10 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
             if not content.get('beats') and not preserved_turn:
                 if r.get('beat_text'):beats[index]['text']=r['beat_text']+' ('+', '.join(beats[index]['refs'])+')'
     if content.get('beats'):beats=deepcopy(content['beats'])
+    if asset_intent and asset_intent['kind']=='icon_set' and not content.get('beats'):
+        for b in beats:
+            b['is_turn']=False;b['mechanism']='static'
+            b['text']=copy['subject']+'; consistent icon silhouettes ('+', '.join(b['refs'])+')'
     if logo_last:
         beats[-1]['text']+='；最後呈現 logo' if copy['zh'] else '; logo appears last'
     for b in beats:b['hard_constraints']=deepcopy(constraints)
@@ -243,6 +250,10 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
                 camera=content.get('camera',('固定鏡頭，讓轉化清楚可見' if copy['zh'] else 'static camera; keep the transformation readable') if preserved_turn else ('拉遠：減速落在完整主體' if copy['zh'] else 'pull: ease out into the complete outline')),meta=meta,
                 contact_sheets='.scratch/brief-refs/',status='proposal' if authored else 'skeleton',text_origin='agent-authored' if authored else 'skeleton')
     if not cards:result['missing_asset']='未提供真實素材；預覽使用剪影卡片。' if copy['zh'] else 'Real subject media is missing; the preview uses silhouette cards.'
+    if asset_intent:
+        result['asset_spec']=asset_intent;result['route']='asset'
+        result['pipeline_note']='asset pipeline pending: spec-14 is not built; retain asset_spec for handoff.'
+        result.pop('missing_asset',None)
     if copy['zh'] and not content.get('pace'):result['pace']='動作連續，轉折前留呼吸，細節清楚落定'
     if isinstance(music,(str,Path)) and Path(music).suffix!='.json':result['music_source']=str(Path(music).resolve())
     if copy['background']:
@@ -267,6 +278,7 @@ def prompt(brief):
     if brief.get('mode') in ('housekeeping','delta','image_feedback'):return brief.get('prompt',brief.get('draft',''))
     zh=bool(re.search('[\u3400-\u9fff]',brief.get('draft','')))
     lines=[('以' if zh else 'in ')+brief['aesthetic']+('：' if zh else ':')]
+    if brief.get('asset_spec'):lines.append('asset_spec: '+json.dumps(brief['asset_spec'],ensure_ascii=False)+'; '+brief['pipeline_note'])
     for b in brief['beats']:lines.append(f'{b["id"]}. {b["t_start"]:g}–{b["t_end"]:g}s: {b["text"]}')
     if brief.get('hard_constraints'):lines.append('constraints: '+'; '.join(brief['hard_constraints']))
     lines.append(brief['pace']+'; '+brief['camera'])
@@ -299,6 +311,9 @@ def markdown(brief):
 
 
 def to_storyboard(brief,variant=1,allow_skeleton=False):
+    if brief.get('asset_spec'):
+        from brief_assets import pending_asset
+        return pending_asset(brief)
     if not allow_skeleton and (brief.get('status')=='skeleton' or brief.get('text_origin')!='agent-authored'):
         raise ValueError('E_SKELETON: author beats with --content, or explicitly use --allow-skeleton for a previs')
     check=lint(dict(brief,prompt=prompt(brief)))
