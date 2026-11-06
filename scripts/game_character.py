@@ -7,7 +7,7 @@ from dataclasses import replace
 from pathlib import Path
 import re
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 from image_common import ImageError, digest, read, write
 from image_identity import compare, features, METHOD
 
@@ -105,6 +105,8 @@ def register_subject(im, canvas, ground, height=None):
     target_height=height or round(canvas[1]*.80);scale=min(target_height/(box[3]-box[1]),(canvas[0]-4)/(box[2]-box[0]))
     crop=im.crop(box);size=(max(1,round(crop.width*scale)),max(1,round(crop.height*scale)))
     crop=crop.resize(size,Image.Resampling.BOX if scale<1 else Image.Resampling.NEAREST)
+    if scale<1:
+        alpha=crop.getchannel('A');crop=crop.convert('RGB').filter(ImageFilter.MedianFilter(3)).convert('RGBA');crop.putalpha(alpha)
     x=(canvas[0]-size[0])//2;y=round(ground)-size[1]+1
     if y<1:raise ImageError('E_REGISTRATION','Body exceeds padded canvas; enlarge canvas or reduce target height.')
     result=Image.new('RGBA',canvas);result.paste(crop,(x,y))
@@ -112,13 +114,32 @@ def register_subject(im, canvas, ground, height=None):
 
 
 def quantize(im, palette, size=None):
-    """One fixed logical grid and shared palette. No dither or soft character alpha."""
-    if size:im=im.resize(size,Image.Resampling.NEAREST)
+    """Area integration, median color cleanup and nearest-palette mapping.
+
+    Nearest sampling is reserved for enlarging an established pixel grid.
+    Native same-size artwork is preserved; alpha is never median-eroded.
+    """
+    down=size and (size[0]<im.width or size[1]<im.height)
+    if size:im=im.resize(size,Image.Resampling.BOX if down else Image.Resampling.NEAREST)
+    if down:
+        alpha=im.getchannel('A');im=im.convert('RGB').filter(ImageFilter.MedianFilter(3)).convert('RGBA');im.putalpha(alpha)
     a=np.array(im.convert('RGBA')); colors=np.array([tuple(bytes.fromhex(p['hex'].lstrip('#'))) for p in palette],np.int32)
     if not len(colors):raise ImageError('E_PALETTE','Empty palette.')
     rgb=a[...,:3].astype(np.int32)
     nearest=np.argmin(((rgb[...,None,:]-colors)**2).sum(axis=-1),axis=-1)
     a[...,:3]=colors[nearest];a[...,3]=np.where(a[...,3]>=128,255,0);a[a[...,3]==0]=0
+    if down:
+        # Remove isolated palette islands, retaining silhouette and contiguous ink.
+        import cv2
+        for color in colors:
+            mask=np.all(a[...,:3]==color,axis=-1)&(a[...,3]>0)
+            n,labels,stats,_=cv2.connectedComponentsWithStats(mask.astype('uint8'),8)
+            for label in range(1,n):
+                if stats[label,cv2.CC_STAT_AREA]>2:continue
+                for y,x in zip(*np.where(labels==label)):
+                    region=a[max(0,y-1):y+2,max(0,x-1):x+2];valid=region[...,3]>0
+                    values,counts=np.unique(region[...,:3][valid],axis=0,return_counts=True)
+                    if len(counts) and counts.max()>=3:a[y,x,:3]=values[counts.argmax()]
     return Image.fromarray(a)
 
 
@@ -225,7 +246,8 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
     for name in EXPRESSIONS:
         req=replace(request,refs=[str((out/'identity/front.png').resolve())],transparent=True,n=1,
                     prompt=f'{request.prompt}\nSame front view, ONLY change eyes, eyebrows and mouth to expression {name}. Keep ears, scarf and outfit unchanged. Canvas {size[0]}x{size[1]}.')
-        generated=adapter.generate(req,out/'generation'/name);im=rgba(generated['assets'][0]['path']).resize(size,Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
+        generated=adapter.generate(req,out/'generation'/name);im,_=prepare_subject(rgba(generated['assets'][0]['path']))
+        im,registration=register_subject(im,size,round(size[1]*.9))
         if pixel:im=quantize(im,palette)
         # Explicit local face composite protects everything outside the reviewed face box.
         fixed=front.copy();x,y,w,h=face;fixed.paste(im.crop((x,y,x+w,y+h)),(x,y))

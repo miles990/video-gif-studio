@@ -281,7 +281,7 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
                 from game_character import prepare_subject,register_subject
                 im,subject=prepare_subject(im)
                 im,registration=register_subject(im,size,contract['pivot'][1],contract.get('body_height'))
-            else:im=im.resize(size,Image.Resampling.NEAREST)
+            else:im=quantize(im,palette,size) if contract.get('pixel') else im.resize(size,Image.Resampling.LANCZOS)
             if contract.get('pixel'):im=quantize(im,palette)
             im.save(folder/'keys'/f'{j:02d}.png');keys.append(im)
             from image_identity import compare

@@ -98,8 +98,9 @@ def iconset(adapter,request,items,token,out,pixel=False,fix=False):
         refs=[str(accepted.resolve())] if accepted else []
         prompt=f'Original game item icon: {items[i]}. {request.prompt}. Same exact style token: {token}. Single icon, transparent, {grid}x{grid} grid, safe margin {token["safe_margin"]} pixels, no text.'
         result=adapter.generate(replace(request,prompt=prompt,refs=refs,transparent=True,n=1),out/'generation'/f'{i:02d}-{len(previous.get("repairs",[])) if previous else 0}',no_cache=fix)
-        im=rgba(result['assets'][0]['path']);require_alpha(im);im=im.resize((grid,grid),Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
-        if pixel:im=quantize(im,[p if isinstance(p,dict) else dict(hex=p) for p in token['palette']])
+        im=rgba(result['assets'][0]['path']);require_alpha(im)
+        if pixel:im=quantize(im,[p if isinstance(p,dict) else dict(hex=p) for p in token['palette']],(grid,grid))
+        else:im=im.resize((grid,grid),Image.Resampling.LANCZOS)
         im.save(paths[i]);records[i]=dict(index=i,item=items[i],file=paths[i].name,sha256=digest(paths[i]),refs_sent=[digest(p) for p in refs],style_token_sha=token_sha)
         generations.append(result)
         if style_qa([im],token,pixel)['status']=='PASS' and accepted is None:accepted=paths[i]

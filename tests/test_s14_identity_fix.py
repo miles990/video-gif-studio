@@ -5,6 +5,20 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from game_character import identity_report
 
 class IdentityFixTests(unittest.TestCase):
+    def test_live_near_lookalike_ranks_below_isolated_side(self):
+        from game_character import prepare_subject
+        from image_identity import compare
+        from PIL import Image
+        import tempfile
+        with tempfile.TemporaryDirectory(dir='.scratch') as folder:
+            paths={}
+            for view in ('front','side'):
+                with Image.open(Path('tests/fixtures/live-s14')/('wolf-'+view+'.png')) as im:subject,_=prepare_subject(im.convert('RGBA'),view)
+                paths[view]=Path(folder)/(view+'.png');subject.save(paths[view])
+            side=compare(paths['front'],paths['side'])
+            near=compare(paths['front'],'tests/fixtures/live-s14/wolf-near.png')
+            self.assertLess(side['bhattacharyya'],near['bhattacharyya'])
+
     def test_cross_view_uncertainty_and_override(self):
         paths={n:Path('tests/fixtures/live-s14')/('wolf-'+n+'.png') for n in ('front','side','back')}
         result=identity_report(paths)

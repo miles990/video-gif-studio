@@ -66,6 +66,16 @@ def alpha_contract(im,mode='straight',particles=False,designed_holes=None):
                 edge_good_fraction=edge_good,premultiplication=premul_evidence,hole_review='annotated' if designed_holes is not None else 'unassessed',unintended_hole_pixels=holes)
 
 
+def pixel_noise(im):
+    """Fraction of visible pixels in isolated 1-2 pixel palette islands."""
+    a=np.array(im);visible=a[...,3]>127;small=0
+    for color in np.unique(a[...,:3][visible],axis=0):
+        mask=visible&np.all(a[...,:3]==color,axis=-1)
+        n,labels,stats,_=cv2.connectedComponentsWithStats(mask.astype('uint8'),8)
+        small+=int(sum(s[cv2.CC_STAT_AREA] for s in stats[1:] if s[cv2.CC_STAT_AREA]<=2))
+    return small/max(1,int(visible.sum()))
+
+
 def pixel_qa(images,palette,logical_size,scale=1,max_colors=16,soft_effect=False):
     if not isinstance(scale,int) or scale<1 or max_colors>32 or max_colors<1:raise ImageError('E_PIXEL','Pixel scale/colors are outside the supported range.')
     allowed={tuple(bytes.fromhex(p['hex'].lstrip('#'))) if isinstance(p,dict) else tuple(bytes.fromhex(p.lstrip('#'))) for p in palette}
@@ -80,7 +90,9 @@ def pixel_qa(images,palette,logical_size,scale=1,max_colors=16,soft_effect=False
             if bad_grid:issues.append(dict(frame=i,kind='non_grid',blocks=bad_grid))
         if new:issues.append(dict(frame=i,kind='new_colors',count=len(new)))
         if not soft_effect and np.any((a[...,3]!=0)&(a[...,3]!=255)):issues.append(dict(frame=i,kind='fractional_character_alpha'))
-        rows.append(dict(frame=i,new_colors=len(new),non_grid_blocks=bad_grid))
+        noise=pixel_noise(im.resize((w,h),Image.Resampling.NEAREST))
+        if not soft_effect and noise>.12:issues.append(dict(frame=i,kind='pixel_noise',isolated_fraction=noise))
+        rows.append(dict(frame=i,new_colors=len(new),non_grid_blocks=bad_grid,isolated_color_fraction=noise))
     if len(union)>max_colors:issues.append(dict(kind='color_budget',count=len(union)))
     return dict(status='FAIL' if issues else 'PASS',issues=issues,frames=rows,total_colors=len(union),filter='nearest',logical_size=list(logical_size),pixel_scale=scale)
 
