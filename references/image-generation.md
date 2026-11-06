@@ -142,3 +142,19 @@ renderer supports flattened polygon paths and basic shapes at arbitrary sizes
 with 2x antialiasing; curves, transforms and gradients require flattening or an
 independently installed rasterizer. Safe unsupported geometry fails explicitly.
 This is a flat-graphic tracing fallback, not native model SVG or font recovery.
+
+Variants and picks:
+
+```text
+python scripts/imagegen.py variants --experimental --storyboard storyboard.json --shot 2 --n 4 --refs .scratch/mia.json --out .scratch/variants --json
+python scripts/variants_pick.py .scratch/variants --choose v3 --json
+python scripts/imagegen.py pick .scratch/variants --record .scratch/downloaded-picks.json --json
+```
+
+Each candidate is separately cached and carries its direction/fork ID, identity
+measurement and real animated GIF preview (2.56 seconds). `pick.html` works offline,
+shows a 9:16 safe area, supports keys 1–8, and downloads a user pick record. Local
+storage preserves the click; applying the downloaded record or an explicitly
+requested `--choose` writes append-only picks and `storyboard-picked.json`.
+No AI ranking selects a candidate. Pairwise pHash distances flag insufficiently
+different candidates, and failed identities cannot be applied as user picks.

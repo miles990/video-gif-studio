@@ -21,7 +21,8 @@ with (base/'calls.jsonl').open('a') as f:f.write(json.dumps(dict(argv=sys.argv[1
 time.sleep(config.get('delay',0))
 if config.get('error'):
  print(config['error']);sys.exit(1)
-print(json.dumps({'type':'item.completed','item':{'type':'agent_message','text':json.dumps({'image_paths':[config['image']]})}}))
+images=config.get('images',[config['image']]);index=len((base/'calls.jsonl').read_text().splitlines())-1
+print(json.dumps({'type':'item.completed','item':{'type':'agent_message','text':json.dumps({'image_paths':[images[index%len(images)]]})}}))
 '''
 
 

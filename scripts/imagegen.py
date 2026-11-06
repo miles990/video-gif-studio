@@ -64,6 +64,9 @@ def main(argv=None):
         v=sub.add_parser('vectorize');v.add_argument('image',type=Path);v.add_argument('--out',type=Path,required=True);v.add_argument('--colors',type=int,default=6);v.add_argument('--json',action='store_true')
         ss=sub.add_parser('svg-safe');ss.add_argument('svg',type=Path);ss.add_argument('--out',type=Path);ss.add_argument('--json',action='store_true')
         sr=sub.add_parser('svg-render');sr.add_argument('svg',type=Path);sr.add_argument('--out',type=Path,required=True);sr.add_argument('--sizes',default='512,2048,4096');sr.add_argument('--json',action='store_true')
+        vs=sub.add_parser('variants');options(vs);vs.add_argument('--shot',default='1');vs.add_argument('--storyboard',type=Path)
+        vp=sub.add_parser('variants-page');vp.add_argument('directory',type=Path);vp.add_argument('--out',type=Path);vp.add_argument('--json',action='store_true')
+        pk=sub.add_parser('pick');pk.add_argument('directory',type=Path);pk.add_argument('--choose');pk.add_argument('--record',type=Path);pk.add_argument('--board',type=Path);pk.add_argument('--out-board',type=Path);pk.add_argument('--json',action='store_true')
         k=sub.add_parser('keyframes');options(k);k.add_argument('storyboard',type=Path);k.add_argument('--shots',nargs='+')
         r=sub.add_parser('refset');rs=r.add_subparsers(dest='ref_command',required=True)
         rb=rs.add_parser('build');rb.add_argument('--name',required=True);rb.add_argument('--images',nargs='+',type=Path,required=True)
@@ -72,6 +75,10 @@ def main(argv=None):
         rc=rs.add_parser('check');rc.add_argument('--refs',type=Path,required=True);rc.add_argument('--image',type=Path,required=True);rc.add_argument('--json',action='store_true')
         rr=rs.add_parser('review');rr.add_argument('--refs',type=Path,required=True);rr.add_argument('--same',choices=['yes','no'],required=True);rr.add_argument('--comment',default='');rr.add_argument('--json',action='store_true')
         a=p.parse_args(argv)
+        if a.command in ('variants-page','pick'):
+            from image_variants import page,pick
+            result=page(a.directory,a.out) if a.command=='variants-page' else pick(a.directory,a.choose,a.record,a.board,a.out_board)
+            print(json.dumps(dict(ok=True,result=result)));return 0
         if a.command in ('vectorize','svg-safe','svg-render'):
             from image_vector import trace,safe_svg,rasterize
             if a.command=='vectorize':result=trace(a.image,a.out,a.colors)
@@ -105,7 +112,11 @@ def main(argv=None):
             else:result=review(a.refs,a.same=='yes',a.comment)
             print(json.dumps(dict(ok=True,result=result),ensure_ascii=False));return 0
         adapter,req=adapter_request(a)
-        if a.command in ('edit','delta'):
+        if a.command=='variants':
+            if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
+            from image_variants import variants
+            result=variants(adapter,req,a.out,a.shot,read(a.storyboard) if a.storyboard else None,approval=a.approve_spend,max_usd=a.max_usd)
+        elif a.command in ('edit','delta'):
             if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
             from image_edit import edit,apply_delta
             if a.command=='edit':result=edit(adapter,req,a.image,a.out,a.instruction,a.region,a.markup,a.feather,a.approve_spend,a.max_usd)
