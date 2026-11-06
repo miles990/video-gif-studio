@@ -296,7 +296,9 @@ def write_index(out,report):
 def run(out,items=None,models=None,references=None,auto_only=False,recipes=False):
     cv2.setNumThreads(1)
     out=Path(out).resolve()
-    if out==ROOT or ROOT in out.parents:raise ValueError('Gate output must be outside the repository')
+    scratch=(ROOT/'.scratch').resolve()
+    if (out==ROOT or ROOT in out.parents) and scratch not in out.parents:
+        raise ValueError('Gate output must be outside the repository or inside git-excluded .scratch/')
     if out.exists() and any(out.iterdir()):raise ValueError('Use a new or empty output directory')
     selected=[(kind,name,spec) for kind,registry in (('effect',EFFECTS),('transition',TRANSITIONS)) for name,spec in registry.items() if not items or name in items or f'{kind}:{name}' in items]
     if recipes:

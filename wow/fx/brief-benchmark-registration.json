@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "benchmark": "director-brief-s135",
+  "topics_file": "wow/fx/brief-benchmark-topics.json",
+  "topics_sha256": "86139b636c04bc31427c56c64e2e8661bb498bb13a2bb93386d81763987c5552",
+  "status": "registered_protocol_pending_heldouts_and_commit",
+  "registered_date": "2026-11-06",
+  "protocol": "scripts/brief_bench.py",
+  "technical_axis": "Automatic checks plus independent defect panel; no significant regression",
+  "appeal_axis": ">=8 moving pairs, positive/negative controls, user Wilson95 lower bound > .5",
+  "question": "哪一支你會直接用？",
+  "claim": "未證明更好",
+  "reason": "User prohibits commits; evaluator held-out prompts and user votes are not yet provided. No official run or fabricated result."
+}

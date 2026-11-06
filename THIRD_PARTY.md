@@ -226,3 +226,36 @@ SOFTWARE.
 Note: Individual transitions in the transitions/ directory may have their own
 license specified in their file header comments. When no license is specified,
 the transition is covered by this MIT license.
+
+
+## blank-page — MIT
+
+Source: https://github.com/StewdioAI/blank-page
+
+Author: Blake Shao / Stewdio. Local source snapshot read 2026-11-06; SKILL.md SHA256: `c294a1942a01ef8201fdee96dca0e90c6ec629c6de45b27ed23018a83aee2b11`. Copyright holder is retained verbatim below.
+
+Absorbed: full authoring procedure, role/fence rules, templates, vocabulary, examples and author corpus lessons in `references/blank-page-*.md`; deterministic adaptations in `scripts/brief*.py`. Reference-finder ideas come from `find_refs.py`; code is rewritten for this project with injectable providers, capped downloads, offline fallback, sequential timestamped contact sheets and no Pinterest crawling. No source media or marketing content was copied.
+
+```text
+MIT License
+
+Copyright (c) 2026 Cekura, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

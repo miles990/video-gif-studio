@@ -1,0 +1,54 @@
+"""Decoded reference non-embedding audit, separate from licensing preflight."""
+from pathlib import Path
+import cv2
+import numpy as np
+
+
+def frames(path, step=None):
+    path=Path(path)
+    if path.suffix.lower() in ('.png','.jpg','.jpeg','.webp'):
+        frame=cv2.imread(str(path))
+        if frame is None:raise ValueError('Cannot decode reference image: '+str(path))
+        yield 0.,frame;return
+    cap=cv2.VideoCapture(str(path));fps=cap.get(cv2.CAP_PROP_FPS)
+    if fps<=0:cap.release();raise ValueError('Cannot decode media: '+str(path))
+    index=0;stride=max(1,round((step or 0)*fps))
+    while True:
+        ok,frame=cap.read()
+        if not ok:break
+        if index%stride==0:yield index/fps,frame
+        index+=1
+    cap.release()
+
+
+def signature(frame):
+    gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+    small=cv2.resize(gray,(32,32)).astype(np.float32);dct=cv2.dct(small)[:8,:8].flatten();bits=dct>np.median(dct[1:])
+    scale=min(1.,800/max(gray.shape));gray=cv2.resize(gray,None,fx=scale,fy=scale)
+    detector=cv2.ORB_create(nfeatures=1800,fastThreshold=8);kp,desc=detector.detectAndCompute(gray,None)
+    return bits,kp,desc
+
+
+def matches(a,b):
+    distance=int(np.count_nonzero(a[0]!=b[0]));inliers=0
+    if a[2] is not None and b[2] is not None and len(a[2])>=8 and len(b[2])>=8:
+        pairs=cv2.BFMatcher(cv2.NORM_HAMMING).knnMatch(a[2],b[2],k=2)
+        good=[p[0] for p in pairs if len(p)==2 and p[0].distance<.75*p[1].distance]
+        if len(good)>=8:
+            src=np.float32([a[1][m.queryIdx].pt for m in good]);dst=np.float32([b[1][m.trainIdx].pt for m in good])
+            _,mask=cv2.findHomography(src,dst,cv2.RANSAC,4)
+            if mask is not None:inliers=int(mask.sum())
+    # Uniform images cannot establish copying; retain raw pHash for audit.
+    informative=len(a[1])>=8
+    return dict(phash_distance=distance,orb_inliers=inliers,embedded=(informative and distance<12) or inliers>=25)
+
+
+def audit(movie, references):
+    refs=[(str(p),t,signature(frame)) for p in references for t,frame in frames(p,.25)];hits=[];checked=0
+    for time,frame in frames(movie):
+        sig=signature(frame);checked+=1
+        for path,ref_time,ref in refs:
+            match=matches(sig,ref)
+            if match['embedded']:hits.append(dict(time=time,reference=path,reference_time=ref_time,**match))
+    return dict(pass_nonembedding=not hits,frames_checked=checked,hits=hits,
+                limitation='Textureless images are not identifiable by pHash; asset-path isolation remains mandatory.')

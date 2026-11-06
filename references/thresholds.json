@@ -1848,6 +1848,378 @@
       "scope": "Relative shape review only; synthetic H.264/AAC clean films, not human aesthetic calibration",
       "instrument": "scripts/taste_common.py compare_curve; shared by taste_lint.weakest",
       "margin": 0.01
+    },
+    {
+      "id": "brief.hero_height.min",
+      "value": 0.4,
+      "unit": "fraction",
+      "direction": "min",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "hero_height.min-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "hero_height.min-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.text_px.min",
+      "value": 24,
+      "unit": "px at short side 1080",
+      "direction": "min",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "text_px.min-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "text_px.min-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.end_hold.max",
+      "value": 1,
+      "unit": "seconds, exclusive",
+      "direction": "max",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "end_hold.max-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "end_hold.max-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.turn_end.min",
+      "value": 0.32,
+      "unit": "fraction of duration, exclusive",
+      "direction": "min",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "turn_end.min-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "turn_end.min-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.words.en.max",
+      "value": 150,
+      "unit": "words",
+      "direction": "max",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "words.en.max-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "words.en.max-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.words.cjk.max",
+      "value": 300,
+      "unit": "characters plus Latin words",
+      "direction": "max",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "words.cjk.max-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "words.cjk.max-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.edit_words.en.max",
+      "value": 50,
+      "unit": "words",
+      "direction": "max",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "edit_words.en.max-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "edit_words.en.max-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.edit_words.cjk.max",
+      "value": 100,
+      "unit": "characters plus Latin words",
+      "direction": "max",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "edit_words.cjk.max-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "edit_words.cjk.max-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.word_error_ratio",
+      "value": 1.2,
+      "unit": "ratio",
+      "direction": "max",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "word_error_ratio-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "word_error_ratio-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.forks.max",
+      "value": 3,
+      "unit": "creative forks",
+      "direction": "max",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "forks.max-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "forks.max-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.visual_refs",
+      "value": 5,
+      "unit": "reference slots",
+      "direction": "equal",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "visual_refs-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "visual_refs-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "brief.motion_refs",
+      "value": 3,
+      "unit": "reference slots",
+      "direction": "equal",
+      "class": "C",
+      "measures": "Brief authoring advice; not an external standard",
+      "provenance": {
+        "source_class": "GUESS",
+        "ref": "blank-page SKILL.md Rules / Procedure (MIT); acceptance-11 CJK counting adaptation",
+        "agent_invented": false
+      },
+      "anchors": [
+        {
+          "id": "motion_refs-valid",
+          "path": "tests/test_brief.py",
+          "role": "positive_control",
+          "expected": "pass",
+          "label_source": "fixture"
+        },
+        {
+          "id": "motion_refs-invalid",
+          "path": "tests/test_brief.py",
+          "role": "negative_control",
+          "expected": "fail",
+          "label_source": "fixture"
+        }
+      ],
+      "history": [],
+      "status": "active"
     }
   ],
   "pending": [],

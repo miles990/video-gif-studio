@@ -1,0 +1,46 @@
+{
+  "source": "BL-1..BL-5 quoted from blank-page README (MIT); BL-6 acceptance-11",
+  "topics": [
+    {
+      "id": "BL-1",
+      "draft": "5 sec clip for a payments api: a request leaves the code and comes back as a payment confirmed. dark mode, kind of like stripe’s style",
+      "held_out": false
+    },
+    {
+      "id": "BL-2",
+      "draft": "quick 5 second twitter post: our design tool just hit 10,000 users",
+      "held_out": false
+    },
+    {
+      "id": "BL-3",
+      "draft": "5s looping background for a saas pricing page. it sits behind the plan cards so keep it subtle. soft frosted glass, like apple’s website",
+      "held_out": false
+    },
+    {
+      "id": "BL-4",
+      "draft": "5 second clip for a note-taking app launch. you type one search and results pop in from docs, slack and email",
+      "held_out": false
+    },
+    {
+      "id": "BL-5",
+      "draft": "5 second changelog clip for a calendar app. the messy old settings page snaps into clean grouped sections. clean and minimal, lots of white",
+      "held_out": false
+    },
+    {
+      "id": "BL-6",
+      "draft": "我咖啡店新菜單 10 秒直式，溫暖",
+      "held_out": false
+    },
+    {
+      "id": "HELD-1",
+      "draft": null,
+      "held_out": true
+    },
+    {
+      "id": "HELD-2",
+      "draft": null,
+      "held_out": true
+    }
+  ],
+  "status": "Awaiting evaluator-held topics; no benchmark run performed"
+}
