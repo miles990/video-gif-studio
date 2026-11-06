@@ -15,14 +15,29 @@ VIEWS = {'front':'front', 'side':'left', 'back':'back', 'three_quarter':'three_q
 EXPRESSIONS = ('neutral','joy','anger','sadness','surprise','pain')
 # This is a conservative named-entity guard, not a claim of exhaustive IP recognition.
 NAMED_IP = re.compile(r'\b(mario|luigi|sonic|pikachu|pokemon|pokémon|kirby|zelda|link from|samus|megaman|mega man|cloud strife|sephiroth|lara croft|kratos|master chief|hollow knight|sans|undertale|goku|naruto|totoro|mickey|elsa|doraemon)\b|皮卡丘|馬利歐|马里奥|索尼克|哆啦|初音|悟空|鸣人|鳴人', re.I)
+LOCAL_IP=re.compile(r'瑪利歐|玛利欧|林克|寶可夢|宝可梦|薩爾達|萨尔达|薩爾達傳說|\b(?:link|crash(?: bandicoot)?|shovel knight)\b',re.I)
+GAME_STYLE=re.compile(r'(?:in (?:the )?style of|recreate (?:the )?look of|模仿|照著|照着).{0,12}(?:Stardew Valley|Terraria|Dead Cells|Cuphead|Hades|Celeste|Minecraft|Animal Crossing|Dark Souls|Final Fantasy|星露谷|茶杯頭|茶杯头|動物森友會)|in the style of (?:the game |["“]).+',re.I)
+
+
+def original_alternative(prompt):
+    import hashlib
+    seed=int(hashlib.sha256(prompt.encode('utf8')).hexdigest()[:8],16)
+    species=('arctic hare','sand pangolin','glasswing beetle','river otter','moss salamander','copper owl')
+    shapes=('long triangular ears','rounded shell silhouette','split leaf cloak','crescent shoulder plates','wide woven hood')
+    colors=('teal and ochre','aubergine and mint','slate and coral','cream and copper','navy and amber')
+    props=('tuning-fork blade','folding compass shield','bell-headed staff','crystal sickle','kite-shaped spear')
+    changes=[species[seed%len(species)],shapes[(seed//7)%len(shapes)],colors[(seed//31)%len(colors)],props[(seed//131)%len(props)]]
+    intent='ice-themed sword action' if re.search(r'ice|冰',prompt,re.I) else 'electric movement' if re.search(r'electric|電|电',prompt,re.I) else 'walking and jumping' if re.search(r'walk|走|跳|Mario|瑪利歐|马里奥',prompt,re.I) else 'exploration and combat'
+    return f'Keep the requested {intent}; create an original {changes[0]} with {changes[1]}, {changes[2]} palette, and a {changes[3]}.',changes
 
 
 def originality(prompt, reference_licence=None):
-    if NAMED_IP.search(prompt) or re.search(r'(identical to|exact copy of|一模一樣|一模一样)',prompt,re.I):
+    if NAMED_IP.search(prompt.replace('_',' ')) or LOCAL_IP.search(prompt.replace('_',' ')) or GAME_STYLE.search(prompt) or re.search(r'(identical to|exact copy of|一模一樣|一模一样)',prompt,re.I):
+        suggestion,changes=original_alternative(prompt)
         raise ImageError('E_ORIGINAL_REQUIRED', 'This pipeline creates original characters. An original alternative is available.',
-                         suggestion='Use an original lantern-bearing moth scout: rounded wing silhouette, indigo/copper palette, compass staff instead of the referenced accessories.',
+                         suggestion=suggestion,
                          originality={'named_ip_detected':True,'action':'offered_original'},
-                         design_changes=['rounded wing silhouette','indigo and copper palette','compass staff and lantern','moth species and compact proportions'])
+                         design_changes=changes)
     if reference_licence and reference_licence not in ('original','owned','licensed'):
         raise ImageError('E_REFERENCE_RIGHTS','Reference art must be original, owned, or licensed; official character art is not accepted.')
     return dict(named_ip_detected=False,action='proceed',screening='named-entity guard; human originality review pending')
