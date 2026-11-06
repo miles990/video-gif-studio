@@ -76,6 +76,9 @@ def lint(brief):
     for constraint in hard_constraints(brief.get('draft','')):
         if constraint not in brief.get('hard_constraints',[]) or constraint not in prompt.split('refs:')[0]:
             add('hard_constraint','hard_constraints','Missing user constraint: '+constraint,'Restore the source constraint in the brief and its prompt')
+    from brief_language import constraint_violations
+    for location,message in constraint_violations(brief):
+        add('hard_constraint',location,message,'Repair the authored beat or shot to satisfy the explicit constraint')
     if brief.get('status')=='skeleton' and not brief.get('forks'):
         add('skeleton_fork','forks','Skeleton requires a real creative fork','Offer two materially different treatments')
     aesthetic=brief.get('aesthetic')

@@ -132,6 +132,9 @@ def creative(draft,design):
     subject=re.sub(r'^(?:create|make)\s+(?:a\s+)?','',subject,flags=re.I)
     subject=subject[:40] if zh else ' '.join(subject.split()[:10])
     subject=subject or ('主體' if zh else 'subject')
+    from brief_language import required_subjects
+    required=required_subjects(hard_constraints(draft))
+    if required:subject=required[0]
     return dict(aesthetic=design['aesthetic'],fence='',subject=subject,
                 turn=turn or ('鏡頭拉遠，揭露'+subject+'的完整輪廓' if zh else 'the camera pulls out to reveal the complete outline of '+subject),
                 pace=design['pace'],zh=zh,background=bool(re.search(r'background|背景',draft,re.I)))
@@ -226,7 +229,7 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         for b in beats:
             b['is_turn']=False;b['mechanism']='static'
             b['text']=copy['subject']+'; consistent icon silhouettes ('+', '.join(b['refs'])+')'
-    if logo_last:
+    if logo_last and not content.get('beats'):
         beats[-1]['text']+='；最後呈現 logo' if copy['zh'] else '; logo appears last'
     for b in beats:b['hard_constraints']=deepcopy(constraints)
     for r in refs:
@@ -386,6 +389,9 @@ def to_storyboard(brief,variant=1,allow_skeleton=False):
                brief_ref_uses=[dict(handle=r['handle'],use=r['use'],cited_by=r['cited_by']) for r in brief['refs']],
                preserve_footage_motion=True,asset_policy=brief.get('assets',[]),music=brief.get('music',{}),reference_paths=[r['path'] for r in brief['refs'] if r.get('path') and r.get('source')!='user'])
     if brief.get('music_source'):board['music_source']=brief['music_source']
+    from brief_language import constraint_violations
+    violations=constraint_violations(board)
+    if violations:raise ValueError('E_HARD_CONSTRAINT '+str(violations))
     return validate(board)
 
 

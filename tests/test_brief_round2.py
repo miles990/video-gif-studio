@@ -183,3 +183,25 @@ class AssetRoutingTests(unittest.TestCase):
         self.assertFalse(any(v['is_turn'] for v in b['beats']))
         self.assertFalse({'no_turn','turn_reference'} & {f['rule'] for f in lint(b)['findings']})
         self.assertEqual(lint(b)['errors'],0,lint(b))
+
+
+class HardConstraintTests(unittest.TestCase):
+    def test_subject_and_product_are_verifiable(self):
+        for name in ('霜刃','南瓜拿鐵'):
+            b=brief.expand(name+'一定要出現')
+            self.assertEqual(b['subject'],name)
+            for beat in b['beats']:beat['text']=beat['text'].replace(name,'主體')
+            self.assertIn('hard_constraint',[f['rule'] for f in lint(b)['findings']])
+
+    def test_logo_and_faces_check_actual_content(self):
+        from brief_render import preflight
+        b=brief.expand('Frostblade; Frostblade must appear; logo must appear last; no faces')
+        board=brief.to_storyboard(b,allow_skeleton=True)
+        bad=deepcopy(b);bad['beats'][-1]['text']=bad['beats'][-1]['text'].replace('logo','rune')
+        self.assertIn('hard_constraint',[f['rule'] for f in lint(bad)['findings']])
+        bad=deepcopy(b);bad['beats'][0]['text']+='; a smiling face fills the screen'
+        self.assertIn('hard_constraint',[f['rule'] for f in lint(bad)['findings']])
+        bad=deepcopy(b);bad['shots']=deepcopy(board['shots']);bad['shots'][-1]['action']='Frostblade settles'
+        self.assertIn('hard_constraint',[f['rule'] for f in lint(bad)['findings']])
+        board['shots'][-1]['action']='Frostblade settles'
+        with self.assertRaisesRegex(ValueError,'E_HARD_CONSTRAINT'):preflight(board)

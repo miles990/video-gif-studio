@@ -14,10 +14,13 @@ def write(path,data):
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
 
 
-def preflight(board):
+def preflight(board,sequence=True):
     from storyboard import validate,lint,MOVES
     from fx import TRANSITIONS
     b=validate(board);credits=validate_assets(b.get('asset_policy',[]))
+    from brief_language import constraint_violations
+    violations=constraint_violations(b,sequence=sequence)
+    if violations:raise ValueError('E_HARD_CONSTRAINT '+str(violations))
     denied={str(Path(p).resolve()).casefold() for p in b.get('reference_paths',[])}
     for i,s in enumerate(b['shots']):
         for field in ('image','footage'):
@@ -44,12 +47,12 @@ def proxy_size(board):
     return tuple(max(2,round(v*scale/2)*2) for v in (width,height))
 
 
-def compile_plan(board,out,size=None,music=None):
+def compile_plan(board,out,size=None,music=None,_local_shot=False):
     if board.get('asset_spec'):
         from brief_assets import pending_asset
         return pending_asset(board,out)
     from animatic import to_plan
-    b,credits=preflight(board);out=Path(out);size=size or proxy_size(b)
+    b,credits=preflight(board,sequence=not _local_shot);out=Path(out);size=size or proxy_size(b)
     plan=to_plan(b,out,size=size,music=music or b.get('music_source'))
     # Match the incremental renderer's local-shot semantics. An accent does not
     # leak into a later cached shot just because its recipe has a long tail.
@@ -115,7 +118,7 @@ def render_version(board,out,previous=None,size=None,formats=('png','mp4')):
             shutil.copytree(previous/'shots'/s['id'],shotdir,copy_function=reuse_file);status='cache'
         else:
             localboard=dict(core=b['core'],status=b.get('status','storyboard'),hard_constraints=deepcopy(b.get('hard_constraints',[])),fps=b['fps'],shots=[local],preserve_footage_motion=b.get('preserve_footage_motion',False),asset_policy=b.get('asset_policy',[]),reference_paths=b.get('reference_paths',[]))
-            compile_plan(localboard,out/'inputs'/s['id'],size)
+            compile_plan(localboard,out/'inputs'/s['id'],size,_local_shot=True)
             render(out/'inputs'/s['id']/'plan.json',shotdir,('png',),fps=b['fps']);status='rendered'
         frames=sorted((shotdir/'frames').glob('*.png'))
         record=dict(id=s['id'],fingerprint=fingerprint,status=status,frames=[p.relative_to(out).as_posix() for p in frames],sha256=[digest(p) for p in frames],start=s['start'],end=s['end'])
