@@ -54,6 +54,11 @@ def adapter_request(a):
 
 
 def main(argv=None):
+    args = sys.argv[1:] if argv is None else argv
+    from game_assets import COMMANDS
+    if args and args[0] in COMMANDS:
+        from game_assets import main as game_main
+        return game_main(args)
     try:
         p=Parser(description=__doc__);sub=p.add_subparsers(dest='command',required=True)
         for name in ('generate','estimate','probe','usage'):options(sub.add_parser(name))
