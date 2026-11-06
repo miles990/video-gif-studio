@@ -39,6 +39,41 @@ def require_alpha(im):
     if not np.any(a[...,3]==0):raise ImageError('E_ALPHA_REQUIRED','Generated sprite has no real transparent pixels; keep it as a rejected source, not a sprite.')
 
 
+def prepare_subject(im, view='front'):
+    """Separate large full-height components; keep a recorded canonical sheet cell.
+
+    Four horizontally ordered turnaround cells use the requested front/side/back/
+    three-quarter order. This geometric inference remains pending visual review.
+    Ambiguous layouts request regeneration instead of silently taking a crowd.
+    """
+    import cv2
+    from game_demo import isolate_single_subject
+    require_alpha(im)
+    a=np.array(im);mask=(a[...,3]>127).astype('uint8')
+    # Model-drawn ground rules can connect all four figures. Remove only long
+    # horizontal rules before counting; retain the original source on disk.
+    rule=cv2.morphologyEx(mask,cv2.MORPH_OPEN,np.ones((1,max(3,im.width//2)),np.uint8))
+    if rule.any() and np.count_nonzero(rule.any(axis=1))<=max(2,im.height*.02):
+        mask[rule>0]=0;a[rule>0]=0;im=Image.fromarray(a)
+    n,labels,stats,_=cv2.connectedComponentsWithStats(mask,8)
+    biggest=max(stats[1:,cv2.CC_STAT_AREA],default=0)
+    candidates=[s for s in stats[1:] if s[cv2.CC_STAT_AREA]>=biggest*.18 and s[cv2.CC_STAT_HEIGHT]>=max(stats[1:,cv2.CC_STAT_HEIGHT],default=0)*.65]
+    candidates.sort(key=lambda s:int(s[0]))
+    count=len(candidates);index=0;crop=im
+    if count>1:
+        if count!=4 or max(s[1] for s in candidates)-min(s[1] for s in candidates)>im.height*.2:
+            raise ImageError('E_SUBJECT_COUNT','Ambiguous multiple subjects; regenerate ONE requested view.',subject_count=count)
+        index=list(VIEWS).index(view);x,y,w,h,_=candidates[index]
+        crop=Image.new('RGBA',im.size)
+        # Midpoints between subjects exclude neighboring contour/support pixels.
+        left=0 if index==0 else (int(candidates[index-1][0]+candidates[index-1][2])+int(x))//2
+        right=im.width if index==count-1 else (int(x+w)+int(candidates[index+1][0]))//2
+        crop.paste(im.crop((left,0,right,im.height)),(left,0))
+    crop=isolate_single_subject(crop)
+    return crop,dict(subject_count=count,selected_index=index,requested_view=view,
+                     selection='canonical left-to-right turnaround' if count>1 else 'single subject',visual_review='pending')
+
+
 def palette_of(images, limit=16, minimum=.005):
     counts={}; total=0
     for im in images:
@@ -150,10 +185,16 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
     for name,facing in VIEWS.items():
         prompt=f'{request.prompt}\nOriginal character turnaround. ONE {facing} view. Same scale, ground line at 90% canvas height, shared camera, outfit and palette. No text. Do not mirror asymmetric features. Canvas {size[0]}x{size[1]}.'
         req=replace(request,prompt=prompt,refs=refs[-3:],transparent=True,n=1)
-        result=adapter.generate(req,out/'generation'/name);source=Path(result['assets'][0]['path']);im=rgba(source);require_alpha(im)
+        result=adapter.generate(req,out/'generation'/name);source=Path(result['assets'][0]['path'])
+        try:im,subject=prepare_subject(rgba(source),name)
+        except ImageError as exc:
+            if exc.error['code']!='E_SUBJECT_COUNT':raise
+            req=replace(req,prompt=prompt+' IMPORTANT: a single isolated character only; NOT a turnaround sheet or multiple poses.')
+            result=adapter.generate(req,out/'generation'/(name+'-single'),no_cache=True);source=Path(result['assets'][0]['path'])
+            im,subject=prepare_subject(rgba(source),name)
         actual[name]=list(im.size);im=im.resize(size,Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
         (out/'views').mkdir(parents=True,exist_ok=True);file=out/'views'/f'{name}.png';im.save(file)
-        records.append(dict(name=name,facing=facing,file=f'views/{name}.png',refs_sent=[digest(p) for p in req.refs],size_actual=actual[name]))
+        records.append(dict(name=name,facing=facing,file=f'views/{name}.png',refs_sent=[digest(p) for p in req.refs],size_actual=actual[name],subject=subject))
         views[name]=im;refs.append(str(file.resolve()));manifests.append(result)
     palette=palette_of(list(views.values()),16 if pixel else 12)
     if pixel:
