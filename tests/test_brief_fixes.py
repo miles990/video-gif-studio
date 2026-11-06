@@ -128,3 +128,43 @@ class FixTests(unittest.TestCase):
             self.assertTrue(all(v['mean_abs']>1 for v in differences),differences)
             (folder/'evidence.json').write_text(json.dumps(dict(genres=records,frame_differences=differences),indent=2),encoding='utf-8')
         finally:cv2.setNumThreads(old_threads)
+
+    def test_delta_quantities_roll_and_no_effect(self):
+        from brief_edit import parse,apply_changes
+        b=skeleton_board(brief.expand('coffee 5s',music={'downbeats_ms':[0,2000,4000]}))
+        for s in b['shots']:s['motion']='static';s.pop('recipe',None)
+        edit=parse('make 3 2x faster and 30 degrees clockwise',b)
+        self.assertEqual(len(edit['questions']),1)
+        with self.assertRaisesRegex(ValueError,'E_AMBIGUOUS'):apply_changes(b,edit)
+        edit=parse('第三鏡快兩倍',b)
+        self.assertEqual(edit['changes'][0]['magnitude'],2)
+        self.assertIn(b['shots'][2]['id'],apply_changes(b,edit)['revision']['no_visible_effect'])
+        for phrase,value in [('clockwise',30),('counter-clockwise',-30),('counterclockwise',-30),('逆時針',-30)]:
+            edit=parse('make 3 30 degrees '+phrase,b)
+            self.assertFalse(edit['questions']);self.assertEqual(edit['changes'][0]['direction']['axis'],'roll')
+            self.assertEqual(apply_changes(b,edit)['shots'][2]['rotation_degrees'],value)
+
+    def test_screenshot_matches_prior_render_without_metadata(self):
+        import cv2,tempfile
+        import numpy as np
+        from brief_edit import parse
+        with tempfile.TemporaryDirectory(dir=ROOT/'.scratch') as tmp:
+            folder=Path(tmp);video=folder/'prior.avi';writer=cv2.VideoWriter(str(video),cv2.VideoWriter_fourcc(*'MJPG'),30,(96,64))
+            for i in range(90):
+                frame=np.full((64,96,3),(i*2,20,70),dtype=np.uint8);cv2.circle(frame,(10+i%75,30),9,(220,230,240),-1);writer.write(frame)
+            writer.release();cap=cv2.VideoCapture(str(video));cap.set(cv2.CAP_PROP_POS_FRAMES,62);ok,frame=cap.read();cap.release();self.assertTrue(ok)
+            screenshot=folder/'screenshot.png';cv2.imwrite(str(screenshot),cv2.resize(frame,(192,128)))
+            b=skeleton_board(brief.expand('coffee 3s'));b['render_source']=str(video)
+            edit=parse('too dark',b,image=screenshot)
+            self.assertFalse(edit['questions']);self.assertAlmostEqual(edit['changes'][0]['time'],62/30,delta=1/30)
+            self.assertEqual(edit['changes'][0]['target']['shots'],[s['id'] for s in b['shots'] if s['start']<=62/30<s['end']])
+
+    def test_windows_delivery_rename_retry_is_bounded(self):
+        from unittest.mock import Mock,patch
+        from fx_render import rename_delivery
+        path=Mock();path.rename.side_effect=[PermissionError('locked'),PermissionError('locked'),Path('done')]
+        with patch('fx_render.time.sleep') as sleep:
+            self.assertEqual(rename_delivery(path,Path('done')),Path('done'));self.assertEqual(sleep.call_count,2)
+        path.rename.side_effect=PermissionError('locked')
+        with patch('fx_render.time.sleep'):
+            with self.assertRaises(PermissionError):rename_delivery(path,Path('done'),attempts=2)

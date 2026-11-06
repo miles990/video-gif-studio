@@ -20,6 +20,15 @@ TOP = {'segments','beatmap','music','effects','fps','seed','sampling','review','
 SEGMENT = {'type','manifest','image','previous','frame','duration_ms','in_ms','out_ms','speed','ramp','ending','end_beat','end_downbeat','transition','review'}
 META = {'name','start_ms','end_ms','start_beat','end_beat','review','stage','director_mix','recipe_name','recipe_event_id'}
 
+
+def rename_delivery(source,target,attempts=6):
+    """Windows scanners can briefly hold an encoded delivery directory open."""
+    for attempt in range(attempts):
+        try:return source.rename(target)
+        except PermissionError:
+            if attempt==attempts-1:raise
+            time.sleep(.05*2**attempt)
+
 def keys(value, allowed, where):
     if not isinstance(value,dict): raise ValueError(f'{where}: expected JSON object; valid keys {sorted(allowed)}')
     unknown = set(value)-allowed
@@ -341,7 +350,7 @@ def render(plan_path, out, formats=('gif',), background='000000', experimental=F
                 shutil.move(str(part),str(root/'raster'))
                 if 'gif' in raster:
                     shutil.copy2(root/'raster/animation.gif',root/'animation.gif')
-            root.rename(out)
+            rename_delivery(root,out)
         return {'out':str(out),'formats':list(formats)}
     return _render(plan_path,out,formats,background,experimental,interpolate,fps,platform,proxy,keep_audio,duck,loudnorm,_silent_derivative)
 
@@ -621,7 +630,7 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
                 for effect,event in zip(manifest['effects'],report['fx_checks']['events']):effect['visibility']=event['visibility']
             (root/'manifest.json').write_text(json.dumps(manifest,indent=2))
             (root/'qc.json').write_text(json.dumps(report,indent=2))
-            root.rename(out)
+            rename_delivery(root,out)
         return dict(out=str(out),frames=report['encoded_frames'],duration_ms=report['container_duration_ms'],formats=list(formats))
     images=list(rendered_frames())
     elapsed = time.perf_counter()-started

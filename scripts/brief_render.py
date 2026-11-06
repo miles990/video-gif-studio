@@ -121,8 +121,11 @@ def render_version(board,out,previous=None,size=None,formats=('png','mp4')):
     if b.get('music_source'):assembly['music']=dict(file=b['music_source'])
     write(out/'plan.json',assembly);write(out/'storyboard.json',b);write(out/'credits.json',credits)
     render(out/'plan.json',out/'render',formats,fps=b['fps'])
+    movies=list((out/'render').glob('*.mp4'))
+    if movies:b['render_source']=str(movies[0].resolve());write(out/'storyboard.json',b)
     report=dict(version=1,shots=records,transitions=boundaries,rerendered_shots=[r['id'] for r in records if r['status']=='rendered'],
                 reused_shots=[r['id'] for r in records if r['status']=='cache'],duration=b['duration'],
+                no_visible_effect=[r['id'] for r in records if r['status']=='rendered' and r['id'] in old and r['sha256']==old[r['id']]['sha256']],
                 note='Local shot frames are immutable; final assembly recomposites transition windows and encodes the delivery.')
     write(out/'version.json',report);return report
 
