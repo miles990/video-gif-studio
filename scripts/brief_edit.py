@@ -91,7 +91,11 @@ def parse(draft,previous,image=None):
             if len(quantities)>1:
                 questions.append('[? this shot has multiple directional quantities; which quantity applies to which movement?]')
                 continue
-            if re.search('提前|drop',line,re.I):
+            replacement=re.search(r'(?:第[一二三四五六七八九十\d]+鏡(?:的)?|shot\s*\d+\s*(?:the\s+)?)(.+?)(?:換成|改成|換為|改為|replace with|change to)\s*(.+)',line,re.I)
+            if replacement:
+                change='image_edit';target['element']=replacement[1].strip();magnitude=1
+                direction=dict(axis='image',sense='replace selected region');extra['instruction']=replacement[2].strip()
+            elif re.search('提前|drop',line,re.I):
                 change='time';grid=previous.get('music',{});drop=grid.get('drop_ms');magnitude=drop/1000 if drop is not None else None
                 direction=dict(axis='timeline',sense='align to drop')
                 if magnitude is None:questions.append('[? reviewed drop time]')
@@ -147,6 +151,9 @@ def apply_changes(board,edit):
             elif c['change']=='direction':s['direction']=c['direction']['sense']
             elif c['change']=='brightness':s['brightness_delta']=c['magnitude']
             elif c['change']=='font_size':s['min_text_px']=c['quantified']['target_px_1080']
+            elif c['change']=='image_edit':
+                s['pending_image_edit']=deepcopy(c)
+                notes.append('Use imagegen delta with a selected image_regions bbox or markup to regenerate and composite this region.')
             elif c['change']=='time':
                 idx=b['shots'].index(s);delta=c['magnitude']-s['start']
                 if idx==0 or b['shots'][idx-1]['duration']+delta<=0:raise ValueError('E_TIME: cannot move turn without a positive preceding shot')

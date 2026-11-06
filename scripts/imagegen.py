@@ -58,6 +58,9 @@ def main(argv=None):
         motion.add_argument('--frames',type=int,default=48);motion.add_argument('--frame-ms',type=int,default=40);motion.add_argument('--size');motion.add_argument('--json',action='store_true')
         ing=sub.add_parser('ingest');ing.add_argument('gif',type=Path);ing.add_argument('--out',required=True,type=Path);ing.add_argument('--json',action='store_true')
         alpha=sub.add_parser('alpha');alpha.add_argument('image',type=Path);alpha.add_argument('--out',type=Path);alpha.add_argument('--cleanup',action='store_true');alpha.add_argument('--json',action='store_true')
+        e=sub.add_parser('edit');options(e);e.add_argument('--image',type=Path,required=True);e.add_argument('--instruction',required=True)
+        e.add_argument('--region');e.add_argument('--markup',type=Path);e.add_argument('--feather',type=int,default=8)
+        d=sub.add_parser('delta');options(d);d.add_argument('storyboard',type=Path);d.add_argument('--draft',required=True);d.add_argument('--markup',type=Path);d.add_argument('--feedback',type=Path)
         k=sub.add_parser('keyframes');options(k);k.add_argument('storyboard',type=Path);k.add_argument('--shots',nargs='+')
         r=sub.add_parser('refset');rs=r.add_subparsers(dest='ref_command',required=True)
         rb=rs.add_parser('build');rb.add_argument('--name',required=True);rb.add_argument('--images',nargs='+',type=Path,required=True)
@@ -87,7 +90,12 @@ def main(argv=None):
             else:result=review(a.refs,a.same=='yes',a.comment)
             print(json.dumps(dict(ok=True,result=result),ensure_ascii=False));return 0
         adapter,req=adapter_request(a)
-        if a.command=='keyframes':
+        if a.command in ('edit','delta'):
+            if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
+            from image_edit import edit,apply_delta
+            if a.command=='edit':result=edit(adapter,req,a.image,a.out,a.instruction,a.region,a.markup,a.feather,a.approve_spend,a.max_usd)
+            else:result=apply_delta(read(a.storyboard),a.draft,adapter,req,a.out,a.markup,a.approve_spend,a.max_usd,a.feedback)
+        elif a.command=='keyframes':
             if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
             from image_keyframes import keyframes
             result=keyframes(read(a.storyboard),adapter,a.out,req,a.shots,a.approve_spend,a.max_usd)

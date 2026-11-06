@@ -102,3 +102,24 @@ gets one explicit solid-background regeneration and local chroma matting, record
 as `alpha_source:matted`. A failed QA result is not delivered as a final sticker.
 Output includes RGBA, binary-alpha PNG/GIF and black/white/magenta composites.
 `alpha_qa.py image.png --json` is read-only; add `--cleanup --out new.png` to repair.
+
+Local edits:
+
+```text
+python scripts/imagegen.py edit --experimental --image original.png --region 380,1100,320,360 --instruction "replace cup with latte" --out .scratch/edit --json
+python scripts/imagegen.py delta storyboard.json --draft "第二鏡的杯子改成拿鐵" --experimental --out .scratch/v2 --json
+```
+
+The source is sent as an actual reference. `--markup` accepts a same-sized RGBA
+annotation (closed outlines are filled); `--region` accepts bbox x,y,width,height
+or a JSON polygon. Delta resolves named objects through shot `image_regions`,
+e.g. `{"杯子":[380,1100,320,360]}`, or an explicit markup layer. Missing object
+locations return E_REGION_REQUIRED, never a guessed box. `brief_edit.parse` and
+`apply_changes` also retain structured image edits as pending work.
+Regeneration is aligned using ORB/RANSAC or ECC translation with <=1 px measured
+residual. A changed canvas is rejected. Only the selected mask plus a 2%-short-edge
+margin is composited; inward feathering is <=8 px and all outside bytes are copied
+exactly. Reports include raw outside drift and inside CIEDE2000 change; a no-op is
+rejected. Semantic correctness and visible feather seams remain human review items.
+Only changed shots receive new keyframe hashes; `brief_render.render_version`
+reuses unchanged shot frames and recomposites neighboring transitions.
