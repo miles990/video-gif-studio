@@ -12,6 +12,7 @@ import time
 from collections import deque
 import numpy as np
 from PIL import Image, ImageDraw
+from image_vector import open_image
 from compose_timeline import compose, resolve_plan, export_timeline, FORMATS
 from fx import Context, EFFECTS, TRANSITIONS, evaluate
 from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers, audio_peaks
@@ -91,6 +92,16 @@ def validate_entry(entry, registry, ctx, where, metadata, experimental=False, sk
 def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=None, proxy=False, _silent_derivative=False):
     path = Path(plan_path).resolve()
     plan = json.loads(path.read_text(encoding='utf-8-sig'))
+    # Validate SVG before any renderer/resource can load it, even nested assets.
+    def check_svg(value):
+        if isinstance(value,dict):
+            for v in value.values():check_svg(v)
+        elif isinstance(value,list):
+            for v in value:check_svg(v)
+        elif isinstance(value,str) and value.lower().endswith('.svg'):
+            from image_vector import safe_svg
+            safe_svg(path.parent/value)
+    check_svg(plan)
     if os.environ.get('VIDEO_GIF_INTERPOLATE'):plan['interpolate']=os.environ['VIDEO_GIF_INTERPOLATE']
     if interpolate is not None: plan['interpolate']=interpolate
     keys(plan,TOP,'plan')
@@ -224,7 +235,7 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
                 raise ValueError(f'segments[{i}].ramp.into_beat: beat must be inside or at segment end')
     size = None
     for file in dict.fromkeys([f for f,_ in items]+extra_source_files):
-        with Image.open(file) as im:
+        with open_image(file) as im:
             if size is not None and im.size!=size: raise ValueError(f'segments: {file}: all images must share one canvas {size}')
             size = im.size
     ctx.width,ctx.height = size
@@ -403,7 +414,7 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
             # Explicit unity shares the exact legacy frame/exposure path.
             images=[]
             for file,_ in items:
-                with Image.open(file) as im:images.append(im.convert('RGBA'))
+                with open_image(file) as im:images.append(im.convert('RGBA'))
             result=export_timeline(path,out,formats,background,plan,items,segments,images,[t for _,t in items])
         else:result=compose(path,out,formats,background)
         manifest_path=out/'manifest.json';record=json.loads(manifest_path.read_text());clock=0;record['source_samples']=[]
@@ -464,7 +475,7 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
     def read(file):
         if file not in cache:
             if len(cache)>=3:cache.pop(next(iter(cache)))
-            with Image.open(file) as im:
+            with open_image(file) as im:
                 rgba=im.convert('RGBA')
                 if streaming and not follower and rgba.size!=(ctx.width,ctx.height):
                     from PIL import ImageOps

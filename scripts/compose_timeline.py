@@ -6,6 +6,7 @@ import math
 import tempfile
 from pathlib import Path
 from PIL import Image
+from image_vector import open_image
 from gif_pipeline import encode, verify, natural, sha
 from sprite_export import export as sprites
 from video_export import export as video
@@ -31,7 +32,7 @@ def compose(plan_path, out, formats=('gif',), background='000000', fps=30, platf
     items, segments = resolve_plan(plan, plan_path, formats)
     images = []
     for file, _ in items:
-        with Image.open(file) as im: images.append(im.convert('RGBA'))
+        with open_image(file) as im: images.append(im.convert('RGBA'))
     if any(im.size != images[0].size for im in images):
         raise ValueError('All images must share one canvas; prepare sizing explicitly')
     times = [t for _, t in items]

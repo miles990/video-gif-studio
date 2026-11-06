@@ -61,6 +61,9 @@ def main(argv=None):
         e=sub.add_parser('edit');options(e);e.add_argument('--image',type=Path,required=True);e.add_argument('--instruction',required=True)
         e.add_argument('--region');e.add_argument('--markup',type=Path);e.add_argument('--feather',type=int,default=8)
         d=sub.add_parser('delta');options(d);d.add_argument('storyboard',type=Path);d.add_argument('--draft',required=True);d.add_argument('--markup',type=Path);d.add_argument('--feedback',type=Path)
+        v=sub.add_parser('vectorize');v.add_argument('image',type=Path);v.add_argument('--out',type=Path,required=True);v.add_argument('--colors',type=int,default=6);v.add_argument('--json',action='store_true')
+        ss=sub.add_parser('svg-safe');ss.add_argument('svg',type=Path);ss.add_argument('--out',type=Path);ss.add_argument('--json',action='store_true')
+        sr=sub.add_parser('svg-render');sr.add_argument('svg',type=Path);sr.add_argument('--out',type=Path,required=True);sr.add_argument('--sizes',default='512,2048,4096');sr.add_argument('--json',action='store_true')
         k=sub.add_parser('keyframes');options(k);k.add_argument('storyboard',type=Path);k.add_argument('--shots',nargs='+')
         r=sub.add_parser('refset');rs=r.add_subparsers(dest='ref_command',required=True)
         rb=rs.add_parser('build');rb.add_argument('--name',required=True);rb.add_argument('--images',nargs='+',type=Path,required=True)
@@ -69,6 +72,18 @@ def main(argv=None):
         rc=rs.add_parser('check');rc.add_argument('--refs',type=Path,required=True);rc.add_argument('--image',type=Path,required=True);rc.add_argument('--json',action='store_true')
         rr=rs.add_parser('review');rr.add_argument('--refs',type=Path,required=True);rr.add_argument('--same',choices=['yes','no'],required=True);rr.add_argument('--comment',default='');rr.add_argument('--json',action='store_true')
         a=p.parse_args(argv)
+        if a.command in ('vectorize','svg-safe','svg-render'):
+            from image_vector import trace,safe_svg,rasterize
+            if a.command=='vectorize':result=trace(a.image,a.out,a.colors)
+            elif a.command=='svg-safe':
+                _,result=safe_svg(a.svg)
+                if a.out:a.out.parent.mkdir(parents=True,exist_ok=True);a.out.write_bytes(a.svg.read_bytes())
+            else:
+                a.out.mkdir(parents=True,exist_ok=True);files=[]
+                for size in map(int,a.sizes.split(',')):
+                    file=a.out/f'{size}.png';rasterize(a.svg,size).save(file);files.append(str(file))
+                result=dict(renderer='local polygon renderer v1 (Pillow/OpenCV, 2x antialias)',files=files)
+            print(json.dumps(dict(ok=True,result=result)));return 0
         if a.command=='alpha':
             from PIL import Image
             from image_alpha import alpha_qa,cleanup

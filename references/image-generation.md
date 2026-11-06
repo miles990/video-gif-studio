@@ -123,3 +123,22 @@ exactly. Reports include raw outside drift and inside CIEDE2000 change; a no-op 
 rejected. Semantic correctness and visible feather seams remain human review items.
 Only changed shots receive new keyframe hashes; `brief_render.render_version`
 reuses unchanged shot frames and recomposites neighboring transitions.
+
+SVG fallback:
+
+```text
+python scripts/imagegen.py vectorize graphic.png --out .scratch/title.svg --colors 6 --json
+python scripts/svg_safe.py .scratch/title.svg --json
+python scripts/svg_render.py .scratch/title.svg --sizes 512,2048,4096 --out .scratch/title-renders --json
+```
+
+OpenCV contour tracing emits palette-filled even-odd polygon paths; no raster
+payload, font dependency, scripts or external links. The safety parser uses stdlib
+Expat with DTD/entity/external/processing-instruction handlers that reject before
+ElementTree parsing (defusedxml is not installed). It rejects text until outlined,
+foreignObject/image, event attributes, external href/CSS URLs and import syntax.
+The FX/timeline image entry points validate SVG before rendering. The bundled
+renderer supports flattened polygon paths and basic shapes at arbitrary sizes
+with 2x antialiasing; curves, transforms and gradients require flattening or an
+independently installed rasterizer. Safe unsupported geometry fails explicitly.
+This is a flat-graphic tracing fallback, not native model SVG or font recovery.
