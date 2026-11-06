@@ -11,7 +11,7 @@ from brief_refs import HANDLES, licence_status
 from threshold_registry import value
 
 ROOT=Path(__file__).resolve().parents[1]
-NONEXEMPT={'licence','ref_provenance','refs_in_output','schema'}
+NONEXEMPT={'licence','ref_provenance','refs_in_output','schema','hard_constraint'}
 
 
 def words(text):
@@ -65,6 +65,12 @@ def lint(brief):
     editing=mode in ('delta','image_feedback');cap=limits[('edit_words.' if editing else 'words.')+('cjk.max' if cjk else 'en.max')]
     if count>cap: add('word_cap_edit' if editing else 'word_cap','prompt',f'{count} words; advisory cap {cap}','Drop optional globals first; retain all beats and the turn','error' if count>cap*limits['word_error_ratio'] else 'warning')
     if mode in ('housekeeping','delta','image_feedback'): return result(findings)
+    from brief import hard_constraints
+    for constraint in hard_constraints(brief.get('draft','')):
+        if constraint not in brief.get('hard_constraints',[]) or constraint not in prompt.split('refs:')[0]:
+            add('hard_constraint','hard_constraints','Missing user constraint: '+constraint,'Restore the source constraint in the brief and its prompt')
+    if brief.get('status')=='skeleton' and not brief.get('forks'):
+        add('skeleton_fork','forks','Skeleton requires a real creative fork','Offer two materially different treatments')
     aesthetic=brief.get('aesthetic')
     generic={'modern','clean','minimal','simple','warm','cozy','cool','sleek','professional','現代','簡約','溫暖','質感','高級','專業'}
     first_line=prompt.splitlines()[0] if prompt else ''

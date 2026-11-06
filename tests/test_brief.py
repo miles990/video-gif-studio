@@ -25,6 +25,9 @@ from brief_render import compile_plan,render_version,diff,preflight
 from storyboard import validate,lint as board_lint
 from taste_pick import factory
 
+# These fixtures explicitly exercise unfinished previs, not authored proposals.
+def skeleton_board(b,**kwargs):return brief.to_storyboard(b,allow_skeleton=True,**kwargs)
+
 TOPICS=[
     '5 sec clip for a payments api: a request leaves the code and comes back as a payment confirmed. dark mode, kind of like stripe’s style',
     'quick 5 second twitter post: our design tool just hit 10,000 users',
@@ -64,7 +67,7 @@ class BriefTests(unittest.TestCase):
                 b=brief.expand(text,offline=True);self.assertEqual(b,brief.expand(text,offline=True));self.assertEqual(lint(b)['errors'],0,lint(b))
                 self.assertEqual(len(b['refs']),8);self.assertEqual(sum(x['is_turn'] for x in b['beats']),1)
                 self.assertIn(b['aesthetic'],b['prompt'].splitlines()[0])
-                board=brief.to_storyboard(b);validate(board);self.assertEqual(board_lint(board)['errors'],0)
+                board=skeleton_board(b);validate(board);self.assertEqual(board_lint(board)['errors'],0)
                 md=self.path/f'brief-{i}.md';md.write_text(brief.markdown(b),encoding='utf-8');self.assertEqual(lint(brief.read(md)),lint(b))
                 try:
                     import jsonschema
@@ -72,7 +75,7 @@ class BriefTests(unittest.TestCase):
                 else:jsonschema.validate(b,brief.read(ROOT/'references/brief.schema.json'))
         self.assertEqual(brief.expand(TOPICS[5])['height'],1920)
         from brief_render import proxy_size
-        self.assertEqual(proxy_size(brief.to_storyboard(brief.expand(TOPICS[5]))),(180,320))
+        self.assertEqual(proxy_size(skeleton_board(brief.expand(TOPICS[5]))),(180,320))
 
     def test_existing_transformation_is_only_turn(self):
         for i,verb in ((0,'comes back as'),(4,'snaps into')):
@@ -92,7 +95,7 @@ class BriefTests(unittest.TestCase):
         b=brief.expand(TOPICS[5],project=cards,taste=dict(defaults=dict(density=.5,recipe_family='soft_hit',color='warm')),provider=provider)
         self.assertEqual([r['source'] for r in b['refs'][:5]],['user']*5)
         self.assertEqual(len(provider.requests),3);self.assertTrue(all(r.get('origin_handle') for r in b['refs'][:5]))
-        board=brief.to_storyboard(b);self.assertTrue(all(s['recipe']['name'] in ('warm_memory','breathe','soft_hit') for s in board['shots']))
+        board=skeleton_board(b);self.assertTrue(all(s['recipe']['name'] in ('warm_memory','breathe','soft_hit') for s in board['shots']))
 
     def test_offline_and_network_failure_same_except_meta(self):
         class Blocked:
@@ -101,14 +104,14 @@ class BriefTests(unittest.TestCase):
         a.pop('meta');meta=b.pop('meta');self.assertTrue(meta['offline']);self.assertIn('NET-BLOCK',meta['attempts'][0]['error']);self.assertEqual(a,b)
 
     def test_refstat_timing_and_contrasting_structures(self):
-        b=brief.expand('coffee 10s',refstat=dict(target=dict(asl=1.25,cv=.35)));s=brief.to_storyboard(b)['shots'];lengths=np.array([x['duration'] for x in s])
+        b=brief.expand('coffee 10s',refstat=dict(target=dict(asl=1.25,cv=.35)));s=skeleton_board(b)['shots'];lengths=np.array([x['duration'] for x in s])
         self.assertAlmostEqual(lengths.mean(),1.25,delta=.25);self.assertAlmostEqual(lengths.std()/lengths.mean(),.35,delta=.15)
         from taste_director import treatment
         from taste_lint import transition_family
         for expanded in (False,True):
             rows=[]
             for core in ('sports hype 30s','Japanese fresh 30s','precision watch ad 30s'):
-                board=brief.to_storyboard(brief.expand(core,taste=factory())) if expanded else treatment(['missing.png'],30,core,factory())
+                board=skeleton_board(brief.expand(core,taste=factory())) if expanded else treatment(['missing.png'],30,core,factory())
                 durations=np.array([s['end']-s['start'] for s in board['shots']]);families={transition_family(s['transition']) for s in board['shots'] if s['transition']!='cut'}
                 recipes={s['recipe']['name'] for s in board['shots'] if s.get('recipe')}
                 rows.append((len(durations),round(durations.mean(),2),round(durations.std()/durations.mean(),2),frozenset(families),frozenset(recipes)))
@@ -116,7 +119,7 @@ class BriefTests(unittest.TestCase):
 
     def test_music_turn_and_boundaries(self):
         b=brief.expand(TOPICS[5],music=GRID);turn=next(x for x in b['beats'] if x['is_turn']);self.assertEqual(turn['t_start'],6)
-        board=brief.to_storyboard(b);self.assertEqual(next(s['start'] for s in board['shots'] if s['is_turn']),6)
+        board=skeleton_board(b);self.assertEqual(next(s['start'] for s in board['shots'] if s['is_turn']),6)
         self.assertEqual(next(s['transition'] for s in board['shots'] if s['is_turn']),'cut')
         for beat in b['beats']:self.assertIn(beat['t_start']*1000,GRID['downbeats_ms'])
         b5=brief.expand('coffee 5s',music=dict(GRID,drop_ms=2000));self.assertEqual(next(x for x in b5['beats'] if x['is_turn'])['t_start'],2)
@@ -134,9 +137,9 @@ class BriefTests(unittest.TestCase):
 
     def test_batch_sequence_and_unknown_mechanic(self):
         for draft in ('create 4 variations of the menu reveal','at 7s, after the cup exits, add a steam wipe'):
-            b=brief.expand(draft);self.assertEqual(lint(b)['errors'],0,lint(b));brief.to_storyboard(b)
+            b=brief.expand(draft);self.assertEqual(lint(b)['errors'],0,lint(b));skeleton_board(b)
         b=brief.expand('coffee 5s');next(x for x in b['beats'] if x['is_turn'])['mechanism']='peel'
-        board=brief.to_storyboard(b);self.assertIn('no stable implementation',board['warnings'][0])
+        board=skeleton_board(b);self.assertIn('no stable implementation',board['warnings'][0])
 
     def test_lint_negative_and_boundary_controls(self):
         b=brief.expand('coffee 5s');turn=next(i for i,x in enumerate(b['beats']) if x['is_turn'])
@@ -171,13 +174,13 @@ class BriefTests(unittest.TestCase):
         from fx_render import validate_plan
         path=self.path/'bad-plan.json';brief.write(path,dict(segments=[dict(type='image',image='not-needed.png',duration_ms=1000)],assets=[dict(licence='CC-BY-NC')]))
         with self.assertRaisesRegex(ValueError,'E_LICENCE'):validate_plan(path)
-        board=brief.to_storyboard(brief.expand('coffee 5s'));board['reference_paths']=['hidden.png'];board['shots'][0]['image']='hidden.png'
+        board=skeleton_board(brief.expand('coffee 5s'));board['reference_paths']=['hidden.png'];board['shots'][0]['image']='hidden.png'
         with self.assertRaisesRegex(ValueError,'E_REF_EMBED'):preflight(board)
         b=brief.expand('coffee 5s');b['structure']['recipes'].append('unknown_or_experimental')
-        with self.assertRaisesRegex(ValueError,'E_STATUS'):brief.to_storyboard(b)
+        with self.assertRaisesRegex(ValueError,'E_STATUS'):skeleton_board(b)
 
     def test_delta_six_cases_and_keep(self):
-        board=brief.to_storyboard(brief.expand(TOPICS[5],music=GRID));board['shots'][-1]['motion']='pan';board['shots'][-1]['elements']=[dict(type='title')]
+        board=skeleton_board(brief.expand(TOPICS[5],music=GRID));board['shots'][-1]['motion']='pan';board['shots'][-1]['elements']=[dict(type='title')]
         a=parse(DELTAS[0],board);self.assertEqual(a['changes'][0]['target']['beat'],2);self.assertIn('color',a['changes'][0]['keep']);self.assertEqual(a['changes'][0]['magnitude'],.8)
         b=apply_changes(board,a);self.assertEqual(b['duration'],board['duration']);self.assertTrue(b['revision']['notes'])
         for before,after in zip(board['shots'],b['shots']):self.assertEqual(before['color_script'],after['color_script']);self.assertEqual(before['start'],after['start'])
@@ -220,7 +223,7 @@ class BriefRenderScenarios(unittest.TestCase):
         cv2.setNumThreads(self.threads);self.temp.cleanup()
 
     def test_plan_roundtrip_and_affected_shot_cache(self):
-        b=brief.to_storyboard(brief.expand('coffee 3s'))
+        b=skeleton_board(brief.expand('coffee 3s'))
         # Low-cost decoded cache fixture; the stable recipe route is tested below.
         for s in b['shots']:s.pop('recipe');s['motion']='pan';s['transition']='crossfade'
         first=render_version(b,self.path/'v1',size=(96,64),formats=('png',))
@@ -234,7 +237,7 @@ class BriefRenderScenarios(unittest.TestCase):
     def test_stable_plan_validation_and_turn_time(self):
         from fx_render import validate_plan
         for i,text in enumerate(TOPICS):
-            b=brief.to_storyboard(brief.expand(text));out=self.path/f'plan-{i}';plan=compile_plan(b,out,size=(64,64));validate_plan(out/'plan.json')
+            b=skeleton_board(brief.expand(text));out=self.path/f'plan-{i}';plan=compile_plan(b,out,size=(64,64));validate_plan(out/'plan.json')
             self.assertFalse(plan['experimental']);self.assertFalse(any('reference' in str(s) for s in plan['segments']))
 
     def test_ref_fingerprints_positive_negative(self):

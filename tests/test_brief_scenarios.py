@@ -9,7 +9,9 @@ import cv2
 import numpy as np
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'scripts'))
-from brief import expand,to_storyboard,write
+from brief import expand,to_storyboard as convert_board,write
+
+def to_storyboard(b,**kwargs):return convert_board(b,allow_skeleton=True,**kwargs)
 from brief_refs import contact_sheet
 from brief_edit import parse,apply_changes
 from brief_render import compile_plan,render_version

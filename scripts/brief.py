@@ -147,6 +147,7 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         return parse(draft,previous or {},image=image)
     from taste_pick import load as load_taste
     content=deepcopy(content or {});taste=load_taste() if taste is None else taste;cards=load_project(project);grid=music_grid(music)
+    authored=bool(content.get('beats') or content.get('turn'))
     design=stable_choices(structure(draft,content,taste,refstat));copy=creative(draft,design);copy.update({k:v for k,v in content.items() if k in copy})
     preserved_turn=transformation(draft);constraints=hard_constraints(draft)
     if preserved_turn:copy['turn']=preserved_turn
@@ -238,9 +239,9 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
     result=dict(version=1,mode=mode,mode_reason=reason,draft=draft,aesthetic=copy['aesthetic'],fence=copy['fence'],
                 subject=copy['subject'],hard_constraints=constraints,pace=copy['pace'],duration=duration,fps=fps,width=1080,height=1920 if vertical else 1080,
                 beats=beats,refs=refs,assets=assets,structure=design,taste=taste,refstat=refstat or {},music=grid,
-                end_hold=0.,hero_height=.5,min_text_px=24,forks=content.get('forks',[]),
+                end_hold=0.,hero_height=.5,min_text_px=24,forks=content.get('forks') or [dict(choice_made='主體在原場景轉化' if copy['zh'] else 'transform in place',alternative='以材質細節帶出轉化' if copy['zh'] else 'reveal the transformation through material detail')],
                 camera=content.get('camera','拉遠：減速落在完整主體' if copy['zh'] else 'pull: ease out into the full assembly'),meta=meta,
-                contact_sheets='.scratch/brief-refs/',text_origin='agent-authored' if content else 'editable recorded starting treatment')
+                contact_sheets='.scratch/brief-refs/',status='proposal' if authored else 'skeleton',text_origin='agent-authored' if authored else 'skeleton')
     if not cards:result['missing_asset']='未提供真實素材；預覽使用剪影卡片。' if copy['zh'] else 'Real subject media is missing; the preview uses silhouette cards.'
     if copy['zh'] and not content.get('pace'):result['pace']='動作連續，轉折前留呼吸，細節清楚落定'
     if isinstance(music,(str,Path)) and Path(music).suffix!='.json':result['music_source']=str(Path(music).resolve())
@@ -279,7 +280,7 @@ def prompt(brief):
 
 
 def markdown(brief):
-    lead=brief.get('missing_asset','')
+    lead=('SKELETON — agent authoring required.\n' if brief.get('status')=='skeleton' else '')+brief.get('missing_asset','')
     text=(lead+'\n' if lead else '')+'```text\n'+prompt(brief)+'\n```\n'
     if brief.get('mode') in ('housekeeping','delta','image_feedback'):
         if brief.get('questions'):text+='fill-ins: '+'; '.join(brief['questions'])+'\n'
@@ -292,7 +293,9 @@ def markdown(brief):
     return text+'<!-- brief-json\n'+json.dumps(brief,ensure_ascii=False,sort_keys=True).replace('-->','--\\u003e')+'\n-->\n'
 
 
-def to_storyboard(brief,variant=1):
+def to_storyboard(brief,variant=1,allow_skeleton=False):
+    if not allow_skeleton and (brief.get('status')=='skeleton' or brief.get('text_origin')!='agent-authored'):
+        raise ValueError('E_SKELETON: author beats with --content, or explicitly use --allow-skeleton for a previs')
     check=lint(dict(brief,prompt=prompt(brief)))
     if check['errors']:raise ValueError('E_BRIEF '+json.dumps([f for f in check['findings'] if f['severity']=='error'],ensure_ascii=False))
     from fx import TRANSITIONS
@@ -379,14 +382,15 @@ def main(argv=None):
     parser.add_argument('--taste');parser.add_argument('--ref');parser.add_argument('--content');parser.add_argument('--library');parser.add_argument('--cassette')
     parser.add_argument('--offline',action='store_true');parser.add_argument('--json',action='store_true');parser.add_argument('--out');parser.add_argument('--previous');parser.add_argument('--image')
     parser.add_argument('--variant',type=int,default=1)
+    parser.add_argument('--allow-skeleton',action='store_true',help='Explicitly render an unfinished skeleton as previs')
     a=parser.parse_args(argv)
     try:
         if a.command=='schema':data=read(ROOT/'references/brief.schema.json')
         elif a.command=='lint':data=lint(read(a.input))
-        elif a.command=='to-storyboard':data=to_storyboard(read(a.input),a.variant)
+        elif a.command=='to-storyboard':data=to_storyboard(read(a.input),a.variant,allow_skeleton=a.allow_skeleton)
         elif a.command in ('plan','render'):
             from brief_render import compile_plan,render_version
-            b=read(a.input);board=to_storyboard(b) if 'beats' in b else b
+            b=read(a.input);board=to_storyboard(b,allow_skeleton=a.allow_skeleton) if 'beats' in b else b
             if not a.out:raise ValueError('E_ARGUMENT --out: required')
             data=compile_plan(board,Path(a.out)) if a.command=='plan' else render_version(board,Path(a.out),a.previous)
         elif a.command=='apply':
