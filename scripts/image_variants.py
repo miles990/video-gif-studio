@@ -28,12 +28,13 @@ def phash(path):
 
 def variants(adapter,req,out,shot='1',board=None,forks=None,approval=None,max_usd=0):
     if not 2<=req.n<=8:raise ImageError('E_VARIANTS_N','Variants require 2..8 candidates.')
-    req.normalized();out=Path(out).resolve();out.mkdir(parents=True,exist_ok=True)
+    out=Path(out).resolve()
     selected=None
     if board:
         selected=next((s for i,s in enumerate(board['shots'],1) if shot in (s['id'],str(i))),None)
         if selected is None:raise ImageError('E_SHOT','Shot not found.')
     prompt=keyframe_prompt(board,selected) if selected else req.prompt
+    replace(req,prompt=prompt).normalized();out.mkdir(parents=True,exist_ok=True)
     forks=forks or (board.get('forks') if board else None) or []
     records=[]
     from image_motion import loop_keyframes

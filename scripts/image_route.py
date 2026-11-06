@@ -174,7 +174,7 @@ class Adapter:
         except subprocess.TimeoutExpired:
             raise ImageError('E_TIMEOUT', 'Codex timed out; no automatic retry of an ambiguous generation.') from None
         except OSError as exc:
-            raise ImageError('E_ROUTE_UNAVAILABLE', str(exc), suggestion='Install or select a working Codex CLI; API is never selected automatically.') from None
+            raise ImageError('E_ROUTE_UNAVAILABLE', str(exc), suggestion='Install/select Codex and log in with ChatGPT, import existing images, or explicitly approve the paid API route.',alternatives=['Install/select Codex CLI and log in with ChatGPT','Import an existing local image','Explicit API route with reviewed prices and spend approval']) from None
 
     def login(self):
         response = self.command(['login', 'status'], child_env())
@@ -182,7 +182,7 @@ class Adapter:
         if re.search(r'API\s*key', text, re.I):
             raise ImageError('E_ROUTE_BILLED', 'Codex is logged in using an API key.', suggestion='Log in with ChatGPT, or select the explicit api route with an approved estimate.')
         if response.returncode or not re.search(r'ChatGPT', text, re.I):
-            raise ImageError('E_AUTH', 'A ChatGPT subscription login could not be verified.')
+            raise ImageError('E_AUTH', 'A ChatGPT subscription login could not be verified.',suggestion='Run codex login, import existing images, or explicitly approve the paid API route.',alternatives=['Log in with ChatGPT using codex login','Import an existing local image','Explicit API route with reviewed prices and spend approval'])
         return 'ChatGPT'
 
     def codex_image(self, data, stage, ordinal):

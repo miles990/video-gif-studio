@@ -13,6 +13,7 @@ from collections import deque
 import numpy as np
 from PIL import Image, ImageDraw
 from image_vector import open_image
+from image_common import ImageError
 from compose_timeline import compose, resolve_plan, export_timeline, FORMATS
 from fx import Context, EFFECTS, TRANSITIONS, evaluate
 from fx.core import OVERRIDES, catalog, load_directory, validate_envelope, triggers, audio_peaks
@@ -100,7 +101,11 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
             for v in value:check_svg(v)
         elif isinstance(value,str) and value.lower().endswith('.svg'):
             from image_vector import safe_svg
-            safe_svg(path.parent/value)
+            asset=(path.parent/value).resolve()
+            try:safe_svg(asset)
+            except ImageError as exc:
+                exc.error['location']=str(asset)
+                raise
     check_svg(plan)
     if os.environ.get('VIDEO_GIF_INTERPOLATE'):plan['interpolate']=os.environ['VIDEO_GIF_INTERPOLATE']
     if interpolate is not None: plan['interpolate']=interpolate
@@ -753,6 +758,8 @@ def main(argv=None):
             report=build(a.plan,a.out,a.previous,a.decisions,a.experimental,proxy=True)
             print(json.dumps({k:report[k] for k in ('rerendered_shots','reused_shots','seconds')}));return 0
         print(json.dumps(render(a.plan,a.out,a.formats,a.background,a.experimental,a.interpolate,a.fps,a.platform,a.proxy, None if a.keep_audio is None else a.keep_audio=='on',None if a.duck is None else a.duck=='on',None if a.loudnorm is None else a.loudnorm=='on'))); return 0
+    except ImageError as exc:
+        print(json.dumps(dict(ok=False,error=exc.error)),file=sys.stderr);return 2
     except (OSError,ValueError,KeyError,TypeError,IndexError,RuntimeError) as exc:
         print(f'fx_render: {exc}',file=sys.stderr); return 2
 

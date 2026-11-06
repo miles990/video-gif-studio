@@ -62,12 +62,15 @@ def build(name,images,out,role='identity',source='user',licence=None,negative=No
     for file in images:
         path=Path(file).resolve();features(path)
         records.append(dict(path=str(path),sha256=digest(path),role=role,source=source,licence=licence or ('user supplied' if source=='user' else 'generated')))
-    pairs=[]
+    pairs=[];suspects=set()
     if role in ('identity','product'):
         for i,j in combinations(range(len(images)),2):
             metric=compare(images[i],images[j]);pairs.append(dict(a=i,b=j,**metric))
             if metric['different']:
-                raise ImageError('E_REFSET_MIXED','Reference library cannot establish one identity.',suspect_indices=[i+1,j+1],measurement=metric)
+                suspects.update((i+1,j+1))
+    if suspects:
+        indices=sorted(suspects)
+        raise ImageError('E_REFSET_MIXED','Reference library cannot establish one identity.',suspect_indices=indices,suspect_images=[records[i-1]['path'] for i in indices],measurements=pairs)
     result=dict(version=1,name=name,images=records,created_at=utc(),method=METHOD,pairwise=pairs,
                 negative_images=[dict(path=str(Path(p).resolve()),sha256=digest(p)) for p in (negative or [])],
                 visual_review=dict(status='pending',question='Are these the same character/product?',chooser=None))

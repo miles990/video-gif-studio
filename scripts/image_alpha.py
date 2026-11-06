@@ -148,6 +148,7 @@ def transparent_asset(adapter,req,out,approval=None,max_usd=0,no_cache=False):
         with Image.open(source) as im:native=matte_uniform(im,backing)
         alpha_source='matted';fallback='solid_background_chroma_matte'
     cleaned,clean_report=cleanup(native)
+    clean_report['fake_transparency_detected']=report['fake_transparency']
     if clean_report['after']['status']!='PASS':
         adapter.invalidate(raw['cache_key'],'final alpha QA failed')
         write(out/'alpha-qa.json',clean_report)
@@ -159,6 +160,6 @@ def transparent_asset(adapter,req,out,approval=None,max_usd=0,no_cache=False):
     verify(out/'asset.gif',[Image.fromarray(binary)],[100])
     for name,color in [('black',(0,0,0,255)),('white',(255,255,255,255)),('magenta',(255,0,255,255))]:
         composite=Image.new('RGBA',cleaned.size,color);composite.alpha_composite(cleaned);composite.convert('RGB').save(out/f'on-{name}.png')
-    result=dict(raw,alpha_source=alpha_source,fallback=fallback,matting_background=backing,cleanup=clean_report,
+    result=dict(raw,fake_transparency_detected=report['fake_transparency'],native_alpha_qa=report,alpha_source=alpha_source,fallback=fallback,matting_background=backing,cleanup=clean_report,
                 derived_from=dict(sha256=digest(source),**c2pa(source)),asset=str(out/'asset.png'),ai_generated=True)
     write(out/'gen-manifest.json',result);write(out/'alpha-qa.json',clean_report);return result

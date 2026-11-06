@@ -128,6 +128,10 @@ def main(argv=None):
             if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
             from image_keyframes import keyframes
             result=keyframes(read(a.storyboard),adapter,a.out,req,a.shots,a.approve_spend,a.max_usd)
+            failed=[s['id'] for s in result['shots'] if s.get('keyframe_failure')]
+            if failed:
+                error=ImageError('E_KEYFRAME_PARTIAL','Some keyframes failed; successful shots are retained.',location=str(a.out/'storyboard.json'),failed_shots=failed).error
+                print(json.dumps(dict(ok=False,error=error,result=result),ensure_ascii=False));return 2
         elif a.command=='estimate':result=adapter.estimate(req)
         elif a.command=='generate':
             if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
