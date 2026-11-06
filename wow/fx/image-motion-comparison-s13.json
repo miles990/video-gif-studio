@@ -1,0 +1,10 @@
+{
+  "status": "not_run",
+  "topics": ["character idle", "product rotation", "reaction loop"],
+  "codex_native_gif": {"status": "unavailable", "reason": "2026-11-06 subscription probe returned PNG only"},
+  "grok_video": {"status": "not_run", "reason": "AI video is a separate user-approved step; this build authorizes subscription still images only"},
+  "local_fallback": "cyclic keyframe dissolve or camera motion, tested offline with seam controls and sprite roundtrip",
+  "speed_comparison": null,
+  "identity_comparison": null,
+  "motion_plausibility": "requires human review; no estimated scores substituted"
+}

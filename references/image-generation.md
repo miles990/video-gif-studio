@@ -73,3 +73,20 @@ failed controls stop assessment. Mixed libraries are refused. A library without
 controls can still supply references but cannot claim measured identity consistency.
 Failed keyframe identity gets one corrective generation, then a visible
 `identity_fail` label. Human review is recorded separately and never auto-approved.
+
+Local motion and GIF input:
+
+```text
+python scripts/imagegen.py motion --keyframes start.png end.png --size 352x352 --frames 48 --frame-ms 40 --out .scratch/loop --json
+python scripts/gif_pipeline.py ingest input.gif --out .scratch/ingest --json
+```
+
+The PNG route cannot generate native GIF. `motion` creates a cyclic cosine dissolve
+between keyframes (or a periodic camera zoom for one image), using premultiplied
+colour interpolation. This is local keyframe animation, not synthesized articulated
+motion. GIF encoding/decoded-alpha verification, qa_media loop checks and lossless
+sprite packing use the existing pipeline. `image_motion.repair_loop` offers a
+cosine-time ping-pong repair and records discarded frames. Ingest preserves Pillow's
+disposal-composited RGBA and every original delay; the sprite JSON has those same
+delays. Browser preview encoding may merge <=20 ms exposures, as documented by the
+existing GIF pipeline. Grok/fal video generation is a separate user-approved step.

@@ -203,6 +203,10 @@ def contact(frames, target):
 
 
 def main():
+    import sys
+    if len(sys.argv)>1 and sys.argv[1]=='ingest':
+        from imagegen import main as image_main
+        return image_main(sys.argv[1:])
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('source', type=Path)
     ap.add_argument('--out', type=Path, required=True)
