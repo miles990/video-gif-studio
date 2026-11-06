@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from image_common import ImageError,digest,key,read,write
-from game_character import rgba,quantize,originality,require_alpha
+from game_character import rgba,quantize,originality,require_alpha,ensure_sprite_alpha
 
 
 def outline_width(mask,line):
@@ -117,7 +117,7 @@ def iconset(adapter,request,items,token,out,pixel=False,fix=False):
     anchor=out/'style-anchor.png'
     if not previous:
         anchor_result=adapter.generate(replace(request,prompt=f'Original neutral faceted shield style anchor. Exact style token: {token}. ONE object, no text, transparent background. This image defines outline, palette, upper-left lighting and spacing for an inventory set.',refs=[],transparent=True,n=1),out/'generation/style-anchor')
-        anchor_im=rgba(anchor_result['assets'][0]['path']);require_alpha(anchor_im)
+        anchor_im,anchor_alpha=ensure_sprite_alpha(rgba(anchor_result['assets'][0]['path']))
         anchor_im=fit_icon(anchor_im,token,pixel);anchor_im.save(anchor);generations.append(anchor_result)
         anchor_record=dict(source='generated',file=anchor.name,sha256=digest(anchor),token=token,qa=style_qa([anchor_im],token,pixel))
     else:anchor_record=previous.get('style_anchor',{})
@@ -125,11 +125,11 @@ def iconset(adapter,request,items,token,out,pixel=False,fix=False):
         refs=[str(accepted.resolve())] if accepted else [str(anchor.resolve())] if anchor.exists() else []
         prompt=f'Original game item icon: {items[i]}. {request.prompt}. Same exact style token: {token}. Single icon, transparent, {grid}x{grid} grid, safe margin {token["safe_margin"]} pixels, no text.'
         result=adapter.generate(replace(request,prompt=prompt,refs=refs,transparent=True,n=1),out/'generation'/f'{i:02d}-{len(previous.get("repairs",[])) if previous else 0}',no_cache=fix)
-        im=rgba(result['assets'][0]['path']);require_alpha(im)
+        im,alpha_source=ensure_sprite_alpha(rgba(result['assets'][0]['path']))
         im=fit_icon(im,token,pixel)
         if pixel:im=quantize(im,[p if isinstance(p,dict) else dict(hex=p) for p in token['palette']],(grid,grid))
         else:im=im.resize((grid,grid),Image.Resampling.LANCZOS)
-        im.save(paths[i]);records[i]=dict(index=i,item=items[i],file=paths[i].name,sha256=digest(paths[i]),refs_sent=[digest(p) for p in refs],style_token_sha=token_sha)
+        im.save(paths[i]);records[i]=dict(index=i,item=items[i],file=paths[i].name,sha256=digest(paths[i]),refs_sent=[digest(p) for p in refs],style_token_sha=token_sha,alpha_source=alpha_source)
         generations.append(result)
         if style_qa([im],token,pixel)['status']=='PASS' and accepted is None:accepted=paths[i]
     images=[rgba(p) for p in paths];qa=style_qa(images,token,pixel)

@@ -54,6 +54,23 @@ def require_alpha(im):
     if not np.any(a[...,3]==0):raise ImageError('E_ALPHA_REQUIRED','Generated sprite has no real transparent pixels; keep it as a rejected source, not a sprite.')
 
 
+def ensure_sprite_alpha(im):
+    from image_alpha import matte_uniform,clear_haze,checkerboard
+    im=im.convert('RGBA');a=np.array(im)
+    if checkerboard(a):raise ImageError('E_FAKE_ALPHA','Painted checkerboard requires regeneration on a uniform backing.')
+    if not np.any(a[...,3]==0):
+        border=np.concatenate((a[0,:,:3],a[-1,:,:3],a[:,0,:3],a[:,-1,:3]));backing=np.median(border,axis=0)
+        if np.mean(np.linalg.norm(border.astype(float)-backing,axis=1)<12)<.98:
+            raise ImageError('E_MATTING','No uniform backing; use a segmented matting source or regenerate native alpha.')
+        im=matte_uniform(im,backing);source='matted'
+    else:
+        # Generic image cleanup can interpret a dark pixel-art outline as a
+        # sticker border. Native sprites retain their designed opaque contour.
+        a,_=clear_haze(a);a[a[...,3]==0]=0;im=Image.fromarray(a);source='native'
+    require_alpha(im)
+    return im,source
+
+
 def prepare_subject(im, view='front'):
     """Separate large full-height components; keep a recorded canonical sheet cell.
 
@@ -63,7 +80,7 @@ def prepare_subject(im, view='front'):
     """
     import cv2
     from game_demo import isolate_single_subject
-    require_alpha(im)
+    im,alpha_source=ensure_sprite_alpha(im)
     a=np.array(im);mask=(a[...,3]>127).astype('uint8')
     # Model-drawn ground rules can connect all four figures. Remove only long
     # horizontal rules before counting; retain the original source on disk.
@@ -85,7 +102,7 @@ def prepare_subject(im, view='front'):
         right=im.width if index==count-1 else (int(x+w)+int(candidates[index+1][0]))//2
         crop.paste(im.crop((left,0,right,im.height)),(left,0))
     crop=isolate_single_subject(crop)
-    return crop,dict(subject_count=count,selected_index=index,requested_view=view,
+    return crop,dict(subject_count=count,selected_index=index,requested_view=view,alpha_source=alpha_source,
                      selection='canonical left-to-right turnaround' if count>1 else 'single subject',visual_review='pending')
 
 

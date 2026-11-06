@@ -13,10 +13,18 @@ from image_common import ROOT,ImageError,digest,read,write
 ENGINES={'godot4','unity','phaser-hash','phaser-array','pixi','aseprite'}
 
 
+def restored_frame(record):
+    with Image.open(record['source']) as source:im=source.convert('RGBA')
+    if record.get('restore_canvas'):
+        full=Image.new('RGBA',tuple(record['restore_canvas']));full.paste(im,tuple(record['trim_offset']));return full
+    return im
+
+
 def validated_states(manifests,allow_qa_fail=False):
     states=[];contract=None;names=set()
     for path in manifests:
-        path=Path(path);m=read(path);name=m['state']
+        from game_animation import STATE_NAMES
+        path=Path(path);m=read(path);m['original_state']=m['state'];name=STATE_NAMES.get(m['state'],m['state']);m['state']=name
         if m.get('qa',{}).get('status')=='FAIL' and not allow_qa_fail:
             raise ImageError('E_QA_FAIL','QA FAIL blocks engine export: '+str(path),file=str(path),suggestion='Repair the motion or explicitly pass --allow-qa-fail for a recorded preview export.')
         if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',name) or name in names:raise ImageError('E_STATE','State names must be unique safe identifiers.')
@@ -30,7 +38,11 @@ def validated_states(manifests,allow_qa_fail=False):
             if not math.isfinite(r['duration_ms']) or r['duration_ms']<=0:raise ImageError('E_TIMING','Frame durations must be positive finite milliseconds.')
             file=path.parent/r['file']
             with Image.open(file) as im:
-                if list(im.size)!=m['canvas']:raise ImageError('E_CANVAS','Frame differs from declared canvas.')
+                if list(im.size)!=m['canvas']:
+                    offset=r.get('trim_offset')
+                    if not offset or len(offset)!=2 or any(not isinstance(v,int) or v<0 for v in offset) or offset[0]+im.width>m['canvas'][0] or offset[1]+im.height>m['canvas'][1]:
+                        raise ImageError('E_CANVAS',f'Frame differs from declared canvas: {file}; supply a valid trim_offset [x,y] to restore {m["canvas"]}.',file=str(file))
+                    r['restore_canvas']=m['canvas']
             r.update(source=str(file.resolve()),name=f'{name}/{i:05d}',local_index=i)
         for e in m.get('events',[]):
             if not isinstance(e['frame'],int) or not 0<=e['frame']<len(m['frames']):raise ImageError('E_EVENT','Event index out of range.')
@@ -56,7 +68,7 @@ def state_sidecar(states,packed):
     result={};offset=0
     for m in states:
         count=len(m['frames']);frames=packed['frames'][offset:offset+count]
-        result[m['state']]=dict(fps=m['fps'],loop=m['loop'],events=m.get('events',[]),pivot=m['pivot'],alpha_mode=m['alpha_mode'],pixel_scale=m.get('pixel_scale',1),
+        result[m['state']]=dict(original_state=m.get('original_state',m['state']),fps=m['fps'],loop=m['loop'],events=m.get('events',[]),pivot=m['pivot'],alpha_mode=m['alpha_mode'],pixel_scale=m.get('pixel_scale',1),
             canvas=m['canvas'],target_box=m.get('target_box'),root_motion=m.get('root_motion'),root_motion_mode=m.get('root_motion_mode','visual_displacement'),frames=[dict(name=r['name'],page=f['page'],rect=f['rect'],duration_ms=r['duration_ms']) for r,f in zip(m['frames'],frames)])
         offset+=count
     return result
@@ -222,13 +234,15 @@ def export_engines(manifests,out,engines=('godot4','phaser-hash'),max_size=2048,
     states=validated_states(manifests,allow_qa_fail);out=Path(out);scratch=ROOT/'.scratch';scratch.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(dir=scratch,prefix='game-pack-') as temp:
         temp=Path(temp);(temp/'frames').mkdir();rows=[r for m in states for r in m['frames']]
-        for i,r in enumerate(rows):shutil.copyfile(r['source'],temp/'frames'/f'{i:05d}.png')
+        for i,r in enumerate(rows):
+            target=temp/'frames'/f'{i:05d}.png'
+            restored_frame(r).save(target)
         write(temp/'timing.json',dict(durations_ms=[r['duration_ms'] for r in rows]))
         packed=export(temp/'frames',temp/'timing.json',out,max_size,padding,pivot=states[0]['pivot'])
     extrude_pages(out,packed,extrude);sidecar=state_sidecar(states,packed)
     for i,f in enumerate(packed['frames']):
         x,y,w,h=f['rect']
-        with Image.open(out/f['page']) as page,Image.open(rows[i]['source']) as frame:
+        with Image.open(out/f['page']) as page,restored_frame(rows[i]) as frame:
             if page.crop((x,y,x+w,y+h)).tobytes()!=frame.convert('RGBA').tobytes():raise ImageError('E_CROP','Engine atlas differs from source RGBA.')
     packed.update(states=sidecar,alpha=states[0]['alpha_mode'],alpha_mode=states[0]['alpha_mode'],extrusion=extrude,engines={e:dict(engine_load='untested') for e in engines})
     packed['qa_override']=dict(allow_qa_fail=bool(allow_qa_fail),failed_states=[m['state'] for m in states if m.get('qa',{}).get('status')=='FAIL'])

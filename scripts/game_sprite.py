@@ -41,6 +41,21 @@ def alpha_contract(im,mode='straight',particles=False,designed_holes=None):
     if np.mean(border==0)<.999:issues.append('clipped_border')
     if np.any(a[alpha==0,:3]!=0):issues.append('rgb_under_zero_alpha')
     nearest,distance=nearest_opaque(a);edge_good=None;premul_evidence=None
+    # Sample beyond the first opaque ring: that ring itself may contain backing
+    # contamination. Check straight-alpha composites against BOTH backgrounds.
+    opaque=alpha>=250;core=cv2.erode(opaque.astype('uint8'),np.ones((3,3),np.uint8),iterations=3)>0
+    inner=a.copy();inner[~core,3]=0;deep,deep_distance=nearest_opaque(inner);rim_report=None
+    if deep is not None and mode=='straight':
+        ring=(alpha>0)&~core&(deep_distance<=5)
+        lum=np.array([.2126,.7152,.0722]);coverage=alpha/255
+        delta=(a[...,:3].astype(float)-deep.astype(float))@lum
+        black=(a[...,:3]@lum)*coverage;white=black+255*(1-coverage)
+        expected_black=(deep@lum)*coverage;expected_white=expected_black+255*(1-coverage)
+        bad=ring&(delta>25)&(black-expected_black>15)&(white-expected_white>15)
+        fraction=float(bad.sum()/max(1,ring.sum()))
+        rim_report=dict(contaminated_fraction=fraction,black_luminance_error=float(np.mean((black-expected_black)[ring])) if ring.any() else 0,
+                        white_luminance_error=float(np.mean((white-expected_white)[ring])) if ring.any() else 0)
+        if fraction>.15 and np.count_nonzero(bad&opaque)>4:issues.append('opaque_rim_halo')
     if mode=='premultiplied' and np.any(a[...,:3]>alpha[...,None]):issues.append('invalid_premultiplied_rgb')
     if nearest is not None and semi.any():
         raw=a[...,:3];unpremul=np.rint(np.clip(raw.astype(float)*255/np.maximum(alpha[...,None],1),0,255)).astype(np.uint8)
@@ -63,7 +78,7 @@ def alpha_contract(im,mode='straight',particles=False,designed_holes=None):
         holes=sum(int(np.sum((hl==i)&~protection)) for i in range(1,hn) if i not in boundary)
         if holes/max(largest,1)>.005:issues.append('unintended_holes')
     return dict(status='PASS' if not issues else 'FAIL',issues=issues,alpha_mode=mode,isolated_small_components=tiny,detached_ratio=detached,
-                edge_good_fraction=edge_good,premultiplication=premul_evidence,hole_review='annotated' if designed_holes is not None else 'unassessed',unintended_hole_pixels=holes)
+                edge_good_fraction=edge_good,opaque_rim=rim_report,premultiplication=premul_evidence,hole_review='annotated' if designed_holes is not None else 'unassessed',unintended_hole_pixels=holes)
 
 
 def pixel_noise(im):
@@ -101,7 +116,9 @@ def sprite_check(paths,pivot=None,mode='straight',palette=None,pixel=None,scale=
     from game_character import rgba
     images=[rgba(p) for p in paths];reports=[]
     if not images:raise ImageError('E_FRAMES','No sprite images found.')
-    if len({im.size for im in images})!=1:raise ImageError('E_CANVAS','Sprite canvases differ.')
+    if len({im.size for im in images})!=1:
+        bad=next(i for i,im in enumerate(images) if im.size!=images[0].size)
+        raise ImageError('E_CANVAS',f'Sprite canvas differs: {paths[bad]} ({images[bad].size}, expected {images[0].size}); restore trim offsets or pad explicitly.')
     for i,im in enumerate(images):
         correction=None
         if cleanup:

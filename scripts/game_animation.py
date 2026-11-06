@@ -14,6 +14,7 @@ from image_common import ImageError,digest,read,write
 from game_character import rgba,quantize,originality,require_alpha
 
 DEFAULTS={'idle':(8,8,True),'walk':(8,10,True),'run':(8,12,True),'jump':(12,12,False),'attack':(10,12,False),'hurt':(8,10,False),'death':(10,10,False)}
+STATE_NAMES={'待機':'idle','待机':'idle','走路':'walk','行走':'walk','奔跑':'run','跑步':'run','跳躍':'jump','跳跃':'jump','攻擊':'attack','攻击':'attack','受傷':'hurt','受伤':'hurt','死亡':'death'}
 KEY_POSES={
  'idle':['neutral breath halfway rising','inhale shoulders raised a little, feet planted','exhale halfway descending','relaxed lowest breath, feet planted'],
  'walk':['left foot planted, right passing','left foot planted, right stepping forward','right foot planted, left passing','right foot planted, left stepping forward'],
@@ -259,7 +260,9 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
     plan=read(plan) if isinstance(plan,(str,Path)) else (plan or {});fps=fps or {};size=tuple(contract['canvas']);palette=read(charsheet.parent/contract['palette'])
     refs=[str((charsheet.parent/(f'identity/{v["name"]}.png' if (charsheet.parent/f'identity/{v["name"]}.png').exists() else v['file'])).resolve()) for v in contract['views'] if v['name'] in ('front','three_quarter')]
     all_results={};generations=[]
+    plan={STATE_NAMES.get(k,k):v for k,v in plan.items()}
     for state in states:
+        state=STATE_NAMES.get(state,state)
         if state not in DEFAULTS:raise ImageError('E_STATE','Unknown animation state: '+state)
         count,rate,loop=DEFAULTS[state];spec=plan.get(state,{})
         count=int(spec.get('frame_count',count));rate=float(fps.get(state,spec.get('fps',rate)))
@@ -276,7 +279,8 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
                 description=key.get('prompt',KEY_POSES[state][min(j,3)])
                 req=replace(request,refs=refs,prompt=f'{request.prompt or "Same original reference character"}. State {state}: {description}. ONE full-body key pose. Use front reference for identity and three-quarter reference for orientation. Same fixed camera, scale and {size[0]}x{size[1]} canvas, ground line y={contract["pivot"][1]}. Preserve all accessories and handedness. No text, no ghosting, transparent.',transparent=True,n=1)
                 generation=adapter.generate(req,folder/'generation'/str(j));source=Path(generation['assets'][0]['path']);sent=[digest(p) for p in refs];generations.append(generation)
-            im=rgba(source);require_alpha(im);registration=None
+            from game_character import ensure_sprite_alpha
+            im,alpha_source=ensure_sprite_alpha(rgba(source));registration=None
             if generation:
                 from game_character import prepare_subject,register_subject
                 im,subject=prepare_subject(im)
