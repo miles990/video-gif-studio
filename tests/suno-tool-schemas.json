@@ -1,0 +1,1067 @@
+{
+  "account_me": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "account_upgrade": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "account_usage": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "audio_analysis": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_covers_create": {
+    "type": "object",
+    "properties": {
+      "controls": {
+        "type": "object",
+        "properties": {
+          "audio_influence": {
+            "type": "number"
+          },
+          "style_influence": {
+            "type": "number"
+          },
+          "variety": {
+            "type": "number"
+          },
+          "weirdness": {
+            "type": "number"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "duration": {
+        "type": "number"
+      },
+      "id": {
+        "type": "string"
+      },
+      "idempotency_key": {
+        "type": "string"
+      },
+      "lyrics": {
+        "type": "string"
+      },
+      "max_mode": {
+        "type": "boolean"
+      },
+      "model": {
+        "type": "string"
+      },
+      "negative_style": {
+        "type": "string"
+      },
+      "style": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "voice_id": {
+        "type": "string"
+      },
+      "workspace_id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_create": {
+    "type": "object",
+    "properties": {
+      "controls": {
+        "type": "object",
+        "properties": {
+          "audio_influence": {
+            "type": "number"
+          },
+          "style_influence": {
+            "type": "number"
+          },
+          "variety": {
+            "type": "number"
+          },
+          "weirdness": {
+            "type": "number"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "description": {
+        "type": "string"
+      },
+      "duration": {
+        "type": "number"
+      },
+      "duration_guidance": {
+        "type": "boolean"
+      },
+      "duration_strict": {
+        "type": "boolean"
+      },
+      "idempotency_key": {
+        "type": "string"
+      },
+      "instrumental": {
+        "type": "boolean"
+      },
+      "lyrics": {
+        "type": "string"
+      },
+      "max_mode": {
+        "type": "boolean"
+      },
+      "model": {
+        "type": "string"
+      },
+      "negative_style": {
+        "type": "string"
+      },
+      "reference_audio_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "style": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "vocal_gender": {
+        "anyOf": [
+          {
+            "const": "male"
+          },
+          {
+            "const": "female"
+          }
+        ]
+      },
+      "voice_id": {
+        "type": "string"
+      },
+      "workspace_id": {
+        "type": "string"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "audio_download": {
+    "type": "object",
+    "properties": {
+      "confirm": {
+        "type": "boolean"
+      },
+      "format": {
+        "anyOf": [
+          {
+            "const": "mp3"
+          },
+          {
+            "const": "wav"
+          }
+        ]
+      },
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_edit": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "lyrics": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_extensions_create": {
+    "type": "object",
+    "properties": {
+      "continue_at": {
+        "type": "number"
+      },
+      "controls": {
+        "type": "object",
+        "properties": {
+          "audio_influence": {
+            "type": "number"
+          },
+          "style_influence": {
+            "type": "number"
+          },
+          "variety": {
+            "type": "number"
+          },
+          "weirdness": {
+            "type": "number"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "duration": {
+        "type": "number"
+      },
+      "id": {
+        "type": "string"
+      },
+      "idempotency_key": {
+        "type": "string"
+      },
+      "instrumental": {
+        "type": "boolean"
+      },
+      "lyrics": {
+        "type": "string"
+      },
+      "max_mode": {
+        "type": "boolean"
+      },
+      "model": {
+        "type": "string"
+      },
+      "negative_style": {
+        "type": "string"
+      },
+      "style": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "voice_id": {
+        "type": "string"
+      },
+      "workspace_id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "continue_at",
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_full_song": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "idempotency_key": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_like": {
+    "type": "object",
+    "properties": {
+      "dislike": {
+        "type": "boolean"
+      },
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_listen": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "question": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "question"
+    ],
+    "additionalProperties": false
+  },
+  "audio_listen_wait": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_lyrics_alignment": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_mashups_create": {
+    "type": "object",
+    "properties": {
+      "additional_audio_id": {
+        "type": "string"
+      },
+      "controls": {
+        "type": "object",
+        "properties": {
+          "audio_influence": {
+            "type": "number"
+          },
+          "style_influence": {
+            "type": "number"
+          },
+          "variety": {
+            "type": "number"
+          },
+          "weirdness": {
+            "type": "number"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "duration": {
+        "type": "number"
+      },
+      "id": {
+        "type": "string"
+      },
+      "idempotency_key": {
+        "type": "string"
+      },
+      "lyrics": {
+        "type": "string"
+      },
+      "max_mode": {
+        "type": "boolean"
+      },
+      "model": {
+        "type": "string"
+      },
+      "negative_style": {
+        "type": "string"
+      },
+      "style": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "workspace_id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "additional_audio_id",
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_retrieve": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_unlike": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_upload_complete": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "audio_upload_create": {
+    "type": "object",
+    "properties": {
+      "file": {
+        "type": "object",
+        "properties": {
+          "download_url": {
+            "type": "string"
+          },
+          "file_id": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "mime_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "download_url",
+          "file_id"
+        ],
+        "additionalProperties": false
+      },
+      "title": {
+        "type": "string"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "audio_wait": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "until": {
+        "anyOf": [
+          {
+            "const": "playable"
+          },
+          {
+            "const": "complete"
+          }
+        ]
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "library_liked": {
+    "type": "object",
+    "properties": {
+      "cursor": {
+        "type": "string"
+      },
+      "limit": {
+        "type": "number"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "library_list": {
+    "type": "object",
+    "properties": {
+      "cursor": {
+        "type": "string"
+      },
+      "downloaded": {
+        "type": "boolean"
+      },
+      "liked": {
+        "type": "boolean"
+      },
+      "limit": {
+        "type": "number"
+      },
+      "origin": {
+        "anyOf": [
+          {
+            "const": "upload"
+          },
+          {
+            "anyOf": [
+              {
+                "const": "cover"
+              },
+              {
+                "anyOf": [
+                  {
+                    "const": "extension"
+                  },
+                  {
+                    "const": "remaster"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "visibility": {
+        "anyOf": [
+          {
+            "const": "public"
+          },
+          {
+            "const": "private"
+          }
+        ]
+      },
+      "workspace_id": {
+        "type": "string"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "library_search": {
+    "type": "object",
+    "properties": {
+      "cursor": {
+        "type": "string"
+      },
+      "downloaded": {
+        "type": "boolean"
+      },
+      "liked": {
+        "type": "boolean"
+      },
+      "limit": {
+        "type": "number"
+      },
+      "origin": {
+        "anyOf": [
+          {
+            "const": "upload"
+          },
+          {
+            "anyOf": [
+              {
+                "const": "cover"
+              },
+              {
+                "anyOf": [
+                  {
+                    "const": "extension"
+                  },
+                  {
+                    "const": "remaster"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "query": {
+        "type": "string"
+      },
+      "visibility": {
+        "anyOf": [
+          {
+            "const": "public"
+          },
+          {
+            "const": "private"
+          }
+        ]
+      },
+      "workspace_id": {
+        "type": "string"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "playlists_add_clips": {
+    "type": "object",
+    "properties": {
+      "clip_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "clip_ids",
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "playlists_create": {
+    "type": "object",
+    "properties": {
+      "description": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "visibility": {
+        "anyOf": [
+          {
+            "const": "public"
+          },
+          {
+            "const": "private"
+          }
+        ]
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "additionalProperties": false
+  },
+  "playlists_list": {
+    "type": "object",
+    "properties": {
+      "cursor": {
+        "type": "string"
+      },
+      "limit": {
+        "type": "number"
+      },
+      "query": {
+        "type": "string"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "playlists_list_clips": {
+    "type": "object",
+    "properties": {
+      "cursor": {
+        "type": "string"
+      },
+      "id": {
+        "type": "string"
+      },
+      "limit": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "playlists_remove_clips": {
+    "type": "object",
+    "properties": {
+      "clip_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "clip_ids",
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "sounds_create": {
+    "type": "object",
+    "properties": {
+      "description": {
+        "type": "string"
+      },
+      "idempotency_key": {
+        "type": "string"
+      },
+      "key": {
+        "anyOf": [
+          {
+            "const": "C"
+          },
+          {
+            "anyOf": [
+              {
+                "const": "C#"
+              },
+              {
+                "anyOf": [
+                  {
+                    "const": "D"
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "const": "D#"
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "const": "E"
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "const": "F"
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "const": "F#"
+                                  },
+                                  {
+                                    "anyOf": [
+                                      {
+                                        "const": "G"
+                                      },
+                                      {
+                                        "anyOf": [
+                                          {
+                                            "const": "G#"
+                                          },
+                                          {
+                                            "anyOf": [
+                                              {
+                                                "const": "A"
+                                              },
+                                              {
+                                                "anyOf": [
+                                                  {
+                                                    "const": "A#"
+                                                  },
+                                                  {
+                                                    "anyOf": [
+                                                      {
+                                                        "const": "B"
+                                                      },
+                                                      {
+                                                        "anyOf": [
+                                                          {
+                                                            "const": "Cm"
+                                                          },
+                                                          {
+                                                            "anyOf": [
+                                                              {
+                                                                "const": "C#m"
+                                                              },
+                                                              {
+                                                                "anyOf": [
+                                                                  {
+                                                                    "const": "Dm"
+                                                                  },
+                                                                  {
+                                                                    "anyOf": [
+                                                                      {
+                                                                        "const": "D#m"
+                                                                      },
+                                                                      {
+                                                                        "anyOf": [
+                                                                          {
+                                                                            "const": "Em"
+                                                                          },
+                                                                          {
+                                                                            "anyOf": [
+                                                                              {
+                                                                                "const": "Fm"
+                                                                              },
+                                                                              {
+                                                                                "anyOf": [
+                                                                                  {
+                                                                                    "const": "F#m"
+                                                                                  },
+                                                                                  {
+                                                                                    "anyOf": [
+                                                                                      {
+                                                                                        "const": "Gm"
+                                                                                      },
+                                                                                      {
+                                                                                        "anyOf": [
+                                                                                          {
+                                                                                            "const": "G#m"
+                                                                                          },
+                                                                                          {
+                                                                                            "anyOf": [
+                                                                                              {
+                                                                                                "const": "Am"
+                                                                                              },
+                                                                                              {
+                                                                                                "anyOf": [
+                                                                                                  {
+                                                                                                    "const": "A#m"
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "const": "Bm"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "loop": {
+        "type": "boolean"
+      },
+      "tempo": {
+        "type": "number"
+      },
+      "title": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "description"
+    ],
+    "additionalProperties": false
+  },
+  "speech_create": {
+    "type": "object",
+    "properties": {
+      "backing_music": {
+        "type": "boolean"
+      },
+      "duration": {
+        "type": "number"
+      },
+      "duration_guidance": {
+        "type": "boolean"
+      },
+      "duration_strict": {
+        "type": "boolean"
+      },
+      "idempotency_key": {
+        "type": "string"
+      },
+      "negative_style": {
+        "type": "string"
+      },
+      "prompt": {
+        "type": "string"
+      },
+      "script": {
+        "type": "string"
+      },
+      "style": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "vocal_gender": {
+        "anyOf": [
+          {
+            "const": "male"
+          },
+          {
+            "const": "female"
+          }
+        ]
+      },
+      "voice_id": {
+        "type": "string"
+      },
+      "workspace_id": {
+        "type": "string"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "voices_list": {
+    "type": "object",
+    "properties": {
+      "collection": {
+        "anyOf": [
+          {
+            "const": "own"
+          },
+          {
+            "const": "loved"
+          }
+        ]
+      },
+      "cursor": {
+        "type": "string"
+      },
+      "limit": {
+        "type": "number"
+      },
+      "query": {
+        "type": "string"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "voices_start": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "workspaces_create": {
+    "type": "object",
+    "properties": {
+      "description": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "additionalProperties": false
+  },
+  "workspaces_list": {
+    "type": "object",
+    "properties": {
+      "cursor": {
+        "type": "string"
+      },
+      "query": {
+        "type": "string"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "workspaces_update_clips": {
+    "type": "object",
+    "properties": {
+      "add": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "id": {
+        "type": "string"
+      },
+      "remove": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  }
+}
