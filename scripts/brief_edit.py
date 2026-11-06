@@ -14,6 +14,46 @@ NUMBERS={'一':1,'二':2,'兩':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8
 def number(value):return int(value) if value.isdigit() else NUMBERS.get(value)
 
 
+OPPOSITE={'left-to-right':'right-to-left','right-to-left':'left-to-right',
+          'screen-right':'screen-left','screen-left':'screen-right',
+          'up':'down','down':'up','clockwise':'counter-clockwise','counter-clockwise':'clockwise'}
+
+
+def directional_quantities(shot):
+    """Read the previous shot, not the short revision sentence."""
+    found=[]
+    if shot.get('direction') in OPPOSITE:
+        found.append(('direction','x',OPPOSITE[shot['direction']],1))
+    for field,axis,positive,negative in (('rotation_degrees','roll','clockwise','counter-clockwise'),
+                                         ('yaw_degrees','yaw','screen-right','screen-left')):
+        if shot.get(field):
+            value=shot[field];found.append(('rotation',axis,negative if value>0 else positive,abs(value)))
+    if shot.get('motion_speed',1)!=1:
+        speed=1/shot['motion_speed'];found.append(('speed','time','slower' if speed<1 else 'faster',speed))
+    text=shot.get('action',shot.get('text',''))
+    if not any(q[0]=='direction' for q in found):
+        for direction in ('left-to-right','right-to-left','screen-left','screen-right'):
+            if direction in text:found.append(('direction','x',OPPOSITE[direction],1))
+    if not any(q[0]=='rotation' for q in found):
+        for m in re.finditer(r'(\d+(?:\.\d+)?)\s*(?:degrees?|度)\s*(counter[ -]?clockwise|clockwise|順時針|逆時針)',text,re.I):
+            found.append(('rotation','roll','clockwise' if re.search('counter|逆',m[2],re.I) else 'counter-clockwise',float(m[1])))
+    if not any(q[0]=='speed' for q in found):
+        for m in re.finditer(r'(\d+(?:\.\d+)?)\s*[x×]\b',text,re.I):
+            value=float(m[1])
+            if value>0:found.append(('speed','time','slower' if value>1 else 'faster',1/value))
+    return found
+
+
+def measured_luma(source,time):
+    import cv2
+    import numpy as np
+    if not source or not Path(source).is_file():raise ValueError('E_FEEDBACK source: original rendered clip required to quantify luma')
+    cap=cv2.VideoCapture(str(source));cap.set(cv2.CAP_PROP_POS_MSEC,time*1000);ok,bgr=cap.read();cap.release()
+    if not ok:raise ValueError('E_FEEDBACK source: cannot decode selected frame')
+    rgb=cv2.cvtColor(bgr,cv2.COLOR_BGR2RGB).astype(float)
+    return float(np.mean(rgb@np.array([.2126,.7152,.0722])))
+
+
 def screenshot_time(image,source,shots):
     """Match decoded pixels, including resized screenshots, to the prior render."""
     import cv2
@@ -55,6 +95,15 @@ def parse(draft,previous,image=None):
             metadata=screenshot_time(image,source,shots);metadata['screenshot']=True
             if metadata['ambiguous']:questions.append('[? screenshot matches multiple shots; which shot?]')
     lines=re.split(r'[\n；;、，]',draft)
+    if image and not metadata.get('screenshot'):
+        expanded=[]
+        for line in lines:
+            if re.search('暗|dark',line,re.I) and not re.search(r'第\s*\d+\s*格|frame\s*\d+',line,re.I):
+                dark=[i+1 for i,t in enumerate(metadata.get('frames_at_s',[])) if measured_luma(metadata.get('source'),t)<80]
+                expanded.extend(f'frame {i} {line}' for i in dark)
+                if not dark:questions.append('[? no sampled frame is below luma 80; which frame should be brighter?]')
+            else:expanded.append(line)
+        lines=expanded
     for line in lines:
         if not line.strip() or re.match(r'\s*(keep|保留|其他不動)',line,re.I):continue
         target={};direction=dict(axis='time',sense='forward');magnitude=None;phase='whole shot';change='speed';extra={}
@@ -71,13 +120,7 @@ def parse(draft,previous,image=None):
                 change='image_edit';target['element']=image_replacement[1].strip();magnitude=1
                 direction=dict(axis='image',sense='replace selected region');extra['instruction']=image_replacement[2].strip()
             elif '暗' in line or 'dark' in line.lower():
-                import cv2
-                import numpy as np
-                source=metadata.get('source')
-                if not source or not Path(source).is_file():raise ValueError('E_FEEDBACK source: original rendered clip required to quantify luma')
-                cap=cv2.VideoCapture(str(source));cap.set(cv2.CAP_PROP_POS_MSEC,time*1000);ok,bgr=cap.read();cap.release()
-                if not ok:raise ValueError('E_FEEDBACK source: cannot decode selected frame')
-                rgb=cv2.cvtColor(bgr,cv2.COLOR_BGR2RGB).astype(float);y=float(np.mean(rgb@np.array([.2126,.7152,.0722])))
+                y=measured_luma(metadata.get('source'),time)
                 change='brightness';magnitude=max(0.,80-y);direction=dict(axis='luma',sense='increase');extra['quantified']=dict(measured_y=y,target_y=80)
             else:
                 current=next((s.get('min_text_px',24) for s in shots if s['id'] in target['shots']),None)
@@ -87,6 +130,7 @@ def parse(draft,previous,image=None):
         elif shot_match:
             index=number(next(g for g in shot_match.groups() if g));target['shot']=index;target['shots']=[shots[index-1]['id']] if index and 1<=index<=len(shots) else []
         elif re.search('final pan',line,re.I):target['shots']=[s['id'] for s in shots if s['motion']=='pan'][-1:];target['element']='pan'
+        elif re.search(r'\bpan\b',line,re.I):target['shots']=[s['id'] for s in shots if s['motion']=='pan'];target['element']='pan'
         elif re.search('轉折|the turn',line,re.I):target['shots']=[s['id'] for s in shots if s.get('is_turn')];target['element']='turn'
         elif re.search('拿掉|remove|get rid of',line,re.I):
             target['element']='last title/card';target['shots']=[s['id'] for s in shots if s.get('elements') or s.get('captions') or s.get('recipe',{}).get('name')=='title_pop'][-1:];change='remove'
@@ -99,28 +143,35 @@ def parse(draft,previous,image=None):
             if replacement:
                 change='image_edit';target['element']=replacement[1].strip();magnitude=1
                 direction=dict(axis='image',sense='replace selected region');extra['instruction']=replacement[2].strip()
+            elif re.search('other way|另一邊|反過來',line,re.I):
+                prior=[q for s in shots if s['id'] in target.get('shots',[]) for q in directional_quantities(s)]
+                if len(prior)!=1:
+                    options='; '.join(f'{q[1]}: {q[3]:g} {q[2]}' for q in prior) or 'screen-left / screen-right'
+                    questions.append('[? choose one absolute direction: '+options+']');continue
+                change,axis,sense,magnitude=prior[0];direction=dict(axis=axis,sense=sense)
+            elif re.search(r'右到左|右向左|right[ -]to[ -]left|左到右|左向右|left[ -]to[ -]right',line,re.I):
+                change='direction';magnitude=1
+                direction=dict(axis='x',sense='right-to-left' if re.search(r'右到左|右向左|right[ -]to[ -]left',line,re.I) else 'left-to-right')
             elif re.search('提前|drop',line,re.I):
                 change='time';grid=previous.get('music',{});drop=grid.get('drop_ms');magnitude=drop/1000 if drop is not None else None
                 direction=dict(axis='timeline',sense='align to drop')
                 if magnitude is None:questions.append('[? reviewed drop time]')
             elif re.search('度|degree',line,re.I):
-                change='rotation';match=re.search(r'(\d+(?:\.\d+)?)\s*(?:度|degree)',line);magnitude=float(match[1])
+                change='rotation';match=re.search(r'(\d+(?:\.\d+)?)\s*(?:度|degree)',line)
+                if not match:questions.append('[? specify rotation in degrees and absolute direction]');continue
+                magnitude=float(match[1])
                 if re.search(r'clockwise|順時針|逆時針',line,re.I):
                     direction=dict(axis='roll',sense='counter-clockwise' if re.search(r'counter[ -]?clockwise|逆時針',line,re.I) else 'clockwise')
                 else:direction=dict(axis='yaw',sense='screen-right' if re.search('右|right',line,re.I) else 'screen-left')
             elif change!='remove':
                 match=re.search(r'(\d+(?:\.\d+)?|[一二兩三四五六七八九十])\s*(?:[x×]|倍)',line,re.I)
-                magnitude=(float(match[1]) if re.fullmatch(r'\d+(?:\.\d+)?',match[1]) else number(match[1])) if match else .8 if re.search('慢|slower',line,re.I) else 1.25
-                if match and '倍' in match[0] and re.search('慢',line):magnitude=1/magnitude if magnitude else 0
+                magnitude=(float(match[1]) if re.fullmatch(r'\d+(?:\.\d+)?',match[1]) else number(match[1])) if match else .5 if re.search(r'一半|\bhalf\b',line,re.I) else 2 if re.search(r'\btwice\b',line,re.I) else .8 if re.search('慢|slower',line,re.I) else 1.25 if re.search('快|faster',line,re.I) else None
+                if magnitude is None:questions.append('[? specify speed multiplier or absolute direction]');continue
+                if (match or re.search(r'\btwice\b',line,re.I)) and re.search('慢|slower',line,re.I):magnitude=1/magnitude if magnitude else 0
                 if magnitude<=0:raise ValueError('E_MAGNITUDE: speed multiplier must be positive')
-                direction=dict(axis='time',sense='slower' if re.search('慢|slower',line,re.I) else 'faster')
+                direction=dict(axis='time',sense='slower' if magnitude<1 else 'faster')
                 phase='top speed' if re.search('top speed',line,re.I) else 'whole shot'
-                if not match:extra['default']='[? '+str(magnitude)+'x]'
-            if re.search('other way|另一邊|反過來',line,re.I):
-                old=next((s.get('direction') for s in shots if s['id'] in target.get('shots',[])),None)
-                absolute={'left-to-right':'right-to-left','right-to-left':'left-to-right','screen-right':'screen-left','screen-left':'screen-right'}
-                if old not in absolute:questions.append('[? absolute screen direction]')
-                else:direction=dict(axis='x',sense=absolute[old]);change='direction';magnitude=1
+                if not match and re.search('慢一點|slower|faster',line,re.I) and not re.search(r'half|twice',line,re.I):extra['default']='[? '+str(magnitude)+'x]'
         if not target.get('shots'):questions.append('[? target shot / edit pace or camera speed]' if re.search('make it faster',line,re.I) else '[? target shot]')
         changes.append(dict(target=target,change=change,magnitude=magnitude,direction=direction,phase=phase,keep=keep,**extra))
     questions=list(dict.fromkeys(questions))[:1]

@@ -43,7 +43,7 @@ def classify(draft,image=None,previous=None):
     if edit_context and re.search(r'check the render|\bexport\b|\brename\b|匯出|輸出成|改檔名',draft,re.I):return 'housekeeping','export/rename/check render'
     primary=re.split(r'[，,；;]\s*(?:也|順便|also\b)',draft,flags=re.I)[0]
     if re.search(r'variations|versions|不同的版本|個版本|不同版本|create\s+\d+\s+comps',primary,re.I) and not re.search(r'不急|no rush',primary,re.I):return 'batch','variations / multiple versions'
-    if edit_context and re.search(r'保留|其他不動|拿掉|慢一點|往右|提前|make .*faster|make .*more|make .*less|get rid of|\bfix\b|move to|改成|另一邊|反過來|other way|第[一二三四五六七八九十\d]+[鏡拍]|\bshot\s*\d+|\bmake\s+\d+\b',draft,re.I):
+    if edit_context and re.search(r'保留|其他不動|拿掉|慢一點|往右|提前|make .*faster|make .*more|make .*less|get rid of|\bfix\b|move to|改成|改由|另一邊|反過來|other way|第[一二三四五六七八九十\d]+[鏡拍]|\bshot\s*\d+|\bmake\s+\d+\b',draft,re.I):
         return 'delta','targeted change / keep clause'
     if re.search(r'\bat\s+\d+(?:\.\d+)?\s*s|after .*exits|在\s*\d+(?:\.\d+)?\s*秒',draft,re.I):return 'sequence','timeline anchor / after exit'
     return 'brief','new scene / composition'
