@@ -39,8 +39,8 @@ class IdentityTests(ImageCase):
         with self.assertRaises(ImageError):build('too many',[self.a]*17,self.path/'bad.json')
 
     def test_broken_controls_cannot_judge(self):
-        with self.assertRaises(ImageError):controls(self.a,self.b,self.b)
-        with self.assertRaises(ImageError):controls(self.a,self.a,self.neg)
+        self.assertFalse(controls(self.a,self.b,self.b)['valid'])
+        self.assertFalse(controls(self.a,self.a,self.neg)['valid'])
 
     def test_all_keyframes_send_same_refset_and_retry_drift_once(self):
         from dataclasses import replace
@@ -49,7 +49,7 @@ class IdentityTests(ImageCase):
         ref=self.path/'refs.json';build('Mia',[self.a,self.b],ref,negative=[self.neg])
         self.configure(image=str(self.neg))
         req=self.request(refs=[self.a,self.b],refset_path=str(ref),refset_sha=digest(ref))
-        b=board();b['shots']=b['shots'][:1]
+        b=board();b['height']=1440;b['shots']=b['shots'][:1]
         result=keyframes(b,self.adapter,self.path/'kf',req)
         self.assertEqual(len(self.calls()),2);self.assertEqual(result['shots'][0]['keyframe']['status'],'identity_fail')
         for row in self.calls():self.assertIn(str(self.a).replace('\\','\\\\'),row['stdin'])
