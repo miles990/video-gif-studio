@@ -20,7 +20,9 @@ from brief_render import render_version
 class ImageScenarios(ImageCase):
     def test_board_render_edit_incremental_loop_and_vector(self):
         rng=np.random.default_rng(71)
-        a=rng.integers(25,170,(160,96,3),dtype='uint8')
+        # Successful scene fixture must honor requested 9:16. A 96x160 return
+        # required 6.25% flat padding; that refusal is covered by aspect tests.
+        a=rng.integers(25,170,(160,90,3),dtype='uint8')
         im=Image.fromarray(a);ImageDraw.Draw(im).rectangle((28,95,60,135),fill='#208040');im.save(self.fixture)
         board=dict(core='cafe continuity',width=1080,height=1920,fps=25,
                    shots=[dict(id=f's{i}',size=size,duration=.24,motion='static',subject='Mia',action='holds cup',why='show cafe',serves_core='cafe continuity')
@@ -38,7 +40,7 @@ class ImageScenarios(ImageCase):
         self.assertEqual(before['duration'],after['duration'])
         for old,new in zip(before['shots'],after['shots']):
             if old['id']!='s2':self.assertEqual(old['sha256'],new['sha256'])
-        loop=loop_keyframes([source],self.path/'loop',frames=24,frame_ms=80,size=(96,160))
+        loop=loop_keyframes([source],self.path/'loop',frames=24,frame_ms=80,size=(144,256))
         self.assertEqual(loop['loop']['status'],'PASS');self.assertEqual(read(self.path/'loop/sprites/sprites.json')['qc']['rgba_mismatches'],0)
         self.assertEqual(loop['media_qa_loop']['level'],'PASS')
         svg=trace(source,self.path/'graphic.svg',colors=3)

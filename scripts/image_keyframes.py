@@ -26,6 +26,18 @@ def fit_image(image, size, background=None):
     if loss<=.03:
         fitted=ImageOps.fit(image,size,Image.Resampling.LANCZOS)
         return fitted,dict(method='uniform_crop',source_size=list(image.size),size=list(size),scale=max(size[0]/image.width,size[1]/image.height),offset=[0,0],content_size=list(size),padding_fraction=0,crop_fraction=loss,stretched=False)
+    from image_identity import subject_region
+    mask,method=subject_region(np.array(image))
+    if method!='saliency' and mask.any():
+        y,x=np.where(mask)
+        crop_w=min(image.width,image.height*size[0]/size[1]);crop_h=min(image.height,image.width*size[1]/size[0])
+        if x.max()-x.min()+1<=crop_w and y.max()-y.min()+1<=crop_h:
+            left=float(np.clip((image.width-crop_w)/2,max(0,x.max()+1-crop_w),min(x.min(),image.width-crop_w)))
+            top=float(np.clip((image.height-crop_h)/2,max(0,y.max()+1-crop_h),min(y.min(),image.height-crop_h)))
+            fitted=image.resize(size,Image.Resampling.LANCZOS,box=(left,top,left+crop_w,top+crop_h))
+            return fitted,dict(method='subject_safe_crop',subject_method=method,source_size=list(image.size),size=list(size),scale=size[0]/crop_w,offset=[left,top],content_size=list(size),padding_fraction=0,crop_fraction=loss,stretched=False)
+    if loss>.05:
+        raise ImageError('E_ASPECT_UNFIXABLE','Subject cannot be isolated inside the required crop; regenerate with requested framing.',status='aspect_unfixable',source_size=list(image.size),target_size=list(size),padding_fraction=loss)
     fitted=ImageOps.contain(image,size,Image.Resampling.LANCZOS)
     if background is None:
         corners=np.array(image)[[0,0,-1,-1],[0,-1,0,-1],:3]
@@ -33,6 +45,8 @@ def fit_image(image, size, background=None):
     result=Image.new('RGBA',size,background)
     offset=((size[0]-fitted.width)//2,(size[1]-fitted.height)//2)
     result.paste(fitted,offset)
+    if 1-fitted.width*fitted.height/(size[0]*size[1])>.05:
+        raise ImageError('E_ASPECT_UNFIXABLE','Rounded fit would require more than 5% padding.',status='aspect_unfixable')
     return result,dict(method='uniform_contain',source_size=list(image.size),size=list(size),
                        scale=fitted.width/image.width,offset=list(offset),content_size=list(fitted.size),
                        padding_fraction=1-fitted.width*fitted.height/(size[0]*size[1]),stretched=False)

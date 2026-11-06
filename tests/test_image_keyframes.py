@@ -32,8 +32,8 @@ class KeyframeTests(ImageCase):
         self.assertEqual([(s['start'],s['end']) for s in b['shots']],[(s['start'],s['end']) for s in after['shots']])
 
     def test_contain_never_stretches(self):
-        im=Image.new('RGB',(1024,1536),'red');fitted,report=fit_image(im,(1080,1920))
-        self.assertEqual(fitted.size,(1080,1920));self.assertEqual(report['content_size'],[1080,1620])
+        im=Image.new('RGB',(1040,1800),'red');fitted,report=fit_image(im,(1080,1920))
+        self.assertEqual(fitted.size,(1080,1920));self.assertLessEqual(report['padding_fraction'],.05)
         self.assertFalse(report['stretched'])
 
     def test_missing_frame_falls_back_and_generation_failure_keeps_board(self):
