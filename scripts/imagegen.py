@@ -32,6 +32,9 @@ def options(p):
     p.add_argument('--timeout',type=float,default=300)
     p.add_argument('--round',default='spec-13');p.add_argument('--cap',type=int,default=60);p.add_argument('--run-id')
     p.add_argument('--no-cache',action='store_true');p.add_argument('--out',type=Path)
+    p.add_argument('--since')
+    p.add_argument('--frames',type=int,default=48);p.add_argument('--frame-ms',type=int,default=40)
+    p.add_argument('--start-image',type=Path)
     p.add_argument('--json',action='store_true')
 
 
@@ -128,7 +131,23 @@ def main(argv=None):
         elif a.command=='estimate':result=adapter.estimate(req)
         elif a.command=='generate':
             if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
-            if a.transparent:
+            if a.format in ('gif','svg'):
+                from dataclasses import replace
+                raster=replace(req,format='png');raster.normalized()
+                if a.format=='gif':
+                    from image_motion import validate_motion,loop_keyframes
+                    size=tuple(map(int,a.size.split('x')));validate_motion(size,a.frames,a.frame_ms)
+                source=a.start_image
+                if source is None:
+                    generation=adapter.generate(raster,a.out/'source',a.approve_spend,a.max_usd,a.no_cache)
+                    source=Path(generation['assets'][0]['path'])
+                else:generation=None
+                if a.format=='gif':result=loop_keyframes([source],a.out/'motion',a.frames,a.frame_ms,size)
+                else:
+                    from image_vector import trace
+                    result=trace(source,a.out/'asset.svg')
+                result['generation']=generation;write(a.out/'gen-manifest.json',result)
+            elif a.transparent:
                 from image_alpha import transparent_asset
                 result=transparent_asset(adapter,req,a.out,a.approve_spend,a.max_usd,a.no_cache)
             else:result=adapter.generate(req,a.out,a.approve_spend,a.max_usd,a.no_cache)
@@ -137,9 +156,8 @@ def main(argv=None):
             result=read(Path(__file__).resolve().parents[1]/'references/image-capabilities.json')
             if a.out:write(a.out/'capabilities.json',result)
         else:
-            rows=[r for r in adapter.records() if r.get('event')=='generation']
-            result=dict(generations=len(rows),images=sum(r['subscription_images'] for r in rows),
-                        cache_hits=sum(r['cache_hit'] for r in rows),failures=sum(r['status']=='error' for r in rows))
+            from image_usage import summarize
+            result=summarize(adapter.records(),a.since,a.round,a.run_id)
         print(json.dumps(dict(ok=True,result=result),ensure_ascii=False));return 0
     except (ImageError,OSError,ValueError,KeyError,TypeError) as exc:
         error=exc.error if isinstance(exc,ImageError) else ImageError('E_IMAGE',str(exc)).error

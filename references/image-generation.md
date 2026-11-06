@@ -92,7 +92,7 @@ delays. Browser preview encoding may merge <=20 ms exposures, as documented by t
 existing GIF pipeline. Grok/fal video generation is a separate user-approved step.
 
 Transparent generation (`generate --transparent`) attempts native alpha first,
-removes isolated alpha components <=0.1% of the largest subject, and despills
+removes isolated alpha components <=1% of the largest subject, and despills
 semi-transparent edge colours using nearby opaque subject pixels. It preserves
 graded alpha. QA measures border transparency, isolated components/holes, black
 background outer-band brightness, and CIEDE2000 edge colour continuity. RGB
@@ -158,3 +158,28 @@ storage preserves the click; applying the downloaded record or an explicitly
 requested `--choose` writes append-only picks and `storyboard-picked.json`.
 No AI ranking selects a candidate. Pairwise pHash distances flag insufficiently
 different candidates, and failed identities cannot be applied as user picks.
+
+Usage and provenance:
+
+```text
+python scripts/imagegen.py usage --state .scratch/image-state --round spec-13 --since 2026-11-06 --json
+python scripts/imagegen.py generate --experimental --cap 30 --prompt "flat title graphic" --format svg --out .scratch/title --json
+python scripts/imagegen.py generate --experimental --start-image frame.png --format gif --size 352x352 --out .scratch/loop-from-image --json
+```
+
+`--format gif|svg` invokes the recorded local fallback after PNG generation;
+`--start-image` reuses existing material without any provider request. GIF parameters
+are checked before generation. These options do not request a native GIF or SVG.
+Usage groups append-only generation/reservation records by date, round and run.
+Counts distinguish returned images, conservative reservations, failures and cache
+savings. The route manifest schema is `image-manifest.schema.json`; derivative
+manifests add `derived_from`, native/fallback method and downstream QA. Each source
+PNG is preserved byte-for-byte, including original C2PA containers; derived PNGs
+retain lineage rather than implying the original signature signs edited pixels.
+
+The reused alpha probe exposed attached fragments as well as isolated specks.
+Cleanup removes isolated components <=1% of the main subject and, only for a
+near-binary sticker (>90% of visible alpha >=240), opens/erodes the silhouette by
+1–3 pixels and applies a narrow 0.4 px antialias envelope. Soft artwork skips this
+silhouette step. The original probe's black outer-band luma decreased from 12.74
+to 3.17, with zero remaining speck ratio; the source remains untouched.

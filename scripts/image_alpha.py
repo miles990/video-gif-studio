@@ -77,15 +77,26 @@ def cleanup(image):
     if len(areas):
         largest=int(areas.max())
         for label in range(1,n):
-            if stats[label,cv2.CC_STAT_AREA]<=max(4,largest*.001):
+            if stats[label,cv2.CC_STAT_AREA]<=max(4,largest*.01):
                 pixels=labels==label;removed+=int(pixels.sum());a[pixels]=0
+    # Hard stickers sometimes have attached white fragments as well as detached
+    # specks. Smooth only near-binary silhouettes; retain genuine soft assets.
+    visible=a[...,3]>0
+    hard_sticker=bool(visible.any() and np.mean(a[...,3][visible]>=240)>.90)
+    if hard_sticker:
+        radius=max(1,min(3,round(min(image.size)/400)))
+        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2*radius+1,2*radius+1))
+        silhouette=cv2.morphologyEx((a[...,3]>=128).astype('uint8')*255,cv2.MORPH_OPEN,kernel)
+        silhouette=cv2.erode(silhouette,np.ones((3,3),np.uint8))
+        envelope=cv2.GaussianBlur(silhouette.astype('float32'),(0,0),.4)
+        a[...,3]=np.minimum(a[...,3],np.rint(envelope).astype('uint8'))
     nearest,distance=nearest_opaque(a);recolored=0
     if nearest is not None:
         edge=(a[...,3]>0)&(a[...,3]<250)&(distance<=5)
         bad=edge&(delta_e(lab(a[...,:3]),lab(nearest))>20)
         recolored=int(bad.sum());a[...,:3][bad]=nearest[bad]
     result=Image.fromarray(a)
-    return result,dict(before=before,after=alpha_qa(result),removed_speck_pixels=removed,despilled_pixels=recolored,
+    return result,dict(before=before,after=alpha_qa(result),removed_speck_pixels=removed,despilled_pixels=recolored,hard_sticker_edge_cleanup=hard_sticker,
                        alpha_policy='preserve graded alpha except isolated components; straight RGB edge despill')
 
 
@@ -114,6 +125,7 @@ def choose_backing(image):
 
 
 def transparent_asset(adapter,req,out,approval=None,max_usd=0,no_cache=False):
+    if req.n!=1:raise ImageError('E_COUNT','Transparent asset QA processes one image per request; use separate output directories.')
     out=Path(out).resolve();raw=adapter.generate(replace(req,transparent=True),out/'native',approval,max_usd,no_cache)
     source=Path(raw['assets'][0]['path'])
     with Image.open(source) as im:

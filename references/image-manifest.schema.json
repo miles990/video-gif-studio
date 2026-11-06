@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Experimental image route attempt manifest",
+  "type": "object",
+  "required": ["schema_version", "status", "route", "model", "model_reported", "quality", "size_requested", "size_actual", "aspect_actual", "n_requested", "n_returned", "elapsed_s", "prompt_sha", "refs_sent", "feature_used", "cache_key", "cache_hit", "c2pa_present", "c2pa_claim_generator", "synthid", "subscription_images", "cost_estimate_usd", "approval_id", "run_id", "round_id"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "status": {"enum": ["ok", "error"]},
+    "route": {"enum": ["codex", "api"]},
+    "model": {"type": "string"},
+    "model_reported": {"type": ["string", "null"]},
+    "quality": {"enum": ["draft", "final"]},
+    "size_requested": {"type": "string"},
+    "size_actual": {"type": "array"},
+    "aspect_actual": {"type": "array"},
+    "n_requested": {"type": "integer", "minimum": 1, "maximum": 8},
+    "n_returned": {"type": "integer", "minimum": 0, "maximum": 8},
+    "elapsed_s": {"type": "number", "minimum": 0},
+    "prompt_sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "refs_sent": {"type": "array", "maxItems": 16},
+    "feature_used": {"type": "array"},
+    "cache_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "cache_hit": {"type": "boolean"},
+    "c2pa_present": {"enum": [true, false, "unknown"]},
+    "c2pa_claim_generator": {"type": ["string", "null"]},
+    "synthid": {"const": "not_verifiable_locally"},
+    "subscription_images": {"type": "integer", "minimum": 0},
+    "cost_estimate_usd": {"type": "number", "minimum": 0},
+    "approval_id": {"type": ["string", "null"]},
+    "run_id": {"type": "string"},
+    "round_id": {"type": "string"}
+  }
+}
