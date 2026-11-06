@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 import unittest
 from PIL import Image,ImageDraw
+import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from game_icons import style_qa
 
@@ -16,6 +17,16 @@ class IconTests(unittest.TestCase):
         icons[3]=self.icon(width=4);icons[6]=self.icon(size=30);icons[7]=self.icon(color='#808010')
         result=style_qa(icons,self.token,True);self.assertTrue({3,6,7}<=set(result['outlier_indices']))
         self.assertTrue(any(i['index']==3 and i['kind']=='outline' for i in result['issues']))
+
+    def test_light_direction_uses_cartesian_upper_left(self):
+        im=self.icon();a=np.array(im)
+        yy,xx=np.indices(a.shape[:2]);inside=(xx>=10)&(xx<54)&(yy>=10)&(yy<54)
+        brightness=210-xx-yy;a[...,:3][inside]=brightness[inside,None]
+        result=style_qa([Image.fromarray(a)],self.token)
+        self.assertAlmostEqual(result['icons'][0]['light'],135,delta=1)
+        self.assertFalse(any(i['kind']=='light' for i in result['issues']))
+        a[...,:3][inside]=(255-brightness[inside])[:,None]
+        self.assertTrue(any(i['kind']=='light' for i in style_qa([Image.fromarray(a)],self.token)['issues']))
 
 
 if __name__=='__main__':unittest.main()

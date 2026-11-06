@@ -6,7 +6,30 @@ import cv2
 import numpy as np
 from PIL import Image
 from image_common import ImageError,digest,key,read,write
-from game_character import rgba,quantize,originality
+from game_character import rgba,quantize,originality,require_alpha
+
+
+def outline_width(mask,line):
+    """Median inward boundary run, excluding deep same-color material fills.
+
+    Connected dark boot soles/internal ink are not the exterior stroke thickness.
+    Distance percentiles over the whole dark component conflate those features.
+    """
+    distance=cv2.distanceTransform(mask.astype(np.uint8),cv2.DIST_L2,5)
+    gx=cv2.Sobel(distance,cv2.CV_32F,1,0,ksize=3);gy=cv2.Sobel(distance,cv2.CV_32F,0,1,ksize=3)
+    yy,xx=np.where(line&(distance<=1.1));runs=[];h,w=mask.shape
+    for x,y in zip(xx,yy):
+        vector=np.array([gx[y,x],gy[y,x]],float);length=np.linalg.norm(vector)
+        if length<.01:continue
+        vector/=length;visited=set();run=0
+        for step in range(max(3,min(h,w)//5)+1):
+            px,py=np.rint([x,y]+vector*step).astype(int)
+            if (px,py) in visited:continue
+            visited.add((px,py))
+            if not 0<=px<w or not 0<=py<h or not mask[py,px] or not line[py,px]:break
+            run+=1
+        if 0<run<min(h,w)//5:runs.append(run)
+    return float(np.median(runs)) if runs else 0.
 
 
 def style_qa(images,token,pixel=False):
@@ -22,14 +45,17 @@ def style_qa(images,token,pixel=False):
         # Only outline connected to the exterior belongs to the stroke measurement.
         n,labels,stats,_=cv2.connectedComponentsWithStats(line.astype(np.uint8),8)
         exterior=line&(distance<=1.5);keep=np.unique(labels[exterior]);ring=line&np.isin(labels,keep[keep>0])
-        width=float(np.percentile(distance[ring],90)) if ring.any() else 0
+        width=outline_width(mask,ring)
         hsv=cv2.cvtColor(a[...,:3],cv2.COLOR_RGB2HSV).astype(float);content=mask&~ring
         y,x=np.where(content);light='n/a';r2=0
         if len(x)>3:
             values=(a[...,:3]@np.array([.2126,.7152,.0722]))[content]
             design=np.column_stack((x,y,np.ones(len(x))));fit=np.linalg.lstsq(design,values,rcond=None)[0];pred=design@fit
-            r2=1-float(((values-pred)**2).sum()/max(1e-9,((values-values.mean())**2).sum()))
-            if r2>=.05:light=float(np.degrees(np.arctan2(-fit[1],-fit[0]))%360)
+            variance=float(((values-values.mean())**2).sum())
+            r2=1-float(((values-pred)**2).sum()/variance) if variance>1e-6 else 0.
+            # Image y grows downward; report the light direction in ordinary
+            # Cartesian degrees (upper-left = 135 degrees).
+            if r2>=.05:light=float(np.degrees(np.arctan2(-fit[1],fit[0]))%360)
         row=dict(index=i,canvas=list(im.size),bbox_area_fraction=area,safe_margin=margin,outline_px=width,light=light,light_r_squared=r2,
                  saturation=float(hsv[...,1][mask].mean()),value=float(hsv[...,2][mask].mean()))
         rows.append(row)
@@ -72,7 +98,7 @@ def iconset(adapter,request,items,token,out,pixel=False,fix=False):
         refs=[str(accepted.resolve())] if accepted else []
         prompt=f'Original game item icon: {items[i]}. {request.prompt}. Same exact style token: {token}. Single icon, transparent, {grid}x{grid} grid, safe margin {token["safe_margin"]} pixels, no text.'
         result=adapter.generate(replace(request,prompt=prompt,refs=refs,transparent=True,n=1),out/'generation'/f'{i:02d}-{len(previous.get("repairs",[])) if previous else 0}',no_cache=fix)
-        im=rgba(result['assets'][0]['path']).resize((grid,grid),Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
+        im=rgba(result['assets'][0]['path']);require_alpha(im);im=im.resize((grid,grid),Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
         if pixel:im=quantize(im,[p if isinstance(p,dict) else dict(hex=p) for p in token['palette']])
         im.save(paths[i]);records[i]=dict(index=i,item=items[i],file=paths[i].name,sha256=digest(paths[i]),refs_sent=[digest(p) for p in refs],style_token_sha=token_sha)
         generations.append(result)

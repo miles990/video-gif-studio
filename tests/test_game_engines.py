@@ -5,6 +5,7 @@ import tempfile
 import subprocess
 import json
 import re
+import os
 import numpy as np
 from PIL import Image,ImageDraw
 ROOT=Path(__file__).resolve().parents[1]
@@ -43,7 +44,7 @@ class EngineTests(unittest.TestCase):
                 x,y,w,h=map(int,(x,y,w,h));top=page['size'][1]-y-h;state,index=name.split('/')
                 with Image.open(out/page['file']) as sheet,Image.open(self.path/state/(str(int(index))+'.png')) as src:self.assertEqual(sheet.crop((x,top,x+w,top+h)).tobytes(),src.tobytes())
         anims=json.loads((out/'anims.json').read_text())['anims'];a=anims[1]
-        self.assertEqual([1000/a['frameRate']+f['duration'] for f in a['frames']],[80,120,100]);self.assertEqual(a['events'][0]['frame'],1)
+        self.assertEqual([f['duration'] for f in a['frames']],[80,120,100]);self.assertEqual(a['events'][0]['frame'],1)
 
     def test_shared_contract_and_bad_events_rejected(self):
         data=json.loads(self.manifests[1].read_text());data['pivot']=[15,27];write(self.manifests[1],data)
@@ -54,9 +55,10 @@ class EngineTests(unittest.TestCase):
         engine=Path('C:/Users/User/src/vgs-fx-private/tools/godot4/Godot_v4.7.2-stable_win64_console.exe')
         if not engine.exists():self.skipTest('Godot 4 portable engine not installed')
         out=self.path/'godot';export_engines(self.manifests,out,['godot4'])
-        imported=subprocess.run([str(engine),'--headless','--editor','--path',str(out),'--quit'],capture_output=True,text=True,timeout=60)
+        userdata=self.path/'userdata';userdata.mkdir();env=dict(os.environ,APPDATA=str(userdata),LOCALAPPDATA=str(userdata))
+        imported=subprocess.run([str(engine),'--headless','--editor','--path',str(out),'--quit'],capture_output=True,text=True,timeout=60,env=env)
         self.assertEqual(imported.returncode,0,imported.stdout+imported.stderr)
-        played=subprocess.run([str(engine),'--headless','--path',str(out),'--fixed-fps','120','--script','check_frames.gd'],capture_output=True,text=True,timeout=60)
+        played=subprocess.run([str(engine),'--headless','--path',str(out),'--fixed-fps','120','--script','check_frames.gd'],capture_output=True,text=True,timeout=60,env=env)
         self.assertEqual(played.returncode,0,played.stdout+played.stderr);self.assertIn('S14_GODOT_PASS',played.stdout);self.assertNotIn('SCRIPT ERROR',played.stderr)
 
 

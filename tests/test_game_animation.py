@@ -47,5 +47,14 @@ class AnimationTests(unittest.TestCase):
             frames.append(im)
         self.assertEqual(attack_contact(frames,['#9FE3FF'],[50,29,3,4]),5)
 
+    def test_jump_arc_preparation_and_landing_controls(self):
+        frames=[pose()]
+        crouch=Image.new('RGBA',(64,64));ImageDraw.Draw(crouch).rectangle((24,27,39,60),fill='#E07A2E');frames.append(crouch)
+        for offset in (-4,-11,-15,-17,-15,-11,-4):frames.append(pose(y=offset))
+        frames.extend([crouch,crouch,pose()])
+        result=motion_qa(frames,manifest(12,state='jump',loop=False));self.assertEqual(result['status'],'PASS',result)
+        bad=[frames[0],*frames[2:]];report=motion_qa(bad,manifest(11,state='jump',loop=False))
+        self.assertTrue(any(i['kind']=='jump_missing_preparation' for i in report['issues']))
+
 
 if __name__=='__main__':unittest.main()

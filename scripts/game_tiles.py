@@ -62,11 +62,12 @@ def preview(im,out):
 def texture(adapter,request,out,size=256,repair=True):
     out=Path(out);originality(request.prompt)
     result=adapter.generate(replace(request,prompt=request.prompt+f'. Seamless tileable texture, uniform exposure, no directional light gradient, {size}x{size} canvas.',transparent=False,n=1),out/'generation')
-    im=rgba(result['assets'][0]['path']).convert('RGB').resize((size,size),Image.Resampling.NEAREST)
+    raw=rgba(result['assets'][0]['path']);actual=list(raw.size)
+    im=raw.convert('RGB').resize((size,size),Image.Resampling.NEAREST)
     source=im.copy();qa=tile_qa(im);correction=None
     if repair and qa['status']=='FAIL':im,correction=repair_periodic(im);qa=correction['after']
     im.save(out/'texture.png');source.save(out/'source.png');preview(im,out/'preview-3x3.png')
-    manifest=dict(status='experimental',size_actual=list(source.size),size_requested=f'{size}x{size} (prompt only)',qa=qa,repair=correction,generation=result,originality=originality(request.prompt))
+    manifest=dict(status='experimental',size_actual=actual,size_delivered=list(source.size),size_requested=f'{size}x{size} (prompt only)',qa=qa,repair=correction,generation=result,originality=originality(request.prompt))
     write(out/'gen-manifest.json',manifest);return manifest
 
 

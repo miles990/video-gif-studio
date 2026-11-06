@@ -16,10 +16,12 @@ def main(argv):
         s.add_argument('--image',type=Path);s.add_argument('--pixel',type=int);s.add_argument('--negative',nargs='*',type=Path,default=[])
         s.add_argument('--near-negative',type=Path);s.add_argument('--asymmetric-feature',action='append',default=[])
         s.add_argument('--reference-licence',choices=['original','owned','licensed'],default='original')
+        s.add_argument('--views',default='front,side,back,three_quarter');s.add_argument('--expressions',type=int,default=6)
         s.set_defaults(round='spec-14',cap=40)
         an=sub.add_parser('animate');options(an);an.add_argument('--charsheet',required=True,type=Path)
         an.add_argument('--states',default='idle,run,attack,hurt');an.add_argument('--pose-plan',type=Path);an.add_argument('--fps',nargs='*',default=[])
         an.set_defaults(round='spec-14',cap=40)
+        next(action for action in an._actions if action.dest=='route').choices=['codex','auto','api','video']
         sp=sub.add_parser('sprite-check');sp.add_argument('images',nargs='+',type=Path);sp.add_argument('--experimental',action='store_true');sp.add_argument('--json',action='store_true')
         sp.add_argument('--out',type=Path);sp.add_argument('--cleanup',action='store_true');sp.add_argument('--pixel',type=int);sp.add_argument('--palette',type=Path)
         sp.add_argument('--scale',type=int,default=1);sp.add_argument('--alpha-mode',choices=['straight','premultiplied'],default='straight');sp.add_argument('--particles',action='store_true')
@@ -34,6 +36,8 @@ def main(argv):
         kv.add_argument('--approve-video');kv.add_argument('--video-driver',type=Path);kv.add_argument('--duration',type=float,default=5)
         # Override the generic image route choices; video never shares API authority.
         next(a for a in kv._actions if a.dest=='route').choices=['grok','fal','local'];kv.set_defaults(route='local')
+        dm=sub.add_parser('demo');ds=dm.add_subparsers(dest='action',required=True);game=ds.add_parser('game');options(game)
+        game.add_argument('--source-pack',required=True,type=Path);game.add_argument('--vendor',type=Path);game.add_argument('--godot',type=Path)
         a=p.parse_args(argv)
         if not a.experimental:raise ImageError('E_EXPERIMENTAL','Game assets are experimental.',suggestion='Pass --experimental.')
         if a.command=='sprite-check':
@@ -42,6 +46,13 @@ def main(argv):
             result=sprite_check(a.images,mode=a.alpha_mode,palette=read(a.palette) if a.palette else None,pixel=a.pixel,scale=a.scale,cleanup=a.cleanup,out=a.out,particles=a.particles)
             print(json.dumps(dict(ok=result['status']=='PASS',result=result)));return 0 if result['status']=='PASS' else 2
         if not a.out:raise ImageError('E_ARGUMENT','--out is required.')
+        if a.command=='animate' and a.route=='video':
+            raise ImageError('E_APPROVAL_REQUIRED','Continuous model-video animation requires explicit consent after its input-bound estimate.',network_requests=0,
+                             estimate=dict(duration_seconds=5,cost_estimate_usd=None),suggestion='Prepare first/last key poses and use kf-video to obtain an estimate; local pose interpolation is available without approval.')
+        if a.command=='demo':
+            from game_demo import demo
+            result=demo(a.source_pack,a.out,a.vendor,a.godot)
+            print(json.dumps(dict(ok=True,result=result)));return 0
         if a.command=='kf-video':
             from game_video import keyframes_video
             from image_identity import load
@@ -60,6 +71,7 @@ def main(argv):
         if a.command=='tile':a.size=f'{a.size}x{a.size}' if 'x' not in a.size else a.size
         adapter,req=adapter_request(a)
         if a.command=='character':
+            if a.views.split(',')!=['front','side','back','three_quarter'] or a.expressions!=6:raise ImageError('E_CHARACTER_LAYOUT','This version delivers four canonical views and six expressions.')
             from game_character import sheet
             result=sheet(adapter,req,a.out,a.image,a.pixel,a.negative,a.near_negative,a.asymmetric_feature,a.reference_licence)
         elif a.command=='iconset':
@@ -72,7 +84,10 @@ def main(argv):
             from game_animation import animate
             rates={k:float(v) for k,v in (item.split('=') for item in a.fps)}
             result=animate(adapter,req,a.charsheet,a.out,a.states.split(','),a.pose_plan,rates)
-        print(json.dumps(dict(ok=True,result=result),ensure_ascii=False));return 0
+        failed=result.get('qa',{}).get('status')=='FAIL' or any(r.get('qa',{}).get('status')=='FAIL' for r in result.get('states',{}).values())
+        envelope=dict(ok=not failed,result=result)
+        if failed:envelope['error']=ImageError('E_GAME_QA','Generated preview failed measured QA; inspect the retained report before delivery.').error
+        print(json.dumps(envelope,ensure_ascii=False));return 2 if failed else 0
     except (ImageError,OSError,ValueError,KeyError,TypeError) as exc:
         error=exc.error if isinstance(exc,ImageError) else ImageError('E_GAME',str(exc)).error
         print(json.dumps(dict(ok=False,error=error),ensure_ascii=False));return 2

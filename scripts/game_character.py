@@ -32,6 +32,13 @@ def rgba(path):
     with Image.open(path) as im:return im.convert('RGBA')
 
 
+def require_alpha(im):
+    from image_alpha import checkerboard
+    a=np.array(im.convert('RGBA'))
+    if checkerboard(a):raise ImageError('E_FAKE_ALPHA','Painted checkerboard is not transparency; regenerate with native alpha.')
+    if not np.any(a[...,3]==0):raise ImageError('E_ALPHA_REQUIRED','Generated sprite has no real transparent pixels; keep it as a rejected source, not a sprite.')
+
+
 def palette_of(images, limit=16, minimum=.005):
     counts={}; total=0
     for im in images:
@@ -82,6 +89,7 @@ def identity_report(paths, negatives=(), near=None, palette=None):
             from shot_match import lab,delta_e
             a=np.array(rgba(path));colors=a[...,:3][a[...,3]>127]
             for c in palette:
+                if c.get('role') in ('shade','accent'):continue
                 if c.get('role')=='face' and name=='back':continue
                 ref=np.array(tuple(bytes.fromhex(c['hex'][1:])),np.uint8)
                 color_presence.append(bool(np.any(delta_e(lab(colors[:,None,:]),lab(ref[None,None,:]))<=6)))
@@ -89,14 +97,15 @@ def identity_report(paths, negatives=(), near=None, palette=None):
         rows[name]=dict(bhattacharyya=hist,orb_good_matches=matches,cross_view_palette_exception=cross,
                         palette_present=color_presence,passes_threshold=bool(passed))
     neg=[compare(front,p) for p in negatives]
-    calibrated=bool(neg) and all(m['different'] for m in neg)
+    separation=min((m['bhattacharyya'] for m in neg),default=0)-max(m['bhattacharyya'] for m in rows.values())
+    calibrated=bool(neg) and all(m['different'] for m in neg) and separation>=.10
     near_result=compare(front,near) if near else None
     if near_result:
         calibrated=calibrated and near_result['bhattacharyya']>max(m['bhattacharyya'] for m in rows.values())
     else:calibrated=False
     return dict(status=('pass' if all(m['passes_threshold'] for m in rows.values()) else 'fail') if calibrated else 'unassessed',
                 method={**METHOD,'same_hist_max':.35},views=rows,negative_controls=neg,near_control=near_result,
-                controls_valid=bool(calibrated),visual_review='pending')
+                controls_valid=bool(calibrated),histogram_separation=float(separation),visual_review='pending')
 
 
 def expressions_qa(front, expressions, face_box):
@@ -121,8 +130,28 @@ def expressions_qa(front, expressions, face_box):
     return dict(status='pass' if all(r['pass_outside'] for r in rows) and all(r['different'] for r in differences) else 'fail',outside=rows,face_pairs=differences)
 
 
+def asymmetry_qa(images,features):
+    """Check authored anatomical regions, never infer handedness from mirroring.
+
+    A feature requires a distinct color and a per-view visible region, or null
+    when anatomically hidden. Free-text descriptions alone stay unassessed.
+    """
+    issues=[];measurements=[];assessed=0
+    for feature in features:
+        if not isinstance(feature,dict) or 'regions' not in feature or 'color' not in feature:continue
+        color=np.array(tuple(bytes.fromhex(feature['color'].lstrip('#'))));assessed+=1
+        for name,im in images.items():
+            if name not in feature['regions']:continue
+            a=np.array(im);mask=np.all(a[...,:3]==color,axis=-1)&(a[...,3]>127);region=feature['regions'][name]
+            yy,xx=np.where(mask);observed=[float(xx.mean()),float(yy.mean())] if len(xx) else None
+            valid=not len(xx) if region is None else bool(len(xx) and np.all((xx>=region[0])&(xx<region[0]+region[2])&(yy>=region[1])&(yy<region[1]+region[3])))
+            measurements.append(dict(feature=feature.get('feature'),view=name,centroid=observed,valid=valid))
+            if not valid:issues.append(dict(kind='asymmetric_feature_side_or_visibility',view=name,feature=feature.get('feature')))
+    return dict(status='FAIL' if issues else 'PASS' if assessed else 'unassessed',issues=issues,measurements=measurements)
+
+
 def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None, asymmetric_features=None, reference_licence='original'):
-    out=Path(out);original=originality(request.prompt,reference_licence if image else None)
+    out=Path(out);original=originality(request.prompt+(' '+Path(image).stem if image else ''),reference_licence if image else None)
     size=(pixel,pixel) if pixel else tuple(map(int,request.size.split('x')))
     if pixel and not 16<=pixel<=512:raise ImageError('E_GRID','Logical grid must be 16..512.')
     refs=[str(image)] if image else [];records=[];views={};actual={};manifests=[]
@@ -130,9 +159,12 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
     for name,facing in VIEWS.items():
         prompt=f'{request.prompt}\nOriginal character turnaround. ONE {facing} view. Same scale, ground line at 90% canvas height, shared camera, outfit and palette. No text. Do not mirror asymmetric features. Canvas {size[0]}x{size[1]}.'
         req=replace(request,prompt=prompt,refs=refs[-3:],transparent=True,n=1)
-        result=adapter.generate(req,out/'generation'/name);source=Path(result['assets'][0]['path']);im=rgba(source)
+        result=adapter.generate(req,out/'generation'/name);source=Path(result['assets'][0]['path']);im=rgba(source);require_alpha(im)
         actual[name]=list(im.size);im=im.resize(size,Image.Resampling.NEAREST if pixel else Image.Resampling.LANCZOS)
         (out/'views').mkdir(parents=True,exist_ok=True);file=out/'views'/f'{name}.png';im.save(file)
+        if views:
+            evidence=compare(out/'views/front.png',file)
+            if evidence['bhattacharyya']>.50:raise ImageError('E_IDENTITY_FAIL','Turnaround changed the character palette; rejected view is retained but not used as a reference.',view=name,measurement=evidence)
         records.append(dict(name=name,facing=facing,file=f'views/{name}.png',refs_sent=[digest(p) for p in req.refs],size_actual=actual[name]))
         views[name]=im;refs.append(str(file.resolve()));manifests.append(result)
     palette=palette_of(list(views.values()),16 if pixel else 12)
@@ -161,6 +193,9 @@ def sheet(adapter, request, out, image=None, pixel=None, negatives=(), near=None
                   palette='palette.json',views=records,expressions=exp_records,face_box=list(face),asymmetric_features=asym,mirror_ok=not bool(asym),
                   inferred_views=['side','back'] if image else [],identity=identity,expressions_qa=expressions_qa(front,expressions,face),height_spread=float(scale_spread),
                   fallback='pixel_quantize' if pixel else None,size_requested=f'{size[0]}x{size[1]} (prompt only)',size_actual=actual,review='pending')
+    asymmetry=asymmetry_qa(views,asym)
+    manifest['qa']=dict(status='FAIL' if scale_spread>.03 or manifest['expressions_qa']['status']=='fail' or identity['status']=='fail' or asymmetry['status']=='FAIL' else 'unassessed' if identity['status']=='unassessed' or (asym and asymmetry['status']=='unassessed') else 'PASS',
+        height_consistency=bool(scale_spread<=.03),identity=identity['status'],expressions=manifest['expressions_qa']['status'],asymmetry=asymmetry)
     canvas=Image.new('RGBA',(size[0]*4,size[1]*3+40),(24,29,42,255));draw=ImageDraw.Draw(canvas);draw.text((8,8),'ORIGINAL CHARACTER / '+str(size),fill='white')
     for i,im in enumerate([*views.values(),*expressions.values()]):canvas.alpha_composite(im,((i%4)*size[0],40+(i//4)*size[1]))
     canvas.save(out/'sheet.png');write(out/'charsheet.json',manifest)

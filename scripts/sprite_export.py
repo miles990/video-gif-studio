@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pack uniform RGBA frames into portable multi-page sprite sheets (no engine importer)."""
+"""Pack uniform RGBA frames; optional experimental native game-engine adapters."""
 import argparse
 import json
 import math

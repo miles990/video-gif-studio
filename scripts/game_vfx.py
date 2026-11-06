@@ -29,6 +29,11 @@ def additive_preview(im,background=(12,18,30)):
     return Image.fromarray(result).convert('RGBA'),Image.fromarray(premult)
 
 
+def scene_preview(im,blend,background=(12,18,30)):
+    if blend=='add':return additive_preview(im,background)[0]
+    return Image.alpha_composite(Image.new('RGBA',im.size,(*background,255)),im.convert('RGBA'))
+
+
 def vfx(out,kind='explosion',frames=12,size=96,loop=False,pixel=False,blend='add',color='#80DAFF'):
     budget=16 if pixel else 32
     if not 8<=frames<=budget:raise ImageError('E_FRAME_BUDGET',f'Use 8..{budget} frames; do not silently truncate an effect.',frame_budget=budget,suggestion=f'Resample the complete lifetime to {budget} frames.')
@@ -51,7 +56,8 @@ def vfx(out,kind='explosion',frames=12,size=96,loop=False,pixel=False,blend='add
         records.append(dict(index=i,file=f'frames/{i:05d}.png',duration_ms=80,source='local_procedural'))
     qa=vfx_qa(images,loop);previews(images,[80]*frames,out,loop)
     (out/'additive').mkdir(exist_ok=True);previews(add,[80]*frames,out/'additive',loop)
+    (out/'scene').mkdir(exist_ok=True);previews([scene_preview(im,blend) for im in images],[80]*frames,out/'scene',loop)
     manifest=dict(state=kind,canvas=[size,size],pivot=[size/2,size/2],fps=12.5,loop=loop,events=[],frames=records,alpha_mode='straight',blend=blend,pixel_scale=1,
-                  frame_budget=budget,qa=qa,provenance=dict(tool='game_vfx',version=1,effect_id=kind,source='original local procedural effect; no video generation'),review='pending',status='experimental')
+                  frame_budget=budget,qa=qa,scene_preview=dict(path='scene/preview.png',blend=blend),provenance=dict(tool='game_vfx',version=1,effect_id=kind,source='original local procedural effect; no video generation'),review='pending',status='experimental')
     write(out/'anim.json',manifest);write(out/'gen-manifest.json',dict(provenance=manifest['provenance'],subscription_images=0,network_requests=0,frame_budget=budget))
     return manifest

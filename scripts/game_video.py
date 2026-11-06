@@ -51,7 +51,9 @@ def local_video(first,last,out,duration=5,frames=24):
     ffmpeg=locate('ffmpeg')
     if not ffmpeg:raise ImageError('E_FFMPEG','Local video encoding needs ffmpeg; RGBA/APNG previews retained.')
     # MP4 is explicitly opaque over black. RGBA/APNG masters preserve alpha.
-    command=[ffmpeg,'-v','error','-y','-framerate',str(1000/times[0]),'-i',str(out/'frames/%05d.png'),'-vf','format=rgb24,pad=ceil(iw/2)*2:ceil(ih/2)*2','-c:v','libx264','-pix_fmt','yuv420p',str(out/'local.mp4')]
+    command=[ffmpeg,'-v','error','-y','-framerate',str(1000/times[0]),'-i',str(out/'frames/%05d.png'),'-filter_complex',
+             f'color=c=black:s={a.width}x{a.height}:r={1000/times[0]}[bg];[bg][0:v]overlay=shortest=1:format=auto,pad=ceil(iw/2)*2:ceil(ih/2)*2',
+             '-frames:v',str(frames),'-c:v','libx264','-pix_fmt','yuv420p',str(out/'local.mp4')]
     result=subprocess.run(command,capture_output=True,text=True,timeout=120)
     if result.returncode:raise ImageError('E_ENCODE',result.stderr)
     manifest=dict(route='local',network_requests=0,method='nearest_piecewise_affine_preview',first_frame_sha=digest(first),last_frame_sha=digest(last),duration_ms=sum(times),video='local.mp4',video_alpha='opaque black; RGBA and APNG masters retained',review='pending')

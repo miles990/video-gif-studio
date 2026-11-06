@@ -57,6 +57,81 @@ and each crop compared byte-for-byte with its source. Sidecars retain all
 per-state timing, event and pivot data, including cross-page state sequences.
 Godot resources use format=3 and relative res:// textures. A real Godot test
 project and playback checker are included; Unity remains format-only/untested.
-Phaser durations are additive to its base frame period, as described in the
-[Phaser animation documentation](https://docs.phaser.io/phaser/concepts/animations).
+Phaser 3.90 durations are full frame periods, as implemented in its pinned
+[Animation.getNextTick source](https://github.com/phaserjs/phaser/blob/v3.90.0/src/animations/Animation.js).
 Pixi uses the [Spritesheet format](https://github.com/pixijs/pixijs-skills/blob/main/skills/pixijs-assets/references/spritesheet.md).
+
+`iconset --items sword,shield,potion,key,scroll,gem,bow,boot --style-token style.json
+--pixel --out DIR --experimental` takes a token with `grid`, `outline_hex`,
+`outline_px`, `light_deg` (Cartesian: upper-left = 135), `safe_margin`,
+`palette`, and `shading`. `--fix` remeasures existing icons, regenerates only
+outlier indices against an accepted icon, and verifies other files keep their
+SHA256. A light direction is n/a for genuinely flat shading. Material-color
+variation can confound the brightness-plane proxy; inspect retained failures.
+
+`tile texture --prompt "original mossy stone" --size 256 --out DIR --experimental`
+uses a referenced subscription image followed by recorded periodic repair.
+Wrap differences, Sobel seam ratios, FFT axes, half-image illumination and
+retained high-frequency energy are reported. `tile tileset --grid 16 --set
+wang16 --out DIR --experimental` builds a procedural terrain transition set;
+`blob47` and `min13` are also supported. This first implementation uses a fixed
+grass/soil palette; it does not interpret an arbitrary tileset art prompt.
+
+`vfx --kind explosion --oneshot --frames 12 --size 96 --blend add --out DIR
+--experimental` produces local original procedural sprites and scene previews.
+`magic`, `hit`, and `pickup` are available. `--loop` selects looping motion;
+`--pixel` selects the tighter frame budget, retaining graded glow alpha.
+The declared blend is used for the preview; additive masters have zero RGB
+outside alpha support. One-shots must fade in and out within their budget.
+
+`kf-video --first k0.png --last k1.png --route local --duration 2 --out DIR
+--experimental` does local nearest pose interpolation and emits RGBA masters,
+GIF/APNG and opaque black-composited MP4. It makes no model/network call.
+This is a pose preview, not a physical-motion solver.
+
+For `--route grok|fal`, the first call returns `E_APPROVAL_REQUIRED`, an
+input-bound `estimate_id`, and local alternatives. Reviewed `--prices` JSON
+contains `route`, `version`, ISO `date`, and `usd_per_second`. Approval binds
+the hashes of both endpoints, every reference, prompt, route, duration,
+prices and driver, and expires after 30 minutes. After explicit conversation
+consent, `--approve-video ID` authorizes that one estimate. Environment keys
+never confer approval. A submission receipt prevents automatic duplicates.
+
+The bundled video routes currently cannot transmit first+last+identity refs
+together, so approved calls without a verified `--video-driver` fail with
+`E_VIDEO_CAPABILITY`. The driver reads one JSON object from stdin:
+`route`, `prompt`, `duration_seconds`, absolute `first_frame`, `last_frame`,
+`reference_images`, and `estimate_id`. It must send all inputs once, then print
+JSON containing local `video`, `first_frame_sha`, `last_frame_sha`, ordered
+`refs_sent` SHA256 values, and `network_calls`. A receipt is evidence of
+transport only: returned media is decoded, screened, and retained as pending
+identity/motion review. No live paid-video validation has been performed.
+
+`demo game --source-pack source-pack.json --out DIR --vendor LOCAL_VENDOR
+--godot GODOT4_EXE --experimental` assembles an existing original source pack
+without generation. It records camera transforms and source hashes, retains
+all source images, and writes a portable pack under `sources/`. Use a fresh
+output directory. The source pack contains view transforms, six expression
+crop boxes, four pose strips with corresponding anatomical guides, icon crop
+boxes, and provenance; the supplied Rimewick pack is the concrete example.
+
+The demo returns `status: experimental_preview`; successful assembly is not
+acceptance. Read `qa-summary.json`. Contact intervals omitted by an author
+remain unassessed. Strict key-pose identity metrics may also be unassessed;
+they are not silently upgraded from a shared palette. The live icon atlas
+does not yet meet every outline/value consistency gate.
+
+For actual browser checks, place `phaser-3.90.0.min.js` and optionally
+`pixi-8.6.6.min.js` under the local vendor folder, with their licenses. Run
+`node scripts/check_game_browser.js DEMO/phaser-demo PLAYWRIGHT_MODULE
+CHROMIUM_EXECUTABLE REPORT.json`. The check blocks external requests and
+tests hash/array atlas loads, every frame, runtime version, timing metadata,
+and events. Missing runtimes stay untested. Windows sandboxes that deny
+ancestor traversal may require Node's `--preserve-symlinks
+--preserve-symlinks-main` flags. No npm installation or CDN access occurs.
+
+`game_review.review_bundle(demo, out)` prepares eight blinded moving pairs,
+including damaged foot/color/seam controls and two identical pairs. The
+answer key is separate; do not expose it to reviewers. Automatic checks and
+an independent technical reviewer do not supply user taste votes. Wilson
+lower bounds remain null until real votes exist.

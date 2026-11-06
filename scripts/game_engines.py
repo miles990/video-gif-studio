@@ -55,7 +55,7 @@ def state_sidecar(states,packed):
     for m in states:
         count=len(m['frames']);frames=packed['frames'][offset:offset+count]
         result[m['state']]=dict(fps=m['fps'],loop=m['loop'],events=m.get('events',[]),pivot=m['pivot'],alpha_mode=m['alpha_mode'],pixel_scale=m.get('pixel_scale',1),
-            canvas=m['canvas'],frames=[dict(name=r['name'],page=f['page'],rect=f['rect'],duration_ms=r['duration_ms']) for r,f in zip(m['frames'],frames)])
+            canvas=m['canvas'],target_box=m.get('target_box'),root_motion=m.get('root_motion'),root_motion_mode=m.get('root_motion_mode','visual_displacement'),frames=[dict(name=r['name'],page=f['page'],rect=f['rect'],duration_ms=r['duration_ms']) for r,f in zip(m['frames'],frames)])
         offset+=count
     return result
 
@@ -105,6 +105,11 @@ func _ready():
     sprite.play(names[0])
 func _event():
     hit_flash.visible = false
+    var state = states[str(sprite.animation)]
+    if state.get("target_box") != null:
+        var b = state["target_box"]
+        hit_flash.position = sprite.position + (Vector2(b[0], b[1]) + sprite.offset) * sprite.scale
+        hit_flash.size = Vector2(b[2], b[3]) * sprite.scale
     for event in states[str(sprite.animation)]["events"]:
         if event["frame"] == sprite.frame:
             hit_flash.visible = true
@@ -185,7 +190,7 @@ def texturepacker(out,packed,states,sidecar,engine):
         for name,m in sidecar.items():
             base=min(f['duration_ms'] for f in m['frames'])
             anims.append(dict(key=name,frameRate=1000/base,repeat=-1 if m['loop'] else 0,
-                frames=[dict(key='atlas-'+str(next(i for i,p in enumerate(packed['pages']) if p['file']==f['page'])),frame=f['name'],duration=f['duration_ms']-base) for f in m['frames']],
+                frames=[dict(key='atlas-'+str(next(i for i,p in enumerate(packed['pages']) if p['file']==f['page'])),frame=f['name'],duration=f['duration_ms']) for f in m['frames']],
                 events=m['events'],pivot=m['pivot'],alpha_mode=m['alpha_mode'],pixel_scale=m['pixel_scale']))
         write(out/'anims.json',dict(anims=anims,globalTimeScale=1))
     return files
@@ -252,7 +257,7 @@ The YAML and decoded crops are checked; Unity engine loading is untested.
 Timing/events live in unity.animations.json; no fabricated .anim resources.
 
 Phaser: load each phaser-hash-NNN.json under atlas-N, then anims.fromJSON with
-anims.json. Frame `duration` is extra time beyond the state's base frame period.
+anims.json. Phaser 3.90 frame `duration` is the full frame period in milliseconds.
 Use pixelArt:true. On animationupdate, match zero-based frame indexes against
 events in phaser-hash.animations.json and emit the event name.
 PixiJS: load pixi-NNN.json; assemble cross-page animations using the sidecar.

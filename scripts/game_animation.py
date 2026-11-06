@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from image_common import ImageError,digest,read,write
-from game_character import rgba,quantize,originality
+from game_character import rgba,quantize,originality,require_alpha
 
 DEFAULTS={'idle':(8,8,True),'walk':(8,10,True),'run':(8,12,True),'jump':(12,12,False),'attack':(10,12,False),'hurt':(8,10,False),'death':(10,10,False)}
 KEY_POSES={
@@ -83,6 +83,8 @@ def attack_contact(frames,weapon_colors,target):
 def motion_qa(frames,manifest):
     if len(frames)<2:raise ImageError('E_FRAMES','At least two motion frames are required.')
     if len({im.size for im in frames})!=1:raise ImageError('E_CANVAS','All frames must share one canvas.')
+    if len(manifest.get('frames',[]))!=len(frames):raise ImageError('E_TIMING','Motion metadata must have one duration record per frame.')
+    if any(not isinstance(r.get('duration_ms'),(int,float)) or not math.isfinite(r['duration_ms']) or r['duration_ms']<=0 for r in manifest['frames']):raise ImageError('E_TIMING','Frame durations must be finite positive milliseconds.')
     w,h=frames[0].size;state=manifest.get('state','');c=centers(frames);issues=[]
     contact=contact_qa(frames,manifest);issues.extend(contact['issues'])
     alpha=[np.array(im)[...,3] for im in frames]
@@ -137,7 +139,8 @@ def motion_qa(frames,manifest):
         if record.get('source')=='inbetween' and record.get('adjacent_key_frames'):
             a,b=record['adjacent_key_frames'];limit=(np.count_nonzero(alpha[a])+np.count_nonzero(alpha[b]))/2*1.15
             if np.count_nonzero(alpha[i])>limit:issues.append(dict(kind='double_silhouette',frame=i))
-    return dict(status='FAIL' if issues else 'PASS',issues=issues,contacts=contact,grounded=grounded,vertical_amplitude_px=amplitude,bob_cycles=frequency,jump=jump,
+    missing_contact=state in ('idle','walk','run','attack','hurt') and contact['status']=='unassessed'
+    return dict(status='FAIL' if issues else 'unassessed' if missing_contact else 'PASS',issues=issues,unassessed=['semantic foot contact intervals'] if missing_contact else [],contacts=contact,grounded=grounded,vertical_amplitude_px=amplitude,bob_cycles=frequency,jump=jump,
                 seam_ratio=ratio,seam=seam_report,centers=c.tolist(),visual_review='pending')
 
 
@@ -165,17 +168,50 @@ def mesh_between(a,b,points_a,points_b,t):
     # Delaunay topology is fixed at the midpoint for either direction.
     middle=(pa+pb)/2;sub=cv2.Subdiv2D((0,0,w,h))
     for p in middle:sub.insert(tuple(map(float,p)))
-    src=pa if t<.5 else pb;image=np.array(a if t<.5 else b);result=np.zeros_like(image)
+    src=pa if t<.5 else pb;image=np.array(a if t<.5 else b)
+    # Build ONE inverse sampling field. Independently warping/pasting triangle
+    # images can erase neighboring opaque pixels along rounded raster edges.
+    yy,xx=np.indices((h,w),dtype=np.float32);map_x=xx.copy();map_y=yy.copy()
     for tri in sub.getTriangleList().reshape(-1,3,2):
         indices=[int(np.argmin(np.linalg.norm(middle-p,axis=1))) for p in tri]
         if any(np.linalg.norm(middle[i]-p)>.1 for i,p in zip(indices,tri)):continue
         st,dt=src[indices],dest[indices]
         if abs(cv2.contourArea(dt))<.1:continue
-        matrix=cv2.getAffineTransform(st,dt);warped=cv2.warpAffine(image,matrix,(w,h),flags=cv2.INTER_NEAREST,borderMode=cv2.BORDER_CONSTANT)
+        matrix=cv2.getAffineTransform(dt,st)
         mask=np.zeros((h,w),np.uint8);cv2.fillConvexPoly(mask,np.rint(dt).astype(np.int32),1)
-        result[mask>0]=warped[mask>0]
+        inside=mask>0
+        map_x[inside]=(matrix[0,0]*xx+matrix[0,1]*yy+matrix[0,2])[inside]
+        map_y[inside]=(matrix[1,0]*xx+matrix[1,1]*yy+matrix[1,2])[inside]
+    result=cv2.remap(image,map_x,map_y,cv2.INTER_NEAREST,borderMode=cv2.BORDER_CONSTANT)
     result[result[...,3]==0]=0
     return Image.fromarray(result)
+
+
+def layered_between(a,b,points_a,points_b,t,parts,left_index,right_index):
+    """Occlusion-aware authored parts with width-preserving nearest bone warps.
+
+    Crossing legs cannot share one continuous 2D mesh. Explicit polygons keep
+    their volume, and each part is sampled once without transparent crossfades.
+    """
+    aa=np.array(a);bb=np.array(b);layers=[];w,h=a.size
+    for part in parts:
+        ka,kb=part['keys'][left_index],part['keys'][right_index]
+        masks=[]
+        for record in (ka,kb):
+            mask=np.zeros((h,w),np.uint8);cv2.fillPoly(mask,[np.array(record['polygon'],np.int32)],1);masks.append(mask>0)
+        source=a if t<.5 else b;spec=ka if t<.5 else kb;mask=masks[0] if t<.5 else masks[1]
+        patch=np.array(source).copy();patch[~mask]=0;aa[masks[0]]=0;bb[masks[1]]=0
+        sa,sb=np.array(spec['axis'],float);ta=(1-t)*np.array(ka['axis'][0])+t*np.array(kb['axis'][0]);tb=(1-t)*np.array(ka['axis'][1])+t*np.array(kb['axis'][1])
+        sv=sb-sa;tv=tb-ta;sl=np.linalg.norm(sv);tl=np.linalg.norm(tv)
+        if min(sl,tl)<1:raise ImageError('E_POSE_PART','Part axes must have nonzero length.')
+        # Longitudinal length follows the authored poses; perpendicular width is
+        # retained, avoiding the needle-like leg produced by a folded body mesh.
+        source_basis=np.column_stack((sv/sl,[-sv[1]/sl,sv[0]/sl]));target_basis=np.column_stack((tv/sl,[-tv[1]/tl,tv[0]/tl]));linear=target_basis@source_basis.T
+        matrix=np.column_stack((linear,ta-linear@sa)).astype(np.float32)
+        warped=cv2.warpAffine(patch,matrix,(w,h),flags=cv2.INTER_NEAREST,borderMode=cv2.BORDER_CONSTANT);layers.append(Image.fromarray(warped))
+    result=mesh_between(Image.fromarray(aa),Image.fromarray(bb),points_a,points_b,t)
+    for layer in layers:result.alpha_composite(layer)
+    return result
 
 
 def previews(frames,durations,out,loop):
@@ -189,7 +225,8 @@ def previews(frames,durations,out,loop):
         file.write_bytes(raw.replace(b'!\xff\x0bNETSCAPE2.0\x03\x01\x00\x00\x00',b'',1))
     qc=verify(out/'preview.gif',frames,durations)
     frames[0].save(out/'preview.png',save_all=True,append_images=frames[1:],duration=durations,loop=0 if loop else 1,disposal=0,blend=0)
-    contact(frames,out/'contact.png');return qc
+    scale=max(1,min(4,192//max(frames[0].size)))
+    contact([im.resize((im.width*scale,im.height*scale),Image.Resampling.NEAREST) for im in frames],out/'contact.png');return qc
 
 
 def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),plan=None,fps=None):
@@ -214,10 +251,13 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
                 description=key.get('prompt',KEY_POSES[state][min(j,3)])
                 req=replace(request,refs=refs,prompt=f'{request.prompt or "Same original reference character"}. State {state}: {description}. ONE full-body key pose. Use front reference for identity and three-quarter reference for orientation. Same fixed camera, scale and {size[0]}x{size[1]} canvas, ground line y={contract["pivot"][1]}. Preserve all accessories and handedness. No text, no ghosting, transparent.',transparent=True,n=1)
                 generation=adapter.generate(req,folder/'generation'/str(j));source=Path(generation['assets'][0]['path']);sent=[digest(p) for p in refs];generations.append(generation)
-            im=rgba(source).resize(size,Image.Resampling.NEAREST)
+            im=rgba(source);require_alpha(im);im=im.resize(size,Image.Resampling.NEAREST)
             if contract.get('pixel'):im=quantize(im,palette)
             im.save(folder/'keys'/f'{j:02d}.png');keys.append(im)
-            key_records.append(dict(frame=index,file=f'keys/{j:02d}.png',refs_sent=sent,source_sha=digest(source),points=key.get('points') or silhouette_points(im),guide_source='annotated' if key.get('points') else 'silhouette_preview'))
+            from image_identity import compare
+            metrics=[compare(folder/'keys'/f'{j:02d}.png',ref) for ref in refs]
+            key_records.append(dict(frame=index,file=f'keys/{j:02d}.png',refs_sent=sent,source_sha=digest(source),points=key.get('points') or silhouette_points(im),guide_source='annotated' if key.get('points') else 'silhouette_preview',
+                identity=dict(status='pass' if metrics and all(m['bhattacharyya']<=.35 and m['orb_good_matches']>=25 for m in metrics) and contract.get('identity',{}).get('controls_valid') else 'unassessed',measurements=metrics)))
         frames=[];records=[];durations=spec.get('durations_ms',[round(1000/rate/10)*10]*count)
         if len(durations)!=count or any(not isinstance(v,(float,int)) or not math.isfinite(v) or v<20 for v in durations):raise ImageError('E_TIMING','Supply one finite duration >=20 ms per frame.')
         phases=spec.get('phases',[])
@@ -228,8 +268,18 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
                 left=max(j for j,k in enumerate(indices) if k<i);right=(left+1)%len(keys)
                 end=indices[right] if right else count;t=(i-indices[left])/(end-indices[left])
                 if not loop and right==0:im=keys[left].copy()
+                elif spec.get('rigid_parts'):im=layered_between(keys[left],keys[right],key_records[left]['points'],key_records[right]['points'],t,spec['rigid_parts'],left,right)
                 else:im=mesh_between(keys[left],keys[right],key_records[left]['points'],key_records[right]['points'],t)
                 record=dict(source='inbetween',key_index=left,next_key_index=right,method='nearest_piecewise_affine_pixel_displacement',adjacent_key_frames=[indices[left],indices[right]])
+                if spec.get('rigid_parts'):record['method']='nearest_layered_pose_displacement'
+                if spec.get('cleanup_inbetween_components'):
+                    # Explicitly reviewed sprite-only cleanup, never VFX. These
+                    # components are introduced by resampling, not source edits.
+                    a=np.array(im);n,labels,stats,_=cv2.connectedComponentsWithStats((a[...,3]>0).astype('uint8'),8);removed=[]
+                    for label in range(1,n):
+                        if stats[label,cv2.CC_STAT_AREA]<=2:
+                            yy,xx=np.where(labels==label);removed.extend([[int(x),int(y)] for x,y in zip(xx,yy)]);a[labels==label]=0
+                    im=Image.fromarray(a);record['reviewed_resampling_specks_removed']=removed
             frames.append(im);records.append(dict(index=i,file=f'frames/{i:05d}.png',duration_ms=durations[i],phase=phases[i] if phases else None,**record))
         manifest={**spec,'version':1,'state':state,'fps':rate,'loop':loop,'frames':records,'keys':key_records,'canvas':list(size),'pivot':contract['pivot'],'ground_line':spec.get('ground_line',contract['pivot'][1]),
                   'contacts':spec.get('contacts',[]),'events':spec.get('events',[]),'alpha_mode':'straight','pixel':contract.get('pixel',False),'pixel_scale':1,'fallback':'pixel_quantize' if contract.get('pixel') else 'mesh_inbetween',
@@ -241,5 +291,16 @@ def animate(adapter,request,charsheet,out,states=('idle','run','attack','hurt'),
         for i,im in enumerate(frames):im.save(folder/'frames'/f'{i:05d}.png')
         manifest['qa']=motion_qa(frames,manifest);manifest['gif_qc']=previews(frames,durations,folder,loop)
         write(folder/'anim.json',manifest);all_results[state]=manifest
+    if 'hurt' in all_results and 'idle' in all_results:
+        hurt=all_results['hurt'];images=[rgba(out/'hurt'/r['file']) for r in hurt['frames']]
+        median=float(np.median([frame_distance(a,b) for a,b in zip(images,images[1:])]))
+        distance=frame_distance(images[-1],rgba(out/'idle'/all_results['idle']['frames'][0]['file']))
+        hurt['qa']['idle_return']=dict(distance=distance,maximum=1.5*median,status='PASS' if distance<=1.5*median else 'FAIL')
+        if distance>1.5*median:hurt['qa']['issues'].append(dict(kind='hurt_idle_transition'));hurt['qa']['status']='FAIL'
+        write(out/'hurt/anim.json',hurt)
+    if 'run' in all_results and 'walk' in all_results:
+        run=all_results['run'];run_amp=run['qa']['vertical_amplitude_px'];walk_amp=all_results['walk']['qa']['vertical_amplitude_px']
+        if run_amp<walk_amp:
+            run['qa']['issues'].append(dict(kind='run_bob_less_than_walk',run=run_amp,walk=walk_amp));run['qa']['status']='FAIL';write(out/'run/anim.json',run)
     write(out/'gen-manifest.json',dict(status='experimental',originality=contract.get('originality'),states=list(all_results),generations=generations,review='pending'))
     return dict(states={name:dict(path=str(out/name/'anim.json'),qa=m['qa']) for name,m in all_results.items()},status='experimental')

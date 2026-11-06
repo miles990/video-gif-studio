@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 from PIL import Image,ImageDraw
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from game_character import originality,palette_of,quantize,expressions_qa
+from game_character import originality,palette_of,quantize,expressions_qa,asymmetry_qa
 from image_common import ImageError
 
 
@@ -29,6 +29,12 @@ class CharacterTests(unittest.TestCase):
         im=Image.new('RGBA',(64,64),'orange');other=im.copy();ImageDraw.Draw(other).rectangle((0,50,63,63),fill='blue')
         r=expressions_qa(im,{'a':im,'b':other},(10,10,20,20))
         self.assertEqual(r['status'],'fail');self.assertFalse(r['outside'][1]['pass_outside']);self.assertFalse(r['face_pairs'][0]['different'])
+
+    def test_anatomical_marker_must_not_be_mirrored(self):
+        im=Image.new('RGBA',(64,64),'orange');ImageDraw.Draw(im).rectangle((37,14,39,20),fill='#FF2BD6')
+        f=[dict(feature='character-left scar',color='#FF2BD6',regions={'front':[32,10,16,15]})]
+        self.assertEqual(asymmetry_qa({'front':im},f)['status'],'PASS')
+        self.assertEqual(asymmetry_qa({'front':im.transpose(Image.Transpose.FLIP_LEFT_RIGHT)},f)['status'],'FAIL')
 
 
 if __name__=='__main__':unittest.main()
