@@ -45,3 +45,6 @@ class LiveCliTests(ImageCase):
   with patch('image_alpha.choose_backing',return_value=([0,255,0],100)):
    report=transparent_asset(self.adapter,self.request(),self.path/'asset')
   self.assertTrue(report['fake_transparency_detected'])
+  self.assertEqual(report['alpha_source'],'matted')
+  self.assertEqual(report['status'],'needs_review')  # fake CLI has no vision answer
+  self.assertFalse(report['ok']);self.assertTrue(report['asset'].endswith('.needs-review.png'))

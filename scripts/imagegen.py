@@ -68,6 +68,7 @@ def main(argv=None):
         motion.add_argument('--frames',type=int,default=48);motion.add_argument('--frame-ms',type=int,default=40);motion.add_argument('--size');motion.add_argument('--json',action='store_true')
         ing=sub.add_parser('ingest');ing.add_argument('gif',type=Path);ing.add_argument('--out',required=True,type=Path);ing.add_argument('--json',action='store_true')
         alpha=sub.add_parser('alpha');alpha.add_argument('image',type=Path);alpha.add_argument('--out',type=Path);alpha.add_argument('--cleanup',action='store_true');alpha.add_argument('--json',action='store_true')
+        alpha.add_argument('--codex');alpha.add_argument('--timeout',type=float,default=120)
         e=sub.add_parser('edit');options(e);e.add_argument('--image',type=Path,required=True);e.add_argument('--instruction',required=True)
         e.add_argument('--region');e.add_argument('--markup',type=Path);e.add_argument('--feather',type=int,default=8)
         d=sub.add_parser('delta');options(d);d.add_argument('storyboard',type=Path);d.add_argument('--draft',required=True);d.add_argument('--markup',type=Path);d.add_argument('--feedback',type=Path)
@@ -106,12 +107,19 @@ def main(argv=None):
         if a.command=='alpha':
             from PIL import Image
             from image_alpha import alpha_qa,cleanup
+            from image_hole_judge import SubscriptionHoleJudge
+            folder=(a.out.parent if a.out else Path('.scratch/alpha-reviews')).resolve()
+            folder.mkdir(parents=True,exist_ok=True)
+            cmd=[sys.executable,a.codex] if a.codex and a.codex.endswith('.py') else a.codex
+            judge=SubscriptionHoleJudge(Adapter(folder/'judge-state',codex=cmd,timeout=a.timeout))
+            overlay_path=folder/(a.image.stem+'.holes.png')
             with Image.open(a.image) as im:
                 if a.cleanup:
                     if not a.out:raise ImageError('E_ARGUMENT','Cleanup requires --out PNG.')
-                    cleaned,result=cleanup(im);a.out.parent.mkdir(parents=True,exist_ok=True);cleaned.save(a.out)
-                else:result=alpha_qa(im)
-            print(json.dumps(dict(ok=True,result=result)));return 0 if (result.get('after',result)['status']=='PASS') else 2
+                    cleaned,result=cleanup(im,judge=judge,overlay_path=overlay_path);a.out.parent.mkdir(parents=True,exist_ok=True);cleaned.save(a.out)
+                else:result=alpha_qa(im,judge=judge,overlay_path=overlay_path)
+            status=result.get('after',result)['status']
+            print(json.dumps(dict(ok=status=='PASS',result=result)));return 0 if status=='PASS' else 3 if status=='needs_review' else 2
         if a.command in ('motion','ingest'):
             from image_motion import loop_keyframes,ingest_gif
             if a.command=='motion':result=loop_keyframes(a.keyframes,a.out,a.frames,a.frame_ms,tuple(map(int,a.size.split('x'))) if a.size else None)
@@ -173,6 +181,8 @@ def main(argv=None):
         else:
             from image_usage import summarize
             result=summarize(adapter.records(),a.since,a.round,a.run_id)
+        if result.get('status')=='needs_review':
+            print(json.dumps(dict(ok=False,status='needs_review',result=result),ensure_ascii=False));return 3
         print(json.dumps(dict(ok=True,result=result),ensure_ascii=False));return 0
     except (ImageError,OSError,ValueError,KeyError,TypeError) as exc:
         error=exc.error if isinstance(exc,ImageError) else ImageError('E_IMAGE',str(exc)).error

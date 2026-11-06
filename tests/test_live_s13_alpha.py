@@ -1,4 +1,4 @@
-from image_fixtures import ImageCase,ROOT
+from image_fixtures import ImageCase,ROOT,intended_gaps
 from image_alpha import cleanup,alpha_qa
 from PIL import Image,ImageDraw
 import numpy as np
@@ -6,7 +6,7 @@ LIVE=ROOT/'tests/fixtures/live-s13'
 class LiveAlphaTests(ImageCase):
  def test_live_probe_negative_space_and_specks(self):
   with Image.open(LIVE/'sprite/native/image-1.png') as im:
-   result,report=cleanup(im)
+   result,report=cleanup(im,judge=intended_gaps)
   self.assertEqual(report['after']['status'],'PASS',report)
   self.assertGreater(report['removed_speck_pixels']+report['removed_haze_pixels'],0)
   self.assertGreater(report['after']['designed_negative_space_pixels'],0)
@@ -21,6 +21,6 @@ class LiveAlphaTests(ImageCase):
   qa=alpha_qa(im);self.assertIn('interior_holes',qa['issues']);self.assertEqual(qa['designed_negative_space_pixels'],0)
 
  def test_original_probe_also_passes_cleanup(self):
-  with Image.open(LIVE/'probe-alpha.png') as im:_,report=cleanup(im)
+  with Image.open(LIVE/'probe-alpha.png') as im:_,report=cleanup(im,judge=intended_gaps)
   self.assertEqual(report['after']['status'],'PASS',report)
   self.assertGreater(report['removed_speck_pixels']+report['removed_haze_pixels'],0)

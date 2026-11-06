@@ -10,6 +10,10 @@ sys.path.insert(0,str(ROOT/'scripts'))
 from image_route import Adapter,Request
 from image_common import read,write
 
+def intended_gaps(_path,regions):
+    """Explicit fake judge for labelled positive controls, never a live judge."""
+    return {'regions':[{'id':r['id'],'classification':'intended_gap','reason':'labelled positive test control'} for r in regions]}
+
 FAKE='''import json,os,sys,time
 from pathlib import Path
 base=Path(__file__).parent

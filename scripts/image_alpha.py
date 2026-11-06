@@ -61,7 +61,32 @@ def nearest_opaque(a):
     return colors[labels],distance
 
 
-def alpha_qa(image):
+def enclosed_regions(alpha):
+    """A zero-alpha core stays enclosed even beside a translucent channel.
+
+    Also review substantial translucent defects that contain no zero core.
+    Only <=4-pixel cores are ignored as raster specks; no shape grants approval.
+    """
+    result=np.zeros(alpha.shape,np.int32);regions=[]
+    for binary,translucent in ((alpha==0,False),(alpha<250,True)):
+        n,labels,stats,_=cv2.connectedComponentsWithStats(binary.astype('uint8'),8)
+        boundary=set(np.unique(np.r_[labels[0],labels[-1],labels[:,0],labels[:,-1]]))
+        for label in range(1,n):
+            if label in boundary:continue
+            area=int(stats[label,cv2.CC_STAT_AREA])
+            if area<=4:continue
+            component=labels==label;values=alpha[component]
+            if translucent and (np.any(values==0) or not np.any(values<=128)):continue
+            depth=cv2.distanceTransform(component.astype('uint8'),cv2.DIST_L2,5)
+            if translucent and depth.max()<2:continue
+            cy,cx=np.unravel_index(depth.argmax(),depth.shape);index=len(regions)+1
+            result[component]=index
+            regions.append(dict(id=index,label=index,area=area,center=[int(cx),int(cy)],radius_px=float(depth.max()),
+                                translucent=translucent,designed=False))
+    return result,regions
+
+
+def alpha_qa(image,judge=None,overlay_path=None):
     from shot_match import lab,delta_e
     a,_=clear_haze(np.array(image.convert('RGBA')));alpha=a[...,3];visible=alpha>NEAR_ZERO_ALPHA
     frame=np.zeros(alpha.shape,bool);frame[:2]=True;frame[-2:]=True;frame[:,:2]=True;frame[:,-2:]=True
@@ -77,48 +102,50 @@ def alpha_qa(image):
     center=(alpha>=128).astype('uint8');outer=cv2.dilate(center,np.ones((7,7),np.uint8)).astype(bool)&~center.astype(bool)
     luma=a[...,:3]@np.array([.2126,.7152,.0722])*(alpha/255)
     black_outer=float(luma[outer].mean()) if outer.any() else 0.
-    # Enclosed nonopaque components; outside-connected alpha is not an interior hole.
-    hn,hl,hs,_=cv2.connectedComponentsWithStats((alpha<250).astype('uint8'),8)
-    boundary=set(np.unique(hl[frame]));holes=0;negative_space=0;body_holes=0;geometry=[]
-    exterior=np.isin(hl,list(boundary))
-    wall_distance=cv2.distanceTransform((~exterior).astype('uint8'),cv2.DIST_L2,5)
-    for i in range(1,hn):
-        if i in boundary:continue
-        area=int(hs[i,cv2.CC_STAT_AREA]);values=alpha[hl==i]
-        component=hl==i
-        radius=float(cv2.distanceTransform(component.astype('uint8'),cv2.DIST_L2,5).max())
-        bridge=float(wall_distance[component].min())
-        _,_,w,h,_=hs[i];elongation=max(w,h)/max(1,min(w,h))
-        # A thin enclosing ring or elongated limb gap opens into the exterior
-        # after crossing a narrow wall. Deep, compact body holes do not.
-        thin,median_wall=wall_profile(component,exterior) if radius>=2 else (0,0)
-        # Compact holes in opaque body/shaft material are not limb gaps, even
-        # when the body is longer in one direction. A limb-bounded gap is
-        # elongated/angular relative to its inscribed disk AND has thin walls.
-        shape_extent=area/max(np.pi*radius*radius,1)
-        limb_gap=shape_extent>=1.4 and ((elongation>=1.4 and bridge<=2*radius) or thin<median_wall/2)
-        designed=(values<=NEAR_ZERO_ALPHA).any() and (bridge<=radius or limb_gap)
-        geometry.append(dict(area=area,radius_px=radius,wall_px=bridge,elongation=float(elongation),shape_extent=float(shape_extent),minimum_ray_wall=thin,median_ray_wall=median_wall,designed=bool(designed)))
-        if designed:
-            negative_space+=area
-        else:
-            holes+=area
-            if radius>=2:body_holes+=1
+    # Enumerate transparent cores independently of translucent edge channels.
+    hl,regions=enclosed_regions(alpha)
+    holes=0;negative_space=0;body_holes=0;geometry=regions
+    review=dict(status='not_needed',regions=[]);pending=False
+    if regions:
+        from image_hole_judge import overlay,validate
+        if overlay_path is None:
+            import hashlib
+            overlay_path=Path(__file__).resolve().parents[1]/'.scratch/alpha-reviews'/(hashlib.sha256(a.tobytes()).hexdigest()+'.png')
+        review=dict(status='needs_review',overlay_path=overlay(Image.fromarray(a),hl,regions,overlay_path),regions=regions)
+        answers={}
+        try:
+            if judge is None:raise ValueError('Subscription vision judge unavailable; geometry cannot approve enclosed regions.')
+            answers=validate(judge(review['overlay_path'],regions),regions)
+            review['answers']=list(answers.values());review['status']='assessed'
+        except Exception as exc:
+            # A provider/decoder failure cannot turn semantic uncertainty into
+            # either approval or a crash. KeyboardInterrupt still propagates.
+            review['reason']=str(exc)
+        for region in regions:
+            classification=answers.get(region['id'],{}).get('classification','uncertain')
+            region['classification']=classification
+            if classification=='intended_gap':
+                negative_space+=region['area'];region['designed']=True
+            else:
+                holes+=region['area']
+                if classification=='body_hole':body_holes+=1
+                else:pending=True
+        if pending:review['status']='needs_review'
     hole_ratio=holes/max(largest,1)
     issues=[]
     if fake:issues.append('fake_transparency')
     if not .15<=fraction<=.90:issues.append('transparent_fraction')
     if clear_border<.99:issues.append('clipped_border')
     if specks>.001:issues.append('isolated_specks')
-    if body_holes or hole_ratio>.005:issues.append('interior_holes')
+    if body_holes or pending or hole_ratio>.005:issues.append('interior_holes')
     if halo_good is not None and halo_good<.95 or black_outer>8:issues.append('halo')
-    return dict(status='PASS' if not issues else 'FAIL',issues=issues,fake_transparency=fake,
+    return dict(status='needs_review' if pending else ('PASS' if not issues else 'FAIL'),hole_review=review,issues=issues,fake_transparency=fake,
                 transparent_fraction=fraction,clear_border_fraction=clear_border,speck_ratio=specks,
                 interior_hole_ratio=hole_ratio,designed_negative_space_pixels=negative_space,halo_good_fraction=halo_good,black_outer_luma=black_outer,
                 fractional_alpha_pixels=int(np.sum((alpha>0)&(alpha<255))),hole_geometry=geometry,near_zero_alpha=NEAR_ZERO_ALPHA,visual_review='pending')
 
 
-def cleanup(image):
+def cleanup(image,judge=None,overlay_path=None):
     from shot_match import lab,delta_e
     a,haze_removed=clear_haze(np.array(image.convert('RGBA')));before=alpha_qa(image)
     original=a.copy()
@@ -154,7 +181,7 @@ def cleanup(image):
         recolored=int(bad.sum());a[...,:3][bad]=nearest[bad]
     a,final_haze=clear_haze(a);haze_removed+=final_haze
     result=Image.fromarray(a)
-    return result,dict(before=before,after=alpha_qa(result),removed_haze_pixels=haze_removed,removed_speck_pixels=removed,despilled_pixels=recolored,hard_sticker_edge_cleanup=hard_sticker,
+    return result,dict(before=before,after=alpha_qa(result,judge=judge,overlay_path=overlay_path),removed_haze_pixels=haze_removed,removed_speck_pixels=removed,despilled_pixels=recolored,hard_sticker_edge_cleanup=hard_sticker,
                        alpha_policy='preserve graded alpha except isolated components; straight RGB edge despill')
 
 
@@ -197,8 +224,17 @@ def transparent_asset(adapter,req,out,approval=None,max_usd=0,no_cache=False):
         source=Path(raw['assets'][0]['path'])
         with Image.open(source) as im:native=matte_uniform(im,backing)
         alpha_source='matted';fallback='solid_background_chroma_matte'
-    cleaned,clean_report=cleanup(native)
+    from image_hole_judge import SubscriptionHoleJudge
+    judge=SubscriptionHoleJudge(adapter) if req.route in ('codex','auto') else None
+    cleaned,clean_report=cleanup(native,judge=judge,overlay_path=out/'alpha-holes.png')
     clean_report['fake_transparency_detected']=report['fake_transparency']
+    provenance=dict(fake_transparency_detected=report['fake_transparency'],native_alpha_qa=report,
+                    alpha_source=alpha_source,fallback=fallback,matting_background=backing,cleanup=clean_report,
+                    derived_from=dict(sha256=digest(source),**c2pa(source)),ai_generated=True)
+    if clean_report['after']['status']=='needs_review':
+        cleaned.save(out/'asset.needs-review.png');write(out/'alpha-qa.json',clean_report)
+        result=dict(raw,**provenance,status='needs_review',ok=False,asset=str(out/'asset.needs-review.png'))
+        write(out/'gen-manifest.json',result);return result
     if clean_report['after']['status']!='PASS':
         adapter.invalidate(raw['cache_key'],'final alpha QA failed')
         write(out/'alpha-qa.json',clean_report)
@@ -210,6 +246,5 @@ def transparent_asset(adapter,req,out,approval=None,max_usd=0,no_cache=False):
     verify(out/'asset.gif',[Image.fromarray(binary)],[100])
     for name,color in [('black',(0,0,0,255)),('white',(255,255,255,255)),('magenta',(255,0,255,255))]:
         composite=Image.new('RGBA',cleaned.size,color);composite.alpha_composite(cleaned);composite.convert('RGB').save(out/f'on-{name}.png')
-    result=dict(raw,fake_transparency_detected=report['fake_transparency'],native_alpha_qa=report,alpha_source=alpha_source,fallback=fallback,matting_background=backing,cleanup=clean_report,
-                derived_from=dict(sha256=digest(source),**c2pa(source)),asset=str(out/'asset.png'),ai_generated=True)
+    result=dict(raw,**provenance,asset=str(out/'asset.png'))
     write(out/'gen-manifest.json',result);write(out/'alpha-qa.json',clean_report);return result

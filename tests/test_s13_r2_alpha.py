@@ -1,4 +1,4 @@
-from image_fixtures import ImageCase, ROOT
+from image_fixtures import ImageCase, ROOT,intended_gaps
 from image_alpha import cleanup, alpha_qa
 from PIL import Image, ImageDraw
 import numpy as np
@@ -20,7 +20,7 @@ class AlphaRound2(ImageCase):
 
  def test_native_akimbo_and_ring(self):
   for name in ('sprite','sprite2','key'):
-   with Image.open(LIVE/name/'native/image-1.png') as im: result,qa=cleanup(im)
+   with Image.open(LIVE/name/'native/image-1.png') as im: result,qa=cleanup(im,judge=intended_gaps)
    self.assertEqual(qa['after']['status'],'PASS',(name,qa))
    self.assertGreater(qa['after']['designed_negative_space_pixels'],0)
    a=np.array(result)[...,3]
