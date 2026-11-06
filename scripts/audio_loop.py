@@ -34,9 +34,13 @@ def decode(path):
     return np.frombuffer(r.stdout,'<f4').reshape(-1,2).copy()
 
 
-def encode(path,x,rate=RATE):
+def encode(path,x,rate=RATE,loop_points=None):
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     opts=['-c:a','libvorbis','-q:a','6'] if path.suffix=='.ogg' else ['-c:a','pcm_s16le']
+    if loop_points is not None and path.suffix=='.ogg':
+        start,end=loop_points
+        if not 0<=start<end<=len(x):raise ValueError('Invalid exclusive loop points')
+        opts+=['-metadata',f'LOOPSTART={start}','-metadata',f'LOOPLENGTH={end-start}']
     subprocess.run([executable('ffmpeg'),'-v','error','-y','-f','f32le','-ar',str(rate),'-ac','2','-i','pipe:0',*opts,str(path)],input=np.asarray(x,dtype='<f4').tobytes(),capture_output=True,check=True)
 
 
@@ -184,7 +188,7 @@ def export(source,out,bpm,meter='4/4',provenance=None,allow_failed=False):
         beats_per_bar=int(meter.split('/')[0]),bar_count=report['bar_count'],bar_markers_ms=[t/48 for t in markers],
         engine_load={e:'untested' for e in ('godot4','unity','fmod','wwise')},formats={},source=provenance,qa=report)
     for fmt in ('wav','ogg'):
-        path=out/(name+'.'+fmt);encode(path,x)
+        path=out/(name+'.'+fmt);encode(path,x,loop_points=(0,len(x)))
         if fmt=='wav':riff_markers(path,len(x),markers)
         decoded=decode(path);q=check(decoded,bpm,meter,measured_bpm=provenance.get('measured_bpm'),source_format=fmt)
         q['sample_count_matches']=len(decoded)==len(x)
@@ -198,13 +202,22 @@ def export(source,out,bpm,meter='4/4',provenance=None,allow_failed=False):
 
 
 def main(argv=None):
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('action',choices=('check','export'));p.add_argument('source',type=Path)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('action',choices=('check','make','export'));p.add_argument('source',type=Path)
     p.add_argument('--bpm',required=True,type=float);p.add_argument('--measured-bpm',type=float);p.add_argument('--meter',default='4/4');p.add_argument('--out',type=Path)
     p.add_argument('--provenance',type=Path);p.add_argument('--json',action='store_true');p.add_argument('--experimental',action='store_true')
     a=p.parse_args(argv)
     try:
         if not a.experimental:raise ImageError('E_EXPERIMENTAL','Audio loop tools require --experimental')
-        r=check(decode(a.source),a.bpm,a.meter,measured_bpm=a.measured_bpm,source_format=a.source.suffix[1:]) if a.action=='check' else export(a.source,a.out,a.bpm,a.meter,read(a.provenance))
+        if a.action=='make':
+            from audio_loop_make import make_loop
+            if not a.out:raise ValueError('--out WAV path is required')
+            y,r=make_loop(decode(a.source),a.bpm,a.meter)
+            encode(a.out,y)
+            r['decoded_qa']=check(decode(a.out),a.bpm,a.meter,measured_bpm=r['grid']['bpm'])
+            write(a.out.with_suffix('.make.json'),r)
+            r['status']=r['decoded_qa']['status']
+        else:
+            r=check(decode(a.source),a.bpm,a.meter,measured_bpm=a.measured_bpm,source_format=a.source.suffix[1:]) if a.action=='check' else export(a.source,a.out,a.bpm,a.meter,read(a.provenance))
         print(json.dumps(r));return 0 if r.get('status',r.get('qa',{}).get('status'))=='PASS' else 1
     except (ValueError,OSError,subprocess.SubprocessError) as e:
         print(json.dumps(dict(error=getattr(e,'error',dict(code='E_AUDIO',message=str(e))))));return 2

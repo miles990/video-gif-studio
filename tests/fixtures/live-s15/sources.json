@@ -1,0 +1,200 @@
+{
+  "explore": {
+    "source_file": "explore-0.wav",
+    "source_sha256": "a19896705222388995bb0f1c0ce5aba3dfa2368d37b72e69310b105a6fa14dcb",
+    "start_sample": 341578,
+    "end_sample": 581578,
+    "sample_rate": 48000,
+    "excerpt_sha256": "da8c04e5893166a85eb341886aff6fa7d4309919180f1de692da111716263aaf",
+    "local_grid": {
+      "bpm": 120.06093482561296,
+      "beat_samples": 23987.819220158202,
+      "downbeat_sample": 24000,
+      "beat_phase_sample": 5632,
+      "bar_samples": 95951.27688063281,
+      "meter": "4/4",
+      "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+      "downbeat_source": "local_estimate",
+      "listening_review": "pending",
+      "tempo_candidates": [
+        {
+          "bpm": 120.0,
+          "strength": 130024.92824484379
+        },
+        {
+          "bpm": 80.0,
+          "strength": 110647.76775123188
+        },
+        {
+          "bpm": 160.0,
+          "strength": 67623.85725044661
+        },
+        {
+          "bpm": 176.47058823529412,
+          "strength": 57137.60338414425
+        },
+        {
+          "bpm": 181.8181818181818,
+          "strength": 57087.002115962954
+        }
+      ],
+      "accent_strength": [
+        34.79608128802213,
+        24.190502924726886,
+        29.405523791551307,
+        35.40756444345144
+      ]
+    },
+    "source_grid": {
+      "bpm": 120.06093482561296,
+      "beat_samples": 23987.819220158202,
+      "downbeat_sample": 77595,
+      "beat_phase_sample": 5632,
+      "bar_samples": 95951.27688063281,
+      "meter": "4/4",
+      "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+      "downbeat_source": "local_estimate",
+      "listening_review": "pending",
+      "tempo_candidates": [
+        {
+          "bpm": 120.0,
+          "strength": 130024.92824484379
+        },
+        {
+          "bpm": 80.0,
+          "strength": 110647.76775123188
+        },
+        {
+          "bpm": 160.0,
+          "strength": 67623.85725044661
+        },
+        {
+          "bpm": 176.47058823529412,
+          "strength": 57137.60338414425
+        },
+        {
+          "bpm": 181.8181818181818,
+          "strength": 57087.002115962954
+        }
+      ],
+      "accent_strength": [
+        34.79608128802213,
+        24.190502924726886,
+        29.405523791551307,
+        35.40756444345144
+      ]
+    },
+    "crossfade_samples": 12000
+  },
+  "battle": {
+    "source_file": "battle-0.wav",
+    "source_sha256": "264f6e5572344f2c2d727e07d3eb4b53c217c895cede9a2243dacf3d4b7cfc3c",
+    "start_sample": 190452,
+    "end_sample": 430452,
+    "sample_rate": 48000,
+    "excerpt_sha256": "b73afd2d83bd40e169d9e056053639779cb100f77c3e101dd30d2a2d147b0b72",
+    "local_grid": {
+      "bpm": 120.19319250938358,
+      "beat_samples": 23961.423603713298,
+      "downbeat_sample": 24000,
+      "beat_phase_sample": 22456,
+      "bar_samples": 95845.69441485319,
+      "meter": "4/4",
+      "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+      "downbeat_source": "local_estimate",
+      "listening_review": "pending",
+      "tempo_candidates": [
+        {
+          "bpm": 120.0,
+          "strength": 553769.2471296024
+        },
+        {
+          "bpm": 160.0,
+          "strength": 501148.5997993165
+        },
+        {
+          "bpm": 80.0,
+          "strength": 494232.99992349953
+        },
+        {
+          "bpm": 96.0,
+          "strength": 238032.27324471128
+        },
+        {
+          "bpm": 68.57142857142857,
+          "strength": 187399.93713237986
+        }
+      ],
+      "accent_strength": [
+        74.7077666532227,
+        29.777510157228864,
+        31.783037026352723,
+        60.40601770164884
+      ]
+    },
+    "source_grid": {
+      "bpm": 120.19319250938358,
+      "beat_samples": 23961.423603713298,
+      "downbeat_sample": 22456,
+      "beat_phase_sample": 22456,
+      "bar_samples": 95845.69441485319,
+      "meter": "4/4",
+      "method": "5ms log spectral flux autocorrelation + metrical accent phase",
+      "downbeat_source": "local_estimate",
+      "listening_review": "pending",
+      "tempo_candidates": [
+        {
+          "bpm": 120.0,
+          "strength": 553769.2471296024
+        },
+        {
+          "bpm": 160.0,
+          "strength": 501148.5997993165
+        },
+        {
+          "bpm": 80.0,
+          "strength": 494232.99992349953
+        },
+        {
+          "bpm": 96.0,
+          "strength": 238032.27324471128
+        },
+        {
+          "bpm": 68.57142857142857,
+          "strength": 187399.93713237986
+        }
+      ],
+      "accent_strength": [
+        74.7077666532227,
+        29.777510157228864,
+        31.783037026352723,
+        60.40601770164884
+      ]
+    },
+    "crossfade_samples": 24000
+  },
+  "level-up-0": {
+    "source_file": "level-up-0.wav",
+    "source_sha256": "0edc8257158687add4af92628e7d856e898ed84418f488ce9d2812f3a1f74593",
+    "start_sample": 0,
+    "end_sample": 211200,
+    "sample_rate": 48000,
+    "excerpt_sha256": "6bf5ebec25b5794c537bc6f6b634a95778474562d8f8df0f9a1623d8cef662d0"
+  },
+  "victory-1": {
+    "source_file": "victory-1.wav",
+    "source_sha256": "948ccd19362fe05acd75a839c493d26729496ff96c534ccef6f38a0a34ba2dcc",
+    "start_sample": 0,
+    "end_sample": 168960,
+    "sample_rate": 48000,
+    "excerpt_sha256": "c26a54598e42440671d441ae51e613f1fc5e6f96c3855622be0ba1ed65d9d305"
+  },
+  "confirm-0": {
+    "source_file": "confirm-0.wav",
+    "source_sha256": "eb3359fcc304e6b962a232b4aac417609480b575a33a75c67d772c18d84e04d2",
+    "start_sample": 0,
+    "end_sample": 96000,
+    "sample_rate": 48000,
+    "excerpt_sha256": "6d8ac11fd1f748ded1145160ac613d25bd209a182e5131e9c8c2773156371168"
+  }
+}
