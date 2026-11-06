@@ -129,7 +129,7 @@ def sample_frames(source, info, fps):
     return images,times,cursor
 
 
-def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
+def inspect_frames(images, times_ms, duration_ms, beats_ms=(), cuts_only=False):
     """Bounded thumbnails; median chroma rejects subject motion and brightness accents."""
     rgb = np.asarray([np.asarray(im.convert('RGB').resize((160,90)),np.float32) for im in images])
     n = len(rgb); times = np.asarray(times_ms); step = float(np.median(np.diff(times))) if n>1 else 40.
@@ -231,6 +231,8 @@ def inspect_frames(images, times_ms, duration_ms, beats_ms=()):
                 motions.append({'time_ms':float(times[center]),'direction':'horizontal','confidence':.6,'review':True})
         cuts.append({'time_ms':float(times[center]),'type':kind,'confidence':confidence,'duration_ms':max(80,float(times[b]-times[a]+step*2)) if kind!='cut' else 0,'review':confidence<.8})
     cuts.sort(key=lambda c:c['time_ms'])
+    if cuts_only:
+        return integer_times({'cuts':cuts,'flashes':flashes})
     # Compare to the first exposure, not only adjacent frames: codec keyframes can
     # make a persistent small quality step. One isolated outlier is tolerated;
     # cumulative drift in genuinely moving footage still ends the hold.

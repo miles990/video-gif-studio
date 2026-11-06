@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "planning.md storyboard (backward compatible optional cinematography fields)",
+  "type": "object",
+  "required": [
+    "shots"
+  ],
+  "properties": {
+    "shots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "start": {
+            "type": "number",
+            "minimum": 0
+          },
+          "end": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "duration": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "duration_ms": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "size": {
+            "enum": [
+              "EWS",
+              "WS",
+              "MS",
+              "CU",
+              "ECU"
+            ]
+          },
+          "angle": {
+            "type": "number"
+          },
+          "lens": {
+            "enum": [
+              "wide",
+              "standard",
+              "telephoto"
+            ]
+          },
+          "motion": {
+            "enum": [
+              "static",
+              "push",
+              "pull",
+              "pan",
+              "tilt",
+              "dolly",
+              "crane",
+              "handheld",
+              "crash_in",
+              "crash_out",
+              "expo_in",
+              "smooth_in",
+              "whip",
+              "punch",
+              "drift",
+              "spring_in"
+            ]
+          },
+          "direction": {
+            "enum": [
+              "left-to-right",
+              "right-to-left",
+              "neutral"
+            ]
+          },
+          "axis": {
+            "type": "string"
+          },
+          "composition": {
+            "type": [
+              "string",
+              "object"
+            ]
+          },
+          "lighting": {
+            "type": "string"
+          },
+          "color_script": {
+            "type": "string"
+          },
+          "sound": {
+            "type": "object",
+            "properties": {
+              "energy": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "audio_lead_ms": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "audio_tail_ms": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "intent": {
+            "type": "string"
+          },
+          "recipe": {
+            "type": [
+              "object",
+              "string",
+              "null"
+            ]
+          },
+          "perceived": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "transition": {
+            "type": [
+              "object",
+              "string",
+              "null"
+            ]
+          },
+          "why": {
+            "type": "string"
+          },
+          "serves_core": {
+            "type": "string"
+          },
+          "beats": {
+            "type": "array"
+          },
+          "rule_break": {
+            "type": [
+              "object",
+              "array"
+            ]
+          }
+        }
+      }
+    },
+    "fps": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  }
+}

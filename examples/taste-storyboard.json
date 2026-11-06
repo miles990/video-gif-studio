@@ -1,0 +1,179 @@
+{
+  "core": "Arrival into a crowded station",
+  "design_curve": [
+    [
+      0,
+      0.1
+    ],
+    [
+      4,
+      0.3
+    ],
+    [
+      7,
+      0.5
+    ],
+    [
+      9,
+      0.9
+    ],
+    [
+      10,
+      1
+    ],
+    [
+      11,
+      0.8
+    ],
+    [
+      12,
+      0.2
+    ],
+    [
+      16,
+      0.2
+    ]
+  ],
+  "fps": 30,
+  "shots": [
+    {
+      "action": "Walk",
+      "duration": 4,
+      "id": "0",
+      "lighting": "window light",
+      "motion": "static",
+      "reference_id": "traveler",
+      "size": "WS",
+      "sound": {
+        "energy": 0.1
+      },
+      "why": "Show the next phase of arrival"
+    },
+    {
+      "action": "Walk",
+      "duration": 3,
+      "id": "1",
+      "lighting": "window light",
+      "motion": "pan",
+      "reference_id": "traveler",
+      "size": "MS",
+      "sound": {
+        "energy": 0.3
+      },
+      "why": "Show the next phase of arrival"
+    },
+    {
+      "action": "Walk",
+      "duration": 2,
+      "id": "2",
+      "lighting": "window light",
+      "motion": "push",
+      "reference_id": "traveler",
+      "size": "CU",
+      "sound": {
+        "energy": 0.5
+      },
+      "why": "Show the next phase of arrival"
+    },
+    {
+      "action": "Walk",
+      "duration": 1,
+      "id": "3",
+      "lighting": "window light",
+      "motion": "push",
+      "reference_id": "traveler",
+      "size": "WS",
+      "sound": {
+        "energy": 0.9
+      },
+      "why": "Show the next phase of arrival"
+    },
+    {
+      "action": "Walk",
+      "duration": 1,
+      "id": "4",
+      "intent": "hit",
+      "lighting": "window light",
+      "motion": "static",
+      "recipe": {
+        "name": "impact",
+        "perceived": 0.7,
+        "serves_core": "Mark the moment the traveler recognizes the destination"
+      },
+      "reference_id": "traveler",
+      "size": "MS",
+      "sound": {
+        "energy": 1
+      },
+      "why": "Show the next phase of arrival"
+    },
+    {
+      "action": "Walk",
+      "duration": 1,
+      "id": "5",
+      "lighting": "window light",
+      "motion": "push",
+      "reference_id": "traveler",
+      "size": "CU",
+      "sound": {
+        "energy": 0.8
+      },
+      "why": "Show the next phase of arrival"
+    },
+    {
+      "action": "Walk",
+      "duration": 4,
+      "id": "6",
+      "lighting": "window light",
+      "motion": "static",
+      "reference_id": "traveler",
+      "size": "WS",
+      "sound": {
+        "energy": 0.2
+      },
+      "why": "Show the next phase of arrival"
+    }
+  ],
+  "tokens": {
+    "color": {
+      "lut": null,
+      "script": [],
+      "skin_hue_degrees": [
+        15,
+        50
+      ],
+      "skin_protection": true
+    },
+    "motion": [
+      "static",
+      "push",
+      "pull",
+      "whip",
+      "punch"
+    ],
+    "name": "spectacle",
+    "sfx": [
+      "hit",
+      "whoosh",
+      "riser",
+      "click"
+    ],
+    "texture": {
+      "film_grain": 0.15,
+      "halation": 0.3
+    },
+    "transitions": {
+      "accent": "energy",
+      "primary": "energy"
+    },
+    "type": {
+      "fonts": [
+        "sans",
+        "serif"
+      ],
+      "shadow": "soft",
+      "size_ratio": 1.25,
+      "stroke": "outline"
+    }
+  }
+}

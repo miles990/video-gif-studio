@@ -1200,6 +1200,654 @@
         "ref": "acceptance-6 S-71 fixed reproducibility contract",
         "agent_invented": false
       }
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "equal",
+      "history": [],
+      "id": "taste.smooth.seconds",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 smooth.seconds",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "s",
+      "value": 2
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "equal",
+      "history": [],
+      "id": "taste.weak.seconds",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 weak.seconds",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "s",
+      "value": 2
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "min",
+      "history": [],
+      "id": "taste.curve.correlation.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 curve.correlation.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "Pearson r",
+      "value": 0.6
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "max",
+      "history": [],
+      "id": "taste.curve.peak_bars.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 curve.peak_bars.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "bar",
+      "value": 1
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "equal",
+      "history": [],
+      "id": "taste.audio.low_hz",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 audio.low_hz",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "Hz",
+      "value": 80
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "max",
+      "history": [],
+      "id": "taste.audio.silence_db",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 audio.silence_db",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "dBFS",
+      "value": -50
+    },
+    {
+      "anchors": [
+        {
+          "expected": "pass",
+          "held_out": true,
+          "id": "taste.cut.rgb_delta.positive_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#cut.rgb_delta",
+          "role": "positive_control"
+        },
+        {
+          "expected": "fail",
+          "held_out": true,
+          "id": "taste.cut.rgb_delta.negative_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#cut.rgb_delta",
+          "role": "negative_control"
+        }
+      ],
+      "class": "C",
+      "direction": "min",
+      "history": [],
+      "id": "taste.cut.rgb_delta",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 cut.rgb_delta",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "calibrate_first",
+      "unit": "RGB L2",
+      "value": 25
+    },
+    {
+      "anchors": [
+        {
+          "expected": "pass",
+          "held_out": true,
+          "id": "taste.peak.prominence.positive_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#peak.prominence",
+          "role": "positive_control"
+        },
+        {
+          "expected": "fail",
+          "held_out": true,
+          "id": "taste.peak.prominence.negative_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#peak.prominence",
+          "role": "negative_control"
+        }
+      ],
+      "class": "C",
+      "direction": "min",
+      "history": [],
+      "id": "taste.peak.prominence",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 peak.prominence",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "calibrate_first",
+      "unit": "z",
+      "value": 0.1
+    },
+    {
+      "anchors": [
+        {
+          "expected": "pass",
+          "held_out": true,
+          "id": "taste.luminance.no_peak.positive_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#luminance.no_peak",
+          "role": "positive_control"
+        },
+        {
+          "expected": "fail",
+          "held_out": true,
+          "id": "taste.luminance.no_peak.negative_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#luminance.no_peak",
+          "role": "negative_control"
+        }
+      ],
+      "class": "C",
+      "direction": "max",
+      "history": [],
+      "id": "taste.luminance.no_peak",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 luminance.no_peak",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "calibrate_first",
+      "unit": "ratio",
+      "value": 0.01
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "min",
+      "history": [],
+      "id": "taste.luminance.jump.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 luminance.jump.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.15
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "min",
+      "history": [],
+      "id": "taste.shot.cv.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 shot.cv.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.4
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "max",
+      "history": [],
+      "id": "taste.eye.distance.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 eye.distance.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "width",
+      "value": 0.3
+    },
+    {
+      "anchors": [
+        {
+          "expected": "pass",
+          "held_out": true,
+          "id": "taste.action.motion.min.positive_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#action.motion.min",
+          "role": "positive_control"
+        },
+        {
+          "expected": "fail",
+          "held_out": true,
+          "id": "taste.action.motion.min.negative_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#action.motion.min",
+          "role": "negative_control"
+        }
+      ],
+      "class": "C",
+      "direction": "min",
+      "history": [],
+      "id": "taste.action.motion.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 action.motion.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "calibrate_first",
+      "unit": "px/frame",
+      "value": 0.3
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "min",
+      "history": [],
+      "id": "taste.action.ratio.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 action.ratio.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.25
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "max",
+      "history": [],
+      "id": "taste.mickey.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 mickey.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.75
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "max",
+      "history": [],
+      "id": "taste.valley.ratio.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 valley.ratio.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.85
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "max",
+      "history": [],
+      "id": "taste.ablation.mae.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 ablation.mae.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "Y",
+      "value": 0.5
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "min",
+      "history": [],
+      "id": "taste.ablation.psnr.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 ablation.psnr.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "dB",
+      "value": 48
+    },
+    {
+      "anchors": [
+        {
+          "expected": "pass",
+          "held_out": true,
+          "id": "taste.ablation.lufs.max.positive_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#ablation.lufs.max",
+          "role": "positive_control"
+        },
+        {
+          "expected": "fail",
+          "held_out": true,
+          "id": "taste.ablation.lufs.max.negative_control",
+          "label_source": "fixture",
+          "path": "tests/test_taste.py#ablation.lufs.max",
+          "role": "negative_control"
+        }
+      ],
+      "class": "C",
+      "direction": "max",
+      "history": [],
+      "id": "taste.ablation.lufs.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 ablation.lufs.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "calibrate_first",
+      "unit": "LU",
+      "value": 0.5
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "min",
+      "history": [],
+      "id": "taste.angle.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 angle.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "degrees",
+      "value": 30
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "equal",
+      "history": [],
+      "id": "taste.budget.base",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 budget.base",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "perceived",
+      "value": 0.1
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "equal",
+      "history": [],
+      "id": "taste.budget.slope",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 budget.slope",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "perceived",
+      "value": 1
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "max",
+      "history": [],
+      "id": "taste.profile.step.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 profile.step.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.15
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "equal",
+      "history": [],
+      "id": "taste.profile.wilson.z",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 profile.wilson.z",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "z",
+      "value": 1.959963984540054
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "min",
+      "history": [],
+      "id": "taste.profile.wilson.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 profile.wilson.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.5
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "min",
+      "history": [],
+      "id": "taste.focal.overlap.min",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "max_step": 0.15,
+      "measures": "S7 focal.overlap.min",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.5
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "max",
+      "history": [],
+      "id": "taste.match.gray.de.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 match.gray.de.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "deltaE2000",
+      "value": 2
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "max",
+      "history": [],
+      "id": "taste.match.color.de.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 match.color.de.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "deltaE2000",
+      "value": 3
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "max",
+      "history": [],
+      "id": "taste.match.color.worst.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 match.color.worst.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "deltaE2000",
+      "value": 5
+    },
+    {
+      "anchors": [],
+      "class": "F",
+      "direction": "max",
+      "history": [],
+      "id": "taste.match.luma.max",
+      "instrument": "scripts/taste_report.py / taste_lint.py v1",
+      "measures": "S7 match.luma.max",
+      "provenance": {
+        "ref": "wow/fx/acceptance-7.md as amended by acceptance-amendments.md; references/taste.md",
+        "source_class": "PHYS"
+      },
+      "status": "active",
+      "unit": "ratio",
+      "value": 0.02
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "max",
+      "history": [],
+      "id": "taste.tokens.fonts.max",
+      "max_step": 0.15,
+      "measures": "tokens.fonts.max",
+      "provenance": {
+        "ref": "wow/fx/spec-7.md; intentional exceptions allowed",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "count",
+      "value": 2
+    },
+    {
+      "anchors": [],
+      "class": "U",
+      "direction": "max",
+      "history": [],
+      "id": "taste.shot_size.repeat",
+      "max_step": 0.15,
+      "measures": "shot_size.repeat",
+      "provenance": {
+        "ref": "wow/fx/spec-7.md; intentional exceptions allowed",
+        "source_class": "GUESS"
+      },
+      "status": "active",
+      "unit": "count",
+      "value": 3
+    },
+    {
+      "id": "taste.profile.pairs.min",
+      "value": 8,
+      "class": "F",
+      "unit": "pairs",
+      "measures": "P-USER moving comparison pairs per delivery",
+      "direction": "min",
+      "provenance": {
+        "source_class": "PHYS",
+        "ref": "wow/fx/acceptance-amendments.md P-USER"
+      },
+      "anchors": [],
+      "history": [],
+      "status": "active"
+    },
+    {
+      "id": "taste.curve.residual.max",
+      "value": 0.08,
+      "class": "C",
+      "unit": "aligned planning intensity",
+      "measures": "Two-second missing-intensity residual after proxy P5/P95 alignment",
+      "direction": "max",
+      "provenance": {
+        "source_class": "ANCHOR",
+        "ref": "tests/test_taste_scenarios.py plateau/mesa clean-film calibration; wow/fx/build-notes-s7.md round 6"
+      },
+      "anchors": [
+        {"id": "clean-plateaus", "path": "tests/test_taste_scenarios.py#test_encoded_plateaus_and_mesa", "role": "positive_control", "expected": "pass", "label_source": "fixture"},
+        {"id": "clean-short-hold", "path": "tests/test_taste_scenarios.py#test_f_design_match_mismatch_shift", "role": "positive_control", "expected": "pass", "label_source": "fixture"},
+        {"id": "plateau-freeze", "path": "tests/test_taste_scenarios.py#test_encoded_plateau_freeze", "role": "negative_control", "expected": "fail", "label_source": "fixture"}
+      ],
+      "history": [],
+      "status": "active",
+      "scope": "Relative shape review only; synthetic H.264/AAC clean films, not human aesthetic calibration",
+      "instrument": "scripts/taste_common.py compare_curve; shared by taste_lint.weakest",
+      "margin": 0.01
     }
   ],
   "pending": [],

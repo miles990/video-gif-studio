@@ -1,5 +1,9 @@
 # Explicit post-production effects
 
+For the opt-in S-80–S-94 taste/storyboard layer, commands, report fields and
+limitations, see [taste](taste.md) and the extended [planning shot table](planning.md).
+Existing plans do not implicitly load taste profiles or change their rendering.
+
 Use this route only when the user asks for post-production effects. Effects never
 substitute for physical character motion, invent a jump, or hide a broken source join.
 Prepare the source with `gif_pipeline.py`; retain the source animation and its alpha.
@@ -443,6 +447,12 @@ also retain their flags rather than treating intentional graphics as automatic p
 ## Open notes (spec-6 verification, 2026-11-05; non-blocking)
 - WCAG flash counter compensates pure translation only: a high-contrast checkerboard panned 9 px/frame while rotating 0.10–0.15°/frame (no effect) is false-flagged (15/5 flashes/s); real footage with the same motion measures 0. Extend compensation to rotation.
 - Click-only recipes land at −14.97 LUFS, 0.03 LU inside the −15 lower bound; make the loudness retry converge within ±0.8 LU of target or fail loudly.
+
+## Open notes (spec-7 verification, 2026-11-06; non-blocking)
+- Residual tolerance 0.08 (C-class) was calibrated on synthetic films; clean films with ~5% speed/loudness jitter still list small 0.09–0.15 "missing" deviations (no revision).
+- Local freezes in an otherwise well-correlated film appear in the deviation list and weakest window but do not trigger a "Restore" suggestion.
+- The director currently produces near-identical structures for very different briefs (homogeneity) — addressed by spec-11 (brief expansion) and P3.
+- Storyboard lint has no auto-fix mode (held-out H7-9 not executable as written).
 
 ## Experimental (pending quality gate)
 

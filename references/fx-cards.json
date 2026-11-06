@@ -631,7 +631,8 @@
     "conflicts": [],
     "style_tags": [
       "transition-match"
-    ]
+    ],
+    "family": "dissolve"
   },
   "transition:whip_pan": {
     "intent": [
@@ -655,7 +656,8 @@
     "conflicts": [],
     "style_tags": [
       "transition-energy"
-    ]
+    ],
+    "family": "warp"
   },
   "transition:hex_shutter": {
     "intent": [
@@ -680,7 +682,8 @@
     "style_tags": [
       "幾何",
       "搶眼/衝擊"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:flash_cut": {
     "intent": [
@@ -706,7 +709,8 @@
     ],
     "style_tags": [
       "drop"
-    ]
+    ],
+    "family": "flash"
   },
   "transition:shape_wipe": {
     "intent": [
@@ -730,7 +734,8 @@
     "conflicts": [],
     "style_tags": [
       "transition-energy"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:luma_wipe": {
     "intent": [
@@ -754,7 +759,8 @@
     "conflicts": [],
     "style_tags": [
       "transition-energy"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:push": {
     "intent": [
@@ -778,7 +784,8 @@
     "conflicts": [],
     "style_tags": [
       "transition-energy"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:slide": {
     "intent": [
@@ -802,7 +809,8 @@
     "conflicts": [],
     "style_tags": [
       "transition-energy"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:spin": {
     "intent": [
@@ -827,7 +835,8 @@
     "style_tags": [
       "旋轉",
       "衝擊"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:zoom_through": {
     "intent": [
@@ -851,7 +860,8 @@
     "conflicts": [],
     "style_tags": [
       "transition-energy"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:glitch": {
     "intent": [
@@ -875,7 +885,8 @@
     "conflicts": [],
     "style_tags": [
       "transition-energy"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_clock_wipe": {
     "intent": [
@@ -900,7 +911,8 @@
     "style_tags": [
       "幾何",
       "含蓄/柔和"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_cross_warp": {
     "intent": [
@@ -925,7 +937,8 @@
     "style_tags": [
       "流動",
       "含蓄/柔和"
-    ]
+    ],
+    "family": "warp"
   },
   "transition:gl_directional_warp": {
     "intent": [
@@ -950,7 +963,8 @@
     "style_tags": [
       "流動",
       "動感"
-    ]
+    ],
+    "family": "warp"
   },
   "transition:gl_dreamy": {
     "intent": [
@@ -975,7 +989,8 @@
     "style_tags": [
       "夢幻",
       "含蓄/柔和"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_dreamy_zoom": {
     "intent": [
@@ -1001,7 +1016,8 @@
       "夢幻",
       "搶眼/衝擊",
       "閃白"
-    ]
+    ],
+    "family": "warp"
   },
   "transition:gl_rotate_scale_fade": {
     "intent": [
@@ -1026,7 +1042,8 @@
     "style_tags": [
       "旋轉",
       "衝擊"
-    ]
+    ],
+    "family": "warp"
   },
   "transition:gl_swirl": {
     "intent": [
@@ -1051,7 +1068,8 @@
     "style_tags": [
       "迷幻",
       "搶眼"
-    ]
+    ],
+    "family": "warp"
   },
   "transition:gl_water_drop": {
     "intent": [
@@ -1076,7 +1094,8 @@
     "style_tags": [
       "有機",
       "含蓄/柔和"
-    ]
+    ],
+    "family": "energy"
   },
   "transition:gl_burn_through": {
     "intent": [
@@ -1102,7 +1121,8 @@
       "搶眼/衝擊",
       "有機",
       "火焰"
-    ]
+    ],
+    "family": "energy"
   },
   "transition:gl_overexposure": {
     "intent": [
@@ -1129,7 +1149,8 @@
     "style_tags": [
       "閃光",
       "搶眼"
-    ]
+    ],
+    "family": "flash"
   },
   "transition:gl_fade_grayscale": {
     "intent": [
@@ -1154,7 +1175,8 @@
     "style_tags": [
       "含蓄/柔和",
       "復古"
-    ]
+    ],
+    "family": "dissolve"
   },
   "transition:gl_color_distance": {
     "intent": [
@@ -1179,7 +1201,8 @@
     "style_tags": [
       "含蓄/柔和",
       "有機"
-    ]
+    ],
+    "family": "dissolve"
   },
   "transition:gl_luminance_melt": {
     "intent": [
@@ -1204,7 +1227,8 @@
     "style_tags": [
       "故障",
       "有機"
-    ]
+    ],
+    "family": "energy"
   },
   "transition:gl_pixelize": {
     "intent": [
@@ -1229,7 +1253,8 @@
     "style_tags": [
       "復古",
       "像素"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_dither_dissolve": {
     "intent": [
@@ -1254,7 +1279,8 @@
     "style_tags": [
       "復古",
       "像素"
-    ]
+    ],
+    "family": "dissolve"
   },
   "transition:gl_random_squares": {
     "intent": [
@@ -1279,7 +1305,8 @@
     "style_tags": [
       "幾何",
       "數位"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_window_slices": {
     "intent": [
@@ -1304,7 +1331,8 @@
     "style_tags": [
       "幾何",
       "俐落"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_wind": {
     "intent": [
@@ -1329,7 +1357,8 @@
     "style_tags": [
       "動感",
       "有機"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_pinwheel": {
     "intent": [
@@ -1354,7 +1383,8 @@
     "style_tags": [
       "幾何",
       "俏皮"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_polka_dots_curtain": {
     "intent": [
@@ -1379,7 +1409,8 @@
     "style_tags": [
       "幾何",
       "俏皮"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_crosshatch": {
     "intent": [
@@ -1404,7 +1435,8 @@
     "style_tags": [
       "有機",
       "含蓄/柔和"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_perlin_dissolve": {
     "intent": [
@@ -1429,7 +1461,8 @@
     "style_tags": [
       "有機",
       "含蓄/柔和"
-    ]
+    ],
+    "family": "dissolve"
   },
   "transition:gl_glitch_memories": {
     "intent": [
@@ -1454,7 +1487,8 @@
     "style_tags": [
       "故障",
       "搶眼/衝擊"
-    ]
+    ],
+    "family": "glitch"
   },
   "transition:gl_scale_in": {
     "intent": [
@@ -1479,7 +1513,8 @@
     "style_tags": [
       "含蓄/柔和",
       "動感"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_bounce": {
     "intent": [
@@ -1504,7 +1539,8 @@
     "style_tags": [
       "俏皮",
       "衝擊"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_multiply_blend": {
     "intent": [
@@ -1529,7 +1565,8 @@
     "style_tags": [
       "含蓄/柔和",
       "暗調"
-    ]
+    ],
+    "family": "color"
   },
   "transition:gl_color_phase": {
     "intent": [
@@ -1555,7 +1592,8 @@
       "迷幻",
       "色彩",
       "復古"
-    ]
+    ],
+    "family": "color"
   },
   "transition:gl_hexagonalize": {
     "intent": [
@@ -1580,7 +1618,8 @@
     "style_tags": [
       "幾何",
       "數位"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_squares_wipe": {
     "intent": [
@@ -1605,7 +1644,8 @@
     "style_tags": [
       "幾何",
       "數位"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_bow_tie_horizontal": {
     "intent": [
@@ -1630,7 +1670,8 @@
     "style_tags": [
       "幾何",
       "俐落"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_curved_wipe": {
     "intent": [
@@ -1655,7 +1696,8 @@
     "style_tags": [
       "幾何",
       "含蓄/柔和"
-    ]
+    ],
+    "family": "geometric"
   },
   "transition:gl_arrow_wipe": {
     "intent": [
@@ -1680,6 +1722,7 @@
     "style_tags": [
       "幾何",
       "搶眼"
-    ]
+    ],
+    "family": "geometric"
   }
 }

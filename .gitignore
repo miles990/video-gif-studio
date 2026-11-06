@@ -6,3 +6,4 @@ output/
 run-*/
 local-settings.json
 .runtime/
+.scratch/

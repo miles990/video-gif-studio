@@ -1,0 +1,377 @@
+{
+  "agreement": {
+    "axis": "appeal only; cannot delete effects",
+    "matches": 0,
+    "n": 4,
+    "rate": 0.0,
+    "status": "invalid",
+    "wilson_lower": 0.0
+  },
+  "axis": "user_taste",
+  "choices": [
+    {
+      "candidate": "A",
+      "choice": "tie",
+      "context": "default",
+      "control": true,
+      "control_negative": false,
+      "date": "2026-11-05",
+      "dimension": "transition_family",
+      "id": "spotcheck-1-1",
+      "item": "transition_hex_shutter_opaque-480x270_middle_benchmark",
+      "judge": "tie",
+      "options": {
+        "A": {
+          "transition_family": "geometric"
+        }
+      },
+      "raw_answer": "一樣",
+      "source": "wow/fx/gate/spotcheck-1-answers.json"
+    },
+    {
+      "candidate": "A",
+      "choice": "A",
+      "context": "default",
+      "control": false,
+      "control_negative": false,
+      "date": "2026-11-05",
+      "dimension": "transition_family",
+      "id": "spotcheck-1-2",
+      "item": "transition_gl_burn_through_opaque-480x270_middle_benchmark",
+      "judge": "B",
+      "options": {
+        "A": {
+          "transition_family": "energy"
+        }
+      },
+      "raw_answer": "左",
+      "source": "wow/fx/gate/spotcheck-1-answers.json"
+    },
+    {
+      "candidate": "A",
+      "choice": "B",
+      "context": "default",
+      "control": false,
+      "control_negative": false,
+      "date": "2026-11-05",
+      "dimension": "transition_family",
+      "id": "spotcheck-1-3",
+      "item": "transition_gl_cross_warp_opaque-480x270_middle_benchmark",
+      "judge": "A",
+      "options": {
+        "A": {
+          "transition_family": "warp"
+        }
+      },
+      "raw_answer": "右",
+      "source": "wow/fx/gate/spotcheck-1-answers.json"
+    },
+    {
+      "candidate": "A",
+      "choice": "A",
+      "context": "default",
+      "control": false,
+      "control_negative": false,
+      "date": "2026-11-05",
+      "dimension": "transition_family",
+      "id": "spotcheck-1-4",
+      "item": "transition_gl_luminance_melt_rgba-480x270_middle_benchmark",
+      "judge": "B",
+      "options": {
+        "A": {
+          "transition_family": "energy"
+        }
+      },
+      "raw_answer": "左",
+      "source": "wow/fx/gate/spotcheck-1-answers.json"
+    },
+    {
+      "candidate": "B",
+      "choice": "tie",
+      "context": "default",
+      "control": false,
+      "control_negative": false,
+      "date": "2026-11-05",
+      "dimension": "transition_family",
+      "id": "spotcheck-1-5",
+      "item": "transition_gl_water_drop_rgba-270x480_middle_benchmark",
+      "judge": "B",
+      "options": {
+        "B": {
+          "transition_family": "energy"
+        }
+      },
+      "raw_answer": "一樣",
+      "source": "wow/fx/gate/spotcheck-1-answers.json"
+    },
+    {
+      "candidate": "A",
+      "choice": "tie",
+      "context": "default",
+      "control": true,
+      "control_negative": false,
+      "date": "2026-11-05",
+      "dimension": "transition_family",
+      "id": "spotcheck-1-6",
+      "item": "transition_gl_dreamy_opaque-480x270_middle_style",
+      "judge": "tie",
+      "options": {
+        "A": {
+          "transition_family": "geometric"
+        }
+      },
+      "raw_answer": "一樣",
+      "source": "wow/fx/gate/spotcheck-1-answers.json"
+    },
+    {
+      "candidate": "B",
+      "choice": "tie",
+      "context": "default",
+      "control": false,
+      "control_negative": false,
+      "date": "2026-11-05",
+      "dimension": "transition_family",
+      "id": "spotcheck-1-7",
+      "item": "transition_gl_polka_dots_curtain_rgba-480x270_middle_benchmark",
+      "judge": "tie",
+      "options": {
+        "B": {
+          "transition_family": "geometric"
+        }
+      },
+      "raw_answer": "一樣",
+      "source": "wow/fx/gate/spotcheck-1-answers.json"
+    },
+    {
+      "candidate": "A",
+      "choice": "tie",
+      "context": "default",
+      "control": true,
+      "control_negative": true,
+      "date": "2026-11-05",
+      "dimension": "transition_family",
+      "id": "spotcheck-1-8",
+      "item": "transition_gl_swirl_opaque-480x270_middle_broken",
+      "judge": "tie",
+      "options": {
+        "A": {
+          "transition_family": "warp"
+        }
+      },
+      "raw_answer": "一樣",
+      "source": "wow/fx/gate/spotcheck-1-answers.json"
+    }
+  ],
+  "defaults": {
+    "caption_scale": 1.0,
+    "caption_style": "clean",
+    "color": 1.0,
+    "density": 1.0,
+    "flashiness": 1.0,
+    "transition_family": "energy"
+  },
+  "family_votes": {
+    "energy": 2
+  },
+  "gate_updates": false,
+  "history": [
+    {
+      "after": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "dissolve"
+      },
+      "approved_by": "user",
+      "before": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "dissolve"
+      },
+      "date": "2026-11-05",
+      "id": "spotcheck-1-1",
+      "max_relative_step": 0.15,
+      "trigger": "user_choice"
+    },
+    {
+      "after": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "dissolve"
+      },
+      "approved_by": "user",
+      "before": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "dissolve"
+      },
+      "date": "2026-11-05",
+      "id": "spotcheck-1-2",
+      "max_relative_step": 0.15,
+      "trigger": "user_choice"
+    },
+    {
+      "after": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "dissolve"
+      },
+      "approved_by": "user",
+      "before": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "dissolve"
+      },
+      "date": "2026-11-05",
+      "id": "spotcheck-1-3",
+      "max_relative_step": 0.15,
+      "trigger": "user_choice"
+    },
+    {
+      "after": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "approved_by": "user",
+      "before": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "dissolve"
+      },
+      "date": "2026-11-05",
+      "id": "spotcheck-1-4",
+      "max_relative_step": 0.15,
+      "trigger": "user_choice"
+    },
+    {
+      "after": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "approved_by": "user",
+      "before": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "date": "2026-11-05",
+      "id": "spotcheck-1-5",
+      "max_relative_step": 0.15,
+      "trigger": "user_choice"
+    },
+    {
+      "after": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "approved_by": "user",
+      "before": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "date": "2026-11-05",
+      "id": "spotcheck-1-6",
+      "max_relative_step": 0.15,
+      "trigger": "user_choice"
+    },
+    {
+      "after": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "approved_by": "user",
+      "before": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "date": "2026-11-05",
+      "id": "spotcheck-1-7",
+      "max_relative_step": 0.15,
+      "trigger": "user_choice"
+    },
+    {
+      "after": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "approved_by": "user",
+      "before": {
+        "caption_scale": 1.0,
+        "caption_style": "clean",
+        "color": 1.0,
+        "density": 1.0,
+        "flashiness": 1.0,
+        "transition_family": "energy"
+      },
+      "date": "2026-11-05",
+      "id": "spotcheck-1-8",
+      "max_relative_step": 0.15,
+      "trigger": "user_choice"
+    }
+  ],
+  "item_preferences": {
+    "transition_gl_burn_through_opaque-480x270_middle_benchmark": 1,
+    "transition_gl_cross_warp_opaque-480x270_middle_benchmark": -1,
+    "transition_gl_luminance_melt_rgba-480x270_middle_benchmark": 1
+  },
+  "note": "User choices adjust recommendations only; technical acceptance is unchanged.",
+  "threshold_class": "U",
+  "version": 1,
+  "weights": [
+    0.35,
+    0.25,
+    0.3,
+    0.1
+  ]
+}

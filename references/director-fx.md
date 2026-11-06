@@ -128,6 +128,15 @@ the table exposes that rather than amplifying its score. Requests beyond a
 table's measured maximum raise an error. Lookup never silently clips .7 to an
 unreachable value. The small cutout range does not meet S-71's ≥.10 grid maximum.
 
+## User taste and storyboard preflight
+
+Read [taste](taste.md) for the measured M1–M16 report, design/predicted curves,
+annotated grammar/token rules, shot matching, reference statistics and user
+profiles. `taste_director.py` writes an opt-in treatment and existing shot table;
+`animatic.py` compiles it to the existing renderer. The first persisted sample is
+`references/taste-user.json`: its preference for flashier transitions changes
+recommendations, never technical status. No panel appeal ranking overrides it.
+
 ## Visibility, harshness, and flash checks
 
 `fx_check` decodes both the delivered file and the timeline-matched untreated

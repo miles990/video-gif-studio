@@ -1,0 +1,124 @@
+{
+  "graphic": {
+    "color": {
+      "lut": null,
+      "script": [],
+      "skin_hue_degrees": [
+        15,
+        50
+      ],
+      "skin_protection": true
+    },
+    "motion": [
+      "static",
+      "push",
+      "pan"
+    ],
+    "name": "graphic",
+    "sfx": [
+      "hit",
+      "whoosh",
+      "riser",
+      "click"
+    ],
+    "texture": {
+      "film_grain": 0.05,
+      "halation": 0.05
+    },
+    "transitions": {
+      "accent": "energy",
+      "primary": "geometric"
+    },
+    "type": {
+      "fonts": [
+        "sans",
+        "serif"
+      ],
+      "shadow": "soft",
+      "size_ratio": 1.25,
+      "stroke": "outline"
+    }
+  },
+  "observational": {
+    "color": {
+      "lut": null,
+      "script": [],
+      "skin_hue_degrees": [
+        15,
+        50
+      ],
+      "skin_protection": true
+    },
+    "motion": [
+      "static",
+      "pan",
+      "drift"
+    ],
+    "name": "observational",
+    "sfx": [
+      "hit",
+      "whoosh",
+      "riser",
+      "click"
+    ],
+    "texture": {
+      "film_grain": 0.05,
+      "halation": 0.1
+    },
+    "transitions": {
+      "accent": "energy",
+      "primary": "dissolve"
+    },
+    "type": {
+      "fonts": [
+        "sans",
+        "serif"
+      ],
+      "shadow": "soft",
+      "size_ratio": 1.25,
+      "stroke": "outline"
+    }
+  },
+  "spectacle": {
+    "color": {
+      "lut": null,
+      "script": [],
+      "skin_hue_degrees": [
+        15,
+        50
+      ],
+      "skin_protection": true
+    },
+    "motion": [
+      "static",
+      "push",
+      "pull",
+      "whip",
+      "punch"
+    ],
+    "name": "spectacle",
+    "sfx": [
+      "hit",
+      "whoosh",
+      "riser",
+      "click"
+    ],
+    "texture": {
+      "film_grain": 0.15,
+      "halation": 0.3
+    },
+    "transitions": {
+      "accent": "energy",
+      "primary": "energy"
+    },
+    "type": {
+      "fonts": [
+        "sans",
+        "serif"
+      ],
+      "shadow": "soft",
+      "size_ratio": 1.25,
+      "stroke": "outline"
+    }
+  }
+}
