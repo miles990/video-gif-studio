@@ -87,3 +87,6 @@
 - 08:05 使用者：「這個專案是trunk based」→ 承認 spec-7 長命分支＋squash 偏離；process.md 改為：測試全綠即當天以 experimental 合回 main，審查與修正在 main 上以小提交進行，旗標升級，不再 squash 大包。spec-11 起照此執行。
 - 09:20 spec-11 依 trunk-based 當天以 experimental 合回 main（一般 merge 033128b，保留歷史）：安裝目錄 doctor 通過、全套只剩 2 個環境錯誤、乾淨狀態實跑 brief→lint→分鏡→算繪成功。push。接著在 main 上派獨立審查＋保留題驗收。
 - 11:10 spec-11 在 main 上獨立審查：未可升 stable（提案像模板、轉折寫死、草稿轉化與硬限制遺失、WAV 抓不到 drop 而巧合過關、同質化 14 類 11 類相同且畫面幾乎一樣、修改語法誤解、stable 導演行為被改未加旗標）。依 trunk-based 派修正：每項一個小 commit，驗證後快轉進 main。
+- 12:10 使用者問 Codex 為何一次只能跑一個、要更好的做法。原因：wow-agent 預設 per-engine codex=1（源自 2026-10-31 16 GB 機器兩個 Codex build＋subagents 並行被記憶體收掉）；但真正的瓶頸是重工作的記憶體，不是 Codex 本身。改為依資源排程：新增 vgs-fx-private/dispatch.sh——重工作（build／全套測試／算繪）佔全機 build 號誌一次一個；輕工作（出圖、文字、小檢查）用 --class light、codex 上限放寬到 3，可與重工作並行，仍守最低可用記憶體 2.5 GB。實測：imagegen-test2 已與 s11-fix 同時在跑。
+## 待回報給 wow 技能（續）
+4. wow-agent 的 --light 對 Codex 不生效（仍受 codex=1），輕工作被重工作擋住；建議 light 類別不計入 per-engine 上限、只受記憶體下限管。
