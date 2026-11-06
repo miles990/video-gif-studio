@@ -115,8 +115,14 @@ def keyframes(board, adapter, out, request=None, selected=None, approval=None, m
                 identity=check(source,req.refset_path)
                 if identity['status']=='identity_fail':
                     retry=replace(current,prompt=current.prompt+'\nIdentity correction: match all supplied identity details exactly. Preserve face, markings and costume.')
-                    generated=adapter.generate(retry,folder/'identity-retry',approval,max_usd)
-                    source=Path(generated['assets'][0]['path']);identity=check(source,req.refset_path)
+                    try:
+                        retried=adapter.generate(retry,folder/'identity-retry',approval,max_usd)
+                    except ImageError as exc:
+                        if exc.error['code']!='E_CAP':raise
+                        identity=dict(identity,retry_error=exc.error,generation_retained='first')
+                    else:
+                        generated=retried
+                        source=Path(generated['assets'][0]['path']);identity=check(source,req.refset_path)
             with Image.open(source) as image:frame,fit=fit_image(image,size)
             path=folder/'keyframe.png';frame.save(path)
             qa=frame_qa(path,shot,swatch(b,shot))
