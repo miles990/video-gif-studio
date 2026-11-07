@@ -56,7 +56,7 @@ For generated raster art, follow the available image-generation tool's instructi
 
 ## Direction and generation
 
-Read [references/motion.md](references/motion.md) when designing or revising action. Write a concise visible plan and one executable prompt. Separate:
+Read [references/motion.md](references/motion.md) when designing or revising action, and [generator vocabulary](references/generator-vocab.md) before finalizing any video or image prompt. Write a concise visible plan and one executable prompt. Separate:
 
 1. Appearance/camera invariants and reference roles.
 2. Ordered action phases, support/contact, anticipation, travel, contact and recovery.

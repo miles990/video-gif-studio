@@ -14,6 +14,8 @@ Author the actual prompt yourself; replace these fields with photographable fact
 - Constant light/background if intended for keying; keep full required silhouette inside a safe margin.
 - Intended final state and loop boundary. A requested matching pose is an intention until verified.
 
+Generator wording: read [generator vocabulary](generator-vocab.md) before finalizing the prompt. Disambiguate micro-actions with body-part isolation and "X, not Y" (a head-only nod, not a bow), state amplitude instead of stacking softeners, use second-stamped timelines for speed changes, and pair every push term with a restraint term. A genre register sentence is optional and unverified (n=3).
+
 Timing ranges are direction, not frame-accurate provider guarantees. Inspect what was actually generated before editing. In the founding example, 12 seconds plus repeated relaxed/soft settling language produced a slow leg switch; this is case evidence, not a normal-human timing standard.
 
 ## Articulation and perspective

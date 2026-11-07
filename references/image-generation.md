@@ -197,3 +197,7 @@ an explicitly rejected preview (`E_LOOP_QA`), not an accepted delivery.
 Roundtrip tests include real separate CLI processes sharing one cache entry.
 
 Price tables must carry a nonempty version and an ISO date within the last 30 days (no future dates). Zero, non-finite, negative, or rounded-to-zero prices are refused. API dispatch always requires a strictly positive `--max-usd`, including cached requests. No reviewed price file is shipped in this checkout.
+
+## Prompt wording
+
+Before finalizing an image prompt, read [generator vocabulary](generator-vocab.md) (Image section). Pair every escalation term (ornament, detail, centerpiece, frame) with a restraint term (negative space, visual hierarchy, controlled complexity, smooth contours), and add an identity anchor ("same facial features, proportions, costume; do not redesign") whenever a style booster or register is used.
