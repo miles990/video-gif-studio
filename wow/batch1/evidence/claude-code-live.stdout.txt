@@ -1,0 +1,24 @@
+All steps ran. Nothing was installed, committed or pushed, and `~/.claude/skills` and `~/.codex/skills` were not touched.
+
+**1. SKILL.md.** Line 14 documents `python scripts/vgs.py make <video> --out <new-dir>`, `/video-gif-studio` in Claude Code and `$video-gif-studio` in Codex.
+
+**2. Doctor.**
+- Exit code is 0.
+- `local_gif_runtime_ready` is `true`, and `media_runtime_ready` is also `true`.
+- Pillow, numpy, cv2, ffmpeg and ffprobe are all present.
+- There is no Grok OAuth session and no fal key, and no external requests were made.
+- The optional DINOv2 identity model and optional matting are not installed.
+
+**3. Make.** Exit code is 0, with `XAI_API_KEY` and `FAL_KEY` unset.
+
+**Human summary** (the tool printed it in Chinese; this is my translation):
+- Background removed using key color #FC01F9 (tolerance 0.2, softening 0.18, confidence 1.000).
+- The key color only removes background connected to the border, so any matching color inside the subject is kept.
+- Output is 320×320, 93 frames, 3.87 s, 0.72 MB.
+- The tail was trimmed from 6.04 s to 3.88 s. The last moving frame is at 3.42 s.
+- **QA FAIL:** the loop check failed with a speed mismatch (loop position and speed). The pops check gave a WARN for a small transient pop that should be inspected in context.
+- Visual approval was not assessed and needs a human.
+
+**Output GIF:** `/tmp/vgs-claude-live/animation.gif`, 720,905 bytes (about 0.72 MB).
+
+The command exited 0 even though QA reported a loop FAIL, so the exit code alone doesn't show the output passed QA. Someone should watch the GIF before treating it as good.

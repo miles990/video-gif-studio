@@ -1,0 +1,22 @@
+I've written the acceptance file at `wow/batch1/acceptance.md`, in Traditional Chinese. It is the only file I created; `spec.md` and the product code are untouched. I ran nothing paid: my baseline runs used the existing free local pipeline and wrote only to `/tmp`.
+
+**How it's laid out:**
+- **Baseline (§0):** measured numbers from the sample video, so expected results are based on real output.
+- **Domain rules and counterexamples (§1):** the five topics you asked for, each with a rule, an invariant, a boundary case and a counterexample. That covers chroma key vs subject color, binary GIF alpha, freeze vs designed hold, loop seam vs first=last generation, and QA vs visual approval. It ends with the spec's remaining constraints: no Grok/fal calls, no workflow edits, no native-engine claims, only Codex and Claude Code named as compatible.
+- **Setup (§2):** ffmpeg commands for three synthetic controls, plus a small measurement helper:
+  - C1: flat magenta background with a magenta hole inside the subject.
+  - C2: a busy, non-flat background.
+  - C3: a green screen.
+- **S-1 to S-7 (§3):** each has the core input, exact commands, what must happen (files, exit codes, measured thresholds) and what is forbidden. The visible sample is `examples/chibi-running-dash/source.mp4`. The file states that held-out inputs are preferred later; because the builder can see the chibi sample, the synthetic controls are required for S-1 and S-2.
+- **Closing sections (§4–5):** what fails the whole batch, and the checks only a person can do.
+
+**What the baseline runs found that should shape the build:**
+- **S-2:** today's QA run on the un-keyed 4.21 MB magenta GIF fails only because of the loop check. Nothing flags the background. If tail trimming fixes the loop, that GIF would pass. The acceptance therefore requires the failure reason to be the background itself.
+- **Sample colors:** the background decodes as about RGB (244,20,247), not pure `FF00FF`. The chibi sword glow is real pink/purple foreground, so the magenta limit tolerates small amounts.
+- **S-3:** the loop check passes on position (the clip starts and ends on the same frame) but fails on speed (ratio 0.088), because of the frozen tail from 3.54 to 6.04 s. Hiding that tail by marking it as a designed pause (`--holds`) is explicitly forbidden.
+- **S-5 / S-7:** the README hero images are currently 19.9 MB (seated), 7.0 MB (robot) and 10.5 MB (neon). Compressed versions must be saved as new files, not written over `examples/*/final.gif`.
+- **Existing files:** `~/.claude/skills/video-gif-studio`, `~/.codex/skills/video-gif-studio` and `/workspace/money-radar-team/2026-11-22/agensi-listing-pack.md` already exist. S-6 install tests use a temporary home directory so nothing real is overwritten, and S-7 requires the listing pack to show it was updated for this batch.
+
+I added two rules of my own that are not in the spec, and the file labels them that way:
+- **Zip size:** a bundle over 25 MB needs a written reason. This is a review prompt, not a hard limit.
+- **Tail limit:** any remaining frozen stretch at the end must be 0.5 s or less.

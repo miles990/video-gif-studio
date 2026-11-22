@@ -1,0 +1,20 @@
+設計審查寫好了，在 `wow/batch1/reviews/design-review.md`。我沒改任何產品檔，也沒在 390／1440 寬度的真實 GitHub 渲染或深色主題下看過，版面判斷是從 Markdown 結構與圖片尺寸推論的。
+
+**最重要的發現：** README 首屏的 hero 圖 `examples/chibi-running-dash/hero.png` 是洋紅底的原始畫面。我讀了檔案：它是 320×320 的 RGB，沒有 alpha，整張洋紅底，圖說只寫「Chibi dash preview」。審查用的 `after-frame0-transparent.png` 是另一張中灰底的圖，所以光看審查圖看不出這個問題。這張 `hero.png` 跟 README 第一句「transparent GIF」的承諾相矛盾。
+
+**逐項判斷：**
+- **視覺層級：可接受。** 順序合理，但最弱的素材（靜態 320px 圖）占了首屏，會動的 `hero.gif` 被放到 Examples。
+- **字體與尺寸對比：可接受。** 免責聲明「Recheck before listing」比主指令還醒目。價格表的「Headline 1.5 $0.080/sec」容易讀成價格打錯字。圖內標籤約 10px，字距吃掉空格。
+- **狀態誠實：不及格。** 洋紅 hero 沒標是來源圖，`after-frame0-transparent.png` 把透明角色壓在不透明灰底上卻叫 transparent。「loop review pending」、價格日期、QA 的邊界說明做得好，要保留。
+- **空、錯誤、成功狀態：不及格。** 前 80 行完全沒有 `vgs make` 的成功摘要或錯誤輸出，S-1 和 S-4 的賣點讀者看不到。
+- **淺深色可讀：可接受。** 淺深兩種棋盤都看得到角色，沒有洋紅底板。衝刺幀的洋紅速度線和粉紅塵土，我無法判斷是特效還是色鍵殘留。contact sheet 每幀只出現在一種底色上，深色底上黑絲襪與背景接近。
+- **專業感：可接受，偏工程文件。** 沒有範本語氣，但主指令重複三次，code block 裡有不能直接貼的註解。
+
+**前 5 項修正：**
+1. 必修：首屏 hero 換成透明版，或把洋紅圖明確標成來源並放在結果旁對照。
+2. 必修：把會動的透明 `hero.gif` 提到首屏。
+3. 對外前必修：補一段真實的成功輸出和一個失敗輸出。
+4. 之後：查明洋紅特效是溢色還是刻意；contact sheet 改成每幀淺深兩底並排。
+5. 之後：瘦身 Quick start；價格表「1.5」的寫法中英都要改。
+
+修完第 1 項之前，我不建議對外發佈。

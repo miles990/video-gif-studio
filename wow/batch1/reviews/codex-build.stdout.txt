@@ -1,0 +1,15 @@
+Implemented the local `vgs.py` workflow, installer target selection, README updates, and draft Agensi pack. The chibi self-check produced a 320×320 GIF with a transparent border, trimmed the still tail from 6.04 to 3.62 seconds, and reported **loop FAIL: speed mismatch**. Visual approval remains pending.
+
+The magenta, busy-background, and green-screen controls ran locally. The forced-background delivery and legacy GIF background gate both failed as intended. The extracted ZIP also produced the chibi GIF. Results are recorded in [build-selfcheck.md](/workspace/src/video-gif-studio/wow/batch1/evidence/build-selfcheck.md).
+
+**One acceptance item remains unverified:** no live Claude Code session was run; the coordinator’s verification is pending. The listing pack states that limitation and remains unsubmitted.
+
+Changed or created:
+
+- [scripts/vgs.py](/workspace/src/video-gif-studio/scripts/vgs.py)
+- [scripts/install.py](/workspace/src/video-gif-studio/scripts/install.py)
+- [README.md](/workspace/src/video-gif-studio/README.md), [README.zh-TW.md](/workspace/src/video-gif-studio/README.zh-TW.md), and [SKILL.md](/workspace/src/video-gif-studio/SKILL.md)
+- [hero.png](/workspace/src/video-gif-studio/examples/chibi-running-dash/hero.png)
+- [agensi-listing-pack.md](/workspace/money-radar-team/2026-11-22/agensi-listing-pack.md) and [video-gif-studio-agensi.zip](/workspace/money-radar-team/2026-11-22/video-gif-studio-agensi.zip)
+
+No commit or push was made, and the pre-existing CI changes were left untouched.

@@ -1,0 +1,1488 @@
+OpenAI Codex v0.165.0
+--------
+workdir: /workspace/src/video-gif-studio
+model: gpt-6.1-terra
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a2031e-fac5-7e51-b654-19b0a40f70d7
+--------
+user
+You are the builder for a wow lite delivery of video-gif-studio (Batch 1). Work in /workspace/src/video-gif-studio.
+
+READ FIRST (do not edit acceptance.md or spec.md):
+- wow/batch1/spec.md
+- wow/batch1/acceptance.md  ← your tests must satisfy this; if conflict, the stricter rule wins
+- scripts/gif_pipeline.py, scripts/qa_media.py, scripts/install.py, scripts/doctor.py
+- README.md, README.zh-TW.md, SKILL.md
+
+HARD RULES
+- Cost cap $0: never call Grok, fal, or any paid generation API. Never set or use XAI_API_KEY / FAL_KEY for generation.
+- Do NOT modify .github/workflows/ at all. Leave the existing uncommitted test.yml change and untracked scripts/run_ci_smoke.py UNTOUCHED — they belong to a separate CI effort. Do not git add them.
+- Do not git commit or git push. Leave staging clean except for files you may create; ideally do not `git add` at all.
+- Do not overwrite examples/*/final.gif, final.apng, source.mp4, or official production records. Compressed heroes must be NEW files (e.g. examples/.../hero.gif).
+- Do not overwrite the user's real ~/.claude/skills/video-gif-studio or ~/.codex/skills/video-gif-studio. Test installers with --skills-dir or a temporary HOME.
+- Do not claim Unity/Godot/TexturePacker native format, market savings, seamless loops without QA, or agents other than Codex and Claude Code.
+- Reuse gif_pipeline.py and qa_media.py. Do not rewrite the encoder. Wrapper + helpers only.
+- Python for tests: PY=/home/box/.codex/skills/video-gif-studio/.venv/bin/python
+- Put self-test evidence under wow/batch1/evidence/ (ok to write). Outputs of test runs go under /tmp/vgs-build/ not into examples/.
+
+GOAL: implement S-1..S-7 in acceptance.md.
+
+## S-1  scripts/vgs.py  (new human entry)
+
+`python scripts/vgs.py make <input> --out <new-dir>`
+
+Defaults (do not require --key, --tolerance, or --width on the happy path):
+- Default output width 320 (print it in the summary). Must finish the chibi sample in ≤ 15 s wall clock.
+- Auto background key:
+  - Sample borders/corners over time. Only auto-key when evidence shows a uniform flat background color (confidence in manifest).
+  - Estimated key hex, tolerance, softness, confidence must be recorded in manifest + human summary.
+  - Source magenta is NOT exact FF00FF (decoded ~RGB 244,20,247). Tune tolerance so the 4px border becomes transparent (ring_opaque_max ≤ 0.01) without wiping the chibi sword glow (magenta_share_max ≤ 0.02 is the allowance for legitimate pink/purple).
+  - If the subject contains a closed region of the key color (acceptance control C1), either keep that island (prefer flood/connected-to-border key) OR clearly WARN that foreground contains the key color and may have been punched through. Silent punch-through is forbidden.
+  - If the background is busy/not flat (C2 testsrc2): do NOT key, do NOT claim transparent. Summary must say 未去背 and why. Exit 0 only if clearly labeled as a non-transparent delivery. (Background QA in S-2 still applies when the user wanted transparency; for C2, honest non-transparent is OK with exit 0.)
+  - If green screen (C3): either key the detected green correctly, or say you only support magenta and did not key. Do not claim transparent if you did not key.
+- Trailing freeze (S-3): detect a long still tail. On examples/chibi-running-dash/source.mp4 the hold is frames ~85–144 (about 3.54s–6.04s). Trim or retime it. Remaining end freeze must be ≤ 0.5s or gone. Keep the recovery action itself (last non-still source time ≈ ≥ 3.5s). Record in summary+manifest: original duration, new duration, source interval removed/sped, method (trim/speed/decimate). Do NOT use qa_media --holds to hide a freeze. Do not secretly crossfade, reverse, or interpolate. Prefer trimming after a short guard (≤0.5s) and feeding a PNG sequence or cut video into gif_pipeline (PNG dir requires --fps). Preserve source_indices in the manifest so acceptance can check the last moving frame.
+- Then run QA (qa_media) on the GIF.
+- Human-readable stdout summary (not JSON-only) including: width×height, frame count, duration seconds, file size MB, whether background was removed plus key color, QA grade PASS/WARN/FAIL and main reasons, output path, and a line that visual approval still needs a human. If loop FAIL, say "loop FAIL" and position/speed reason; never write seamless / 無縫 / loop OK / 視覺通過 in that case. If loop PASS, you may write "loop 量測通過（未經視覺核准）".
+- Write into --out: the gif (name it in the summary; animation.gif is fine), manifest.json (key, tolerance, confidence, tail treatment, source_indices, qc alpha_mismatch_pixels), QA report (report.md / report.json), and a checkerboard (light and dark) preview or contact so transparency is visible.
+- Exit 0 only for a successful transparent delivery (or an honest non-transparent delivery like C2). If chroma/background should have been removed but was not, exit non-zero (S-2).
+- Never call the network.
+
+Implement helpers in scripts/ (e.g. scripts/vgs_detect.py) if that keeps vgs.py readable. Keep them local and dependency-free beyond requirements.txt (numpy, pillow already present).
+
+## S-2  QA must fail when background was not removed
+
+- Flag: `--no-key` (and mention `--keep-background` as an alias in help).
+- `vgs.py make source --out DIR --no-key` must FAIL the delivery check because of the background itself (e.g. "border fully opaque and magenta"), not merely because loop failed. Exit code != 0. Summary first screen must say the background was not removed and this is not a transparent GIF.
+- The background check must not false-FAIL the successful S-1 transparent chibi (sword glow is legal).
+- For a legacy `gif_pipeline.py` unkeyed GIF, at least one user-visible gate (vgs delivery check, a `vgs qa` command, or an added qa_media check) must FAIL and name the background. Prefer implementing the check in a shared helper used by `vgs make`, and optionally `python scripts/vgs.py qa <gif>` so the wrapper is the user-visible gate. Avoid silently breaking existing qa_media default contracts on already-passing official GIFs; if you extend qa_media, make the new check explicit or clearly justified and keep official chibi final.gif from false-failing on sword glow.
+
+## S-4  Human-readable errors
+
+`vgs.py make` must catch these and exit != 0 with no `Traceback (most recent call last)`. Each message has three parts in plain language: what happened (name the path or numbers), impact, next step (a copy-pasteable fix):
+
+1. Missing source file
+2. PNG directory without --fps
+3. Non-empty --out directory: do not write or delete anything (keep.txt hash unchanged, no new files)
+4. Relabeling video FPS (`--fps 30` on a 24fps video): explain "source is 24 fps, you passed 30", that this would change playback speed, and to use `--fps 24` or omit it
+
+If a missing source caused an empty out dir to be created, leave it empty or say so.
+
+Wrap ValueError / argparse errors from gif_pipeline into the same style. Do not let raw tracebacks escape `vgs make`.
+
+Also add `--help` that documents make, --no-key / --keep-background, --fps, --out, and the auto-key behavior.
+
+## S-5  Dual-track README
+
+Update BOTH README.md and README.zh-TW.md consistently:
+
+- First ~40 lines: this is a standalone CLI tool AND a Codex + Claude Code skill. One human command (`python scripts/vgs.py make <video> --out <dir>`, after install / with the venv python) and one agent invocation.
+- Document `/video-gif-studio` (Claude Code) and `$video-gif-studio` (Codex).
+- Say that if the environment has no built-in image generation, the user must supply a start image or an existing video. Local path needs no account and costs $0.
+- How it works diagram (mermaid is fine) that distinguishes the local path ($0, no account: existing video/PNG → key/trim → GIF/APNG/sprite) from generation API paths (Grok / fal).
+- I2V options table, prices only as specified, dated 2026-11-22, with "recheck before listing":
+  - Local existing media: $0
+  - Grok / X plan website: uses the site's weekly shared credit pool (not a $/sec retail price in this table)
+  - Grok API (prepaid credits, not the weekly pool): headline 1.5 $0.080/sec, lite $0.020/sec; note that a resolution-tier table may differ; recheck before listing
+  - fal MiniMax H3 Max: from 2026-11-16, $0.05 / $0.08 / $0.16 per second at 480p / 768p / 1080p
+- Move "Measured delivery QA" / qa_media so it is NOT the first section; it must come after the entry path and How it works.
+- First-screen hero images each ≤ 3 MB (target ≤ 2 MB). Current seated final.gif 19.9 MB, robot 7.0 MB, neon preview 10.5 MB must not remain as first-screen embeds. Write compressed copies as new files and embed those. Leave original final.gif as optional links, not huge embeds. Do not overwrite official finals.
+- No market-savings claims, no agents besides Codex and Claude Code, no native engine-importer claims, do not describe technical_pass as visual approval.
+
+## S-6  Claude Code installer
+
+Extend scripts/install.py:
+- `--skills-dir` still overrides everything.
+- `--target claude` → $HOME/.claude/skills
+- `--target codex` → $CODEX_HOME/skills or $HOME/.codex/skills
+- Default with no flags: if --skills-dir not given, then if CODEX_HOME is set use it; else if $HOME/.codex exists use ~/.codex/skills; else if $HOME/.claude exists use ~/.claude/skills; else ~/.codex/skills. Document this in --help and README.
+- Keep "do not overwrite an existing install that is not this source"; re-run must exit != 0 with a human explanation (什麼/影響/下一步). Keep staging-dir copy so a failed install cannot look installed.
+- `--skip-deps` remains registration-only and must not claim runtime readiness.
+- Optionally mention vgs.py in the post-install help check list (in addition to gif_pipeline / grok_video).
+- Update SKILL.md so an agent is told to use `python scripts/vgs.py make` for the local one-command path, and both invocation names.
+
+You do not need to run a live Claude Code session yourself if it would be heavy; leave wow/batch1/evidence/ notes of installer tests. The coordinator will run Claude Code verification.
+
+## S-7  Agensi pack (do not submit, do not contact anyone)
+
+Update (do not invent a submit):
+/workspace/money-radar-team/2026-11-22/agensi-listing-pack.md
+/workspace/money-radar-team/2026-11-22/video-gif-studio-agensi.zip
+Keep or refresh cover/logo already in that folder if the listing still needs them.
+
+The existing pack was written before this batch (Codex-only). It MUST be updated to mention `vgs make`, verified Claude Code + Codex only, How it works, and the S-5 price table with 2026-11-22 / 2026-11-16 dates and the recheck note. English form fields can stay, plus a Traditional Chinese note for Alex. Do not claim the listing was submitted. Do not claim market savings.
+
+ZIP must contain SKILL.md, requirements.txt, scripts/ (at least vgs.py, gif_pipeline.py, install.py, doctor.py) and README. Must NOT contain .git, .venv, .runtime, __pycache__, output/, run-*, .env*, local-settings.json, wow/, or QA scratch. A buyer should be able to run `python scripts/vgs.py make` from the unzipped tree against the repo's examples/chibi-running-dash/source.mp4. List the five largest files in the pack markdown with reasons for keeping them. Prefer a zip well under 25 MB (exclude bulky examples if needed; then say to use GitHub for samples).
+
+## Self-check before you stop
+
+Using PY=/home/box/.codex/skills/video-gif-studio/.venv/bin/python, run the acceptance commands for S-1 (chibi + C1/C2/C3), S-2, S-3, S-4, installer --target claude / --skills-dir with a fake HOME, and record results in wow/batch1/evidence/build-selfcheck.md. Fix failures that are in scope.
+
+Do not start a web service. Do not push. When done, list the files you changed.
+
+codex
+I’ll use the video-gif-studio skill and the batch acceptance criteria to implement the local CLI, installer, documentation, and listing pack. I’ll keep all generation offline and leave the separate CI changes untouched.
+exec
+/bin/bash -lc 'cat wow/batch1/spec.md wow/batch1/acceptance.md scripts/gif_pipeline.py scripts/qa_media.py scripts/install.py scripts/doctor.py README.md README.zh-TW.md SKILL.md > /tmp/vgs-build-read.txt && wc -l /tmp/vgs-build-read.txt && git status --short' in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+1775 /tmp/vgs-build-read.txt
+ M .github/workflows/test.yml
+?? scripts/run_ci_smoke.py
+?? wow/batch1/
+
+exec
+/bin/bash -lc 'cat wow/batch1/acceptance.md' in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+# Batch 1 驗收答案卷 — video-gif-studio 輕量交付
+
+- 角色：獨立驗收者（Claude Opus），建造者為 Codex（不同廠商）。本卷建造前寫成，**不修改 spec，也不放寬 spec**；若本卷與 spec 有衝突，以較嚴者為準。
+- 日期：2026-11-22（Asia/Taipei）
+- 成本：$0。驗收全程不得呼叫 Grok／fal 或任何付費生成；驗收指令一律輸出到 `/tmp/vgs-acc/…` 新目錄，不寫入 repo。
+- 樣本：可見樣本為 `examples/chibi-running-dash/source.mp4`。之後的批次應優先使用建造者沒看過的保留（held-out）輸入；本輕量批次可只用此範例來源，必要時加上下面定義的合成洋紅純色對照組（ffmpeg lavfi 產生，免費）。由於建造者看得到 chibi 來源，**只靠 chibi 通過不能證明泛化**，所以合成對照組（C1 至 C3）在 S-1 和 S-2 屬於必驗。
+
+## 0. 樣本基線（驗收者 2026-11-22 本機實測，免費路徑，輸出在 /tmp）
+
+| 項目 | 值 |
+|---|---|
+| `source.mp4` | 720×720、24 fps、145 幀、6.04 s、1.64 MB |
+| 背景色 | 洋紅，解碼 RGB ≈ (244,20,247)／(251,0,249)，不是精確的 `FF00FF` |
+| 舊預設 `gif_pipeline.py source.mp4 --out X --width 320`（不帶 `--key`） | 4.21 MB，每幀 100% 不透明，邊框 4 px 全不透明，不透明像素中洋紅佔比最高 94.8%；`technical_pass: true` ← 這就是 spec 要消滅的反例 |
+| `--key FF00FF --tolerance .2 --softness .18 --width 320` | 1.12 MB、145 幀、alpha mismatch 0；每幀不透明面積最多 9.4%；邊框 4 px 不透明為 0；洋紅佔比 0 |
+| `qa_media.py` 對上列透明 GIF | exit 1；`freeze WARN f85/3.540 s 到 f144/6.040 s`；`loop FAIL`（`position_pass: true`、`speed_pass: false`，speed_ratio 0.088）；pops WARN f38、f53、f54 |
+| `qa_media.py` 對未去背 GIF | exit 1，但 FAIL 理由**只有 loop**，沒有任何一項指出「背景未去除」 ← S-2 的直接反例 |
+
+本表只作為對照參考。建造後的數字可以不同，但下列不變式不得違反。
+
+## 1. 領域規則、不變式、邊界與反例（專家先看這些）
+
+### 1.1 色鍵與主體顏色
+- **規則**：只有在證據顯示背景是均勻純色時，才可以自動色鍵。證據至少包含：四邊或角落取樣的顏色一致，且在時間上穩定。估得的鍵色、容差與信心值須寫進 manifest 和摘要。
+- **不變式**：自動色鍵不得把主體內部大片區域變透明而不告知。
+- **邊界**：來源洋紅不是精確的 `FF00FF`，而且有壓縮噪聲；硬寫 `FF00FF` 加窄容差會殘留邊框，驗收時要看實測顏色。chibi 劍光是亮粉紫色的合法前景，不能把它當背景刪掉來追求「零洋紅」。
+- **反例 1**：前景含有和背景同色的封閉區塊（C1 的洋紅內框）。全域色鍵會把它挖空。可接受的結果有兩種：保留該區塊（例如只移除和邊框連通的背景），或在摘要中**明確警告**「前景含鍵色，可能被挖空」。默默挖空不可接受。
+- **反例 2**：背景不是純色（C2 的 testsrc2）。不得自動套用色鍵並宣稱透明。應不套用色鍵（或拒絕），並在摘要明說「未去背，原因：背景非純色」。
+- **反例 3**：背景是綠幕而不是洋紅（C3）。若宣稱能自動偵測背景色，就不能把洋紅硬寫死。若只支援洋紅，摘要須說明此限制，不得宣稱已透明。
+
+### 1.2 GIF 是二值透明
+- GIF 每個像素只有透明或不透明。半透明邊緣在 GIF 中一定是取捨後的結果，邊緣殘留的洋紅色環屬於品質問題，不能用 `alpha_mismatch_pixels: 0` 掩蓋。alpha mismatch 只證明編碼和來源閾值一致，不證明去背正確。
+- **不變式**：「透明 GIF」至少要求每幀邊框 4 px 的不透明比例 ≈ 0（主體可能碰邊時另行說明），且不透明像素中不得有整片背景色。
+- **反例**：`technical_pass: true` 但每幀 100% 不透明，即舊預設的情況。
+
+### 1.3 定格與設計停頓
+- 尾端長時間靜止（3.54 至 6.04 s，佔全片約 41%）是生成來源的收招殘留，不是設計停頓。
+- **不變式**：自動裁切或壓縮尾端時，須在摘要和 manifest 記錄「原長度、處理後長度、裁掉或壓縮的時間範圍與方法」。不得用 `--holds` 把定格標成設計停頓，只為讓 WARN 消失。
+- **邊界**：收招後保留短暫的 guard 姿勢（例如 ≤ 0.5 s）是合理的設計；把收招動作本身也裁掉則屬破壞內容。
+- **反例**：只把 QA 參數改成 `--holds 3.5-6.04`，定格仍然整段在場，摘要卻寫「已處理」。
+
+### 1.4 循環接縫與「生成時首幀等於尾幀」
+- chibi 是用同一張圖當首幀和尾幀生成的，所以 `position_pass: true`，但這不代表循環無縫。首尾兩幀幾乎相同時，循環播放會出現一次重複幀（卡一下）；尾端定格則讓速度在接縫處跳變，這就是 speed FAIL 的原因。
+- **不變式**：只要 loop 檢查仍是 FAIL，摘要必須照寫，不得出現「無縫」「seamless」「loop OK」等字樣。若因裁掉重複的末幀而讓 loop 通過，須記錄為處理動作。
+- **反例**：為了讓 loop PASS，加入淡入淡出、倒放或插幀卻沒有揭露。原範例聲明沒有 crossfade 或倒放，新流程同樣須揭露任何這類處理。
+
+### 1.5 QA 與視覺核准
+- `technical_pass` 和 QA PASS 只代表量測的閾值過關。動作自然度、意義、無縫感都需要人看，摘要須保留「視覺核准：未評估（需人看）」或同等字樣。
+- **反例**：摘要只印出「PASS」或「✅ Done」，讓人以為可以交付。或者 QA 等級是 FAIL，摘要的第一行卻寫成功。
+
+### 1.6 其他 spec 不變式（每個 S 都要順帶確認）
+- 本機路徑不得連網呼叫 Grok／fal。驗收時以 `env -u XAI_API_KEY -u FAL_KEY` 執行，並可在斷網環境（例如 `unshare -n`）重跑 S-1，結果須相同。
+- 不改 `.github/workflows/`（`git diff --stat <base>..HEAD -- .github/workflows` 須為空）。注意：工作樹開工前已有一處未提交的 `test.yml` 修改，那不是建造者的變更，但建造者的提交不得包含它。
+- Sprite metadata 不得宣稱原生 Unity／Godot／TexturePacker 格式。
+- 不得宣稱已驗證的市場節省；相容 agent 只列 Codex 和 Claude Code。
+
+## 2. 共用準備（驗收者執行）
+
+```sh
+cd /workspace/src/video-gif-studio
+PY=${PY:-.venv/bin/python}   # 或已安裝 skill 的 venv；以 README 寫法為準
+SRC=examples/chibi-running-dash/source.mp4
+A=/tmp/vgs-acc; rm -rf $A; mkdir -p $A
+# C1：洋紅純色背景，白色移動方塊，內含封閉洋紅內框（前景含鍵色）與暗紫條
+ffmpeg -v error -f lavfi -i "color=c=0xF414F7:s=320x240:r=24:d=2" -f lavfi -i "color=c=white:s=100x100:r=24:d=2" \
+  -filter_complex "[1]drawbox=x=25:y=35:w=50:h=30:color=0xF414F7@1:t=fill,drawbox=x=0:y=88:w=100:h=10:color=0xC81EC8@1:t=fill[s];[0][s]overlay=x='20+t*60':y=60:shortest=1" \
+  -pix_fmt yuv420p $A/c1_magenta_flat.mp4
+# C2：非純色背景
+ffmpeg -v error -f lavfi -i "testsrc2=s=320x240:r=24:d=2" -pix_fmt yuv420p $A/c2_busy.mp4
+# C3：綠幕純色加白色方塊
+ffmpeg -v error -f lavfi -i "color=c=0x00FF00:s=320x240:r=24:d=2" -f lavfi -i "color=c=white:s=100x100:r=24:d=2" \
+  -filter_complex "[0][1]overlay=x='20+t*60':y=60:shortest=1" -pix_fmt yuv420p $A/c3_green.mp4
+```
+
+已驗證：C1 為 24 fps、48 幀，方塊從 x=20 移到 x=136，內框解碼為 (242,18,247)，和背景同色。
+
+GIF 量測輔助（寫在 `/tmp/vgs-acc/measure.py`，不放進 repo）：
+
+```python
+import sys, numpy as np
+from PIL import Image, ImageSequence
+g = Image.open(sys.argv[1]); op, ring, mag = [], [], []
+for f in ImageSequence.Iterator(g):
+    a = np.array(f.convert('RGBA')); al = a[..., 3] > 0
+    op.append(al.mean())
+    ring.append(np.concatenate([al[:4].ravel(), al[-4:].ravel(), al[:, :4].ravel(), al[:, -4:].ravel()]).mean())
+    c = a[..., :3].astype(int)
+    m = (c[..., 0] > 180) & (c[..., 2] > 180) & (c[..., 1] < 90) & al
+    mag.append(m.sum() / max(al.sum(), 1))
+print(dict(size=g.size, frames=g.n_frames, loop=g.info.get('loop'), opaque_max=round(max(op), 3),
+           ring_opaque_max=round(max(ring), 4), magenta_share_max=round(max(mag), 4)))
+```
+
+## 3. S 條目驗收
+
+每條的判定方式：每個「必須」都成立才算 PASS；任何一個「禁止」出現即 FAIL。須留證據（指令、stdout／stderr、結束碼、量測輸出），存到 `wow/batch1/evidence/`（由建造者或協調者存放，驗收者不寫入 repo）。
+
+### S-1 一條指令、透明預設
+
+- **核心輸入**：`$SRC`（chibi 洋紅來源）。對照組：C1、C2、C3。
+- **指令**（不得手動傳 `--key`、`--tolerance`、`--width`）：
+  ```sh
+  s=$(date +%s%N); $PY scripts/vgs.py make $SRC --out $A/s1; echo "exit=$?"; e=$(date +%s%N); echo "wall_ms=$(( (e-s)/1000000 ))"
+  $PY $A/measure.py $A/s1/*.gif
+  for c in c1_magenta_flat c2_busy c3_green; do $PY scripts/vgs.py make $A/$c.mp4 --out $A/s1_$c; echo "$c exit=$?"; done
+  ```
+  若 README 寫的入口是 `vgs make`，兩種寫法都要跑，結果須相同。
+- **必須**：
+  1. chibi 執行的 exit 為 0，`$A/s1/` 內有一個透明 GIF（檔名需在摘要中印出）、manifest（記錄自動估得的鍵色、容差、信心值，以及尾端處理，見 S-3），以及 QA 報告（`report.md`／`report.json`）。
+  2. 量測結果：`ring_opaque_max ≤ 0.01`；`opaque_max < 0.5`（基線為 0.094，主體不會佔滿畫面）；`magenta_share_max ≤ 0.02`（容許劍光等合法粉紫色，但不得有整片背景）；`loop == 0`；manifest 或 QC 的 `alpha_mismatch_pixels == 0`。
+  3. 若輸出有 preview 或 contact 圖，須在淺色**與**深色（或棋盤）底上都能看出透明。棋盤底上看得到主體、看不到洋紅底板（以人眼或 Read 圖檢查）。
+  4. 人話摘要（stdout，非僅 JSON）包含：寬×高、幀數、時長（秒）、檔案大小（MB）、是否去背（並附鍵色）、QA 等級（PASS／WARN／FAIL 加上主要原因）、輸出路徑，以及「視覺核准需人看」這類聲明。
+  5. 編碼牆鐘 ≤ 15 s。以上面指令實測的 `wall_ms` 為準，並同時記錄輸出寬度（spec 的時間目標是在 ≤ 320 px 寬下訂的；若預設寬度大於 320，仍須 ≤ 15 s，不得因寬度而放寬）。牆鐘只是本機數字，首次使用的 30 秒須另由真人確認。
+  6. C1：外部洋紅變透明，白色方塊保留；封閉的洋紅內框若被挖空，摘要須有明確警告（見 1.1 反例 1）。C2：不得宣稱透明，摘要須寫明「未去背」及原因；若 exit 為 0，摘要須清楚標示為非透明交付。C3：要嘛綠底正確去背，要嘛明說只支援洋紅、未去背。
+- **禁止**：整片洋紅仍在卻 exit 0 且摘要寫「透明」或「PASS」；只輸出原始 JSON；連網呼叫 Grok／fal；為了達成牆鐘目標而預設輸出極小尺寸卻不在摘要中寫出尺寸；寫入或覆蓋 `examples/` 內的檔案。
+
+### S-2 未去背不得通過 QA
+
+- **核心輸入**：`$SRC`，強制保留背景。
+- **指令**：用建造者在 `--help` 中提供的明確旗標（例如 `--no-key` 或 `--keep-background`；名稱以 `$PY scripts/vgs.py make --help` 為準），另外對舊產物也做一次 QA：
+  ```sh
+  $PY scripts/vgs.py make --help
+  $PY scripts/vgs.py make $SRC --out $A/s2 --no-key; echo "exit=$?"     # 旗標名稱依 help 調整
+  $PY scripts/gif_pipeline.py $SRC --out $A/s2_legacy --width 320; echo "legacy exit=$?"
+  $PY scripts/qa_media.py $A/s2_legacy/animation.gif --out $A/s2_legacy_qa; echo "qa exit=$?"   # 若交付檢查改在其他入口，改跑該入口
+  ```
+- **必須**：
+  1. 強制保留背景時，QA 或交付檢查的結果為 **FAIL**，且 make 的結束碼 ≠ 0；或者至少 QA 等級為 FAIL，摘要第一屏寫明「背景未去除，不是透明 GIF」。spec 寫的是「必須 FAIL 或同等非零結束碼」，兩者都不能缺少「指出背景未去除」這句。
+  2. FAIL 的理由必須是背景／透明度本身（例如「邊框 100% 不透明且為洋紅」），**不能只靠剛好存在的 loop FAIL**。基線顯示舊 QA 對未去背 GIF 的唯一 FAIL 理由就是 loop，這不算達標。驗法：把 S-3 處理後 loop 能通過的版本在保留背景下重跑，仍須 FAIL。
+  3. 舊路徑 `gif_pipeline.py` 單獨使用時，若仍輸出 `technical_pass: true`，那麼 make 摘要、交付檢查，或 `qa_media` 中至少一個使用者可見的關卡須對該檔判 FAIL 並指出背景。若 `gif_pipeline` 本身也改了，記錄其新行為。
+- **禁止**：`technical_pass: true` 成為唯一可見的結論；摘要寫「已去背」；exit 0 且沒有任何 FAIL 或警告。
+- **反例檢查**：對 S-1 的透明成品跑同一個背景檢查，**不得**誤判 FAIL（避免把合法劍光當成殘留背景）。
+
+### S-3 尾端定格與循環
+
+- **核心輸入**：`$SRC`。
+- **指令**：
+  ```sh
+  $PY scripts/qa_media.py $A/s1/*.gif --out $A/s3_qa; echo "qa exit=$?"
+  grep -nE "freeze|loop" -A4 $A/s3_qa/report.md
+  ```
+  另外檢查 S-1 的摘要與 manifest。
+- **必須**：
+  1. 處理後的 freeze 段不得再覆蓋「收招後約 3.54 s 起到結尾」的長靜止。判準：任何殘留的尾端 freeze 段 ≤ 0.5 s，或整段已被移除。時長須明顯短於 6.04 s，並列在摘要裡。
+  2. 摘要與 manifest 寫明尾端處理：原時長、新時長、裁掉或壓縮的來源區間（例如「來源 3.54 到 6.04 s 裁切，保留 x.xx s guard」）及方法（裁切／加速／抽幀）。
+  3. 收招動作本身須保留：處理後最後一個非靜止幀的來源時間 ≥ 基線 freeze 起點附近（約 3.5 s）。以 manifest 的 `source_indices` 對照驗證。
+  4. loop：若 QA loop 為 PASS，摘要可寫「loop 量測通過（未經視覺核准）」。若仍是 FAIL，摘要須寫「loop FAIL」及原因（position／speed），不得只寫在 report.md 裡。
+- **禁止**：用 `--holds` 或標記設計停頓來壓掉 WARN；不加揭露地使用 crossfade、倒放或插幀；loop FAIL 時摘要出現「seamless」「無縫」「loop OK」或「視覺通過」；裁切卻不記錄。
+
+### S-4 人話錯誤
+
+- **核心輸入與指令**（每一個都要記錄 exit、stdout、stderr）：
+  ```sh
+  $PY scripts/vgs.py make $A/does-not-exist.mp4 --out $A/s4a                      # 來源不存在
+  mkdir -p $A/pngs && $PY -c "from PIL import Image;[Image.new('RGBA',(32,32),(255,0,0,255)).save(f'$A/pngs/{i:03d}.png') for i in range(3)]"
+  $PY scripts/vgs.py make $A/pngs --out $A/s4b                                    # PNG 目錄缺 fps
+  mkdir -p $A/s4c && echo keep > $A/s4c/keep.txt && sha256sum $A/s4c/keep.txt
+  $PY scripts/vgs.py make $SRC --out $A/s4c; sha256sum $A/s4c/keep.txt; ls $A/s4c   # 輸出目錄非空
+  $PY scripts/vgs.py make $SRC --out $A/s4d --fps 30                              # 誤標 FPS（來源 24）
+  ```
+- **必須**（每一案）：exit ≠ 0；stderr 或 stdout **不含** `Traceback (most recent call last)`；訊息包含三個部分：發生什麼（指名路徑或數值，例如「來源 24 fps，你指定 30」）、影響（例如「會改變動作速度」「不會寫入任何檔案」）、下一步（可直接複製的修正指令或旗標，例如「改用 `--fps 24` 或省略」「改用新的 `--out` 目錄」）。訊息以人話寫成，不能只是 argparse 的 usage 片段。
+  - 非空目錄：`keep.txt` 的雜湊前後相同，目錄內不得多出檔案。
+  - 來源不存在：不得留下半成品輸出目錄（若已建立，須是空的，或訊息中有說明）。
+- **禁止**：未捕捉的 traceback；exit 0；只顯示「Error」；覆蓋或刪除使用者檔案。
+
+### S-5 雙軌 README、How it works 與圖生影表
+
+- **核心輸入**：`README.md`、`README.zh-TW.md`（建造後）。
+- **指令**：
+  ```sh
+  for f in README.md README.zh-TW.md; do echo "== $f"; sed -n 1,40p $f; done
+  grep -nE "vgs(\.py)? make|skill" README.md README.zh-TW.md | head -20
+  grep -nE "How it works|運作方式|運作原理" README.md README.zh-TW.md
+  grep -nE "0\.080|0\.020|0\.05|0\.08|0\.16|2026-11-16|2026-11-22|\\\$0" README.md README.zh-TW.md
+  grep -nE "Measured delivery QA|qa_media" README.md | head -3      # QA 段落行號須在入口與 How it works 之後
+  # 首屏 hero：取前 40 行引用的圖片並量大小
+  grep -oE "\]\(([^)]+\.(gif|png|webp|jpg|apng))\)" README.md | head -5
+  ```
+- **必須**：
+  1. 兩個 README 的開頭（前約 40 行內）都說明「這是獨立 CLI 工具，同時也是 Codex 與 Claude Code skill」，並各有一條人用入口（`vgs make …` 一條指令）和一條 agent 入口。中英內容須一致，不得一邊有、一邊沒有。
+  2. 有一張 How it works 圖（mermaid 或圖片），清楚區分**本機路徑（$0，不需帳號）**與**生成 API 路徑（Grok／fal）**。
+  3. 圖生影選項表的價格逐字符合 spec：本機 $0；Grok／X 方案使用網站額度；Grok API 標題價 1.5 為 $0.080／秒、lite 為 $0.020／秒，並註明「分級表可能不同、上架前再查」；fal H3 Max 自 2026-11-16 起 480p／768p／1080p 分別為 $0.05／$0.08／$0.16 每秒。表上標示核對日期 2026-11-22。不得出現其他未核對的價格或「最便宜」之類宣稱。
+  4. 「Measured delivery QA」段落不得再是 README 的第一節，須移到入口與 How it works 之後。
+  5. 首屏引用的每個 hero 檔案 ≤ 3 MB（目標 ≤ 2 MB），以 `ls -l` 實測。現況 seated 為 19.9 MB、robot 為 7.0 MB、neon preview 為 10.5 MB，皆不合格，若仍留在首屏須換成壓縮版。
+- **禁止**：宣稱市場節省或已驗證的效益數字；列出 Codex／Claude Code 以外的相容 agent；宣稱 sprite 為原生 Unity／Godot／TexturePacker 格式；README 將 `technical_pass` 描述為視覺通過；為了壓縮 hero 而覆寫 `examples/*/final.gif`（壓縮版應另存新檔，原交付保留）。
+
+### S-6 Claude Code 支援
+
+- **核心輸入**：`scripts/install.py`、`scripts/doctor.py`、SKILL.md／README。注意：本機 `~/.claude/skills/video-gif-studio` 與 `~/.codex/skills/video-gif-studio` **已存在**，驗收時不得覆寫，應以暫時 HOME 或 `--skills-dir` 測試。
+- **指令**：
+  ```sh
+  T=$A/home; mkdir -p $T/.claude
+  HOME=$T $PY scripts/install.py --target claude --skip-deps; echo "exit=$?"; ls $T/.claude/skills/video-gif-studio/SKILL.md
+  $PY scripts/install.py --skills-dir $A/sk --skip-deps; echo "exit=$?"; ls $A/sk/video-gif-studio/SKILL.md
+  HOME=$T $PY scripts/install.py --target claude --skip-deps; echo "re-run exit=$?"   # 已存在且非同源時須保留並說明
+  $PY scripts/install.py --help | grep -E "target|skills-dir"
+  grep -rnE "/video-gif-studio|\\\$video-gif-studio" README.md README.zh-TW.md SKILL.md
+  $PY scripts/doctor.py; echo "doctor exit=$?"
+  ```
+  另以 `HOME=$T`（只有 `~/.claude`、沒有 `~/.codex`）測試未帶旗標時的偵測行為。
+- **必須**：
+  1. `--target claude` 裝到 `$HOME/.claude/skills/video-gif-studio`；`--skills-dir` 可指定任意目錄；`--target` 的值和預設偵測規則須寫在 `--help` 與 README。原有「不覆寫既存安裝、以 staging 目錄避免半套安裝」的行為不得退化（重跑時 exit ≠ 0，並顯示人話說明）。
+  2. 文件同時寫出 `/video-gif-studio`（Claude Code）與 `$video-gif-studio`（Codex）兩種呼叫方式。
+  3. 文件說明：環境沒有內建生圖時，需要提供起始圖或既有影片。
+  4. doctor 不連網、不登入；在已安裝 deps 的 venv 中 exit 0；輸出包含 `local_gif_runtime_ready: true`。若 doctor 新增了 Claude Code 安裝位置的回報，須與實際路徑一致。
+  5. **本機 Claude Code 實跑**（spec 硬性要求，不可用「理論上可行」代替）：在乾淨的工作目錄以 Claude Code 載入 skill（`/video-gif-studio` 或 skill 清單中可見），讓它執行 doctor 和本機 `vgs make`（輸入 `$SRC`，輸出到新 `/tmp` 目錄）。證據包含 session 紀錄或 stdout、產出的 GIF 路徑與 S-1 量測結果，存到 `wow/batch1/evidence/`。整個過程不得呼叫 Grok／fal。
+  6. 相容 agent 只宣稱 Codex 與 Claude Code。
+- **禁止**：覆寫使用者既有的 `~/.claude/skills/video-gif-studio` 或 `~/.codex/skills/video-gif-studio`；只做 `--skip-deps` 註冊就宣稱「Claude Code 可用」；沒有實跑證據。
+
+### S-7 壓縮 hero、示範圖庫與 Agensi 包
+
+- **核心輸入**：README 示範圖；`/workspace/money-radar-team/2026-11-22/`。注意該目錄**已有**一份 `agensi-listing-pack.md`（建造前就存在），驗收時須確認它已為本批更新（內容提到 `vgs make`、Claude Code 支援與 S-5 的價格表），不能拿舊檔充數。
+- **指令**：
+  ```sh
+  D=/workspace/money-radar-team/2026-11-22
+  ls -l $D/agensi-listing-pack.md $D/video-gif-studio-agensi.zip $D/agensi-cover.png 2>&1
+  grep -nE "vgs make|Claude Code|0\.080|2026-11-16" $D/agensi-listing-pack.md
+  unzip -l $D/video-gif-studio-agensi.zip | tail -1
+  unzip -l $D/video-gif-studio-agensi.zip | grep -E "\.git/|\.venv/|\.runtime/|__pycache__|\.pyc$|/output/|/run-|wow/|qa/|\.env|local-settings\.json" ; echo "excluded-hits=$?"
+  unzip -l $D/video-gif-studio-agensi.zip | sort -k1 -n | tail -5
+  mkdir -p $A/zip && unzip -q $D/video-gif-studio-agensi.zip -d $A/zip && ls $A/zip/*/SKILL.md $A/zip/SKILL.md 2>/dev/null
+  # README 示範圖大小
+  grep -oE "\]\(([^)]+\.(gif|png|webp|jpg))\)" README.md | sed -E 's/.*\(//;s/\)//' | xargs -I{} ls -l {}
+  ```
+- **必須**：
+  1. 兩個檔案都存在且為本批產出；封面若 listing 需要則須存在。
+  2. 壓縮包內含 `SKILL.md`、`requirements.txt`、`scripts/`（至少包含 `vgs.py`、`gif_pipeline.py`、`install.py`、`doctor.py`）及 README；解壓後 `$PY <解壓目錄>/scripts/vgs.py make $SRC --out $A/s7run` 可以跑出和 S-1 同樣通過的結果（若包內不含 chibi 來源，就用 repo 內的 `$SRC`）。
+  3. 不含 `.git`、`.venv`、`.runtime`、`__pycache__`、`output/`、`run-*`、`.env*`、`local-settings.json`、`wow/` 建造紀錄或 QA 暫存（上面的 grep 不得有命中，即 `excluded-hits=1`）。包內最大的五個檔案須逐一說明保留理由。驗收者建議的紅線：整包 > 25 MB 須書面說明（這是審查提示，不是 spec 門檻）。
+  4. README 示範圖全部可快速載入：首屏 hero ≤ 3 MB；圖庫中每張建議 ≤ 3 MB，超過的須改成連結，不要內嵌。
+  5. listing 內容遵守 1.6 節（不宣稱市場節省、只列兩個 agent、價格與 S-5 一致並註明上架前再查）。
+- **禁止**：實際提交到 Agensi 或對外聯絡；壓縮包內含憑證、token 或 `.env`；宣稱已上架。
+
+## 4. 非目標守門（任一違反即整批 FAIL）
+
+- `.github/workflows/` 有任何建造者提交的變更。
+- 驗收或建造期間產生任何 Grok／fal 付費請求（檢查日誌與 `~/.codex`／fal 用量。若無法檢查，標**未知**，不得寫通過）。
+- 宣稱原生引擎 importer、宣稱所有循環無縫、對外寄信或提交 listing。
+
+## 5. 仍需真人的項目（本卷不判通過）
+
+- README 入口到發出正確指令 ≤ 30 秒（L10，須真人計時）。
+- 成品動作的自然度與循環的觀感（視覺核准）。
+- 390／1440 寬度下 README 首屏的設計審查（W2／W4）。
+
+exec
+/bin/bash -lc "cat scripts/install.py; cat wow/batch1/spec.md; rg -n 'argparse|add_argument|def main|json|key|fps|alpha_mismatch' scripts/gif_pipeline.py scripts/qa_media.py" in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+#!/usr/bin/env python3
+"""Install from a trusted checkout without replacing an existing skill."""
+import argparse
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import venv
+
+NAME = 'video-gif-studio'
+
+
+def install(source, skills_dir, skip_deps=False, with_matting=False):
+    source = Path(source).resolve()
+    if not (source/'SKILL.md').is_file() or not (source/'requirements.txt').is_file():
+        raise ValueError('Source is not a complete video-gif-studio checkout')
+    target = Path(skills_dir).expanduser()/NAME
+    if target.exists() or target.is_symlink():
+        if target.resolve() != source:
+            raise ValueError(f'Existing install preserved: {target}. Run its own install.py to repair dependencies; do not overwrite it.')
+    else:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        # A staging sibling prevents an interrupted copy appearing installed.
+        import tempfile
+        stage = Path(tempfile.mkdtemp(prefix='.video-gif-install-', dir=target.parent))
+        try:
+            shutil.copytree(source,stage,dirs_exist_ok=True,
+                ignore=shutil.ignore_patterns('.git','.venv','.runtime','__pycache__','*.pyc','output','run-*','local-settings.json','.env*'))
+            stage.rename(target)
+        except BaseException:
+            shutil.rmtree(stage, ignore_errors=True)
+            raise
+    runtime = target/'.venv'
+    python = runtime/('Scripts/python.exe' if os.name == 'nt' else 'bin/python')
+    if not skip_deps:
+        if sys.version_info < (3,11):
+            raise ValueError('Run installer with Python 3.11 or newer')
+        if not python.is_file():
+            venv.EnvBuilder(with_pip=True).create(runtime)
+        subprocess.run([str(python),'-m','pip','install','-r',str(target/'requirements.txt')],check=True)
+        if with_matting:
+            subprocess.run([str(python),'-m','pip','install','-r',str(target/'requirements-matting.txt')],check=True)
+        subprocess.run([str(python),str(target/'scripts/media_runtime.py'),'--install'],check=True)
+        for script in ('gif_pipeline.py','grok_video.py'):
+            subprocess.run([str(python),str(target/'scripts'/script),'--help'],check=True,stdout=subprocess.DEVNULL)
+    result = {'skill':str(target),'skill_registered':(target/'SKILL.md').is_file(),
+              'python':str(python),'dependencies':'not checked (--skip-deps)' if skip_deps else 'ready',
+              'note':'Grok generation entitlement and credits are not verified by installation'}
+    return result
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--source',type=Path,default=Path(__file__).resolve().parents[1])
+    ap.add_argument('--skills-dir',type=Path,default=Path(os.environ.get('CODEX_HOME',str(Path.home()/'.codex')))/'skills')
+    ap.add_argument('--skip-deps',action='store_true',help='Registration-only test; does not claim runtime readiness')
+    ap.add_argument('--with-matting',action='store_true',help='Install optional CPU foreground separation backend')
+    args=ap.parse_args()
+    try:
+        result=install(args.source,args.skills_dir,args.skip_deps,args.with_matting)
+    except (ValueError,OSError,subprocess.CalledProcessError) as exc:
+        raise SystemExit(f'Install incomplete: {exc}') from None
+    print(json.dumps(result,ensure_ascii=False,indent=2))
+
+
+if __name__=='__main__':
+    main()
+# Batch 1 規格 — video-gif-studio 輕量交付（上架前入口）
+
+- 模式：wow 交付：輕量
+- 日期：2026-11-22（Asia/Taipei）
+- 核准：Alex 核准執行；成本上限 $0（不呼叫付費生成）；不改 `.github/workflows`；不提交 Agensi、不對外聯絡
+- 核心情境（唯一）：本機既有影片 → 人用一條指令得到可檢查的透明 GIF；同一套工具可作為 Claude Code 與 Codex skill
+
+## 痛點與來源
+
+獨立創作者／遊戲開發者要把 AI 或綠幕／洋紅底影片做成透明 GIF 或 sprite。現行做法是在 ezgif、去背、匯出工具之間手動切換，代價是時間與第一眼品質不穩。來源：擁有者指定需求（2026-11-22 審查與核准）；市場規模標**未知**。對外不得宣稱已驗證的市場節省。
+
+審查證據（本機，免費路徑）：預設 `gif_pipeline.py source.mp4 --out DIR` 產出 12.19 MB 洋紅背景 GIF 且 `technical_pass: true`；正確色鍵後 5.726 秒得到 1.12 MB 透明 GIF，但 QA loop FAIL、尾端定格 WARN。README 不提 `gif_pipeline.py`。安裝器預設只裝到 `~/.codex/skills`。
+
+## 領域要點（建造前列出，答案卷可補反例）
+
+- GIF 為二值透明；洋紅／綠幕殘留不得被當成通過。
+- 色鍵須對純色背景有把握才自動套用；前景也可能含洋紅，不確定時應警告而非默默破壞前景。
+- 不得把技術通過說成視覺／循環通過。
+- 自動處理尾端定格時，須記錄做了什麼；不能假裝來源本來就無縫。
+- 本機路徑不得呼叫 Grok／fal。
+- 價格表只能引用已核對來源與日期；上架前須再查。
+- 不改 CI workflow（另案）。
+- Sprite 預設 metadata 仍是 repo 自訂 schema，不得宣稱原生 Unity／Godot／TexturePacker。
+
+## 驚豔時刻與未抵達的樣子
+
+- 驚豔：人（或不看長文的 agent）對一支洋紅底示範影片下達一條指令，得到透明 GIF、人話摘要與 QA；不再出現「12 MB 洋紅還顯示通過」。
+- 未抵達：預設仍留下洋紅且 QA 通過；或必須讀長文、記四個旗標才做對；或 Claude Code 仍無法按官方文件安裝／呼叫。
+
+## 主流程與首次使用時間（事前登記）
+
+- 主流程：安裝或使用已有 venv → `python scripts/vgs.py make <video> --out <new-dir>`（或同等 `vgs make`）→ 輸出透明 GIF + 摘要 + QA。
+- 時間目標：從看到 README 入口到發出正確指令 ≤ 30 秒（待真人確認）；本機編碼牆鐘另列，目標 ≤ 15 秒（chibi 來源、≤ 320px 寬）。代理估計須標待真人確認。
+- 安裝（照 README）與「不看文件完成主任務」分開驗。
+
+## 贏面表（開工）
+
+| 關 | 適用 | 狀態 | 判準與證據路徑 | 未抵達／未知 | 下一步 |
+|---|---|---|---|---|---|
+| W1 痛點 | 是 | 指定需求可通過；市場未知 | 本檔痛點段 | 市場 | 保持宣稱不超過證據 |
+| W2 美觀 | 是 | 待建造 | README 首屏、壓縮 hero、CLI 摘要 | 390／1440 審查 | 設計審查 |
+| W3 好用 | 是 | 待建造 | 一條指令、人話錯誤、0 次因介面不清而猜錯 | 真人 30 秒 | L10 |
+| W4 介面 | 是（無資料圖：7–12） | 待建造 | 入口層級、狀態誠實、預覽若有則可讀 | 獨立設計審查 | L8 |
+| W5 驚豔 | 是 | 待建造 | 真實主流程可重現透明成果 | 盲測分享句 | 示範 |
+| W6 領域與實作 | 是 | 待建造 | 非門面：洋紅片→透明；QA 對未去背失敗 | 保留樣本種類 | 測試 |
+| W7 工作流 | 是 | 見 progress 宣告 | 成本 0、不改 workflow、小步提交 | CI 另案 | 對照消耗 |
+
+## S 條目
+
+**S-1 一條指令、透明預設。** `python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out <新目錄>`（不手動傳 `--key`）產出透明 GIF：棋盤底可見主體、無整片洋紅背景、gif_pipeline alpha 不符為 0。人話摘要含尺寸、幀數、時長、MB、是否去背、QA 等級。編碼牆鐘 ≤ 15 s。
+
+**S-2 未去背不得通過 QA。** 對同一支影片若強制保留背景（明確旗標或關閉自動色鍵），QA／交付檢查必須 FAIL 或同等非零結束碼，並指出背景未去除。不得 `technical_pass` 掩蓋洋紅底。
+
+**S-3 尾端定格與循環。** 對 chibi `source.mp4` 的快速起步，不得再出現約 3.54–6.04 s 的長定格 WARN 而不處理。須自動裁切或壓縮尾端定格，並在摘要中說明。若 loop 仍 FAIL，摘要須誠實寫出，不得標視覺通過。目標：處理後定格不再覆蓋收招後的長靜止；loop 能過則過，不能過則清楚標示。
+
+**S-4 人話錯誤。** 來源不存在、PNG 目錄缺 fps、輸出目錄非空、誤標影片 FPS：不得只丟未捕捉的 traceback；須說明發生什麼、影響、下一步。結束碼非 0。
+
+**S-5 雙軌 README + How it works + 圖生影表。** 中英 README 開頭說明這是獨立工具也是 skill；有 How it works 圖（本機 vs 生成 API）；有圖生影選項表，價格僅用 2026-11-22 已核對來源（本機 $0；Grok／X 方案網站額度；Grok API 標題價 1.5 $0.080／秒、lite $0.020／秒，並註明分級表可能不同、上架前再查；fal H3 Max 自 2026-11-16 起 $0.05／$0.08／$0.16 每秒於 480p／768p／1080p）。QA 說明下移。首屏 hero 各 ≤ 3 MB（目標 ≤ 2 MB）。
+
+**S-6 Claude Code 支援。** 安裝器可裝到 `~/.claude/skills`（偵測或 `--target claude`／`--skills-dir`）。文件同時寫 `/video-gif-studio` 與 `$video-gif-studio`。無內建生圖時說明需提供起始圖或既有影片。須在本機 Claude Code 實跑：載入 skill、doctor、以及本機 `vgs make`（或 skill 指引的同等命令）。相容 agent 只宣稱已驗證的 Codex 與 Claude Code。
+
+**S-7 壓縮 hero／示範圖庫與 Agensi 包。** README 示範圖可快速載入。產出 `/workspace/money-radar-team/2026-11-22/agensi-listing-pack.md` 與 `video-gif-studio-agensi.zip`（及封面若需要）。包內不含必須排除的巨型建造產物；不提交上架。
+
+**非目標：** 改 `.github/workflows`；付費生成；原生引擎 importer；自動宣稱所有循環無縫；對外寄信或提交 listing。
+
+## 呈現形式（L2）
+
+- CLI：成功時一段人話摘要（必要數字＋路徑）；失敗時「什麼／影響／下一步」。
+- README：首屏英雄圖與兩條入口（人／agent）；How it works 層級清楚。
+- 若輸出目錄含簡易 preview／contact，須可在淺／深底辨識透明。
+scripts/qa_media.py:8:import argparse
+scripts/qa_media.py:9:import json
+scripts/qa_media.py:31:def read_json(path):
+scripts/qa_media.py:32:    return json.loads(Path(path).read_text(encoding='utf-8-sig'))
+scripts/qa_media.py:35:def media_info(path, fps):
+scripts/qa_media.py:37:        files = sorted((p for p in path.glob('*.png') if p.stem.isdigit()), key=lambda p: int(p.stem))
+scripts/qa_media.py:42:        return dict(kind='png', files=files, size=size, durations=[1/fps]*len(files), audio=False, loop=False)
+scripts/qa_media.py:49:                durations.append(float(im.info.get('duration', 1000/fps))/1000)
+scripts/qa_media.py:55:    data = json.loads(command([ffprobe, '-v', 'error', '-show_streams', '-show_format', '-of', 'json', str(path)]))
+scripts/qa_media.py:59:    frame_data = json.loads(command([ffprobe, '-v', 'error', '-select_streams', 'v:0', '-show_frames',
+scripts/qa_media.py:60:        '-show_entries', 'frame=best_effort_timestamp,best_effort_timestamp_time,pkt_duration_time,duration_time', '-of', 'json', str(path)]))['frames']
+scripts/qa_media.py:163:    plan = read_json(path)
+scripts/qa_media.py:167:    beats = read_json(path.parent/plan['beatmap'])['beats_ms'] if 'beatmap' in plan else None
+scripts/qa_media.py:176:            manifest = read_json(path.parent/segment['manifest'])
+scripts/qa_media.py:324:                matched.add(min(candidates,key=lambda i:abs(edges[i]-t)))
+scripts/qa_media.py:477:def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None, threshold_metrics=None):
+scripts/qa_media.py:480:    if not math.isfinite(fps) or fps<=0:
+scripts/qa_media.py:481:        raise ValueError('--fps must be finite and positive')
+scripts/qa_media.py:484:    info = media_info(path,fps)
+scripts/qa_media.py:497:    timing=read_json(Path(timeline)) if timeline else None
+scripts/qa_media.py:510:        elif info['kind']=='png':stamp=Fraction(index)/Fraction(str(fps))
+scripts/qa_media.py:536:        report['fps']=round(len(durations)/float(sum(durations)),6)
+scripts/qa_media.py:537:        report['cfr']=bool(np.max(np.abs(np.asarray(durations)-1/report['fps']))<=.0011)
+scripts/qa_media.py:538:        if report['fps']>60:report['warnings']=['Platform may resample video above 60 fps']
+scripts/qa_media.py:541:        timeline_path=Path(timeline);timing=read_json(timeline_path)
+scripts/qa_media.py:544:            beatmap=read_json(timeline_path.parent/timing['beatmap'])
+scripts/qa_media.py:554:    (out/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8',newline='\n')
+scripts/qa_media.py:568:            lines += ['', '```json',json.dumps(metrics,indent=2,ensure_ascii=False,allow_nan=False),'```']
+scripts/qa_media.py:576:def main(argv=None):
+scripts/qa_media.py:577:    parser = argparse.ArgumentParser(description=__doc__)
+scripts/qa_media.py:578:    parser.add_argument('input',type=Path)
+scripts/qa_media.py:579:    parser.add_argument('--out',type=Path,required=True)
+scripts/qa_media.py:580:    parser.add_argument('--fps',type=float,default=25,help='PNG sequence rate; GIF/APNG use embedded delays')
+scripts/qa_media.py:581:    parser.add_argument('--loop',action='store_true',help='Check position and speed at wrap (also automatic for infinite GIF/APNG)')
+scripts/qa_media.py:582:    parser.add_argument('--holds',default='',help='Designed holds in seconds, e.g. 1.0-3.0,5.0-6.5')
+scripts/qa_media.py:583:    parser.add_argument('--expect-cuts',default='',help='Explicit hard-cut times in seconds, comma-separated')
+scripts/qa_media.py:584:    parser.add_argument('--timeline',type=Path,help='compose_timeline plan or emitted manifest; ordinary joins are not hard cuts')
+scripts/qa_media.py:585:    parser.add_argument('--threshold-metrics',type=Path,help='JSON threshold-id -> independently measured value (event, budget, memory, camera channels)')
+scripts/qa_media.py:591:        report = qa(args.input,args.out,args.fps,args.loop,holds,
+scripts/qa_media.py:593:                    read_json(args.threshold_metrics) if args.threshold_metrics else None)
+scripts/gif_pipeline.py:3:import argparse
+scripts/gif_pipeline.py:5:import json
+scripts/gif_pipeline.py:26:def load_frames(source, fps, width, key, tolerance, softness):
+scripts/gif_pipeline.py:29:        paths = sorted(source.glob('*.png'), key=natural)
+scripts/gif_pipeline.py:30:        if not fps:
+scripts/gif_pipeline.py:31:            raise ValueError('PNG input requires --fps')
+scripts/gif_pipeline.py:38:        if fps and abs(fps-native) > .001:
+scripts/gif_pipeline.py:40:        fps = native
+scripts/gif_pipeline.py:51:    if not np.isfinite(fps) or fps <= 0:
+scripts/gif_pipeline.py:56:        if key:
+scripts/gif_pipeline.py:60:            color = np.array(key, dtype=float) / 255
+scripts/gif_pipeline.py:70:    return frames, fps
+scripts/gif_pipeline.py:73:def timing(count, fps, phases):
+scripts/gif_pipeline.py:80:        if start < previous or end <= start or end > count/fps or speed <= 0 or ramp < 0:
+scripts/gif_pipeline.py:85:        t = (i + .5) / fps
+scripts/gif_pipeline.py:94:        accumulated += 1000 / fps / rate
+scripts/gif_pipeline.py:186:            'duration_ms': sum(actual_durations), 'alpha_mismatch_pixels': mismatch,
+scripts/gif_pipeline.py:205:def main():
+scripts/gif_pipeline.py:210:    ap = argparse.ArgumentParser(description=__doc__)
+scripts/gif_pipeline.py:211:    ap.add_argument('source', type=Path)
+scripts/gif_pipeline.py:212:    ap.add_argument('--out', type=Path, required=True)
+scripts/gif_pipeline.py:213:    ap.add_argument('--fps', type=float, help='Required for PNG input, not a retiming override')
+scripts/gif_pipeline.py:214:    ap.add_argument('--width', type=int, default=640)
+scripts/gif_pipeline.py:215:    ap.add_argument('--pixel-width', type=int, help='Optional raster grid width; overrides --width and never changes aspect ratio')
+scripts/gif_pipeline.py:216:    ap.add_argument('--pixel-scale', type=int, default=1, help='Integer nearest-neighbor enlargement after keying; requires --pixel-width')
+scripts/gif_pipeline.py:217:    ap.add_argument('--key', help='Uniform background hex RGB, e.g. FF00FF; omit to preserve alpha')
+scripts/gif_pipeline.py:218:    ap.add_argument('--tolerance', type=float, default=.15)
+scripts/gif_pipeline.py:219:    ap.add_argument('--softness', type=float, default=.12)
+scripts/gif_pipeline.py:220:    ap.add_argument('--phases', type=Path, help='JSON array of start/end/speed/ramp in SOURCE seconds')
+scripts/gif_pipeline.py:221:    ap.add_argument('--apng', action='store_true')
+scripts/gif_pipeline.py:226:        ap.error('Invalid width or key settings')
+scripts/gif_pipeline.py:231:    key = tuple(bytes.fromhex(args.key.lstrip('#'))) if args.key else None
+scripts/gif_pipeline.py:232:    if key and len(key) != 3:
+scripts/gif_pipeline.py:234:    phases = json.loads(args.phases.read_text()) if args.phases else []
+scripts/gif_pipeline.py:235:    all_frames, fps = load_frames(args.source, args.fps, args.pixel_width or args.width,
+scripts/gif_pipeline.py:236:                                  key, args.tolerance, args.softness)
+scripts/gif_pipeline.py:241:    indices, durations = timing(len(all_frames), fps, phases)
+scripts/gif_pipeline.py:254:               (sorted(args.source.glob('*.png'), key=natural) if args.source.is_dir() else [args.source])]
+scripts/gif_pipeline.py:255:    manifest = {'parents': parents, 'source_fps': fps, 'source_frames': len(all_frames),
+scripts/gif_pipeline.py:257:                'key_rgb': key, 'key_tolerance': args.tolerance, 'key_softness': args.softness,
+scripts/gif_pipeline.py:263:    (args.out/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
+scripts/gif_pipeline.py:264:    print(json.dumps(qc))
+
+exec
+/bin/bash -lc "sed -n '1,72p;190,270p' scripts/gif_pipeline.py; sed -n '477,575p' scripts/qa_media.py; cat requirements.txt" in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+#!/usr/bin/env python3
+"""CFR video/RGBA frames -> deterministic global-palette GIF plus decoded QC."""
+import argparse
+import hashlib
+import json
+import re
+from pathlib import Path
+
+import cv2
+import numpy as np
+from PIL import Image, ImageDraw, ImageSequence
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with open(path, 'rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def natural(path):
+    return [int(v) if v.isdigit() else v for v in re.split(r'(\d+)', path.name)]
+
+
+def load_frames(source, fps, width, key, tolerance, softness):
+    frames = []
+    if source.is_dir():
+        paths = sorted(source.glob('*.png'), key=natural)
+        if not fps:
+            raise ValueError('PNG input requires --fps')
+        raw = (Image.open(f).convert('RGBA') for f in paths)
+    else:
+        cap = cv2.VideoCapture(str(source))
+        if not cap.isOpened():
+            raise ValueError('Cannot decode input video')
+        native = cap.get(cv2.CAP_PROP_FPS)
+        if fps and abs(fps-native) > .001:
+            raise ValueError('Do not relabel video FPS; conform VFR externally or use speed phases')
+        fps = native
+        def decoded():
+            try:
+                while True:
+                    ok, frame = cap.read()
+                    if not ok:
+                        break
+                    yield Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)).convert('RGBA')
+            finally:
+                cap.release()
+        raw = decoded()
+    if not np.isfinite(fps) or fps <= 0:
+        raise ValueError('Invalid source FPS')
+    for im in raw:
+        if width and im.width > width:
+            im = im.resize((width, round(im.height * width / im.width)), Image.Resampling.LANCZOS)
+        if key:
+            a = np.array(im)
+            # Chromatic distance ignores modest exposure shifts of a flat screen.
+            rgb = a[:, :, :3].astype(float) / 255
+            color = np.array(key, dtype=float) / 255
+            chroma = rgb - rgb.mean(axis=2, keepdims=True)
+            color = color - color.mean()
+            dist = np.linalg.norm(chroma - color, axis=2)
+            alpha = np.clip((dist - tolerance) / softness, 0, 1)
+            a[:, :, 3] = np.minimum(a[:, :, 3], np.round(alpha * 255).astype('uint8'))
+            im = Image.fromarray(a)
+        frames.append(im)
+    if not frames or any(f.size != frames[0].size for f in frames):
+        raise ValueError('Empty input or changing canvas size')
+    return frames, fps
+
+
+
+def contact(frames, target):
+    count = min(12, len(frames))
+    board = Image.new('RGB', (4*240, ((count+3)//4)*270), '#dddddd')
+    draw = ImageDraw.Draw(board)
+    for j, idx in enumerate(np.linspace(0, len(frames)-1, count).astype(int)):
+        im = frames[idx].copy()
+        im.thumbnail((232, 240))
+        x, y = j % 4 * 240, j // 4 * 270
+        draw.rectangle((x,y,x+239,y+245), fill='#171717' if j%2 else '#eeeeee')
+        board.paste(im, (x+(240-im.width)//2,y), im)
+        draw.text((x+6,y+248), f'output frame {idx}', fill='black')
+    board.save(target)
+
+
+def main():
+    import sys
+    if len(sys.argv)>1 and sys.argv[1]=='ingest':
+        from imagegen import main as image_main
+        return image_main(sys.argv[1:])
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('source', type=Path)
+    ap.add_argument('--out', type=Path, required=True)
+    ap.add_argument('--fps', type=float, help='Required for PNG input, not a retiming override')
+    ap.add_argument('--width', type=int, default=640)
+    ap.add_argument('--pixel-width', type=int, help='Optional raster grid width; overrides --width and never changes aspect ratio')
+    ap.add_argument('--pixel-scale', type=int, default=1, help='Integer nearest-neighbor enlargement after keying; requires --pixel-width')
+    ap.add_argument('--key', help='Uniform background hex RGB, e.g. FF00FF; omit to preserve alpha')
+    ap.add_argument('--tolerance', type=float, default=.15)
+    ap.add_argument('--softness', type=float, default=.12)
+    ap.add_argument('--phases', type=Path, help='JSON array of start/end/speed/ramp in SOURCE seconds')
+    ap.add_argument('--apng', action='store_true')
+    args = ap.parse_args()
+    if args.out.exists() and any(args.out.iterdir()):
+        ap.error('Use an empty/new output directory; source assets are never overwritten')
+    if args.width < 1 or args.tolerance < 0 or args.softness <= 0:
+        ap.error('Invalid width or key settings')
+    if args.pixel_scale < 1 or (args.pixel_width is not None and args.pixel_width < 1):
+        ap.error('Pixel width and scale must be positive integers')
+    if args.pixel_scale != 1 and args.pixel_width is None:
+        ap.error('--pixel-scale requires --pixel-width')
+    key = tuple(bytes.fromhex(args.key.lstrip('#'))) if args.key else None
+    if key and len(key) != 3:
+        ap.error('Key must have six hexadecimal digits')
+    phases = json.loads(args.phases.read_text()) if args.phases else []
+    all_frames, fps = load_frames(args.source, args.fps, args.pixel_width or args.width,
+                                  key, args.tolerance, args.softness)
+    raster_size = all_frames[0].size
+    if args.pixel_width and args.pixel_scale != 1:
+        all_frames = [im.resize((im.width*args.pixel_scale, im.height*args.pixel_scale),
+                                Image.Resampling.NEAREST) for im in all_frames]
+    indices, durations = timing(len(all_frames), fps, phases)
+    frames = [all_frames[i] for i in indices]
+    args.out.mkdir(parents=True, exist_ok=True)
+    (args.out/'frames').mkdir()
+    for j, im in enumerate(frames):
+        im.save(args.out/'frames'/f'{j:05d}.png')
+    encode(frames, durations, args.out/'animation.gif')
+    qc = verify(args.out/'animation.gif', frames, durations)
+    if args.apng:
+        frames[0].save(args.out/'animation.png', save_all=True, append_images=frames[1:],
+                       duration=durations, loop=0, disposal=0, blend=0)
+    contact(frames, args.out/'contact.png')
+    parents = [{'file': str(f.resolve()), 'sha256': sha(f)} for f in
+               (sorted(args.source.glob('*.png'), key=natural) if args.source.is_dir() else [args.source])]
+    manifest = {'parents': parents, 'source_fps': fps, 'source_frames': len(all_frames),
+                'source_indices': indices, 'durations_ms': durations, 'phases': phases,
+                'key_rgb': key, 'key_tolerance': args.tolerance, 'key_softness': args.softness,
+                'size': frames[0].size, 'transparency_index': 255,
+                'pixel_processing': {'requested_width': args.pixel_width,
+                                     'raster_size': raster_size, 'integer_scale': args.pixel_scale,
+                                     'enlargement': 'nearest' if args.pixel_width else None},
+                'script_sha256': sha(Path(__file__)), 'gif_sha256': sha(args.out/'animation.gif'), 'qc': qc}
+    (args.out/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
+    print(json.dumps(qc))
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
+def qa(path, out, fps=25, loop=False, holds=(), expected=(), timeline=None, threshold_metrics=None):
+    started = time.perf_counter()
+    path, out = Path(path),Path(out)
+    if not math.isfinite(fps) or fps<=0:
+        raise ValueError('--fps must be finite and positive')
+    if out.exists() and any(out.iterdir()):
+        raise ValueError('Use a new or empty output directory')
+    info = media_info(path,fps)
+    durations = info['durations']
+    if not durations or any(not math.isfinite(t) or t<=0 for t in durations):
+        raise ValueError('Every decoded frame must have a positive duration')
+    edges = np.concatenate(([0.0],np.cumsum(durations)))
+    planned_holds, planned_cuts, joins = plan_settings(Path(timeline) if timeline else None)
+    holds = list(holds)+planned_holds
+    if any(not math.isfinite(a+b) or a<0 or b<=a for a,b in holds):
+        raise ValueError('Holds require finite 0 <= START < END')
+    expected = list(expected)+planned_cuts
+    if any(not math.isfinite(t) or t<0 or t>=edges[-1] for t in expected):
+        raise ValueError('Expected cuts must fall within the media duration')
+    st = picture(path,info,edges)
+    timing=read_json(Path(timeline)) if timeline else None
+    checks = analyse_picture(st,edges,loop or info['loop'],holds,expected,joins,timing)
+    checks += analyse_audio(path,info,edges)
+    from fx_measure import FlashCounter
+    flash_counter=FlashCounter()
+    if info['kind']=='video':
+        from fx_check import decoded
+        flash_frames=decoded(path)
+    else:
+        flash_frames=(np.asarray(im) for im in frames(path,info))
+    for index,frame in enumerate(flash_frames):
+        if 'frame_ticks' in info:
+            stamp=(info['frame_ticks'][index]-info['frame_ticks'][0])*Fraction(info['time_base'])
+        elif info['kind']=='png':stamp=Fraction(index)/Fraction(str(fps))
+        else:stamp=Fraction(str(float(edges[index]))).limit_denominator(1_000_000)
+        flash_counter.push(frame,stamp)
+    flash_report=flash_counter.report()
+    checks.append(dict(name='WCAG 2.3.1',level='FAIL' if flash_report['status']=='harsh' else 'PASS',
+                       message='Decoded general and saturated-red opposing flashes; more than three per second blocks delivery.',
+                       events=[],measurement=flash_report))
+    if timing and timing.get('fx_checks'):
+        for measured in timing['fx_checks'].get('events',[]):
+            v=measured['visibility']
+            if v['status']!='ok' or 'unknown' in v.get('instrument_status',{}).values():
+                checks.append(dict(name='effect visibility',level='FAIL' if v['status'] in ('harsh','destructive') else 'WARN',
+                    message=v['advice'],events=[],measurement=measured))
+    from threshold_registry import snapshot, check_metrics
+    runtime_checks=check_metrics(threshold_metrics or {})
+    for c in runtime_checks:
+        checks.append(dict(name=c['id'],level={'pass':'PASS','fail':'FAIL','unknown':'WARN'}[c['decision']],
+                           message=c['reason'],events=[],threshold=c))
+    out.mkdir(parents=True,exist_ok=True)
+    sheets = {name:sheet(st,edges,name,out) for name in st['targets']}
+    report = dict(input=str(path),frames=len(durations),duration_seconds=float(edges[-1]),
+                  frame_times_seconds=edges[:-1].tolist(),checks=checks,sheets=sheets,
+                  limitations='Numeric screening is not proof of natural motion, correct semantics, good matting or audio/video sync. Review playback independently.',
+                  elapsed_seconds=time.perf_counter()-started,threshold_registry=snapshot(),threshold_checks=runtime_checks)
+    if info['kind']=='video':
+        # Mean period handles WebM's alternating 33/34 ms timestamp ticks.
+        report['fps']=round(len(durations)/float(sum(durations)),6)
+        report['cfr']=bool(np.max(np.abs(np.asarray(durations)-1/report['fps']))<=.0011)
+        if report['fps']>60:report['warnings']=['Platform may resample video above 60 fps']
+    report['level'] = 'FAIL' if any(c['level']=='FAIL' for c in checks) else ('WARN' if any(c['level']=='WARN' for c in checks) else 'PASS')
+    if timeline:
+        timeline_path=Path(timeline);timing=read_json(timeline_path)
+        down=timing.get('beat_layers',{}).get('downbeats_ms',timing.get('downbeats_ms',[]))
+        if not down and timing.get('beatmap'):
+            beatmap=read_json(timeline_path.parent/timing['beatmap'])
+            down=beatmap.get('downbeats_ms',beatmap.get('beats_ms',[])[::4])
+        if down:
+            detected=next((c.get('detected',[]) for c in checks if c['name']=='cuts'),[])
+            detected,excluded=rhythm_cuts(detected,timing,float(np.median(durations))*1000+1e-6)
+            excluded+=next((c.get('excluded_effect_events',[]) for c in checks if c['name']=='cuts'),[])
+            distances=[min(abs(e['seconds']*1000-d) for d in down) for e in detected]
+            report['cut_to_downbeat_median_ms']=float(np.median(distances)) if distances else None
+            report['rhythm_cuts']=detected;report['rhythm_excluded_effect_events']=excluded
+            report['rhythm_measurement']='decoded cuts vs downbeats, excluding bounded planned effect impulses except at shot boundaries; null when no cuts detected'
+    (out/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8',newline='\n')
+    lines = [f'# Media QA: {report["level"]}', '', f'{path.name} | {len(durations)} frames | {edges[-1]:.3f} s', '', report['limitations'], '']
+    for c in checks:
+        label = c['level'] if c.get('applicable', True) else 'N/A'
+        lines += [f'## {label} — {c["name"]}', '', c['message']]
+        for e in c['events']:
+            label = f'f{e["frame"]} / {e["seconds"]:.3f} s'
+            if 'end_seconds' in e:
+                label += f' to f{e["end_frame"]} / {e["end_seconds"]:.3f} s (time end exclusive)'
+            if 'to_frame' in e:
+                label += f' -> f{e["to_frame"]}'
+            lines += [f'- {label}' + (f': {e["kind"]}' if 'kind' in e else '')]
+        metrics = {k:v for k,v in c.items() if k not in ('name','level','message','events')}
+        if metrics:
+            lines += ['', '```json',json.dumps(metrics,indent=2,ensure_ascii=False,allow_nan=False),'```']
+        lines += ['']
+    lines += [f'![{name}]({name}.jpg)' for name in sheets]
+    lines += ['',f'Analysis and sheets: {report["elapsed_seconds"]:.3f} s.']
+    (out/'report.md').write_text('\n'.join(lines)+'\n',encoding='utf-8',newline='\n')
+    return report
+
+
+Pillow>=10
+numpy>=1.24
+opencv-python>=4.8
+static-ffmpeg==3.0
+
+codex
+The acceptance checks require a separate background delivery gate as well as the existing media QA. I’m building the wrapper around the existing encoder and QA functions, with the source timing and key decision recorded in the manifest.
+exec
+/bin/bash -lc "cat > scripts/vgs.py <<'PY'
+#"'!/usr/bin/env python3
+"""Local media to GIF: automatic flat-background detection, tail trim and QA."""
+import argparse
+import json
+import sys
+from pathlib import Path
+import cv2
+import numpy as np
+from PIL import Image, ImageSequence
+import gif_pipeline as gp
+import qa_media
+
+
+def background(path):
+    im = Image.open(path)
+    rings = []
+    for frame in ImageSequence.Iterator(im):
+        a = np.asarray(frame.convert('"'RGBA'))
+        alpha = a[:, :, 3] > 0
+        rings.append(np.concatenate((alpha[:4].ravel(), alpha[-4:].ravel(), alpha[:, :4].ravel(), alpha[:, -4:].ravel())).mean())
+    return max(rings)
+
+
+def make(a):
+    src, out = a.input, a.out
+    if out.exists() and (not out.is_dir() or any(out.iterdir())):
+        raise ValueError(f'輸出目錄 {out} 非空；不會寫入或刪除檔案。請改用 --out /tmp/vgs-new-output。')
+    if not src.exists():
+        raise ValueError(f'來源 {src} 不存在；無法製作 GIF。請使用正確路徑，例如 python scripts/vgs.py make <video> --out /tmp/vgs-new-output。')
+    if src.is_dir() and not a.fps:
+        raise ValueError(f'PNG 目錄 {src} 缺少 fps；無法確定播放速度。請加上 --fps 24。')
+    if a.width < 1:
+        raise ValueError(f'寬度 {a.width} 無效；無法輸出。請使用 --width 320。')
+    if not src.is_dir():
+        cap = cv2.VideoCapture(str(src)); native = cap.get(cv2.CAP_PROP_FPS); cap.release()
+        if a.fps and native and abs(a.fps-native) > .001:
+            raise ValueError(f'來源是 {native:g} fps，你指定 {a.fps:g} fps；這會改變播放速度。請用 --fps {native:g} 或省略 --fps。')
+    raw, fps = gp.load_frames(src, a.fps, a.width, None, .2, .18)
+    samples = []
+    for i in np.linspace(0, len(raw)-1, min(12, len(raw))).astype(int):
+        p = np.asarray(raw[i].convert('RGB'))
+        samples.append(np.concatenate((p[:4].reshape(-1,3),p[-4:].reshape(-1,3),p[:, :4].reshape(-1,3),p[:, -4:].reshape(-1,3)))[::8])
+    samples = np.concatenate(samples).astype(float)
+    key = np.median(samples,axis=0)
+    confidence = float(np.mean(np.linalg.norm(samples-key,axis=1)<35))
+    flat = confidence > .95
+    keyed = flat and not a.no_key
+    # Preserve still recovery up to four frames after the last meaningful change.
+    diffs = [float(np.mean(np.abs(np.asarray(raw[i].convert('RGB'),dtype=np.int16)-np.asarray(raw[i-1].convert('RGB'),dtype=np.int16)))) for i in range(1,len(raw))]
+    last = len(raw)-1
+    while last > 0 and diffs[last-1] < .35:
+        last -= 1
+    end = min(len(raw), last+5) if len(raw)-last > fps*.7 else len(raw)
+    frames = raw[:end]
+    if keyed:
+        color = key / 255; color -= color.mean()
+        for n, im in enumerate(frames):
+            p = np.array(im); rgb=p[:,:,:3].astype(float)/255
+            dist=np.linalg.norm((rgb-rgb.mean(axis=2,keepdims=True))-color,axis=2)
+            p[:,:,3]=np.minimum(p[:,:,3],np.round(np.clip((dist-.2)/.18,0,1)*255).astype('uint8'))
+            frames[n]=Image.fromarray(p)
+    indices, durations = gp.timing(len(frames),fps,[])
+    frames=[frames[i] for i in indices]
+    out.mkdir(parents=True,exist_ok=True)
+    gp.encode(frames,durations,out/'animation.gif')
+    qc=gp.verify(out/'animation.gif',frames,durations)
+    gp.contact(frames,out/'contact.png')
+    report=qa_media.qa(out/'animation.gif',out/'qa')
+    for name in ('report.json','report.md'):
+        (out/name).write_bytes((out/'qa'/name).read_bytes())
+    ring=background(out/'animation.gif')
+    bg_fail = (a.no_key and flat) or (keyed and ring > .01)
+    treatment={'method':'trim' if end<len(raw) else 'none','original_duration_seconds':len(raw)/fps,'new_duration_seconds':sum(durations)/1000,'source_interval_removed_seconds':[end/fps,len(raw)/fps] if end<len(raw) else None,'last_detected_motion_source_seconds':last/fps}
+    manifest={'source':str(src),'source_fps':fps,'source_indices':indices,'key_rgb':key.round().astype(int).tolist() if keyed else None,'key_hex':'#'+''.join(f'{int(x):02X}' for x in key.round()) if keyed else None,'key_tolerance':.2,'key_softness':.18,'key_confidence':confidence,'background_flat':flat,'tail_treatment':treatment,'qc':qc,'border_opaque_max':ring}
+    (out/'manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\\n')
+    grade='FAIL' if bg_fail else report['level']
+    print(f'交付檢查 {grade}：'+ ('背景未去除，不是透明 GIF；平坦背景仍存在。' if bg_fail else ('已去背' if keyed else '未去背：背景非純色；非透明交付。')))
+    print(f'尺寸 {frames[0].width}×{frames[0].height}（預設寬度 320）；{len(frames)} 幀，{sum(durations)/1000:.2f} 秒，{(out/\"animation.gif\").stat().st_size/1e6:.2f} MB')
+    print(f'鍵色 {manifest[\"key_hex\"]}；容差 0.2，柔化 0.18，信心 {confidence:.3f}')
+    if keyed: print('警告：前景若含相同鍵色，可能被挖空；請檢查。')
+    print(f'尾端 {treatment[\"method\"]}：原長 {len(raw)/fps:.2f}s，新長 {sum(durations)/1000:.2f}s；移除來源區間 {treatment[\"source_interval_removed_seconds\"]}')
+    for c in report['checks']:
+        if c['level'] "'!= '"'PASS': print(f'{c[\"name\"]} {c[\"level\"]}: {c[\"message\"]} '+(str(c.get('measurement','')) if c['name']=='loop' else ''))
+    print(f'QA {report[\"level\"]}；輸出 {out/\"animation.gif\"}；視覺核准：未評估，需人看。')
+    return 1 if bg_fail else 0
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    sub=p.add_subparsers(dest='command',required=True)
+    m=sub.add_parser('make',help='Convert local media; auto-key only a flat stable border')
+    m.add_argument('input',type=Path); m.add_argument('--out',type=Path,required=True,help='New or empty output directory')
+    m.add_argument('--fps',type=float,help='Required for PNG; video must match source FPS')
+    m.add_argument('--width',type=int,default=320)
+    m.add_argument('--no-key','--keep-background',action='store_true',help='Keep background; flat background fails transparent delivery')
+    q=sub.add_parser('qa',help='Check GIF background delivery'); q.add_argument('input',type=Path)
+    a=p.parse_args()
+    try:
+        if a.command=='qa':
+            ring=background(a.input); print(f'背景檢查 {\"FAIL：背景未去除，不是透明 GIF\" if ring > .01 else \"PASS\"}；邊框不透明比例 {ring:.3f}'); return int(ring>.01)
+        return make(a)
+    except Exception as e:
+        print(f'無法處理 {a.input}：{e}。輸出可能不完整；請檢查來源及參數，並使用新的 --out /tmp/vgs-new-output 重試。',file=sys.stderr)
+        return 1
+if __name__=='__main__': sys.exit(main())
+PY
+python - <<'PY'
+p='scripts/install.py'
+s=open(p).read().replace(\"ap.add_argument('--skills-dir',type=Path,default=Path(os.environ.get('CODEX_HOME',str(Path.home()/'.codex')))/'skills')\", \"ap.add_argument('--skills-dir',type=Path,help='Override all target selection')\\n    ap.add_argument('--target',choices=['claude','codex'],help='Install for Claude Code or Codex. Default: CODEX_HOME, then existing ~/.codex, then existing ~/.claude, otherwise ~/.codex')\")
+s=s.replace('result=install(args.source,args.skills_dir,args.skip_deps,args.with_matting)',\"home=Path.home()\\n        if args.skills_dir: dest=args.skills_dir\\n        elif args.target == 'claude': dest=home/'.claude'/'skills'\\n        elif args.target == 'codex': dest=Path(os.environ.get('CODEX_HOME',str(home/'.codex')))/'skills'\\n        elif os.environ.get('CODEX_HOME'): dest=Path(os.environ['CODEX_HOME'])/'skills'\\n        elif (home/'.codex').exists(): dest=home/'.codex'/'skills'\\n        elif (home/'.claude').exists(): dest=home/'.claude'/'skills'\\n        else: dest=home/'.codex'/'skills'\\n        result=install(args.source,dest,args.skip_deps,args.with_matting)\")
+open(p,'w').write(s)
+PY" in /workspace/src/video-gif-studio
+ exited 127 in 0ms:
+/bin/bash: line 108: python: command not found
+
+exec
+/bin/bash -lc "python3 - <<'PY'
+p='scripts/install.py';s=open(p).read().replace(\"ap.add_argument('--skills-dir',type=Path,default=Path(os.environ.get('CODEX_HOME',str(Path.home()/'.codex')))/'skills')\", \"ap.add_argument('--skills-dir',type=Path,help='Override all target selection')\\n    ap.add_argument('--target',choices=['claude','codex'],help='Default: CODEX_HOME, existing ~/.codex, existing ~/.claude, otherwise ~/.codex')\");s=s.replace('result=install(args.source,args.skills_dir,args.skip_deps,args.with_matting)',\"home=Path.home()\\n        if args.skills_dir: dest=args.skills_dir\\n        elif args.target == 'claude': dest=home/'.claude'/'skills'\\n        elif args.target == 'codex': dest=Path(os.environ.get('CODEX_HOME',str(home/'.codex')))/'skills'\\n        elif os.environ.get('CODEX_HOME'): dest=Path(os.environ['CODEX_HOME'])/'skills'\\n        elif (home/'.codex').exists(): dest=home/'.codex'/'skills'\\n        elif (home/'.claude').exists(): dest=home/'.claude'/'skills'\\n        else: dest=home/'.codex'/'skills'\\n        result=install(args.source,dest,args.skip_deps,args.with_matting)\");open(p,'w').write(s)
+PY
+mkdir -p /tmp/vgs-build
+/usr/bin/time -f 'wall %e' /home/box/.codex/skills/video-gif-studio/.venv/bin/python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/vgs-build/s1" in /workspace/src/video-gif-studio
+ exited 127 in 0ms:
+/bin/bash: line 5: /usr/bin/time: No such file or directory
+
+exec
+/bin/bash -lc 'time /home/box/.codex/skills/video-gif-studio/.venv/bin/python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/vgs-build/s1' in /workspace/src/video-gif-studio
+ succeeded in 5481ms:
+交付檢查 FAIL：已去背
+尺寸 320×320（預設寬度 320）；145 幀，6.04 秒，1.12 MB
+鍵色 #FC01F9；容差 0.2，柔化 0.18，信心 1.000
+警告：前景若含相同鍵色，可能被挖空；請檢查。
+尾端 none：原長 6.04s，新長 6.04s；移除來源區間 None
+pops WARN: Small transient pop scan; inspect in context 
+freeze WARN: Frozen stretches; mark intended pauses with --holds START-END or timeline still segments 
+loop FAIL: Loop position and speed: speed mismatch 
+QA FAIL；輸出 /tmp/vgs-build/s1/animation.gif；視覺核准：未評估，需人看。
+
+real	0m5.628s
+user	0m5.748s
+sys	0m1.561s
+
+exec
+/bin/bash -lc "/home/box/.codex/skills/video-gif-studio/.venv/bin/python - <<'PY'
+import sys;sys.path.insert(0,'scripts');import gif_pipeline as g,numpy as n
+from pathlib import Path
+f,_=g.load_frames(Path('examples/chibi-running-dash/source.mp4'),None,320,None,.2,.18)
+d=[n.mean(n.abs(n.asarray(f[i],dtype=n.int16)-n.asarray(f[i-1],dtype=n.int16))) for i in range(1,len(f))]
+print([(i,round(d[i-1],3)) for i in range(75,145,5)])
+PY" in /workspace/src/video-gif-studio
+ succeeded in 1671ms:
+[(75, np.float64(0.562)), (80, np.float64(0.512)), (85, np.float64(0.535)), (90, np.float64(0.471)), (95, np.float64(0.64)), (100, np.float64(0.369)), (105, np.float64(0.406)), (110, np.float64(0.448)), (115, np.float64(0.597)), (120, np.float64(0.37)), (125, np.float64(0.417)), (130, np.float64(0.49)), (135, np.float64(0.685)), (140, np.float64(0.36))]
+
+exec
+/bin/bash -lc "rg -n 'freeze|still' scripts/qa_media.py" in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+183:        if segment.get('type') in ('still','hold'):
+279:    still = d<.25
+280:    still[0] = False
+281:    intervals = [(float(edges[a-1]),float(edges[b])) for a,b in runs(still)]
+303:    add('freeze','WARN' if frozen else 'PASS','Frozen stretches; mark intended pauses with --holds START-END or timeline still segments',frozen,
+
+exec
+/bin/bash -lc "sed -n '210,290p' scripts/qa_media.py" in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+        width = min(192, im.width)
+        small = im.resize((width,max(1,round(im.height*width/im.width))), Image.Resampling.BOX)
+        rgba = np.asarray(small, dtype=np.float32)
+        alpha = rgba[:,:,3]/255
+        gray = rgba[:,:,:3] @ np.array([.299,.587,.114], dtype=np.float32)
+        weight = float(alpha.sum())
+        mean = float((gray*alpha).sum()/weight) if weight else 0.0
+        contrast = float(np.sqrt(((gray-mean)**2*alpha).sum()/weight)) if weight else 0.0
+        means.append(mean); contrasts.append(contrast)
+        # Premultiply solely for *differences*, not frame-0 exposure. Retain RGB:
+        # equal-luminance colored objects can move without changing grayscale.
+        visible = rgba[:,:,:3]*alpha[:,:,None]
+        d.append(float(np.abs(visible-prev).mean()) if prev is not None else 0.0)
+        skip.append(0.0); pops.append(0.0)
+        if prev2 is not None:
+            skip[i-1] = float(np.abs(visible-prev2).mean())
+            # A local patch returning immediately, distinct from moving silhouettes.
+            stable = np.abs(visible-prev2).mean(axis=2)<5
+            excursion = np.minimum(np.abs(prev-visible).mean(axis=2), np.abs(prev-prev2).mean(axis=2))
+            pops[i-1] = float(np.mean(stable & (excursion>40)))
+        if first is None:
+            first = visible.copy()
+        prev2, prev = prev, visible
+    if len(d) != len(edges)-1:
+        raise ValueError('Decoded frame count does not match timestamps')
+    return dict(d=np.array(d), skip=np.array(skip), patch=np.array(pops), mean=means, contrast=contrasts,
+                seam=float(np.abs(prev-first).mean()), targets=targets, thumbs=thumbs)
+
+
+def event(edges, start, end=None, **extra):
+    item = {'frame':int(start), 'seconds':round(float(edges[start]),6)}
+    if end is not None:
+        item.update(end_frame=int(min(end,len(edges)-2)), end_seconds=round(float(edges[end]),6))
+    item.update(extra)
+    return item
+
+
+def analyse_picture(st, edges, loop=False, holds=(), expected=(), joins=(), timing=None):
+    n = len(edges)-1
+    checks = []
+    def add(name, level, message, events=(), **metrics):
+        checks.append(dict(name=name,level=level,message=message,events=list(events),**metrics))
+    mean, contrast = st['mean'][0], st['contrast'][0]
+    bad = mean<8 or contrast<6
+    add('frame0','FAIL' if bad else 'PASS', 'Black frame' if mean<8 else ('Flat frame' if contrast<6 else 'Visible composition has exposure and contrast'),
+        [event(edges,0)], mean=mean,contrast=contrast)
+    d, skip = st['d'], st['skip']
+    # Median of actual visual steps: duplicated encoder frames do not lower the baseline.
+    active = d[1:][d[1:]>=.01]
+    med = float(np.median(active)) if len(active) else 0.0
+    flashes = [i for i in range(1,n-1) if
+               ((d[i]>max(2,4*med) and d[i+1]>max(2,4*med)) or
+                (st['mean'][i]>245 and st['contrast'][i]<10 and max(st['mean'][i-1],st['mean'][i+1])<220))
+               and skip[i]<.35*min(d[i],d[i+1])]
+    excluded_flashes=[]
+    if timing:
+        marks=camera_event_times(timing)
+        tolerance=float(np.median(np.diff(edges)))*1000+1e-6
+        def exposure_flash(i):
+            return (st['mean'][i]>245 and st['contrast'][i]<10) or st['mean'][i]-max(st['mean'][i-1],st['mean'][i+1])>40
+        excluded_flashes=[i for i in flashes if not exposure_flash(i) and any(abs(edges[i]*1000-t)<=tolerance for t in marks)]
+        flashes=[i for i in flashes if i not in excluded_flashes]
+    flash_edges = set(flashes) | {i+1 for i in flashes}
+    pop = [i for i in range(1,n-1) if i not in flash_edges and
+           ((st['patch'][i]>.01 and d[i]>.5 and d[i+1]>.5) or
+            (d[i]>max(2,3*med) and d[i+1]>2 and skip[i]<.8*min(d[i],d[i+1])))]
+    add('flashes','FAIL' if flashes else 'PASS','Single-frame flash scan', [event(edges,i) for i in flashes], excluded_camera_events=[event(edges,i) for i in excluded_flashes])
+    add('pops','WARN' if pop else 'PASS','Small transient pop scan; inspect in context', [event(edges,i) for i in pop])
+    frozen, designed = [], []
+    still = d<.25
+    still[0] = False
+    intervals = [(float(edges[a-1]),float(edges[b])) for a,b in runs(still)]
+    # GIF/APNG encoders may merge identical frames into one long-duration frame.
+    intervals += [(float(edges[i]),float(edges[i+1])) for i in range(n) if edges[i+1]-edges[i]>=1]
+    merged = []
+    for a,b in sorted(intervals):
+        if b-a<1-1e-8:
+            continue
+        if merged and a<=merged[-1][1]+1e-8:
+            merged[-1] = (merged[-1][0],max(b,merged[-1][1]))
+        else:
+
+exec
+/bin/bash -lc "python3 - <<'PY'
+p='scripts/vgs.py';s=open(p).read();start=s.index('    # Preserve still recovery');end=s.index('    indices, durations',start);s=s[:start]+'''    frames = raw
+    if keyed:
+        color = key / 255; color -= color.mean()
+        frames = []
+        for im in raw:
+            p = np.array(im); rgb=p[:,:,:3].astype(float)/255
+            dist=np.linalg.norm((rgb-rgb.mean(axis=2,keepdims=True))-color,axis=2)
+            p[:,:,3]=np.minimum(p[:,:,3],np.round(np.clip((dist-.2)/.18,0,1)*255).astype('uint8'))
+            frames.append(Image.fromarray(p))
+    small = [np.asarray(im.resize((192, max(1,round(im.height*192/im.width))), Image.Resampling.BOX),dtype=np.float32) for im in frames]
+    visible = [x[:,:,:3]*(x[:,:,3:4]/255) for x in small]
+    diffs = [float(np.mean(np.abs(visible[i]-visible[i-1]))) for i in range(1,len(visible))]
+    last = len(raw)-1
+    while last > 0 and diffs[last-1] < .25:
+        last -= 1
+    end = min(len(raw), last+5) if len(raw)-last > fps*.7 else len(raw)
+    frames = frames[:end]
+''' + s[end:];open(p,'w').write(s)
+PY
+/home/box/.codex/skills/video-gif-studio/.venv/bin/python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/vgs-build/s1b" in /workspace/src/video-gif-studio
+ succeeded in 4223ms:
+交付檢查 FAIL：已去背
+尺寸 320×320（預設寬度 320）；87 幀，3.62 秒，0.67 MB
+鍵色 #FC01F9；容差 0.2，柔化 0.18，信心 1.000
+警告：前景若含相同鍵色，可能被挖空；請檢查。
+尾端 trim：原長 6.04s，新長 3.62s；移除來源區間 [3.625, 6.041666666666667]
+pops WARN: Small transient pop scan; inspect in context 
+loop FAIL: Loop position and speed: speed mismatch 
+QA FAIL；輸出 /tmp/vgs-build/s1b/animation.gif；視覺核准：未評估，需人看。
+
+codex
+The chibi run now trims the detected still tail to 3.62 seconds and retains the recovery frames. Its loop measurement still fails on speed, which the summary reports; I’m checking the controls and packaging the documented local workflow next.
+exec
+/bin/bash -lc "python3 - <<'PY'
+from pathlib import Path
+for name,zh in [('README.md',False),('README.zh-TW.md',True)]:
+ p=Path(name); old=p.read_text(); old=old.replace('"'!['"', '[') # existing large media become links
+ intro='''# Video GIF Studio
+
+Standalone CLI tool and a Codex + Claude Code skill. 本工具是獨立 CLI，也可作為 Codex 與 Claude Code skill。
+
+"'```sh
+python scripts/install.py
+# use the installed skill'"'s venv Python, from its directory:
+python scripts/vgs.py make <video> --out <new-dir>
+"'```
+
+Claude Code: `/video-gif-studio` · Codex: `$video-gif-studio`.
+If your environment has no built-in image generation, supply a start image or an existing video. The local existing-media path needs no account and costs $0. 若環境沒有內建生圖，請提供起始圖或既有影片；本機處理不需帳號、費用 $0。
+
+## How it works / 運作方式
+
+```mermaid
+flowchart LR
+  A[Existing video or PNG: local, $0, no account] --> B[Key and trim] --> C[GIF / APNG / sprite]
+  D[Start image] --> E[Grok / fal generation API] --> B
+```
+
+I2V options / 圖生影選項 — checked 2026-11-22; **recheck before listing / 上架前再查**:
+
+| Route | Price / 價格 |
+| --- | --- |
+| Local existing media | $0 |
+| Grok / X plan website | Weekly shared credit pool; not a retail per-second price |
+| Grok API (prepaid credits, separate from weekly pool) | 1.5 headline $0.080/sec; lite $0.020/sec. Resolution-tier table may differ; recheck before listing. |
+| fal MiniMax H3 Max, from 2026-11-16 | 480p $0.05/sec; 768p $0.08/sec; 1080p $0.16/sec |
+
+Installer: `--skills-dir` overrides all selection; `--target claude` uses `~/.claude/skills`, `--target codex` uses `$CODEX_HOME/skills` or `~/.codex/skills`. Without flags: use `CODEX_HOME` if set, else existing `~/.codex`, else existing `~/.claude`, else `~/.codex`. `--skip-deps` only registers; it does not verify runtime readiness. 安裝路徑同上；`--skip-deps` 僅註冊，不代表執行環境已備妥。
+
+'"'''
+ p.write_text(intro+old)
+p=Path('SKILL.md');s=p.read_text();pos=s.index('\\n## Match the requested scope');s=s[:pos]+'''\\n## Local quick start
+
+For existing media use "'`python scripts/vgs.py make <video> --out <new-dir>` with this skill'"'s venv Python. Invoke as "'`/video-gif-studio` in Claude Code or `$video-gif-studio` in Codex. If no built-in image generation is available, ask for a start image or existing video. Local processing requires no account and costs $0.'"\\n'''+s[pos:];p.write_text(s)
+PY
+mkdir -p wow/batch1/evidence /tmp/vgs-build/home/.claude
+ffmpeg -v error -f lavfi -i 'color=c=0xF414F7:s=320x240:r=24:d=2' -f lavfi -i 'color=c=white:s=100x100:r=24:d=2' -filter_complex \"[1]drawbox=x=25:y=35:w=50:h=30:color=0xF414F7@1:t=fill,drawbox=x=0:y=88:w=100:h=10:color=0xC81EC8@1:t=fill[s];[0][s]overlay=x='20+t*60':y=60:shortest=1\" -pix_fmt yuv420p /tmp/vgs-build/c1.mp4
+ffmpeg -v error -f lavfi -i 'testsrc2=s=320x240:r=24:d=2' -pix_fmt yuv420p /tmp/vgs-build/c2.mp4
+ffmpeg -v error -f lavfi -i 'color=c=0x00FF00:s=320x240:r=24:d=2' -f lavfi -i 'color=c=white:s=100x100:r=24:d=2' -filter_complex \"[0][1]overlay=x='20+t*60':y=60:shortest=1\" -pix_fmt yuv420p /tmp/vgs-build/c3.mp4" in /workspace/src/video-gif-studio
+ succeeded in 320ms:
+exec
+/bin/bash -lc 'PY=/home/box/.codex/skills/video-gif-studio/.venv/bin/python
+{ for c in c1 c2 c3; do "$PY" scripts/vgs.py make /tmp/vgs-build/$c.mp4 --out /tmp/vgs-build/out_$c; echo exit=$?; done
+"$PY" scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/vgs-build/no_key --no-key; echo exit=$?
+"$PY" scripts/vgs.py qa /tmp/vgs-build/no_key/animation.gif; echo exit=$?
+"$PY" scripts/vgs.py qa /tmp/vgs-build/s1b/animation.gif; echo exit=$?
+"$PY" scripts/vgs.py make /tmp/vgs-build/missing.mp4 --out /tmp/vgs-build/missingout; echo exit=$?
+mkdir -p /tmp/vgs-build/pngs /tmp/vgs-build/nonempty
+printf keep > /tmp/vgs-build/nonempty/keep.txt
+"$PY" scripts/vgs.py make /tmp/vgs-build/pngs --out /tmp/vgs-build/pngout; echo exit=$?
+sha256sum /tmp/vgs-build/nonempty/keep.txt
+"$PY" scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/vgs-build/nonempty; echo exit=$?
+sha256sum /tmp/vgs-build/nonempty/keep.txt
+"$PY" scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/vgs-build/fps --fps 30; echo exit=$?
+env -u CODEX_HOME HOME=/tmp/vgs-build/home "$PY" scripts/install.py --target claude --skip-deps; echo exit=$?
+env -u CODEX_HOME HOME=/tmp/vgs-build/home "$PY" scripts/install.py --target claude --skip-deps; echo exit=$?
+"$PY" scripts/install.py --skills-dir /tmp/vgs-build/sk --skip-deps; echo exit=$?
+"$PY" scripts/doctor.py; echo exit=$?
+} > /tmp/vgs-build/check.log 2>&1' in /workspace/src/video-gif-studio
+exec
+/bin/bash -lc "rg -n -i 'savings|unity|godot|texturepacker|claude|agent|"'!'"\\[' README.md README.zh-TW.md | head -35" in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+README.zh-TW.md:3:Standalone CLI tool and a Codex + Claude Code skill. 本工具是獨立 CLI，也可作為 Codex 與 Claude Code skill。
+README.zh-TW.md:11:Claude Code: `/video-gif-studio` · Codex: `$video-gif-studio`.
+README.zh-TW.md:31:Installer: `--skills-dir` overrides all selection; `--target claude` uses `~/.claude/skills`, `--target codex` uses `$CODEX_HOME/skills` or `~/.codex/skills`. Without flags: use `CODEX_HOME` if set, else existing `~/.codex`, else existing `~/.claude`, else `~/.codex`. `--skip-deps` only registers; it does not verify runtime readiness. 安裝路徑同上；`--skip-deps` 僅註冊，不代表執行環境已備妥。
+README.zh-TW.md:147:### 可重用的 Agent 角色
+README.zh-TW.md:151:> 使用 $video-gif-studio，透過 fal.ai MiniMax H3 Max 製作透明背景的全身 Agent 角色，包含可重用的待機與致意動畫。
+README.md:3:Standalone CLI tool and a Codex + Claude Code skill. 本工具是獨立 CLI，也可作為 Codex 與 Claude Code skill。
+README.md:11:Claude Code: `/video-gif-studio` · Codex: `$video-gif-studio`.
+README.md:31:Installer: `--skills-dir` overrides all selection; `--target claude` uses `~/.claude/skills`, `--target codex` uses `$CODEX_HOME/skills` or `~/.codex/skills`. Without flags: use `CODEX_HOME` if set, else existing `~/.codex`, else existing `~/.claude`, else `~/.codex`. `--skip-deps` only registers; it does not verify runtime readiness. 安裝路徑同上；`--skip-deps` 僅註冊，不代表執行環境已備妥。
+README.md:147:### Reusable agent characters
+README.md:151:> Use $video-gif-studio with fal.ai MiniMax H3 Max to create a transparent full-body agent character, with reusable idle and greeting animations.
+
+exec
+/bin/bash -lc 'ls -lh examples/chibi-running-dash/final.gif /workspace/money-radar-team/2026-11-22/agensi*; ls scripts | wc -l' in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+-rw-r--r-- 1 box box 211K Nov 22 19:27 /workspace/money-radar-team/2026-11-22/agensi-cover.png
+-rw-r--r-- 1 box box  285 Nov 22 19:21 /workspace/money-radar-team/2026-11-22/agensi-eval.md
+-rw-r--r-- 1 box box  24K Nov 22 19:30 /workspace/money-radar-team/2026-11-22/agensi-listing-pack.md
+-rw-r--r-- 1 box box  91K Nov 22 19:27 /workspace/money-radar-team/2026-11-22/agensi-logo-512.png
+-rw-r--r-- 1 box box 2.1M Nov 19 07:52 examples/chibi-running-dash/final.gif
+
+/workspace/money-radar-team/2026-11-22/agensi-screenshots:
+total 1.3M
+-rw-r--r-- 1 box box 275K Nov 22 19:27 01-seated-leg-switch.png
+-rw-r--r-- 1 box box 247K Nov 22 19:27 02-robot-wave.png
+-rw-r--r-- 1 box box  81K Nov 22 19:27 03-chibi-dash.png
+-rw-r--r-- 1 box box 345K Nov 22 19:27 04-sprite-sheet.png
+-rw-r--r-- 1 box box 353K Nov 22 19:27 05-transparency-before-after.png
+133
+
+ succeeded in 11510ms:
+exec
+/bin/bash -lc 'cat /tmp/vgs-build/check.log' in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+交付檢查 FAIL：已去背
+尺寸 320×240（預設寬度 320）；48 幀，2.00 秒，0.06 MB
+鍵色 #F212F7；容差 0.2，柔化 0.18，信心 1.000
+警告：前景若含相同鍵色，可能被挖空；請檢查。
+尾端 none：原長 2.00s，新長 2.00s；移除來源區間 None
+frame0 FAIL: Flat frame 
+loop FAIL: Loop position and speed 
+QA FAIL；輸出 /tmp/vgs-build/out_c1/animation.gif；視覺核准：未評估，需人看。
+exit=0
+交付檢查 FAIL：未去背：背景非純色；非透明交付。
+尺寸 320×240（預設寬度 320）；48 幀，2.00 秒，0.55 MB
+鍵色 None；容差 0.2，柔化 0.18，信心 0.021
+尾端 none：原長 2.00s，新長 2.00s；移除來源區間 None
+loop FAIL: Loop position and speed 
+QA FAIL；輸出 /tmp/vgs-build/out_c2/animation.gif；視覺核准：未評估，需人看。
+exit=0
+交付檢查 FAIL：已去背
+尺寸 320×240（預設寬度 320）；48 幀，2.00 秒，0.05 MB
+鍵色 #00FE00；容差 0.2，柔化 0.18，信心 1.000
+警告：前景若含相同鍵色，可能被挖空；請檢查。
+尾端 none：原長 2.00s，新長 2.00s；移除來源區間 None
+frame0 FAIL: Flat frame 
+loop FAIL: Loop position and speed 
+QA FAIL；輸出 /tmp/vgs-build/out_c3/animation.gif；視覺核准：未評估，需人看。
+exit=0
+交付檢查 FAIL：背景未去除，不是透明 GIF；平坦背景仍存在。
+尺寸 320×320（預設寬度 320）；145 幀，6.04 秒，4.21 MB
+鍵色 None；容差 0.2，柔化 0.18，信心 1.000
+尾端 none：原長 6.04s，新長 6.04s；移除來源區間 None
+pops WARN: Small transient pop scan; inspect in context 
+loop FAIL: Loop position and speed 
+QA FAIL；輸出 /tmp/vgs-build/no_key/animation.gif；視覺核准：未評估，需人看。
+exit=1
+背景檢查 FAIL：背景未去除，不是透明 GIF；邊框不透明比例 1.000
+exit=1
+背景檢查 PASS；邊框不透明比例 0.000
+exit=0
+無法處理 /tmp/vgs-build/missing.mp4：來源 /tmp/vgs-build/missing.mp4 不存在；無法製作 GIF。請使用正確路徑，例如 python scripts/vgs.py make <video> --out /tmp/vgs-new-output。。輸出可能不完整；請檢查來源及參數，並使用新的 --out /tmp/vgs-new-output 重試。
+exit=1
+無法處理 /tmp/vgs-build/pngs：PNG 目錄 /tmp/vgs-build/pngs 缺少 fps；無法確定播放速度。請加上 --fps 24。。輸出可能不完整；請檢查來源及參數，並使用新的 --out /tmp/vgs-new-output 重試。
+exit=1
+6ca7ea2feefc88ecb5ed6356ed963f47dc9137f82526fdd25d618ea626d0803f  /tmp/vgs-build/nonempty/keep.txt
+無法處理 examples/chibi-running-dash/source.mp4：輸出目錄 /tmp/vgs-build/nonempty 非空；不會寫入或刪除檔案。請改用 --out /tmp/vgs-new-output。。輸出可能不完整；請檢查來源及參數，並使用新的 --out /tmp/vgs-new-output 重試。
+exit=1
+6ca7ea2feefc88ecb5ed6356ed963f47dc9137f82526fdd25d618ea626d0803f  /tmp/vgs-build/nonempty/keep.txt
+無法處理 examples/chibi-running-dash/source.mp4：來源是 24 fps，你指定 30 fps；這會改變播放速度。請用 --fps 24 或省略 --fps。。輸出可能不完整；請檢查來源及參數，並使用新的 --out /tmp/vgs-new-output 重試。
+exit=1
+{
+  "skill": "/tmp/vgs-build/home/.claude/skills/video-gif-studio",
+  "skill_registered": true,
+  "python": "/tmp/vgs-build/home/.claude/skills/video-gif-studio/.venv/bin/python",
+  "dependencies": "not checked (--skip-deps)",
+  "note": "Grok generation entitlement and credits are not verified by installation"
+}
+exit=0
+Install incomplete: Existing install preserved: /tmp/vgs-build/home/.claude/skills/video-gif-studio. Run its own install.py to repair dependencies; do not overwrite it.
+exit=1
+{
+  "skill": "/tmp/vgs-build/sk/video-gif-studio",
+  "skill_registered": true,
+  "python": "/tmp/vgs-build/sk/video-gif-studio/.venv/bin/python",
+  "dependencies": "not checked (--skip-deps)",
+  "note": "Grok generation entitlement and credits are not verified by installation"
+}
+exit=0
+{
+  "skill_entry_exists": true,
+  "python": "/home/box/.codex/skills/video-gif-studio/.venv/bin/python",
+  "python_version_supported": true,
+  "packages": {
+    "PIL": true,
+    "numpy": true,
+    "cv2": true
+  },
+  "ffmpeg": "/usr/bin/ffmpeg",
+  "ffprobe": "/usr/bin/ffprobe",
+  "grok_cli": null,
+  "grok_support": "bundled",
+  "grok_oauth": {
+    "oauth_session_present": false,
+    "expired": true,
+    "expiry_known": false,
+    "refresh_available": false,
+    "generation_entitlement": "not checked"
+  },
+  "grok_auth_and_generation_quota": "not checked; no external requests made",
+  "local_gif_runtime_ready": true,
+  "media_runtime_ready": true,
+  "qa_media": {
+    "numpy": true,
+    "PIL": true,
+    "ffmpeg": "/usr/bin/ffmpeg",
+    "ffprobe": "/usr/bin/ffprobe",
+    "picture_ready": true,
+    "video_audio_ready": true,
+    "ffmpeg_only_fallback_available": true,
+    "note": "GIF/APNG/PNG need numpy and Pillow. Video/audio use ffmpeg/ffprobe; recent ffmpeg also offers a showinfo timing fallback, verified when QA runs."
+  },
+  "api_key_available": false,
+  "fal": {
+    "support": "bundled MiniMax H3 Max",
+    "key_present": false,
+    "auth_and_quota": "not checked; no external requests made"
+  },
+  "optional_matting_installed": false,
+  "optional_identity_engine": {
+    "available": false,
+    "path": "/home/box/.cache/video-gif-studio/models/dinov2-small/model.onnx",
+    "sha256": null,
+    "engine": "DINOv2-small ONNX + subject Lab a*b* 12x12",
+    "reason": "DINOv2 model missing; ORB/HSV fallback is unassessed.",
+    "optional": true
+  }
+}
+exit=0
+
+exec
+/bin/bash -lc "ffmpeg -v error -i examples/chibi-running-dash/source.mp4 -vf 'thumbnail,scale=320:-1' -frames:v 1 examples/chibi-running-dash/hero.png
+python3 - <<'PY'
+from pathlib import Path
+for n in ['README.md','README.zh-TW.md']:
+ p=Path(n);s=p.read_text().replace('## How it works / 運作方式','"'![Chibi animation source preview](examples/chibi-running-dash/hero.png)'"\\n\\n## How it works / 運作方式');p.write_text(s)
+PY
+python3 - <<'PY'
+from pathlib import Path
+import zipfile
+root=Path('/workspace/src/video-gif-studio'); dest=Path('/workspace/money-radar-team/2026-11-22'); z=dest/'video-gif-studio-agensi.zip'
+files=[root/'SKILL.md',root/'requirements.txt',root/'requirements-matting.txt',root/'README.md',root/'README.zh-TW.md']+list((root/'scripts').glob('*.py'))+list((root/'references').rglob('*'))
+files=[p for p in files if p.is_file() and p.name"'!='"'run_ci_smoke.py' and '__pycache__' not in p.parts]
+with zipfile.ZipFile(z,'w',zipfile.ZIP_DEFLATED) as f:
+ for p in files:f.write(p,p.relative_to(root))
+largest=sorted(files,key=lambda p:p.stat().st_size,reverse=True)[:5]
+pack='''# Video GIF Studio — Agensi listing draft
+
+Status: draft only; not submitted. Local standalone CLI and Codex / Claude Code skill. Claude Code execution remains pending coordinator verification.\\n
+Local command: "'`python scripts/vgs.py make <video> --out <new-dir>` (vgs make). Supply a start image or existing video when built-in image generation is unavailable. Local processing requires no account and costs $0.'"\\n
+## How it works
+Existing video or PNG → local key/trim → GIF / APNG / sprite. Optional image-to-video generation paths use Grok or fal before local processing. QA measurements do not constitute visual approval.\\n
+## I2V options — checked 2026-11-22; recheck before listing
+| Option | Price |
+|---|---|
+| Local existing media | "'$0 |
+| Grok / X plan website | Weekly shared credit pool; not a per-second retail price |
+| Grok API | Prepaid credits, separate from weekly pool: 1.5 headline $0.080/sec, lite $0.020/sec; resolution-tier table may differ; recheck before listing. |
+| fal MiniMax H3 Max from 2026-11-16 | 480p $0.05/sec, 768p $0.08/sec, 1080p $0.16/sec |
+'"\\n## Package\\nExamples are excluded to keep the package small; obtain samples from GitHub. Five largest included files:\\n'''
+for p in largest:pack+=f'- "'`{p.relative_to(root)}` ({p.stat().st_size:,} bytes): retained for the bundled workflow and its documentation.'"\\n'
+pack+='\\n給 Alex：這是待審草稿，尚未送出。Claude Code 實跑待協調者確認；上架前請重新核對價格。\\n'
+(dest/'agensi-listing-pack.md').write_text(pack)
+print(z.stat().st_size,largest)
+PY" in /workspace/src/video-gif-studio
+ succeeded in 228ms:
+756477 [PosixPath('/workspace/src/video-gif-studio/references/fx-calibration.json'), PosixPath('/workspace/src/video-gif-studio/references/fx.md'), PosixPath('/workspace/src/video-gif-studio/references/thresholds.json'), PosixPath('/workspace/src/video-gif-studio/references/generator-vocab.md'), PosixPath('/workspace/src/video-gif-studio/scripts/fx_render.py')]
+
+codex
+The control runs distinguish flat magenta, busy backgrounds, and green screens; the forced-background run fails specifically on the background. The listing remains a draft, and I’m recording the self-check results and testing the extracted package.
+exec
+/bin/bash -lc 'PY=/home/box/.codex/skills/video-gif-studio/.venv/bin/python
+mkdir -p /tmp/vgs-build/zip /tmp/vgs-build/home2/.claude
+unzip -q /workspace/money-radar-team/2026-11-22/video-gif-studio-agensi.zip -d /tmp/vgs-build/zip
+{ "$PY" /tmp/vgs-build/zip/scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/vgs-build/ziprun; echo zip_exit=$?
+env -u CODEX_HOME HOME=/tmp/vgs-build/home2 "$PY" scripts/install.py --skip-deps; echo default_exit=$?
+"$PY" scripts/qa_media.py /tmp/vgs-build/s1b/animation.gif --out /tmp/vgs-build/s3qa; echo qa_exit=$?
+"$PY" - <<'"'PY'
+import numpy as np
+from PIL import Image,ImageSequence
+im=Image.open('/tmp/vgs-build/s1b/animation.gif'); rows=[]
+for f in ImageSequence.Iterator(im):
+ a=np.array(f.convert('RGBA')); o=a[:,:,3]>0;c=a[:,:,:3];ring=np.concatenate([o[:4].ravel(),o[-4:].ravel(),o[:,:4].ravel(),o[:,-4:].ravel()]);mag=(c[:,:,0]>180)&(c[:,:,2]>180)&(c[:,:,1]<90)&o;rows.append((o.mean(),ring.mean(),mag.sum()/max(o.sum(),1)))
+print('GIF size, frames, loop, max opaque/ring/magenta:', im.size,im.n_frames,im.info.get('loop'),np.max(rows,axis=0))
+PY
+} > /tmp/vgs-build/additional.log 2>&1" in /workspace/src/video-gif-studio
+ succeeded in 6367ms:
+exec
+/bin/bash -lc 'cat /tmp/vgs-build/additional.log | tail -20; git status --short; command -v claude || true; ls -lh examples/chibi-running-dash/hero.png' in /workspace/src/video-gif-studio
+ succeeded in 0ms:
+交付檢查 FAIL：已去背
+尺寸 320×320（預設寬度 320）；87 幀，3.62 秒，0.67 MB
+鍵色 #FC01F9；容差 0.2，柔化 0.18，信心 1.000
+警告：前景若含相同鍵色，可能被挖空；請檢查。
+尾端 trim：原長 6.04s，新長 3.62s；移除來源區間 [3.625, 6.041666666666667]
+pops WARN: Small transient pop scan; inspect in context 
+loop FAIL: Loop position and speed: speed mismatch 
+QA FAIL；輸出 /tmp/vgs-build/ziprun/animation.gif；視覺核准：未評估，需人看。
+zip_exit=0
+{
+  "skill": "/tmp/vgs-build/home2/.claude/skills/video-gif-studio",
+  "skill_registered": true,
+  "python": "/tmp/vgs-build/home2/.claude/skills/video-gif-studio/.venv/bin/python",
+  "dependencies": "not checked (--skip-deps)",
+  "note": "Grok generation entitlement and credits are not verified by installation"
+}
+default_exit=0
+FAIL: /tmp/vgs-build/s3qa/report.md (1.179 s)
+qa_exit=1
+GIF size, frames, loop, max opaque/ring/magenta: (320, 320) 87 0 [0.09241211 0.         0.        ]
+ M .github/workflows/test.yml
+ M README.md
+ M README.zh-TW.md
+ M SKILL.md
+ M scripts/install.py
+?? examples/chibi-running-dash/hero.png
+?? scripts/run_ci_smoke.py
+?? scripts/vgs.py
+?? wow/batch1/
+/home/box/.local/bin/claude
+-rw-r--r-- 1 box box 57K Nov 22 20:01 examples/chibi-running-dash/hero.png
+
+exec
+/bin/bash -lc 'PY=/home/box/.codex/skills/video-gif-studio/.venv/bin/python
+{ "$PY" scripts/gif_pipeline.py examples/chibi-running-dash/source.mp4 --out /tmp/vgs-build/legacy --width 320; echo encoder_exit=$?; "$PY" scripts/vgs.py qa /tmp/vgs-build/legacy/animation.gif; echo gate_exit=$?; } > /tmp/vgs-build/legacy.log 2>&1
+python3 - <<'"'PY'
+import zipfile
+z='/workspace/money-radar-team/2026-11-22/video-gif-studio-agensi.zip'
+with zipfile.ZipFile(z,'a',zipfile.ZIP_DEFLATED) as f:f.write('examples/chibi-running-dash/hero.png')
+PY
+{ printf '# Batch 1 self-check\\n\\nAll runs local, no generation API calls. Python: /home/box/.codex/skills/video-gif-studio/.venv/bin/python. Outputs: /tmp/vgs-build.\\n\\nChibi initial wall time 5.628 s (before tail trimming); trimmed run 87 frames, 3.62 s. Human timing and visual review remain pending. Claude Code live session was not run; coordinator verification is pending.\\n\\n## Controls, errors, installer and doctor\\n\\n"'```text'"\\n'; cat /tmp/vgs-build/check.log; printf '\\n"'```'"\\n\\n## Extracted ZIP, default installer and measurements\\n\\n"'```text'"\\n'; cat /tmp/vgs-build/additional.log; printf '\\n"'```'"\\n\\n## Legacy background gate\\n\\n"'```text'"\\n'; cat /tmp/vgs-build/legacy.log; printf '\\n"'```'"\\n'; } > wow/batch1/evidence/build-selfcheck.md" in /workspace/src/video-gif-studio
+ succeeded in 5761ms:
+codex
+Implemented the local `vgs.py` workflow, installer target selection, README updates, and draft Agensi pack. The chibi self-check produced a 320×320 GIF with a transparent border, trimmed the still tail from 6.04 to 3.62 seconds, and reported **loop FAIL: speed mismatch**. Visual approval remains pending.
+
+The magenta, busy-background, and green-screen controls ran locally. The forced-background delivery and legacy GIF background gate both failed as intended. The extracted ZIP also produced the chibi GIF. Results are recorded in [build-selfcheck.md](/workspace/src/video-gif-studio/wow/batch1/evidence/build-selfcheck.md).
+
+**One acceptance item remains unverified:** no live Claude Code session was run; the coordinator’s verification is pending. The listing pack states that limitation and remains unsubmitted.
+
+Changed or created:
+
+- [scripts/vgs.py](/workspace/src/video-gif-studio/scripts/vgs.py)
+- [scripts/install.py](/workspace/src/video-gif-studio/scripts/install.py)
+- [README.md](/workspace/src/video-gif-studio/README.md), [README.zh-TW.md](/workspace/src/video-gif-studio/README.zh-TW.md), and [SKILL.md](/workspace/src/video-gif-studio/SKILL.md)
+- [hero.png](/workspace/src/video-gif-studio/examples/chibi-running-dash/hero.png)
+- [agensi-listing-pack.md](/workspace/money-radar-team/2026-11-22/agensi-listing-pack.md) and [video-gif-studio-agensi.zip](/workspace/money-radar-team/2026-11-22/video-gif-studio-agensi.zip)
+
+No commit or push was made, and the pre-existing CI changes were left untouched.
+tokens used
+49,198
