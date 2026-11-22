@@ -164,6 +164,41 @@ def key_metrics(path):
     return ring, share, worst
 
 
+
+def despill_pixel_edges(frames, key_rgb):
+    """Suppress chroma spill on 1px opaque silhouette pixels touching alpha=0."""
+    k = np.asarray(key_rgb, dtype=float)
+    k_chroma = k - k.mean()
+    k_norm = float(np.linalg.norm(k_chroma))
+    if k_norm < 1e-6:
+        return frames
+    k_dir = k_chroma / k_norm
+    out = []
+    for f in frames:
+        arr = np.array(f)
+        alpha = arr[:, :, 3] >= 128
+        # 4-connected neighbors of transparent pixels
+        bg = ~alpha
+        border_band = np.zeros_like(alpha)
+        border_band[1:] |= alpha[1:] & bg[:-1]
+        border_band[:-1] |= alpha[:-1] & bg[1:]
+        border_band[:, 1:] |= alpha[:, 1:] & bg[:, :-1]
+        border_band[:, :-1] |= alpha[:, :-1] & bg[:, 1:]
+        if border_band.any():
+            rgb = arr[:, :, :3].astype(float)
+            c = rgb - rgb.mean(axis=2, keepdims=True)
+            proj = np.tensordot(c, k_dir, axes=([2], [0]))
+            # only pixels whose chroma leans meaningfully toward the key color
+            spill = border_band & (proj > 25.0)
+            if spill.any():
+                # remove positive projection onto key chroma, keeping brightness neutral
+                for ch in range(3):
+                    rgb[:, :, ch] = np.where(spill, np.clip(rgb[:, :, ch] - proj * k_dir[ch], 0, 255), rgb[:, :, ch])
+                arr[:, :, :3] = np.round(rgb).astype(np.uint8)
+        out.append(Image.fromarray(arr))
+    return out
+
+
 def pixel_quantize(frames, colors, scale):
     samples = [np.asarray(f)[:,:,:3][np.asarray(f)[:,:,3]>=128] for f in frames]
     visible = np.concatenate(samples)
@@ -295,6 +330,8 @@ def make(a) -> int:
     islands = None
     if keyed:
         frames, islands = apply_key_connected(frames, key, TOLERANCE, SOFTNESS, a.keep_interior_key)
+        if pixel:
+            frames = despill_pixel_edges(frames, key)
         if a.key and all(np.mean(np.asarray(f)[:,:,3]>=128)<.005 for f in frames):
             raise ValueError(f'--key {a.key} 與主體太接近，會挖空主體；不寫入檔案。請省略 --key 重試。')
     trimmed, treatment, last = trim_tail(frames, fps)

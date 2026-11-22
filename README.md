@@ -4,25 +4,49 @@
 
 **English** | [繁體中文](README.zh-TW.md)
 
-Standalone CLI tool and a Codex + Claude Code skill. Use it yourself from the command line, or invoke it from an agent, to turn existing video (or a generated clip) into a transparent GIF, APNG or sprite sheet.
+Standalone CLI tool and a Codex + Claude Code skill to turn existing video (or generated clips) into transparent GIFs, APNGs, MP4s or sprite sheets.
+
+![Transparent chibi dash GIF](examples/chibi-running-dash/hero.gif)
+
+*Transparent GIF from one local `vgs make` run ($0, auto-trimmed to 90 frames / 3.75 s so `loop` QA passes; visual review still needs a human). On GitHub, the background behind the character is your page color.*
 
 ## Quick start
 
 ```sh
-python scripts/install.py --target claude   # or: --target codex
-# From the installed skill directory, with its venv Python:
-python scripts/vgs.py make <video> --out <new-dir>
+python scripts/install.py \
+  --target claude   # or --target codex
+
+python scripts/vgs.py make \
+  <video> --out <new-dir>
 ```
 
-- Human entry: one command, `python scripts/vgs.py make <video> --out <new-dir>`. The output directory must be new or empty. A flat studio background (magenta or green) is keyed automatically; `--no-key` / `--keep-background` keeps it and fails transparent delivery.
-- Agent entry: Claude Code `/video-gif-studio` · Codex `$video-gif-studio`.
-- If your environment has no built-in image generation, supply a start image or an existing video. The local existing-media path needs no account and costs $0.
+- **Human CLI**: `python scripts/vgs.py make <video> --out <new-dir>` (run from the installed skill dir with its `.venv/bin/python`). Auto-keys saturated flat studio backdrops (`magenta`/`green`); `--no-key` keeps them and fails transparent delivery.
+- **Agent skill**: Claude Code `/video-gif-studio` · Codex `$video-gif-studio`. If your environment has no built-in image tool, supply a start image or existing video ($0 locally).
 
 ![Transparent chibi dash on light and dark checkerboards](examples/chibi-running-dash/hero-preview.png)
 
-![Transparent chibi dash GIF](examples/chibi-running-dash/hero.gif)
+## A local run (QA pops warning, loop PASS)
 
-The still is a local `vgs make` result on a light and a dark checkerboard. The GIF is auto-trimmed to a natural return point (90 frames / 3.75 s), so `loop` measurement passes; visual motion and seamlessness still need a human look. The background on GitHub is the page color, not a studio floor.
+Actual output of `python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/chibi-gif` (2026-11-22, no generation API):
+
+```text
+已去背，鍵色 #FC01F9（容差 0.2，柔化 0.18，信心 1.000）。
+警告：內部鍵色區最大比例 0.0465，第 54 幀；如需保留請加 --keep-interior-key。
+border_opaque_max 0.0000；key_share_max 0.0000（第 0 幀）。
+尺寸 320×320；90 幀，3.75 秒，0.70 MB。（預設寬度 320）
+尾端 trim：原長 6.04s，新長 3.75s；來源 3.75 到 6.04s 已裁切，保留約 0.29s guard；最後移動幀 3.42s。
+QA WARN；pops WARN: Small transient pop scan; inspect in context
+loop 量測通過（未經視覺核准）；輸出 /tmp/chibi-gif/animation.gif
+視覺核准：未評估，需人看。
+```
+
+*English summary of the stdout above: background keyed (`#FC01F9`, confidence `1.000`, `border_opaque_max 0`, `key_share_max 0`); warns about a `4.65%` enclosed key pocket at frame 54 (`--keep-interior-key` preserves it); `320×320`, `90` frames, `3.75 s`, `0.70 MB`; QA `WARN` (`pops` only) and `loop` measurement `PASS` (visual approval still pending).*
+
+If `--out` already has files, it writes nothing and explains the fix:
+
+```text
+輸出目錄 /tmp/vgs-occupied 非空；不會寫入或刪除檔案。請改用一個新的空目錄，例如 --out /tmp/vgs-new-output。
+```
 
 ## How it works
 
@@ -48,28 +72,6 @@ Prices checked 2026-11-22. **Recheck before listing.**
 | fal MiniMax H3 Max, from 2026-11-16 | $0.05 / $0.08 / $0.16 per second at 480p / 768p / 1080p |
 
 Installer: `--skills-dir` overrides everything; `--target claude` installs to `~/.claude/skills`; `--target codex` installs to `$CODEX_HOME/skills` or `~/.codex/skills`. With no flags: `CODEX_HOME` if set, else an existing `~/.codex`, else an existing `~/.claude`, else `~/.codex`. `--skip-deps` only registers the skill and does not mean the runtime is ready.
-
-
-## What a run looks like
-
-Successful local run of `python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/chibi-gif` (2026-11-22, no generation API):
-
-```text
-已去背，鍵色 #FC01F9（容差 0.2，柔化 0.18，信心 1.000）。
-警告：內部鍵色區最大比例 0.0465，第 54 幀；如需保留請加 --keep-interior-key。
-border_opaque_max 0.0000；key_share_max 0.0000（第 0 幀）。
-尺寸 320×320；90 幀，3.75 秒，0.70 MB。（預設寬度 320）
-尾端 trim：原長 6.04s，新長 3.75s；來源 3.75 到 6.04s 已裁切，保留約 0.29s guard；最後移動幀 3.42s。
-QA WARN；pops WARN: Small transient pop scan; inspect in context
-loop 量測通過（未經視覺核准）；輸出 /tmp/chibi-gif/animation.gif
-視覺核准：未評估，需人看。
-```
-
-If `--out` already has files, the command writes nothing and explains what to do:
-
-```text
-輸出目錄 /tmp/vgs-occupied 非空；不會寫入或刪除檔案。請改用一個新的空目錄，例如 --out /tmp/vgs-new-output。
-```
 
 
 ### Pixel export
