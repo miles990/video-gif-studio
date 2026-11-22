@@ -199,17 +199,120 @@ def despill_pixel_edges(frames, key_rgb):
     return out
 
 
+def pixel_pool_and_stabilize_alpha(frames, pw, ph):
+    w, h = frames[0].size
+    if w <= pw and h <= ph:
+        frames = [f.resize((pw, ph), Image.Resampling.NEAREST) for f in frames]
+        w, h = pw, ph
+    ys = np.round(np.linspace(0, h, ph + 1)).astype(int)
+    xs = np.round(np.linspace(0, w, pw + 1)).astype(int)
+    cov = np.zeros((len(frames), ph, pw), dtype=np.float32)
+    rgb = np.zeros((len(frames), ph, pw, 3), dtype=np.uint8)
+    for t, frame in enumerate(frames):
+        a = np.asarray(frame.convert('RGBA'))
+        for y in range(ph):
+            for x in range(pw):
+                y0, x0 = min(ys[y], h-1), min(xs[x], w-1)
+                cell = a[y0:max(y0+1, ys[y+1]), x0:max(x0+1, xs[x+1])].reshape(-1, 4)
+                alpha = cell[:, 3].astype(float) / 255
+                cov[t, y, x] = alpha.mean()
+                if cov[t, y, x] > .01:
+                    solid = alpha >= .8
+                    color = np.median(cell[solid, :3], axis=0) if solid.sum() >= max(2, len(cell)//4) else np.average(cell[:, :3], axis=0, weights=alpha)
+                    rgb[t, y, x] = np.round(color).astype(np.uint8)
+    opaque = np.zeros_like(cov, dtype=bool)
+    opaque[0] = cov[0] >= .5
+    for t in range(1, len(frames)):
+        opaque[t] = np.where(opaque[t-1], cov[t] > .38, cov[t] >= .62)
+    for t in range(1, len(frames)-1):
+        mask = (opaque[t-1] == opaque[t+1]) & (opaque[t] != opaque[t-1]) & (cov[t] > .12) & (cov[t] < .88)
+        opaque[t][mask] = opaque[t-1][mask]
+    return [Image.fromarray(np.dstack((rgb[t], opaque[t].astype(np.uint8)*255))) for t in range(len(frames))]
+
+
 def pixel_quantize(frames, colors, scale):
-    samples = [np.asarray(f)[:,:,:3][np.asarray(f)[:,:,3]>=128] for f in frames]
-    visible = np.concatenate(samples)
+    arrays = [np.asarray(f.convert('RGBA')) for f in frames]
+    visible = np.concatenate([a[:, :, :3][a[:, :, 3] >= 128] for a in arrays])
     if not len(visible): raise ValueError('鍵色與主體太接近；不寫入檔案。請省略 --key 重試。')
-    palette = Image.fromarray(visible.reshape(-1,1,3)).quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
-    result = []
-    for f in frames:
-        a = np.asarray(f); q = f.convert('RGB').quantize(palette=palette, dither=Image.Dither.NONE).convert('RGB').convert('RGBA')
-        q.putalpha(Image.fromarray(np.where(a[:,:,3]>=128,255,0).astype('uint8')))
-        result.append(q.resize((q.width*scale,q.height*scale), Image.Resampling.NEAREST))
-    return result
+    pal = Image.fromarray(visible.reshape(-1, 1, 3)).quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+    palette = np.asarray(pal.getpalette(), dtype=np.uint8).reshape(-1, 3)[np.unique(np.asarray(pal))]
+    raw = np.stack([a[:, :, :3] for a in arrays]).astype(np.float32)
+    opaque = np.stack([a[:, :, 3] >= 128 for a in arrays])
+    indices = []
+    for t in range(len(frames)):
+        dist = np.linalg.norm(raw[t, :, :, None, :] - palette.astype(np.float32), axis=-1)
+        best = dist.argmin(axis=-1)
+        if t:
+            prev = indices[-1]
+            prev_dist = np.take_along_axis(dist, prev[..., None], axis=-1)[..., 0]
+            best_dist = np.take_along_axis(dist, best[..., None], axis=-1)[..., 0]
+            keep = opaque[t] & opaque[t-1] & (best != prev) & (prev_dist <= 32) & ((np.linalg.norm(raw[t]-raw[t-1], axis=-1) <= 26) | (prev_dist-best_dist <= 20))
+            best = np.where(keep, prev, best)
+        indices.append(best)
+    for t in range(1, len(frames)-1):
+        prev, cur, nxt = indices[t-1:t+2]
+        delta = np.linalg.norm(palette[cur].astype(float)-palette[prev].astype(float), axis=-1)
+        mask = opaque[t-1] & opaque[t] & opaque[t+1] & (prev == nxt) & (cur != prev) & (delta <= 75)
+        indices[t] = np.where(mask, prev, cur)
+    return [Image.fromarray(np.dstack((palette[indices[t]], opaque[t].astype(np.uint8)*255))).resize((frames[t].width*scale, frames[t].height*scale), Image.Resampling.NEAREST) for t in range(len(frames))]
+
+
+def _gif_tables(data, strip=False):
+    data = bytearray(data)
+    if data[:6] not in (b'GIF87a', b'GIF89a') or len(data) < 13: raise ValueError('Invalid GIF header')
+    size = 3 * (2 ** ((data[10] & 7) + 1)) if data[10] & 128 else 0
+    global_table = bytes(data[13:13+size]) if size else None
+    pos, count = 13 + size, 0
+    while pos < len(data):
+        marker = data[pos]
+        if marker == 0x3b: break
+        if marker == 0x21:
+            pos += 2
+        elif marker == 0x2c:
+            packed_pos = pos + 9
+            packed = data[packed_pos]
+            pos += 10
+            if packed & 128:
+                n = 3 * (2 ** ((packed & 7) + 1))
+                if strip and global_table is not None and bytes(data[pos:pos+n]) == global_table:
+                    data[packed_pos] = packed & 0x78
+                    del data[pos:pos+n]
+                else:
+                    count += 1
+                    pos += n
+            pos += 1
+        else: raise ValueError('Invalid GIF block')
+        while True:
+            n = data[pos]; pos += 1
+            if not n: break
+            pos += n
+    return bytes(data), count
+
+
+def _strip_redundant_lcts(data: bytes) -> bytes:
+    return _gif_tables(data, True)[0]
+
+
+def count_gif_lcts(path: Path) -> int:
+    return _gif_tables(path.read_bytes())[1]
+
+
+def flicker_metrics(path: Path) -> dict:
+    with Image.open(path) as im:
+        w, h = im.size
+        step = max(1, min(h, w) // 96)
+        frames = [np.asarray(f.convert('RGBA'))[::step, ::step].copy() for f in ImageSequence.Iterator(im)]
+    active_count = quiet_count = aba_count = quiet_aba_count = 0
+    for t in range(1, len(frames)-1):
+        a, b, c = frames[t-1:t+2]
+        active = (a[:, :, 3] >= 128) | (b[:, :, 3] >= 128) | (c[:, :, 3] >= 128)
+        same = np.all(a == c, axis=2)
+        aba = same & np.any(a != b, axis=2) & active
+        quiet = cv2.boxFilter(same.astype(np.float32), -1, (5, 5), normalize=True, borderType=cv2.BORDER_REPLICATE) >= .8
+        active_count += int(active.sum()); quiet_count += int((active & quiet).sum())
+        aba_count += int(aba.sum()); quiet_aba_count += int((aba & quiet).sum())
+    n = max(1, len(frames)-2)
+    return {'lct_count': count_gif_lcts(path), 'aba_fg_rate': aba_count/max(1, active_count), 'quiet_flicker_rate': quiet_aba_count/max(1, quiet_count), 'aba_pixels_per_frame': aba_count/n, 'quiet_flicker_pixels_per_frame': quiet_aba_count/n}
 
 
 def encode_pixel(frames, durations, target):
@@ -224,8 +327,10 @@ def encode_pixel(frames, durations, target):
         for color, i in lookup.items():
             idx[(rgb == color).all(axis=2) & (arr[:,:,3]>=128)] = i
         im = Image.fromarray(idx); im.putpalette(palette); encoded.append(im)
-    encoded[0].save(target, format='GIF', save_all=True, append_images=encoded[1:], duration=durations,
-                    loop=0, transparency=255, background=255, disposal=2, optimize=False)
+    encoded[0].save(target, format='GIF', save_all=True, append_images=encoded[1:], duration=durations, loop=0, transparency=255, background=255, disposal=2, optimize=False)
+    target = Path(target)
+    target.write_bytes(_strip_redundant_lcts(target.read_bytes()))
+    if count_gif_lcts(target): raise ValueError('GIF contains local color tables')
 
 
 def checkerboard(size, cell=8, light=(235, 235, 235), dark=(50, 50, 50)):
@@ -313,10 +418,6 @@ def make(a) -> int:
         raise ValueError('像素或循環參數無效；不寫入檔案。請使用正整數尺寸、倍率和循環次數，以及 2..255 色。')
     pixel = a.pixel or a.pixel_width is not None
     frames, fps = gp.load_frames(src, a.fps if src.is_dir() else None, None if pixel else a.width, None, TOLERANCE, SOFTNESS)
-    if pixel:
-        pw = a.pixel_width or 96
-        ph = max(1, round(frames[0].height * pw / frames[0].width))
-        frames = [f.resize((pw,ph), Image.Resampling.NEAREST) for f in frames]
     if a.fps and not src.is_dir() and abs(a.fps - fps) > 0.001:
         raise ValueError(
             f'來源是 {fps:g} fps，你指定 {a.fps:g} fps；這會改變播放速度。請用 --fps {fps:g} 或省略 --fps。'
@@ -330,8 +431,6 @@ def make(a) -> int:
     islands = None
     if keyed:
         frames, islands = apply_key_connected(frames, key, TOLERANCE, SOFTNESS, a.keep_interior_key)
-        if pixel:
-            frames = despill_pixel_edges(frames, key)
         if a.key and all(np.mean(np.asarray(f)[:,:,3]>=128)<.005 for f in frames):
             raise ValueError(f'--key {a.key} 與主體太接近，會挖空主體；不寫入檔案。請省略 --key 重試。')
     trimmed, treatment, last = trim_tail(frames, fps)
@@ -349,12 +448,19 @@ def make(a) -> int:
     treatment['new_duration_seconds'] = end/fps
     treatment['source_interval_removed_seconds'] = [end/fps,treatment['original_duration_seconds']] if end/fps < treatment['original_duration_seconds'] else None
     treatment['guard_seconds'] = max(0,end-last-1)/fps
+    if pixel:
+        pw = a.pixel_width or 96
+        ph = max(1, round(frames[0].height * pw / frames[0].width))
+        grid_frames = pixel_pool_and_stabilize_alpha(frames, pw, ph)
+        if keyed: grid_frames = despill_pixel_edges(grid_frames, key)
     indices, durations = gp.timing(len(frames), fps, [])
     frames = [frames[i] for i in indices]
     pixel_info = None
     if pixel:
+        grid_frames = [grid_frames[i] for i in indices]
+        quantized_grid_frames = pixel_quantize(grid_frames, a.colors, 1)
         scale = a.pixel_scale or max(1,math.ceil(288/pw))
-        frames = pixel_quantize(frames,a.colors,scale)
+        frames = [f.resize((pw*scale, ph*scale), Image.Resampling.NEAREST) for f in quantized_grid_frames]
         pixel_info = {'grid_size':[pw,ph], 'scale':scale, 'output_size':[pw*scale,ph*scale], 'colors':a.colors, 'resample':'nearest','dither':'none'}
 
     out.mkdir(parents=True, exist_ok=True)
@@ -367,10 +473,12 @@ def make(a) -> int:
     for name in ('report.json', 'report.md'):
         (out / name).write_bytes((out / 'qa' / name).read_bytes())
 
+    flicker = flicker_metrics(gif)
+    print(f"閃爍量測：靜態區 A-B-A 閃爍率 {flicker['quiet_flicker_rate']:.4f}，全域 A-B-A 率 {flicker['aba_fg_rate']:.4f}，LCT {flicker['lct_count']}。")
     ring, key_share, key_frame = key_metrics(gif)
     bg_fail = bool((a.no_key and flat) or (keyed and ring > 0.01))
     manifest = {
-        'source': str(src),
+        'source': str(src), 'flicker': flicker,
         'loop_treatment': loop_treatment,
         'interior_key_islands': islands,
         'key_saturation': sat, 'key_saturation_threshold': .35, 'key_saturation_formula': '(max-min)/max',
@@ -405,13 +513,30 @@ def make(a) -> int:
         if not a.loop_count and seconds <= 15:
             possible = [k for k in range(1, max(2,math.ceil(15/seconds)+1)) if 8 <= k*seconds <= 15]
             if possible: count = min(possible,key=lambda k:abs(k*seconds-10.5))
-        w,h = frames[0].size; pad = [w%2,h%2]
+        mp4_frames = frames
+        if pixel:
+            needed = max(2, math.ceil(576 / min(pw, ph)))
+            s8 = math.ceil(needed / 8) * 8
+            s4 = math.ceil(needed / 4) * 4
+            mp4_scale = s8 if max(pw, ph)*s8 <= 1024 else (s4 if max(pw, ph)*s4 <= 1280 else math.ceil(needed/2)*2)
+            mw, mh = pw*mp4_scale, ph*mp4_scale
+            mp4_frames = [f.resize((mw, mh), Image.Resampling.NEAREST) for f in quantized_grid_frames]
+            mp4_dur = seconds * count
+            x_ok = bool(fps <= 60 and 32 <= mw <= 1280 and 32 <= mh <= 1024 and (1/3 <= mw/mh <= 3) and 0.5 <= mp4_dur <= 140)
+            manifest.update(mp4_scale=mp4_scale, mp4_size=[mw, mh], mp4_pix_fmt='yuv420p', mp4_x_compatible=x_ok)
+        w,h = mp4_frames[0].size; pad = [w%2,h%2]
         manifest['mp4_padding'] = {'right':pad[0], 'bottom':pad[1], 'color':'#141820'}
         manifest['loop_count'] = count
         with tempfile.TemporaryDirectory() as tmp:
-            for i, f in enumerate(frames):
+            for i, f in enumerate(mp4_frames):
                 bg = Image.new('RGB',(w+pad[0],h+pad[1]),'#141820'); bg.paste(f,(0,0),f.getchannel('A')); bg.save(Path(tmp)/f'{i:05d}.png')
-            subprocess.run(['ffmpeg','-v','error','-y','-stream_loop',str(count-1),'-framerate',str(fps),'-i',str(Path(tmp)/'%05d.png'),'-c:v','libx264','-pix_fmt','yuv420p','-movflags','+faststart',str(out/'animation.mp4')],check=True)
+            ff_cmd = ['ffmpeg','-v','error','-y','-stream_loop',str(count-1),'-framerate',str(fps),'-i',str(Path(tmp)/'%05d.png')]
+            if pixel:
+                ff_cmd += ['-sws_flags','neighbor','-c:v','libx264','-profile:v','high','-level:v','4.0','-pix_fmt','yuv420p','-vf','setsar=1','-flags','+cgop','-crf','8','-preset','medium','-x264-params','no-deblock=1:aq-mode=0']
+            else:
+                ff_cmd += ['-c:v','libx264','-pix_fmt','yuv420p']
+            ff_cmd += ['-movflags','+faststart',str(out/'animation.mp4')]
+            subprocess.run(ff_cmd, check=True)
         print(f'MP4 重複 {count} 次；補邊右 {pad[0]}、下 {pad[1]} 像素。')
     (out / 'manifest.json').write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
 
@@ -464,7 +589,11 @@ def qa_gif(path: Path) -> int:
     status = 'FAIL' if failed else ('WARN' if share > .02 else 'PASS')
     reason = '背景未去除，不是透明 GIF' if ring > .01 else ('中央或封閉區殘留大面積鍵色' if share > .10 else '')
     print(f'背景檢查 {status}：{reason}；border_opaque_max {ring:.4f}；key_share_max {share:.4f}（第 {frame} 幀）')
-    return int(failed)
+    flicker = flicker_metrics(path)
+    rate = flicker['quiet_flicker_rate']
+    flicker_status = 'FAIL' if rate > .15 else ('WARN' if rate > .05 else 'PASS')
+    print(f"閃爍檢查 {flicker_status}；quiet_flicker_rate {rate:.4f}；aba_fg_rate {flicker['aba_fg_rate']:.4f}；LCT {flicker['lct_count']}")
+    return int(failed or rate > .15)
 
 
 class HumanParser(argparse.ArgumentParser):

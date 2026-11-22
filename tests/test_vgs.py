@@ -15,6 +15,64 @@ import vgs
 
 
 class VgsTests(unittest.TestCase):
+    def test_temporal_palette_and_global_table(self):
+        colors = [(100, 100, 100), (110, 100, 100), (100, 100, 100), (200, 100, 100)]
+        frames = [Image.new('RGBA', (16, 16), (*c, 255)) for c in colors]
+        result = vgs.pixel_quantize(frames, 4, 1)
+        pixels = [f.getpixel((0, 0)) for f in result]
+        self.assertEqual(pixels[0], pixels[1])
+        self.assertEqual(pixels[0], pixels[2])
+        self.assertNotEqual(pixels[2], pixels[3])
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / 'out.gif'
+            vgs.encode_pixel(result, [100]*4, path)
+            self.assertEqual(vgs.count_gif_lcts(path), 0)
+
+    def test_flicker_metrics_and_qa(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / 'out.gif'
+            frames = []
+            for i in range(5):
+                a = np.zeros((48, 48, 4), dtype=np.uint8)
+                a[8:40, 8:40] = (80 + 100*(i % 2), 80, 80, 255)
+                frames.append(Image.fromarray(a))
+            vgs.encode_pixel(frames, [100]*5, path)
+            self.assertGreater(vgs.flicker_metrics(path)['quiet_flicker_rate'], .15)
+            self.assertEqual(vgs.qa_gif(path), 1)
+            clean = []
+            for i in range(5):
+                a = np.zeros((48, 48, 4), dtype=np.uint8)
+                a[10:30, 8+i:28+i] = (80, 80, 80, 255)
+                clean.append(Image.fromarray(a))
+            vgs.encode_pixel(clean, [100]*5, path)
+            metrics = vgs.flicker_metrics(path)
+            self.assertLessEqual(metrics['quiet_flicker_rate'], .03)
+            self.assertEqual(metrics['lct_count'], 0)
+
+    def test_pixel_mp4_crisp(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d) / 'frames'; src.mkdir()
+            for i in range(4):
+                a = np.zeros((32, 32, 4), dtype=np.uint8)
+                a[8:24, 8+i:24+i] = (180, 100, 40, 255)
+                Image.fromarray(a).save(src / f'{i:05d}.png')
+            out = Path(d) / 'out'
+            proc = subprocess.run([sys.executable, str(ROOT/'scripts/vgs.py'), 'make', str(src), '--fps', '4', '--out', str(out), '--pixel', '--pixel-width', '32', '--mp4', '--loop-count', '1', '--loop', 'off'], capture_output=True, text=True)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            manifest = json.loads((out/'manifest.json').read_text())
+            scale = manifest['mp4_scale']
+            self.assertGreaterEqual(min(manifest['mp4_size']), 576)
+            probe = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=pix_fmt', '-of', 'default=nw=1:nk=1', str(out/'animation.mp4')], capture_output=True, text=True, check=True)
+            self.assertEqual(probe.stdout.strip(), 'yuv420p')
+            import cv2
+            cap = cv2.VideoCapture(str(out/'animation.mp4'))
+            ok, frame = cap.read(); cap.release()
+            self.assertTrue(ok)
+            h, w = frame.shape[:2]
+            blocks = frame.reshape(h//scale, scale, w//scale, scale, 3)
+            std = blocks.std(axis=(1, 3)).max(axis=2)
+            self.assertLess(np.mean(std > 5), .02)
+
     def test_low_saturation(self):
         key, confidence, flat = vgs.estimate_key([Image.new('RGBA', (32, 32), '#f3eadb')])
         self.assertTrue(flat)
@@ -79,6 +137,23 @@ class VgsTests(unittest.TestCase):
             self.assertEqual(p.returncode, 0, p.stderr)
             self.assertIn('未去背', p.stdout)
             self.assertNotIn('請加 --key', p.stdout)
+
+
+    def test_gradual_fade_not_frozen_and_alpha_hysteresis(self):
+        # Gradual fade 0..200 in steps of 10 must advance across palette entries
+        fade_frames = [Image.fromarray(np.full((8,8,4), [v,v,v,255], dtype=np.uint8)) for v in range(0, 201, 10)]
+        q = vgs.pixel_quantize(fade_frames, 16, 1)
+        vals = [int(np.asarray(f)[0,0,0]) for f in q]
+        self.assertEqual(vals[0], 0)
+        self.assertGreater(vals[-1], 150)
+        # Alpha hysteresis: 0.55 coverage stays transparent after transparent frame, >=0.62 turns opaque
+        a0 = np.zeros((10,10,4), dtype=np.uint8)
+        a1 = np.zeros((10,10,4), dtype=np.uint8); a1[:5, :] = [200,200,200,255]; a1[5, :5] = [200,200,200,255]  # 0.55 cov
+        a2 = np.zeros((10,10,4), dtype=np.uint8); a2[:7, :] = [200,200,200,255]  # 0.70 cov
+        pooled = vgs.pixel_pool_and_stabilize_alpha([Image.fromarray(a0), Image.fromarray(a1), Image.fromarray(a2)], 1, 1)
+        self.assertEqual(np.asarray(pooled[0])[0,0,3], 0)
+        self.assertEqual(np.asarray(pooled[1])[0,0,3], 0)
+        self.assertEqual(np.asarray(pooled[2])[0,0,3], 255)
 
 if __name__ == '__main__':
     unittest.main()
