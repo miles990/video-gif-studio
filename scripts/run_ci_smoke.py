@@ -14,8 +14,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MISSING = 'Media runtime missing'
 
-# Live FFmpeg/ffprobe integration and encoded-media scenarios. The manual
-# full job covers these after installing the media runtime.
+# Live FFmpeg/ffprobe integration, encoded-media scenarios, and headless
+# Chromium plugin tests. The manual full job covers these.
 MEDIA_MODULES = {
     'test_assemble_edit',
     'test_audio_beat_sync',
@@ -23,6 +23,7 @@ MEDIA_MODULES = {
     'test_audio_preview',
     'test_delivery_audio_cli',
     'test_delivery_p0',
+    'test_js_styles',
     'test_music',
     'test_taste_scenarios',
     'test_video',
