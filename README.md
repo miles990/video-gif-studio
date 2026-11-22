@@ -4,6 +4,72 @@
 
 **English** | [繁體中文](README.zh-TW.md)
 
+Standalone CLI tool and a Codex + Claude Code skill. Use it yourself from the command line, or invoke it from an agent, to turn existing video (or a generated clip) into a transparent GIF, APNG or sprite sheet.
+
+## Quick start
+
+```sh
+python scripts/install.py --target claude   # or: --target codex
+# From the installed skill directory, with its venv Python:
+python scripts/vgs.py make <video> --out <new-dir>
+```
+
+- Human entry: one command, `python scripts/vgs.py make <video> --out <new-dir>`. The output directory must be new or empty. A flat studio background (magenta or green) is keyed automatically; `--no-key` / `--keep-background` keeps it and fails transparent delivery.
+- Agent entry: Claude Code `/video-gif-studio` · Codex `$video-gif-studio`.
+- If your environment has no built-in image generation, supply a start image or an existing video. The local existing-media path needs no account and costs $0.
+
+![Transparent chibi dash on light and dark checkerboards](examples/chibi-running-dash/hero-preview.png)
+
+![Transparent chibi dash GIF](examples/chibi-running-dash/hero.gif)
+
+The still is a local `vgs make` result on a light and a dark checkerboard. The GIF is transparent: the background you see on GitHub is the page color, not a studio floor. Magenta streaks in the attack frames are sword-trail effects, not leftover backdrop. Loop measurement on this source still fails the speed check; it is not claimed to be visually seamless.
+
+## How it works
+
+```mermaid
+flowchart LR
+  A["Existing video or PNG<br/>local, $0, no account"] --> B["Detect flat background,<br/>key, trim a still tail"]
+  B --> C["GIF / APNG / sprite"]
+  D["Start image"] --> E["Generation API<br/>Grok or fal"]
+  E --> B
+```
+
+Local steps (doctor, chroma key, encode, QA, import of a video you already have) stay on the machine. Grok and fal are optional generation steps and need their own account or credits.
+
+### Image-to-video options
+
+Prices checked 2026-11-22. **Recheck before listing.**
+
+| Route | Price |
+| --- | --- |
+| Local existing media | $0 |
+| Grok / X plan website | Uses the site’s weekly shared credit pool (not a retail per-second price) |
+| Grok API (prepaid credits, not the weekly pool) | Grok 1.5 $0.080/sec, lite $0.020/sec. A resolution-tier table may differ; recheck before listing. |
+| fal MiniMax H3 Max, from 2026-11-16 | $0.05 / $0.08 / $0.16 per second at 480p / 768p / 1080p |
+
+Installer: `--skills-dir` overrides everything; `--target claude` installs to `~/.claude/skills`; `--target codex` installs to `$CODEX_HOME/skills` or `~/.codex/skills`. With no flags: `CODEX_HOME` if set, else an existing `~/.codex`, else an existing `~/.claude`, else `~/.codex`. `--skip-deps` only registers the skill and does not mean the runtime is ready.
+
+
+## What a run looks like
+
+Successful local run of `python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/chibi-gif` (2026-11-22, no generation API):
+
+```text
+已去背，鍵色 #FC01F9（容差 0.2，柔化 0.18，信心 1.000）。
+色鍵只移除與邊框連通的背景；主體內若有相同顏色會保留。
+尺寸 320×320；93 幀，3.87 秒，0.72 MB。（預設寬度 320）
+尾端 trim：原長 6.04s，新長 3.88s；來源 3.88 到 6.04s 已裁切，保留約 0.42s guard；最後移動幀 3.42s。
+QA FAIL；pops WARN: Small transient pop scan; inspect in context；loop FAIL: Loop position and speed: speed mismatch
+loop FAIL：speed mismatch；輸出 /tmp/chibi-gif/animation.gif
+視覺核准：未評估，需人看。
+```
+
+If `--out` already has files, the command writes nothing and explains what to do:
+
+```text
+輸出目錄 /tmp/vgs-occupied 非空；不會寫入或刪除檔案。請改用一個新的空目錄，例如 --out /tmp/vgs-new-output。
+```
+
 ## Measured delivery QA
 
 ```sh
@@ -21,31 +87,31 @@ Adapted from [win4r/video-director](https://github.com/win4r/video-director), MI
 
 **Seated leg switch** — Reference image → Grok video → transparent GIF.
 
-![Seated leg switch](examples/seated-leg-switch/final.gif)
+![Seated leg switch](examples/seated-leg-switch/hero.gif)
 
 [GIF](examples/seated-leg-switch/final.gif) · [Reference, prompt and production record](examples/seated-leg-switch/README.md)
 
 **Original robot wave** — Created without a reference image.
 
-![Original robot wave](examples/robot-wave-no-reference/final.gif)
+![Original robot wave](examples/robot-wave-no-reference/hero.gif)
 
 [GIF](examples/robot-wave-no-reference/final.gif) · [Production record](examples/robot-wave-no-reference/README.md)
 
 **Chibi dash attack** — Running steps, sword trails and recovery. Full-speed loop review remains pending.
 
-![Chibi dash attack](examples/chibi-running-dash/final.gif)
+![Chibi dash attack](examples/chibi-running-dash/hero.gif)
 
 [GIF](examples/chibi-running-dash/final.gif) · [APNG](examples/chibi-running-dash/final.apng) · [Sprite pack](examples/chibi-running-dash/sprites.zip) · [Production record](examples/chibi-running-dash/README.md)
 
 **NEON ZEN** — 30-second music PV assembled from five Grok clips. Full-speed music sync review remains pending.
 
-![NEON ZEN excerpt](examples/neon-zen-pv/preview.gif)
+![NEON ZEN excerpt](examples/neon-zen-pv/hero.gif)
 
 [MP4 with music](examples/neon-zen-pv/final.mp4) · [Story and production record](examples/neon-zen-pv/README.md)
 
 ## Purpose
 
-A **Codex skill for AI animation, transparent GIF creation, game sprite sheets and video editing**, with script/storyboard planning and music beat analysis.
+A **standalone CLI and a Codex + Claude Code skill** for AI animation, transparent GIF creation, game sprite sheets and video editing, with script/storyboard planning and music beat analysis.
 
 **Turn a simple description into the animation or related assets you want.** Provide text, reference images, video or music, and let the skill plan the script, motion, effects, editing and export—or handle just one step. Create GIFs, videos, APNGs and game sprites with less manual coordination. Complex results may still need review and refinement.
 
@@ -80,13 +146,13 @@ The AI checks and downloads missing tools, including Python, required packages, 
 
 Give this request to your AI assistant:
 
-> Install the Codex skill from https://github.com/miles990/video-gif-studio. Follow references/install.md, preserve existing data, install dependencies and run the doctor check. Report local tools and Grok readiness separately.
+> Install video-gif-studio from https://github.com/miles990/video-gif-studio. Follow references/install.md, preserve existing data, install dependencies and run the doctor check. Report local tools and Grok readiness separately. For Claude Code, run `python scripts/install.py --target claude` (or set `--skills-dir`). For Codex, use `--target codex` or the default path.
 
-See [installation instructions](references/install.md). Then invoke `$video-gif-studio` in Codex.
+See [installation instructions](references/install.md). Then invoke `/video-gif-studio` in Claude Code or `$video-gif-studio` in Codex.
 
 ## Requirements
 
-- **Codex**, plus an available image-generation tool when creating character images or keyframes.
+- **Codex** or **Claude Code**, plus an available image-generation tool when creating character images or keyframes. If no built-in image tool is available, supply a start image or an existing video.
 - **Grok** — default but optional. Sign in to [Grok Imagine](https://grok.com/imagine) to generate video on the website, then import the downloaded video; no API key or CLI is needed for website use. Account access and limits apply. The bundled automatic client uses separate CLI OAuth or API-key authentication. [Connection setup](references/grok.md).
 - **fal.ai / MiniMax H3 Max** — optional built-in alternative; requires `FAL_KEY` and available account credit. No Grok login or external project required. [Connection and limits](references/fal.md).
 - **Python 3.11+** — the installer manages Python packages and missing FFmpeg/ffprobe on supported platforms. [Dependencies](references/dependencies.md).

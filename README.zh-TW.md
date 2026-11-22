@@ -4,6 +4,72 @@
 
 [English](README.md) | **繁體中文**
 
+這是獨立 CLI 工具，同時也是 Codex 與 Claude Code skill。你可以自己在命令列使用，或由 agent 呼叫，把既有影片（或生成片段）做成透明 GIF、APNG 或 sprite sheet。
+
+## 快速開始
+
+```sh
+python scripts/install.py --target claude   # 或：--target codex
+# 進入已安裝的 skill 目錄，使用它的 venv Python：
+python scripts/vgs.py make <video> --out <new-dir>
+```
+
+- 人用入口：一條指令 `python scripts/vgs.py make <video> --out <new-dir>`。輸出目錄必須是新的或空的。平坦棚景（洋紅或綠幕）會自動色鍵；`--no-key` / `--keep-background` 會保留背景，且透明交付檢查會失敗。
+- Agent 入口：Claude Code `/video-gif-studio` · Codex `$video-gif-studio`。
+- 若環境沒有內建生圖，請提供起始圖或既有影片。本機既有媒體路徑不需帳號，費用 $0。
+
+![淺底與深底棋盤上的透明 Q 版前衝](examples/chibi-running-dash/hero-preview.png)
+
+![透明 Q 版前衝 GIF](examples/chibi-running-dash/hero.gif)
+
+靜態圖是本機 `vgs make` 的結果，疊在淺色與深色棋盤上。GIF 是透明的：你在 GitHub 看到的底色是頁面顏色，不是棚景。攻擊幀的洋紅線條是劍光／速度線特效，不是底板殘留。此來源的 loop 量測仍是 speed FAIL，並不宣稱視覺上無縫。
+
+## 運作方式
+
+```mermaid
+flowchart LR
+  A["既有影片或 PNG<br/>本機、$0、不需帳號"] --> B["偵測平坦背景、色鍵、<br/>裁切尾端定格"]
+  B --> C["GIF / APNG / sprite"]
+  D["起始圖"] --> E["生成 API<br/>Grok 或 fal"]
+  E --> B
+```
+
+本機步驟（doctor、色鍵、編碼、QA、匯入你已有的影片）都在這台電腦完成。Grok 與 fal 是可選的生成步驟，需要各自的帳號或額度。
+
+### 圖生影選項
+
+價格核對日期 2026-11-22。**上架前再查。**
+
+| 路徑 | 價格 |
+| --- | --- |
+| 本機既有媒體 | $0 |
+| Grok／X 方案網站 | 使用網站的每週共享額度（不是零售每秒單價） |
+| Grok API（預付點數，不是每週額度池） | Grok 1.5 為 $0.080／秒、lite 為 $0.020／秒。分級表可能不同；上架前再查。 |
+| fal MiniMax H3 Max，自 2026-11-16 起 | 480p／768p／1080p 分別為每秒 $0.05／$0.08／$0.16 |
+
+安裝器：`--skills-dir` 會覆蓋其他選擇；`--target claude` 裝到 `~/.claude/skills`；`--target codex` 裝到 `$CODEX_HOME/skills` 或 `~/.codex/skills`。未加旗標時：若已設 `CODEX_HOME` 就用它，否則既有的 `~/.codex`，再否則既有的 `~/.claude`，最後才是 `~/.codex`。`--skip-deps` 只做註冊，不代表執行環境已備妥。
+
+
+## 執行後會長這樣
+
+本機成功執行 `python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --out /tmp/chibi-gif`（2026-11-22，未呼叫生成 API）的真實輸出：
+
+```text
+已去背，鍵色 #FC01F9（容差 0.2，柔化 0.18，信心 1.000）。
+色鍵只移除與邊框連通的背景；主體內若有相同顏色會保留。
+尺寸 320×320；93 幀，3.87 秒，0.72 MB。（預設寬度 320）
+尾端 trim：原長 6.04s，新長 3.88s；來源 3.88 到 6.04s 已裁切，保留約 0.42s guard；最後移動幀 3.42s。
+QA FAIL；pops WARN: Small transient pop scan; inspect in context；loop FAIL: Loop position and speed: speed mismatch
+loop FAIL：speed mismatch；輸出 /tmp/chibi-gif/animation.gif
+視覺核准：未評估，需人看。
+```
+
+若 `--out` 目錄已有檔案，指令不會寫入任何東西，並說明下一步：
+
+```text
+輸出目錄 /tmp/vgs-occupied 非空；不會寫入或刪除檔案。請改用一個新的空目錄，例如 --out /tmp/vgs-new-output。
+```
+
 ## 交付品質量測
 
 ```sh
@@ -21,31 +87,31 @@ PASS 表示量測門檻通過；WARN 要依格號／秒數檢視；FAIL 阻擋�
 
 **坐姿換腿** — 參考圖 → Grok 影片 → 透明 GIF。
 
-![坐姿換腿](examples/seated-leg-switch/final.gif)
+![坐姿換腿](examples/seated-leg-switch/hero.gif)
 
 [GIF](examples/seated-leg-switch/final.gif) · [參考圖、提示詞與製作紀錄](examples/seated-leg-switch/README.zh-TW.md)
 
 **原創機器人揮手** — 不使用參考圖，從文字建立角色。
 
-![原創機器人揮手](examples/robot-wave-no-reference/final.gif)
+![原創機器人揮手](examples/robot-wave-no-reference/hero.gif)
 
 [GIF](examples/robot-wave-no-reference/final.gif) · [製作紀錄](examples/robot-wave-no-reference/README.zh-TW.md)
 
 **Q 版前衝攻擊** — 小跑步、劍光與收招；正常速度下的循環驗收仍待完成。
 
-![Q 版前衝攻擊](examples/chibi-running-dash/final.gif)
+![Q 版前衝攻擊](examples/chibi-running-dash/hero.gif)
 
 [GIF](examples/chibi-running-dash/final.gif) · [APNG](examples/chibi-running-dash/final.apng) · [Sprite 素材包](examples/chibi-running-dash/sprites.zip) · [製作紀錄](examples/chibi-running-dash/README.zh-TW.md)
 
 **NEON ZEN** — 五段 Grok 影片串接成 30 秒音樂 PV；完整播放的音樂同步驗收仍待完成。
 
-![NEON ZEN 片段預覽](examples/neon-zen-pv/preview.gif)
+![NEON ZEN 片段預覽](examples/neon-zen-pv/hero.gif)
 
 [有聲 MP4](examples/neon-zen-pv/final.mp4) · [腳本與製作紀錄](examples/neon-zen-pv/README.zh-TW.md)
 
 ## 目的
 
-用於 **AI 動畫、透明 GIF、遊戲 Sprite Sheet 與影片剪輯的 Codex skill**，也支援腳本／分鏡規劃及音樂卡點分析。
+這是 **獨立 CLI，同時也是 Codex 與 Claude Code skill**，用於 AI 動畫、透明 GIF、遊戲 Sprite Sheet 與影片剪輯，也支援腳本／分鏡規劃及音樂卡點分析。
 
 **用簡單描述，方便地製作想要的動畫與相關素材。** 提供文字、參考圖、影片或音樂，讓 skill 規劃腳本、動作、特效、剪輯與輸出，也能只做其中一步。減少手動串接工具的工作，製作 GIF、影片、APNG 與遊戲用 Sprite；複雜成果仍可能需要檢查與調整。
 
@@ -80,13 +146,13 @@ AI 會檢查並自行下載安裝缺少的 Python、必要套件、FFmpeg／ffpr
 
 把這段交給 AI 助理：
 
-> 請安裝 https://github.com/miles990/video-gif-studio 的 Codex skill。依 references/install.md 操作，保留既有資料，安裝依賴並執行 doctor 驗證，分別回報本機工具與 Grok 是否就緒。
+> 請安裝 https://github.com/miles990/video-gif-studio。依 references/install.md 操作，保留既有資料，安裝依賴並執行 doctor 驗證，分別回報本機工具與 Grok 是否就緒。Claude Code 請執行 `python scripts/install.py --target claude`（或指定 `--skills-dir`）；Codex 請用 `--target codex` 或預設路徑。
 
-詳見[安裝說明](references/install.md)。安裝後在 Codex 使用 `$video-gif-studio`。
+詳見[安裝說明](references/install.md)。然後在 Claude Code 呼叫 `/video-gif-studio`，或在 Codex 呼叫 `$video-gif-studio`。
 
 ## 需求
 
-- **Codex**；建立角色圖或關鍵幀時，另需可用圖片生成工具。
+- **Codex** 或 **Claude Code**；建立角色圖或關鍵幀時，另需可用圖片生成工具。若環境沒有內建生圖，請提供起始圖或既有影片。
 - **Grok** — 預設使用，但非必要依賴。登入 [Grok Imagine 網站](https://grok.com/imagine) 即可使用網站影片生成功能，再匯入下載的影片，不必設定 API key 或 CLI；依帳號權限與額度使用。Repo 的自動連線工具則另用 CLI OAuth 或 API key 登入。[連線設定](references/grok.md)。
 - **fal.ai／MiniMax H3 Max** — 可選的內建替代來源，需設定 `FAL_KEY` 並有可用額度；不依賴 Grok 登入或其他專案。[連線與限制](references/fal.md)。
 - **Python 3.11+** — 安裝器管理 Python 套件，並在支援平台下載缺少的 FFmpeg／ffprobe。[依賴說明](references/dependencies.md)。

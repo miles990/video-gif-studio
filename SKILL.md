@@ -9,6 +9,10 @@ metadata:
 
 Deliver an inspectable animation, its source lineage and a reproducible export. Preserve the user's latest motion, appearance and camera preferences. Reference images are optional; an existing video can be sufficient. Do not inherit this skill's founding character, pose, color, duration, or chair constraints into unrelated work.
 
+## Local quick start
+
+For existing media use `python scripts/vgs.py make <video> --out <new-dir>` with this skill's venv Python. Invoke as `/video-gif-studio` in Claude Code or `$video-gif-studio` in Codex. If no built-in image generation is available, ask for a start image or existing video. Local processing requires no account and costs $0.
+
 ## Match the requested scope
 
 Users may describe only an intended result. Infer a suitable script, motion, timing, camera, effects and output from that goal; briefly state the choices and proceed within existing authorization. Ask only for a necessary missing input, a consequential ambiguity or new spending authority. Do not require a settings questionnaire.
