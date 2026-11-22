@@ -35,6 +35,8 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
       - run: python -m pip install -r requirements.txt
+      - name: Install CJK and emoji fonts
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk fonts-noto-color-emoji
       - name: Unit smoke (skip tests that need a live FFmpeg runtime)
         run: python scripts/run_ci_smoke.py
 
@@ -51,8 +53,8 @@ jobs:
           python-version: '3.11'
           cache: pip
           cache-dependency-path: requirements.txt
-      - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install FFmpeg and fonts
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk fonts-noto-color-emoji
       - run: python -m pip install -r requirements.txt
       - name: Install / verify media runtime
         run: |
