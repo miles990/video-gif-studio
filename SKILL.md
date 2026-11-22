@@ -173,3 +173,9 @@ For “same video/music, change only the character,” read [character-video-edi
 ## Spatial previs and paired review
 
 For interactive camera blocking, verified control ZIP to MP4, and timestamp-aligned A/B review boards, read [spatial-previs-workflow.md](references/spatial-previs-workflow.md).
+
+## Local vgs pixel and loop options
+
+`vgs make` defaults to `--loop auto`, a natural trim search; `--loop off` keeps ordinary tail trimming, while explicit `--loop crossfade` blends the ending and must be disclosed. Auto-key needs a flat border and saturation `(max-min)/max >= 0.35`; otherwise the delivery remains opaque unless `--key HEX` is given. Global keying warns about enclosed key-colored areas; `--keep-interior-key` preserves them. `vgs qa` checks border opacity and residual key share.
+
+`--pixel` uses a 96-pixel grid, 32 colors, binary alpha and integer nearest-neighbor scaling; adjust with `--pixel-width`, `--pixel-scale`, and `--colors`. `--sprite` exports at GIF output size without engine validation. `--mp4` composites on #141820 and repeats complete loops; `--loop-count` sets the count, otherwise it targets 8–15 seconds where possible. Review visually.

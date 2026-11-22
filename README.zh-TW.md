@@ -22,7 +22,7 @@ python scripts/vgs.py make <video> --out <new-dir>
 
 ![透明 Q 版前衝 GIF](examples/chibi-running-dash/hero.gif)
 
-靜態圖是本機 `vgs make` 的結果，疊在淺色與深色棋盤上。GIF 是透明的：你在 GitHub 看到的底色是頁面顏色，不是棚景。攻擊幀的洋紅線條是劍光／速度線特效，不是底板殘留。此來源的 loop 量測仍是 speed FAIL，並不宣稱視覺上無縫。
+靜態圖是本機 `vgs make` 的結果，疊在淺色與深色棋盤上。GIF 已自動裁切至自然回位點（90 幀／3.75 秒），`loop` 量測通過；但視覺動作與無縫感仍須人看核准。你在 GitHub 看到的底色是頁面顏色，不是棚景。
 
 ## 運作方式
 
@@ -56,11 +56,12 @@ flowchart LR
 
 ```text
 已去背，鍵色 #FC01F9（容差 0.2，柔化 0.18，信心 1.000）。
-色鍵只移除與邊框連通的背景；主體內若有相同顏色會保留。
-尺寸 320×320；93 幀，3.87 秒，0.72 MB。（預設寬度 320）
-尾端 trim：原長 6.04s，新長 3.88s；來源 3.88 到 6.04s 已裁切，保留約 0.42s guard；最後移動幀 3.42s。
-QA FAIL；pops WARN: Small transient pop scan; inspect in context；loop FAIL: Loop position and speed: speed mismatch
-loop FAIL：speed mismatch；輸出 /tmp/chibi-gif/animation.gif
+警告：內部鍵色區最大比例 0.0465，第 54 幀；如需保留請加 --keep-interior-key。
+border_opaque_max 0.0000；key_share_max 0.0000（第 0 幀）。
+尺寸 320×320；90 幀，3.75 秒，0.70 MB。（預設寬度 320）
+尾端 trim：原長 6.04s，新長 3.75s；來源 3.75 到 6.04s 已裁切，保留約 0.29s guard；最後移動幀 3.42s。
+QA WARN；pops WARN: Small transient pop scan; inspect in context
+loop 量測通過（未經視覺核准）；輸出 /tmp/chibi-gif/animation.gif
 視覺核准：未評估，需人看。
 ```
 
@@ -69,6 +70,17 @@ loop FAIL：speed mismatch；輸出 /tmp/chibi-gif/animation.gif
 ```text
 輸出目錄 /tmp/vgs-occupied 非空；不會寫入或刪除檔案。請改用一個新的空目錄，例如 --out /tmp/vgs-new-output。
 ```
+
+
+### 像素輸出
+
+```sh
+python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --pixel --sprite --mp4 --out /tmp/chibi-pixel
+```
+
+![Pixel art demo](examples/chibi-running-dash/hero-pixel.gif)
+
+`--pixel` 預設 96 像素網格、32 色與整數最近鄰放大，可用 `--pixel-width`、`--pixel-scale`、`--colors` 調整。`--sprite` 以 GIF 輸出尺寸匯出影格和圖集，未做引擎驗證；`--mp4` 合成深色底並重複完整循環，`--loop-count` 指定次數，預設盡可能落在 8–15 秒。`--loop auto` 尋找自然裁切點，`--loop crossfade` 明確混合尾端，`--loop off` 只裁靜止尾端。自動去背需要平坦邊框且飽和度 `(max-min)/max >= 0.35`；低飽和背景保留不透明，可明確指定 `--key HEX`。全域色鍵可能挖掉封閉的同色圖案；警告列出內島，`--keep-interior-key` 可保留。`vgs qa` 檢查邊框不透明度與殘留鍵色；仍需人看核准。
 
 ## 交付品質量測
 

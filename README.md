@@ -22,7 +22,7 @@ python scripts/vgs.py make <video> --out <new-dir>
 
 ![Transparent chibi dash GIF](examples/chibi-running-dash/hero.gif)
 
-The still is a local `vgs make` result on a light and a dark checkerboard. The GIF is transparent: the background you see on GitHub is the page color, not a studio floor. Magenta streaks in the attack frames are sword-trail effects, not leftover backdrop. Loop measurement on this source still fails the speed check; it is not claimed to be visually seamless.
+The still is a local `vgs make` result on a light and a dark checkerboard. The GIF is auto-trimmed to a natural return point (90 frames / 3.75 s), so `loop` measurement passes; visual motion and seamlessness still need a human look. The background on GitHub is the page color, not a studio floor.
 
 ## How it works
 
@@ -56,11 +56,12 @@ Successful local run of `python scripts/vgs.py make examples/chibi-running-dash/
 
 ```text
 已去背，鍵色 #FC01F9（容差 0.2，柔化 0.18，信心 1.000）。
-色鍵只移除與邊框連通的背景；主體內若有相同顏色會保留。
-尺寸 320×320；93 幀，3.87 秒，0.72 MB。（預設寬度 320）
-尾端 trim：原長 6.04s，新長 3.88s；來源 3.88 到 6.04s 已裁切，保留約 0.42s guard；最後移動幀 3.42s。
-QA FAIL；pops WARN: Small transient pop scan; inspect in context；loop FAIL: Loop position and speed: speed mismatch
-loop FAIL：speed mismatch；輸出 /tmp/chibi-gif/animation.gif
+警告：內部鍵色區最大比例 0.0465，第 54 幀；如需保留請加 --keep-interior-key。
+border_opaque_max 0.0000；key_share_max 0.0000（第 0 幀）。
+尺寸 320×320；90 幀，3.75 秒，0.70 MB。（預設寬度 320）
+尾端 trim：原長 6.04s，新長 3.75s；來源 3.75 到 6.04s 已裁切，保留約 0.29s guard；最後移動幀 3.42s。
+QA WARN；pops WARN: Small transient pop scan; inspect in context
+loop 量測通過（未經視覺核准）；輸出 /tmp/chibi-gif/animation.gif
 視覺核准：未評估，需人看。
 ```
 
@@ -69,6 +70,17 @@ If `--out` already has files, the command writes nothing and explains what to do
 ```text
 輸出目錄 /tmp/vgs-occupied 非空；不會寫入或刪除檔案。請改用一個新的空目錄，例如 --out /tmp/vgs-new-output。
 ```
+
+
+### Pixel export
+
+```sh
+python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --pixel --sprite --mp4 --out /tmp/chibi-pixel
+```
+
+![Pixel art demo](examples/chibi-running-dash/hero-pixel.gif)
+
+`--pixel` uses a 96-pixel grid, 32 colors and integer nearest-neighbor scaling. Set `--pixel-width`, `--pixel-scale` and `--colors` to customize it. `--sprite` exports frames and sheets at GIF output size; engine validation is not performed. `--mp4` composites onto #141820 and repeats complete loops; use `--loop-count` to set repetitions. The default aims for 8–15 seconds when possible. `--loop auto` searches a natural trim; `--loop crossfade` explicitly blends the end; `--loop off` uses ordinary tail trimming. Auto-key requires a flat border and saturation `(max-min)/max >= 0.35`; low-saturation backgrounds stay opaque unless you explicitly provide `--key HEX`. Global keying can remove enclosed key-colored artwork; the warning identifies it, and `--keep-interior-key` preserves it. `vgs qa` checks both border opacity and remaining key colors. Visual approval remains necessary.
 
 ## Measured delivery QA
 
