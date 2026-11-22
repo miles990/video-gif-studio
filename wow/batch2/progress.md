@@ -14,4 +14,4 @@
 - [x] L4 獨立答案卷（Opus，建造前；wow/batch2/acceptance.md）
 - [x] L7 建造（Codex + coord fix `3b83806` / `873003d`）
 - [x] L8–L9 驗證、實跑 held-out 與 recovery hints、X 像素素材、GitHub 390/1440 淺深雙色截圖、獨立 Sonnet W4 設計審查
-- [ ] L11–L13 交付與 Fable 評審（claude-fable-5-1，Call 2 / 2）
+- [ ] L11–L13 Fable 評審（Call 1 已存 `wow/batch2/reviews/fable.md`；Call 2 觸發 `claude-fable-5-1` CLI 用量上限：`You're out of usage credits.`，待帳號額度恢復後可補跑或由 Alex 直接複核）
