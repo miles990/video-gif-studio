@@ -1,0 +1,7 @@
+Implemented the Batch 2 CLI changes, documentation, tests, hero assets, and draft showcase packs. The requested unittest suite passed: **38 tests**, with both paid API keys unset.
+
+The default chibi GIF measures a loop PASS at 90 frames / 3.75 seconds. The held-out robot honestly reports a loop failure; seated and idle remain opaque under the low-saturation guard. Pixel checks found zero nonuniform blocks and stayed within the requested palette limits. The documented showcase command reproduced byte-identical GIF and MP4 files.
+
+Evidence is in [build-selfcheck.md](/workspace/src/video-gif-studio/wow/batch2/evidence/build-selfcheck.md) and [held-out.md](/workspace/src/video-gif-studio/wow/batch2/evidence/held-out.md). The [X pixel media pack](/workspace/money-radar-team/2026-11-22/x-pixel-media/ASSET-NOTES.md) and [Agensi ZIP](/workspace/money-radar-team/2026-11-22/video-gif-studio-agensi.zip) are prepared but unpublished. Visual approval remains pending.
+
+No commit or push was made. The protected workflow and CI smoke files were untouched, and the existing `final.gif` hashes match the acceptance baseline.

@@ -1,0 +1,29 @@
+I've written the Batch 2 acceptance to `wow/batch2/acceptance.md` before the build starts. I didn't touch product code or `spec.md`. The baseline was measured on this machine at $0, with nothing written outside `/tmp/vgs-acc2/`.
+
+**What the current code does on your local videos** (plain `vgs make`, base commit `064c675`):
+
+| Video | Result now |
+|---|---|
+| chibi | `magenta_share_max` is 0.348 at frame 54, well over the 0.02 limit. The sword pocket stays as solid magenta |
+| robot | Leftover magenta is 0.040, also over 0.02. Loop fails on both position and speed |
+| seated / idle | Background saturation is 0.10 / 0.03, so the colour-difference key treats the whole figure as background. Both stop with exit 1 and the bare English message `No visible foreground`, leaving an empty output folder |
+| gufeng | Correctly left un-keyed, but the GIF is 41 MB and took 24 s |
+
+Two more checks I ran ahead of the build:
+- **chibi can loop honestly.** Ending at frames 84–90 (3.50–3.75 s), just after the last movement at 3.42 s, passes both loop checks. Ending at 2.92–3.08 s also passes, but cuts off the final move, so the acceptance lists that as a failure case.
+- **robot never returns to its start pose.** No ending between frames 100 and 145 passes the position check, so the default must report `loop FAIL` and must not crossfade.
+
+**What the acceptance covers:**
+1. **Domain rules, each with failure cases:**
+   - Trimming to a natural return point is honest because every frame still comes from the source; an unrequested crossfade or reverse hides that the clip doesn't loop.
+   - Low-saturation backdrops are never auto-keyed. A user-supplied `--key` on one must either keep the figure or refuse in plain language.
+   - The default key removes all background-coloured areas, including enclosed ones, and must always warn about them with the `--keep-interior-key` option. The chibi frame-54 pocket and the C1 inner box are the paired examples. There is also a rule against the current always-false warning check (`and False`) in `apply_key_connected`.
+   - Pixel art is checked by measurement: every s×s block is a single colour, colour count ≤ `--colors`, transparency is fully on or off, and no smooth resizing. The portrait idle video gives an odd MP4 height, which must be padded rather than resized.
+2. **S-8 to S-12:** exact commands, expected values, exit codes and forbidden outcomes for each. Two helper scripts (`measure2.py`, `pixelcheck.py`) go in `/tmp`. S-11 uses robot, seated, idle and gufeng as unseen test videos, and the builder's verdict for each must match my rerun. Batch 1 S-1..S-7 must all still pass, and S-1's ≤ 0.02 magenta limit, which Batch 1 never met, is now required.
+3. **Non-goal gates:** I recorded the sha256 of all three `examples/*/final.gif` files. There are diff checks on `.github/workflows` and `run_ci_smoke.py`, and a ban on Grok/fal calls, Agensi submission and X posting.
+
+Two choices I made where the spec is silent:
+- I set a ≤ 0.5 s limit on the still pause kept after the last movement, carried over from Batch 1.
+- If gufeng's output is over 15 MB, the summary must say so and give a command to make it smaller.
+
+One file was already sitting untracked before the build: `examples/chibi-running-dash/hero.png`. If the builder commits it, they have to explain why in the progress file.

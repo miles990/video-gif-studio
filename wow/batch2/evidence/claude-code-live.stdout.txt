@@ -1,0 +1,26 @@
+Batch 2 verified: the run exited 0, and both `animation.gif` and `sprites/sprites.json` exist. QA gave a WARN, and nobody has checked the result visually.
+
+**1. SKILL.md docs**
+- Lines 1-20 only have the frontmatter and the quick start (`vgs.py make <video> --out <new-dir>`). They mention none of the Batch 2 flags.
+- All four are documented in the "Local vgs pixel and loop options" section at lines 177-181:
+  - **Loop modes:** `--loop auto` is the default, `--loop off` keeps ordinary tail trimming, and `--loop crossfade` blends the ending and must be disclosed.
+  - **Low-saturation guard:** auto-key needs a flat border and saturation `(max-min)/max >= 0.35`. Otherwise the output stays opaque unless `--key HEX` is given.
+  - **`--keep-interior-key`:** it preserves enclosed key-colored areas, which global keying otherwise warns about.
+  - **`--pixel`:** it uses a 96-pixel grid, 32 colors, binary alpha and integer nearest-neighbor scaling. `--pixel-width`, `--pixel-scale` and `--colors` adjust it.
+- `--sprite` and `--mp4` are documented in the same section.
+
+**2. Run results**
+- **Exit code:** 0.
+- **Keying:** the key color was #FB01F9 (tolerance 0.2, softness 0.18, confidence 1.000). The tool warned that an interior key-colored area reached 0.0073 of the frame (frame 37) and suggested `--keep-interior-key` if that area should be kept.
+- **Border and key residue:** `border_opaque_max` and `key_share_max` were both 0.0000.
+- **Size:** 288×288, 90 frames, 3.75 s, 0.28 MB.
+- **Tail trim:** the source was 6.04 s, and 3.75 s to 6.04 s was trimmed. The last moving frame is at 3.71 s.
+- **QA:** WARN, from the pops check ("Small transient pop scan; inspect in context").
+- **Loop:** the loop measurement passed, but it has not been visually approved.
+- **Visual approval:** not evaluated, so a person still needs to look at it.
+
+**3. Output files**
+- `/tmp/vgs-b2-claude-live/animation.gif` exists (281,938 bytes).
+- `/tmp/vgs-b2-claude-live/sprites/sprites.json` exists (20,874 bytes).
+
+I did not touch `~/.claude/skills` or `~/.codex/skills`, and I made no commits or pushes.
