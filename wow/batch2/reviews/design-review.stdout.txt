@@ -1,0 +1,27 @@
+I've written the Batch 2 W4 review in Traditional Chinese to `wow/batch2/reviews/design-review.md`. I changed no product files. My overall call is not to treat the README as final until the 5 must-fix items below are done and it is re-screenshotted.
+
+**Batch 1 items #1–#3 on the live renders:**
+- **#1, magenta hero:** resolved. The 1440 render shows transparent characters on light and dark checkerboards, with no magenta slab. However, the 1440 first screen cuts the preview at the character's waist, and the 390 render shows no image at all.
+- **#2, animated `hero.gif` on the first screen:** only partly resolved. The GIF now sits right after the preview in the README, but it is not visible in either first screen. The "page colour, not a studio floor" note comes after both images.
+- **#3, real `vgs make` output and a failure example:** the content is now there and honest, including the QA WARN and "visual approval not assessed" lines. It sits after the pricing table, so I have no rendering evidence it is near the first screen. It is also all Chinese in an English README, and it is headed "Successful" while showing QA WARN.
+
+**CI badge:** the red "Validate GIF tools — failing" badge is real. `gh run list` shows the last four completed push runs all failed, and the newest run was still in progress. The review says to fix the CI rather than hide the badge.
+
+**Must-fix before going public:**
+1. Put the animated `hero.gif` on the first screen, with the "page colour" note directly under it.
+2. Fix the Quick start code block, which is clipped at 390 (it shows `--targe` and `<vide`).
+3. Deal with the red CI by fixing the cause, not by removing the badge.
+4. Move "What a run looks like" above the pricing table and add an English gloss.
+5. Check the isolated magenta pixels in the `--pixel` preview before it is used in X/social media. They look like key spill, but I can't tell from the image alone.
+
+**Later:**
+- Enlarge the image labels. "lightcheckerboard" has its space swallowed.
+- Stop inline flags like `--no-key` breaking mid-token.
+- Dedupe the main command and move the installer and pricing details out of the README.
+- Add a FAIL example.
+- Don't `git add` the old magenta `hero.png`, which is still untracked.
+- Re-shoot with a second screen and a dark theme.
+
+**Not verified:**
+- Dark theme: the hero images are opaque white-background PNGs, so they would likely show as white slabs in dark mode. That is inference, not evidence.
+- Everything below the first screen on the live page.

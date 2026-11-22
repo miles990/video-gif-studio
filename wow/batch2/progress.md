@@ -12,6 +12,6 @@
 - [x] G1 資源宣告（本檔）
 - [x] L1–L2 spec.md（Batch 2）
 - [x] L4 獨立答案卷（Opus，建造前；wow/batch2/acceptance.md）
-- [ ] L7 建造（Codex）← 進行中
-- [ ] L8–L9 驗證、實跑 held-out、X 像素素材、GitHub 390/1440 截圖、獨立 W4 設計審查
-- [ ] L11–L13 交付與 Fable 評審（claude-fable-5-1）
+- [x] L7 建造（Codex + coord fix `3b83806` / `873003d`）
+- [x] L8–L9 驗證、實跑 held-out 與 recovery hints、X 像素素材、GitHub 390/1440 淺深雙色截圖、獨立 Sonnet W4 設計審查
+- [ ] L11–L13 交付與 Fable 評審（claude-fable-5-1，Call 2 / 2）
