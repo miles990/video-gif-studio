@@ -66,5 +66,19 @@ class VgsTests(unittest.TestCase):
         self.assertEqual(info['method'], 'not_found')
 
 
+
+    def test_low_saturation_cli_safe_hint(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d)/'frames'; src.mkdir()
+            for i in range(4):
+                a = np.full((64,64,4), [243,234,219,255], dtype=np.uint8)
+                a[16:48,16:48] = [40+i*10, 40, 40, 255]
+                Image.fromarray(a).save(src/f'{i:05d}.png')
+            out = Path(d)/'out'
+            p = subprocess.run([sys.executable, str(ROOT/'scripts/vgs.py'), 'make', str(src), '--fps', '12', '--out', str(out)], capture_output=True, text=True, env={k:v for k,v in os.environ.items() if k not in ('XAI_API_KEY','FAL_KEY')})
+            self.assertEqual(p.returncode, 0, p.stderr)
+            self.assertIn('未去背', p.stdout)
+            self.assertNotIn('請加 --key', p.stdout)
+
 if __name__ == '__main__':
     unittest.main()

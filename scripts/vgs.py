@@ -424,7 +424,7 @@ def make(a) -> int:
         if a.keep_interior_key: print(f'已保留內部鍵色區；殘留鍵色比例 {key_share:.4f}。')
     elif flat and sat < .35 and not a.no_key:
         hexkey = ''.join(f'{int(round(x)):02X}' for x in detected_key)
-        print(f'未去背，原因：邊框雖平坦但為低飽和純底（飽和度 {sat:.2f} < 0.35 門檻）。這是非透明交付。若確定要去背，請加 --key {hexkey}')
+        print(f'未去背，原因：邊框 #{hexkey} 雖平坦但為低飽和純底（飽和度 {sat:.2f} < 0.35 門檻），色鍵會誤傷膚色／白色主體，因此保留為不透明交付。若需透明背景，請改用洋紅／綠幕棚景重製，或先用可選去背 scripts/background_remove.py（--with-matting）輸出 RGBA PNG 後再匯入。')
     else:
         print(f'未去背，原因：背景非純色或指定保留背景（信心 {confidence:.3f}）。這是非透明交付。')
     print(f'border_opaque_max {ring:.4f}；key_share_max {key_share:.4f}（第 {key_frame} 幀）。')
