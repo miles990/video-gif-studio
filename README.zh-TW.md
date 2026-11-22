@@ -1,6 +1,6 @@
 # Video GIF Studio
 
-[![CI](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml) · [![Release](https://img.shields.io/github/v/release/miles990/video-gif-studio)](https://github.com/miles990/video-gif-studio/releases/latest)
+[![Release](https://img.shields.io/github/v/release/miles990/video-gif-studio)](https://github.com/miles990/video-gif-studio/releases/latest)
 
 [English](README.md) | **繁體中文**
 
@@ -80,7 +80,7 @@ python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --pixel --spri
 
 ![Pixel art demo](examples/chibi-running-dash/hero-pixel.gif)
 
-`--pixel` 預設 96 像素網格、32 色與整數最近鄰放大，可用 `--pixel-width`、`--pixel-scale`、`--colors` 調整。`--sprite` 以 GIF 輸出尺寸匯出影格和圖集，未做引擎驗證；`--mp4` 合成深色底並重複完整循環，`--loop-count` 指定次數，預設盡可能落在 8–15 秒。`--loop auto` 尋找自然裁切點，`--loop crossfade` 明確混合尾端，`--loop off` 只裁靜止尾端。自動去背需要平坦邊框且飽和度 `(max-min)/max >= 0.35`；低飽和背景保留不透明，可明確指定 `--key HEX`。全域色鍵可能挖掉封閉的同色圖案；警告列出內島，`--keep-interior-key` 可保留。`vgs qa` 檢查邊框不透明度與殘留鍵色；仍需人看核准。
+`--pixel` 預設 96 像素網格、32 色與整數最近鄰放大，可用 `--pixel-width`、`--pixel-scale`、`--colors` 調整。`--sprite` 以 GIF 輸出尺寸匯出影格和圖集，未做引擎驗證；`--mp4` 合成深色底並重複完整循環，`--loop-count` 指定次數，預設盡可能落在 8–15 秒。`--loop auto` 尋找自然裁切點，`--loop crossfade` 明確混合尾端，`--loop off` 只裁靜止尾端。自動去背需要平坦邊框且飽和度 `(max-min)/max >= 0.35`；低飽和背景會保留不透明以免誤傷膚色與白衣高光（僅在主體不含近白／膚色時才強制 `--key HEX`，或改用可選去背 `scripts/background_remove.py`／高飽和棚景）。全域色鍵可能挖掉封閉的同色圖案；警告列出內島，`--keep-interior-key` 可保留。`vgs qa` 檢查邊框不透明度與殘留鍵色；仍需人看核准。
 
 ## 交付品質量測
 

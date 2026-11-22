@@ -1,6 +1,6 @@
 # Video GIF Studio
 
-[![CI](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml) · [![Release](https://img.shields.io/github/v/release/miles990/video-gif-studio)](https://github.com/miles990/video-gif-studio/releases/latest)
+[![Release](https://img.shields.io/github/v/release/miles990/video-gif-studio)](https://github.com/miles990/video-gif-studio/releases/latest)
 
 **English** | [繁體中文](README.zh-TW.md)
 
@@ -82,7 +82,7 @@ python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --pixel --spri
 
 ![Pixel art demo](examples/chibi-running-dash/hero-pixel.gif)
 
-`--pixel` uses a 96-pixel grid, 32 colors and integer nearest-neighbor scaling. Set `--pixel-width`, `--pixel-scale` and `--colors` to customize it. `--sprite` exports frames and sheets at GIF output size; engine validation is not performed. `--mp4` composites onto #141820 and repeats complete loops; use `--loop-count` to set repetitions. The default aims for 8–15 seconds when possible. `--loop auto` searches a natural trim; `--loop crossfade` explicitly blends the end; `--loop off` uses ordinary tail trimming. Auto-key requires a flat border and saturation `(max-min)/max >= 0.35`; low-saturation backgrounds stay opaque unless you explicitly provide `--key HEX`. Global keying can remove enclosed key-colored artwork; the warning identifies it, and `--keep-interior-key` preserves it. `vgs qa` checks both border opacity and remaining key colors. Visual approval remains necessary.
+`--pixel` uses a 96-pixel grid, 32 colors and integer nearest-neighbor scaling. Set `--pixel-width`, `--pixel-scale` and `--colors` to customize it. `--sprite` exports frames and sheets at GIF output size; engine validation is not performed. `--mp4` composites onto #141820 and repeats complete loops; use `--loop-count` to set repetitions. The default aims for 8–15 seconds when possible. `--loop auto` searches a natural trim; `--loop crossfade` explicitly blends the end; `--loop off` uses ordinary tail trimming. Auto-key requires a flat border and saturation `(max-min)/max >= 0.35`; low-saturation neutral backgrounds stay opaque so skin and white highlights are not erased (only force `--key HEX` when the foreground has no overlapping neutral tones, or use optional `scripts/background_remove.py` / a saturated backdrop). Global keying can remove enclosed key-colored artwork; the warning identifies it, and `--keep-interior-key` preserves it. `vgs qa` checks both border opacity and remaining key colors. Visual approval remains necessary.
 
 ## Measured delivery QA
 
