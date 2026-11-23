@@ -21,6 +21,47 @@ def descendants(pid, parents, created):
         wanted.update(more)
 
 
+def _proc_available():
+    return os.path.isdir('/proc')
+
+
+def _proc_tree_memory(pid):
+    """Sum current RSS from /proc without adding a runtime dependency."""
+    page = os.sysconf('SC_PAGE_SIZE') or 4096
+    parents = {}
+    try:
+        entries = os.listdir('/proc')
+    except OSError:
+        return 0, 0
+    for name in entries:
+        if not name.isdigit():
+            continue
+        child = int(name)
+        try:
+            with open(f'/proc/{child}/stat', encoding='utf-8') as fh:
+                text = fh.read()
+            close = text.rfind(')')
+            ppid = int(text[close + 1:].split()[1])
+        except (FileNotFoundError, ProcessLookupError, PermissionError, IndexError, ValueError, OSError):
+            continue
+        parents[child] = ppid
+    wanted = {pid}
+    while True:
+        more = {child for child, parent in parents.items() if parent in wanted} - wanted
+        if not more:
+            break
+        wanted.update(more)
+    rss = 0
+    for child in wanted:
+        try:
+            with open(f'/proc/{child}/statm', encoding='utf-8') as fh:
+                resident = int(fh.read().split()[1])
+            rss += resident * page
+        except (FileNotFoundError, ProcessLookupError, PermissionError, IndexError, ValueError, OSError):
+            continue
+    return rss, rss
+
+
 def tree_memory(pid):
     """Return (RSS sum, peak working-set sum) for a parent and live descendants.
 
@@ -38,6 +79,8 @@ def tree_memory(pid):
                 info=child.memory_info();rss+=info.rss;peak+=getattr(info,'peak_wset',info.rss)
             except psutil.Error:pass
         return rss,peak
+    if _proc_available():
+        return _proc_tree_memory(pid)
     if os.name != 'nt':
         raise RuntimeError('Install psutil to measure process-tree RSS on this OS')
     import ctypes as c

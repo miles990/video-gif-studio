@@ -80,6 +80,9 @@ def verdict(scores,limits=None):
     limits=limits or LIMITS
     # Structure changes with pose/props. It cannot independently veto identity;
     # an inconclusive palette also must not become a structural hard reject.
+    # ORB/HSV fallback scores use different keys and stay unassessed.
+    if not all(k in scores for k in limits):
+        return 'unassessed'
     if scores['colour']<limits['colour']['fail']:return 'identity_fail'
     if all(scores[k]>=limits[k]['pass'] for k in limits):return 'pass'
     return 'unassessed'

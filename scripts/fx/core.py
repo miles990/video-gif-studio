@@ -54,13 +54,21 @@ def restore(a, dtype):
     return cv2.convertScaleAbs(a,alpha=255) if dtype == np.uint8 else a.astype(np.float32,copy=False)
 
 def premultiply(a):
-    channels=cv2.split(a)
-    return cv2.merge([cv2.multiply(c,channels[3]) for c in channels[:3]]+[channels[3]])
+    # NumPy keeps 1x1 and odd tiny frames well-defined; OpenCV 5.1 merge()
+    # asserts on some split/divide results at those sizes.
+    a = np.asarray(a)
+    out = np.empty_like(a, dtype=np.float32)
+    out[..., :3] = a[..., :3] * a[..., 3:4]
+    out[..., 3] = a[..., 3]
+    return out
 
 def straight(a):
-    channels=cv2.split(a); alpha=channels[3]
-    divisor=cv2.max(alpha,1e-8)
-    return cv2.merge([cv2.divide(c,divisor) for c in channels[:3]]+[alpha])
+    a = np.asarray(a)
+    alpha = a[..., 3]
+    out = np.empty_like(a, dtype=np.float32)
+    out[..., :3] = a[..., :3] / np.maximum(alpha, 1e-8)[..., None]
+    out[..., 3] = alpha
+    return out
 
 def over(a, b):
     return straight(premultiply(a)+premultiply(b)*(1-a[..., 3:4]))

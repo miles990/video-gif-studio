@@ -20,7 +20,7 @@ from typing import Protocol
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 from fx.effects.typography import resolve_font, check_glyphs, font_codepoints
-from caption_glyphs import emoji_mask, draw_grapheme
+from caption_glyphs import emoji_mask, draw_grapheme, colour_emoji_mask
 
 LEXICON = ('台北市政府', '開放資料', '真的嗎', '我們', '今天', '參加', '活動', '效果', '太棒', '然後', '上線')
 CLOSING = '，。、！？；：」』）】》…—％,.!?;:%)]}'
@@ -254,7 +254,9 @@ def prepare(spec, base, experimental=False):
     words = normalize_words(words, spec.get('traditional') or str(spec.get('language','')).lower().startswith('zh'))
     # A timed word remains the unit of layout, highlighting and animation.
     fallback = next((p for p in ('C:/Windows/Fonts/seguiemj.ttf',
-        '/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf') if Path(p).is_file()), None)
+        '/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf',
+        '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf',
+        '/usr/share/fonts/truetype/noto-color-emoji/NotoColorEmoji.ttf') if Path(p).is_file()), None)
     supported=font_codepoints(style['font']); extra=font_codepoints(fallback) if fallback else set()
     display=[];dropped=set()
     for index,word in enumerate(words):
@@ -391,12 +393,19 @@ class CaptionRenderer:
         for line in prepared['lines']:
             for c in line['chars']:
                 if c['font'] not in self.fonts:
-                    self.fonts[c['font']]=ImageFont.truetype(c['font'],face.size)
+                    try:
+                        self.fonts[c['font']]=ImageFont.truetype(c['font'],face.size)
+                    except OSError:
+                        # Bitmap colour fonts are opened at their strike in colour_emoji_mask.
+                        self.fonts[c['font']]=face
         self.glyphs={}
         for line in prepared['lines']:
             for c in line['chars']:
                 if c['font']!=s['font'] and not c['char'].isspace():
-                    self.glyphs[(c['font'],c['char'])]=emoji_mask(c['char'],self.fonts[c['font']].getname()[0],face.size)
+                    mask=emoji_mask(c['char'],self.fonts[c['font']].getname()[0],face.size)
+                    if mask is None:
+                        mask=colour_emoji_mask(c['font'],c['char'],face.size)
+                    self.glyphs[(c['font'],c['char'])]=mask
         def measure(group):
             return sum(self.advance(c) for c in make_line(group)['chars'])
         wrapped=[]

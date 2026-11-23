@@ -56,7 +56,12 @@ def _needs_media(err) -> bool:
         return True
     name = getattr(typ, '__name__', '')
     lowered = text.lower()
-    if name in {'FileNotFoundError', 'OSError'} and ('ffmpeg' in lowered or 'ffprobe' in lowered):
+    mentions = 'ffmpeg' in lowered or 'ffprobe' in lowered
+    if not mentions:
+        return False
+    if name in {'FileNotFoundError', 'OSError', 'RuntimeError'}:
+        return True
+    if 'no such file' in lowered or 'not found' in lowered or 'media runtime missing' in lowered:
         return True
     return False
 

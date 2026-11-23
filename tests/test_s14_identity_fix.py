@@ -21,8 +21,11 @@ class IdentityFixTests(unittest.TestCase):
     def test_live_near_lookalike_ranks_below_isolated_side(self):
         from game_character import prepare_subject
         from image_identity import compare
+        from identity_engine import engine
         from PIL import Image
         import tempfile
+        if engine()[0] is None:
+            self.skipTest('optional DINOv2 identity engine is not installed')
         with tempfile.TemporaryDirectory(dir='.scratch') as folder:
             paths={}
             for view in ('front','side'):

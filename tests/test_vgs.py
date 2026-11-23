@@ -12,6 +12,7 @@ from PIL import Image, ImageSequence
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import vgs
+from media_runtime import locate
 
 
 class VgsTests(unittest.TestCase):
@@ -49,6 +50,7 @@ class VgsTests(unittest.TestCase):
             self.assertLessEqual(metrics['quiet_flicker_rate'], .03)
             self.assertEqual(metrics['lct_count'], 0)
 
+    @unittest.skipUnless(locate('ffmpeg') and locate('ffprobe'), 'FFmpeg/ffprobe required')
     def test_pixel_mp4_crisp(self):
         with tempfile.TemporaryDirectory() as d:
             src = Path(d) / 'frames'; src.mkdir()

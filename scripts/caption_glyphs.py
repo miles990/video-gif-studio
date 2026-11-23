@@ -6,7 +6,7 @@ The resulting single grapheme mask is cached, including its joined modifiers.
 from functools import lru_cache
 import sys
 
-from PIL import Image, ImageFilter, features
+from PIL import Image, ImageDraw, ImageFilter, ImageFont, features
 
 
 @lru_cache(maxsize=256)
@@ -73,3 +73,50 @@ def draw_grapheme(draw, pos, text, font, fill, stroke_width, stroke_fill, mask=N
         expanded=expanded.filter(ImageFilter.MaxFilter(2*stroke_width+1))
         draw.bitmap((x-stroke_width,y-stroke_width),expanded,fill=stroke_fill)
     draw.bitmap((x,y),mask,fill=fill)
+
+
+@lru_cache(maxsize=8)
+def colour_font_strikes(path):
+    """Pixel sizes a CBDT/CBLC colour font actually accepts."""
+    ok = []
+    for size in range(8, 200):
+        try:
+            ImageFont.truetype(path, size=size)
+        except OSError:
+            continue
+        else:
+            ok.append(size)
+    return tuple(ok)
+
+
+@lru_cache(maxsize=256)
+def colour_emoji_mask(path, text, size):
+    """Luminance mask of a colour-bitmap emoji, scaled to the caption size.
+
+    Noto Color Emoji only opens at its strike sizes (commonly 109). Rendering
+    at that strike and resizing keeps emoji in captions without a second font.
+    """
+    from PIL import ImageDraw, ImageFont
+    try:
+        ImageFont.truetype(path, size)
+        return None
+    except OSError:
+        pass
+    strikes = colour_font_strikes(path)
+    if not strikes:
+        return None
+    strike = min(strikes, key=lambda candidate: (abs(candidate - size), candidate))
+    font = ImageFont.truetype(path, strike)
+    canvas = Image.new('RGBA', (max(strike * 6, 32), max(strike * 6, 32)), (0, 0, 0, 0))
+    ImageDraw.Draw(canvas).text((strike, strike), text, font=font, embedded_color=True)
+    box = canvas.getbbox()
+    if not box:
+        return None
+    crop = canvas.crop(box)
+    if size != strike:
+        ratio = size / strike
+        crop = crop.resize((max(1, round(crop.width * ratio)), max(1, round(crop.height * ratio))), Image.Resampling.LANCZOS)
+    alpha = crop.getchannel('A') if 'A' in crop.getbands() else crop.convert('L')
+    if alpha.getbbox() is None:
+        alpha = crop.convert('L')
+    return alpha
