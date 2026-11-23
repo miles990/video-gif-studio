@@ -140,15 +140,148 @@ def creative(draft,design):
                 pace=design['pace'],zh=zh,background=bool(re.search(r'background|背景',draft,re.I)))
 
 
+
+def _housekeeping_brief(draft,reason,platform):
+    checking='check' in draft.lower();filename=re.search(r'(?:檔名|filename)\s*([\w-]+)',draft,re.I)
+    target=dict(format='mp4',codec='H.264',platform=platform or 'ig_reels',width=1080,height=1920)
+    if filename:target['filename']=filename[1]+'.mp4'
+    text=draft if checking else draft+'; '+target.get('filename','mp4')+', 1080×1920, H.264'
+    return dict(version=1,mode='housekeeping',mode_reason=reason,draft=draft,prompt=text,command='qa_media.py' if checking else 'export',target=target)
+
+
+def _resolve_duration(draft,content,mode):
+    match=re.search(r'(\d+(?:\.\d+)?)\s*(?:seconds?|secs?|s\b|秒)',draft,re.I)
+    duration=float(content.get('duration',match[1] if match else 5))
+    if mode=='sequence':
+        cap=re.search(r'(\d+(?:\.\d+)?)\s*秒前結束|ends? (?:at|by)\s*(\d+(?:\.\d+)?)',draft,re.I)
+        duration=float(next(g for g in cap.groups() if g)) if cap else max(10.,duration+3)
+    if not math.isfinite(duration) or not .2<=duration<=600:raise ValueError('E_SCHEMA duration: choose 0.2..600 seconds')
+    return duration
+
+
+def _shot_plan_from_grid(duration,fps,design,grid):
+    edges=sorted(set([0.,duration]+[round(t/1000*fps)/fps for t in grid['downbeats_ms'] if 0<t/1000<duration]))
+    drop=grid.get('drop_ms')
+    if drop is None:
+        drop=next((s.get('start_ms',s.get('start',0)*1000) for s in grid.get('sections',[]) if s.get('label',s.get('name','')).lower()=='drop'),None)
+    turn_time=min(edges[:-1],key=lambda t:abs(t-(drop/1000 if drop is not None else duration*.6)))
+    bar=min(range(len(grid['downbeats_ms'])),key=lambda i:abs(grid['downbeats_ms'][i]/1000-turn_time))+1
+    grid['turn_anchor']=dict(bar=bar,time_s=turn_time)
+    grid['drop_status']='drop candidate' if drop is not None else 'no drop detected'
+    anchor=f'downbeat, bar {bar}' if drop is None else 'drop downbeat';shot_groups=[]
+    from taste_target import plan_timing
+    for a,b in zip(edges,edges[1:]):shot_groups.append(plan_timing(b-a,dict(asl=design['asl'],cv=design['cv']))['durations'])
+    return edges,turn_time,shot_groups,anchor
+
+
+def _shot_plan_sequence(draft,duration):
+    anchor_match=re.search(r'(?:at\s*|在\s*)(\d+(?:\.\d+)?)\s*(?:s|秒)',draft,re.I)
+    start=float(anchor_match[1]) if anchor_match else 0.
+    if start>=duration:raise ValueError('E_TIME sequence: duration cap must follow the start anchor')
+    edges=sorted(set([0.,start,start+(duration-start)*.45,duration]));turn_time=edges[-2]
+    shot_groups=[[b-a] for a,b in zip(edges,edges[1:])]
+    return edges,turn_time,shot_groups,'authored sequence time'
+
+
+def _shot_plan_default(duration,design):
+    from taste_target import plan_timing
+    timing=plan_timing(duration,dict(asl=design['asl'],cv=design['cv']))['durations']
+    if design['profile']=='calm' and len(timing)<2:timing=[duration*.6,duration*.4]
+    elif len(timing)<3 and design['profile']!='calm':
+        weights=[.28,.46,.26] if design['profile']=='precision' else [.25,.40,.35]
+        timing=[duration*w for w in weights]
+    groups=np.array_split(np.arange(len(timing)),min(4,len(timing)))
+    shot_groups=[[timing[int(i)] for i in group] for group in groups]
+    edges=[0.]
+    for group in shot_groups:edges.append(edges[-1]+sum(group))
+    edges[-1]=duration;turn_time=edges[-2] if len(edges)==4 else edges[2]
+    return edges,turn_time,shot_groups,'authored phrase'
+
+
+def _shot_plan(draft,mode,duration,fps,design,grid):
+    if grid.get('downbeats_ms'):
+        return _shot_plan_from_grid(duration,fps,design,grid)
+    if mode=='sequence':
+        return _shot_plan_sequence(draft,duration)
+    return _shot_plan_default(duration,design)
+
+
+def _beat_body(copy,i,is_turn,handles):
+    if is_turn:body=copy['turn']
+    elif i==0:body=(copy['subject']+'進入畫面，輪廓逐漸清楚') if copy['zh'] else copy['subject']+' slides from the lower edge; its detail comes into view'
+    else:body=(copy['subject']+'沿原方向繼續運動，細節保持清楚') if copy['zh'] else copy['subject']+' continues along the same axis; keep its detail readable'
+    return body+(' ('+', '.join(handles)+')' if handles else '')
+
+
+def _apply_motion_refs(beats,assignments,refs,content,preserved_turn):
+    # A vetted motion reference supplies its mechanism, not its look. Authored
+    # transformation verbs retain priority and are never replaced by a metaphor.
+    for r in refs:
+        if r['handle'].startswith('m') and r.get('mechanism'):
+            index=assignments[r['handle']];beats[index]['mechanism']=r['mechanism']
+            if not content.get('beats') and not preserved_turn:
+                if r.get('beat_text'):beats[index]['text']=r['beat_text']+' ('+', '.join(beats[index]['refs'])+')'
+
+
+def _finish_beats(beats,copy,constraints,content,asset_intent,logo_last):
+    if content.get('beats'):beats=deepcopy(content['beats'])
+    if asset_intent and asset_intent['kind']=='icon_set' and not content.get('beats'):
+        for b in beats:
+            b['is_turn']=False;b['mechanism']='static'
+            b['text']=copy['subject']+'; consistent icon silhouettes ('+', '.join(b['refs'])+')'
+    if logo_last and not content.get('beats'):
+        beats[-1]['text']+='；最後呈現 logo' if copy['zh'] else '; logo appears last'
+    for b in beats:b['hard_constraints']=deepcopy(constraints)
+    return beats
+
+
+def _build_beats(copy,constraints,edges,turn_time,shot_groups,anchor,mode,content,asset_intent,logo_last,preserved_turn,refs):
+    turn_index=min(range(len(edges)-1),key=lambda i:abs(edges[i]-turn_time))
+    if logo_last and preserved_turn and re.search('logo',preserved_turn,re.I):turn_index=len(edges)-2
+    assignments={h:(turn_index if h in ('a4','m2') else len(edges)-2 if h=='m3' else 0 if h in ('a1','a2','a3','m1') else max(0,turn_index-1)) for h in HANDLES}
+    beats=[]
+    for i,(start,end) in enumerate(zip(edges,edges[1:])):
+        handles=[h for h in HANDLES if assignments[h]==i];is_turn=i==turn_index
+        body=_beat_body(copy,i,is_turn,handles)
+        beats.append(dict(id=i+1,t_start=round(start,6),t_end=round(end,6),text=body,is_turn=is_turn,anchor=anchor,
+                          refs=handles,hero_height=.5,min_text_px=24,action=True,perceived=.15 if is_turn else .04,
+                          shot_durations=shot_groups[i],mechanism='pull' if is_turn else 'drift'))
+    if mode=='sequence' and edges[1]>0:
+        beats[0]['text']='keep the existing timeline unchanged before the insertion ('+', '.join(beats[0]['refs'])+')'
+        beats[0]['preserve_existing']=True
+    _apply_motion_refs(beats,assignments,refs,content,preserved_turn)
+    beats=_finish_beats(beats,copy,constraints,content,asset_intent,logo_last)
+    return beats,assignments,turn_index
+
+
+def _annotate_refs(refs,beats,assignments,copy,content):
+    for r in refs:
+        r['cited_by']=[b['id'] for b in beats if re.search(r'(?<!\w)'+r['handle']+r'(?!\w)',b['text'])]
+        role=r['role'];b=r['cited_by'][0] if r['cited_by'] else 1
+        takes={role:copy['aesthetic']+'; '+role+' for '+copy['subject']}
+        authored_use=content.get('ref_uses',{}).get(r['handle'])
+        r['use']=authored_use or r.get('use') or f'beat {b}: '+r.get('take',takes[role])
+        if role=='turn' and not authored_use:r['use']=f'beat {b}: '+copy['turn']
+        if r['handle'].startswith('m'):
+            if r.get('time_range') and not r.get('placeholder'):
+                r['use']+=f'; {r["time_range"][0]:g}–{r["time_range"][1]:g} s at {r.get("speed_scale",1):g}x'
+        if r['handle']=='m2':r['is_turn']=True;r['use']+=' (the turn)'
+
+
+def _apply_batch(result,draft):
+    n=re.search(r'(\d+)\s*(?:個|different|variations|versions)',draft,re.I);n=int(n[1]) if n else 3
+    if not 2<=n<=30:raise ValueError('E_SCHEMA batch: choose 2..30 items')
+    mechanics=['pull','pan','tilt','push','crane','dolly']
+    result['items']=[dict(id=i+1,mechanic=mechanics[i%6],layout=['centred','thirds','diagonal'][i//6%3],treatment=['paper','glass'][i//18],
+                          text=f'{mechanics[i%6]} to expose the subject; composition {i//6+1}') for i in range(n)]
+    result['dedupe']='Change mechanism, layout or material; reverse direction and mirror alone are not variations.'
+
+
 def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,offline=False,
            provider=None,library=(),content=None,image=None,previous=None):
     mode,reason=classify(draft,image,previous)
     if mode=='housekeeping':
-        checking='check' in draft.lower();filename=re.search(r'(?:檔名|filename)\s*([\w-]+)',draft,re.I)
-        target=dict(format='mp4',codec='H.264',platform=platform or 'ig_reels',width=1080,height=1920)
-        if filename:target['filename']=filename[1]+'.mp4'
-        text=draft if checking else draft+'; '+target.get('filename','mp4')+', 1080×1920, H.264'
-        return dict(version=1,mode=mode,mode_reason=reason,draft=draft,prompt=text,command='qa_media.py' if checking else 'export',target=target)
+        return _housekeeping_brief(draft,reason,platform)
     if mode in ('delta','image_feedback'):
         from brief_edit import parse
         return parse(draft,previous or {},image=image)
@@ -164,88 +297,15 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
     if re.search(r'pixel[ -]?art|像素',draft,re.I) and not content.get('aesthetic'):copy['aesthetic']='pixel art'
     # Grounding precedes beat construction. Attachment slots never go to web.
     refs,meta=ground(copy['aesthetic'],cards,taste,refstat,library,provider,offline)
-    match=re.search(r'(\d+(?:\.\d+)?)\s*(?:seconds?|secs?|s\b|秒)',draft,re.I)
-    duration=float(content.get('duration',match[1] if match else 5))
-    if mode=='sequence':
-        cap=re.search(r'(\d+(?:\.\d+)?)\s*秒前結束|ends? (?:at|by)\s*(\d+(?:\.\d+)?)',draft,re.I)
-        duration=float(next(g for g in cap.groups() if g)) if cap else max(10.,duration+3)
-    if not math.isfinite(duration) or not .2<=duration<=600:raise ValueError('E_SCHEMA duration: choose 0.2..600 seconds')
+    duration=_resolve_duration(draft,content,mode)
     fps=content.get('fps',30);design.update(content.get('structure',{}))
-    from taste_target import plan_timing
-    if grid.get('downbeats_ms'):
-        edges=sorted(set([0.,duration]+[round(t/1000*fps)/fps for t in grid['downbeats_ms'] if 0<t/1000<duration]))
-        drop=grid.get('drop_ms')
-        if drop is None:
-            drop=next((s.get('start_ms',s.get('start',0)*1000) for s in grid.get('sections',[]) if s.get('label',s.get('name','')).lower()=='drop'),None)
-        turn_time=min(edges[:-1],key=lambda t:abs(t-(drop/1000 if drop is not None else duration*.6)))
-        bar=min(range(len(grid['downbeats_ms'])),key=lambda i:abs(grid['downbeats_ms'][i]/1000-turn_time))+1
-        grid['turn_anchor']=dict(bar=bar,time_s=turn_time)
-        grid['drop_status']='drop candidate' if drop is not None else 'no drop detected'
-        anchor=f'downbeat, bar {bar}' if drop is None else 'drop downbeat';shot_groups=[]
-        for a,b in zip(edges,edges[1:]):shot_groups.append(plan_timing(b-a,dict(asl=design['asl'],cv=design['cv']))['durations'])
-    elif mode=='sequence':
-        anchor_match=re.search(r'(?:at\s*|在\s*)(\d+(?:\.\d+)?)\s*(?:s|秒)',draft,re.I)
-        start=float(anchor_match[1]) if anchor_match else 0.
-        if start>=duration:raise ValueError('E_TIME sequence: duration cap must follow the start anchor')
-        edges=sorted(set([0.,start,start+(duration-start)*.45,duration]));turn_time=edges[-2]
-        shot_groups=[[b-a] for a,b in zip(edges,edges[1:])];anchor='authored sequence time'
-    else:
-        timing=plan_timing(duration,dict(asl=design['asl'],cv=design['cv']))['durations']
-        if design['profile']=='calm' and len(timing)<2:timing=[duration*.6,duration*.4]
-        elif len(timing)<3 and design['profile']!='calm':
-            weights=[.28,.46,.26] if design['profile']=='precision' else [.25,.40,.35]
-            timing=[duration*w for w in weights]
-        groups=np.array_split(np.arange(len(timing)),min(4,len(timing)))
-        shot_groups=[[timing[int(i)] for i in group] for group in groups]
-        edges=[0.]
-        for group in shot_groups:edges.append(edges[-1]+sum(group))
-        edges[-1]=duration;turn_time=edges[-2] if len(edges)==4 else edges[2];anchor='authored phrase'
-    turn_index=min(range(len(edges)-1),key=lambda i:abs(edges[i]-turn_time))
+    edges,turn_time,shot_groups,anchor=_shot_plan(draft,mode,duration,fps,design,grid)
     logo_last=any(re.search(r'logo.*(?:最後|last)|(?:最後|last).*logo',c,re.I) for c in constraints)
-    if logo_last and preserved_turn and re.search('logo',preserved_turn,re.I):turn_index=len(edges)-2
-    assignments={h:(turn_index if h in ('a4','m2') else len(edges)-2 if h=='m3' else 0 if h in ('a1','a2','a3','m1') else max(0,turn_index-1)) for h in HANDLES}
-    beats=[]
-    for i,(start,end) in enumerate(zip(edges,edges[1:])):
-        handles=[h for h in HANDLES if assignments[h]==i];is_turn=i==turn_index
-        if is_turn:body=copy['turn']
-        elif i==0:body=(copy['subject']+'進入畫面，輪廓逐漸清楚') if copy['zh'] else copy['subject']+' slides from the lower edge; its detail comes into view'
-        else:body=(copy['subject']+'沿原方向繼續運動，細節保持清楚') if copy['zh'] else copy['subject']+' continues along the same axis; keep its detail readable'
-        body+=' ('+', '.join(handles)+')' if handles else ''
-        beats.append(dict(id=i+1,t_start=round(start,6),t_end=round(end,6),text=body,is_turn=is_turn,anchor=anchor,
-                          refs=handles,hero_height=.5,min_text_px=24,action=True,perceived=.15 if is_turn else .04,
-                          shot_durations=shot_groups[i],mechanism='pull' if is_turn else 'drift'))
-    if mode=='sequence' and edges[1]>0:
-        beats[0]['text']='keep the existing timeline unchanged before the insertion ('+', '.join(beats[0]['refs'])+')'
-        beats[0]['preserve_existing']=True
-    # A vetted motion reference supplies its mechanism, not its look. Authored
-    # transformation verbs retain priority and are never replaced by a metaphor.
-    for r in refs:
-        if r['handle'].startswith('m') and r.get('mechanism'):
-            index=assignments[r['handle']];beats[index]['mechanism']=r['mechanism']
-            if not content.get('beats') and not preserved_turn:
-                if r.get('beat_text'):beats[index]['text']=r['beat_text']+' ('+', '.join(beats[index]['refs'])+')'
-    if content.get('beats'):beats=deepcopy(content['beats'])
-    if asset_intent and asset_intent['kind']=='icon_set' and not content.get('beats'):
-        for b in beats:
-            b['is_turn']=False;b['mechanism']='static'
-            b['text']=copy['subject']+'; consistent icon silhouettes ('+', '.join(b['refs'])+')'
-    if logo_last and not content.get('beats'):
-        beats[-1]['text']+='；最後呈現 logo' if copy['zh'] else '; logo appears last'
-    for b in beats:b['hard_constraints']=deepcopy(constraints)
-    for r in refs:
-        r['cited_by']=[b['id'] for b in beats if re.search(r'(?<!\w)'+r['handle']+r'(?!\w)',b['text'])]
-        role=r['role'];b=r['cited_by'][0] if r['cited_by'] else 1
-        takes={role:copy['aesthetic']+'; '+role+' for '+copy['subject']}
-        authored_use=content.get('ref_uses',{}).get(r['handle'])
-        r['use']=authored_use or r.get('use') or f'beat {b}: '+r.get('take',takes[role])
-        if role=='turn' and not authored_use:r['use']=f'beat {b}: '+copy['turn']
-        if r['handle'].startswith('m'):
-            if r.get('time_range') and not r.get('placeholder'):
-                r['use']+=f'; {r["time_range"][0]:g}–{r["time_range"][1]:g} s at {r.get("speed_scale",1):g}x'
-        if r['handle']=='m2':r['is_turn']=True;r['use']+=' (the turn)'
-    vertical=platform in ('ig_reels','tiktok','shorts') or bool(re.search(r'直式|vertical|9:16',draft,re.I))
+    beats,assignments,_turn_index=_build_beats(copy,constraints,edges,turn_time,shot_groups,anchor,mode,content,asset_intent,logo_last,preserved_turn,refs)
+    _annotate_refs(refs,beats,assignments,copy,content)
     assets=[dict(deepcopy(c),licence=c.get('licence','user-owned'),owned=c.get('owned',True),role=c.get('role','asset'),title=c.get('title',c.get('id','user footage'))) for c in cards if c.get('path')]
     assets+=deepcopy(content.get('assets',[]))
+    vertical=platform in ('ig_reels','tiktok','shorts') or bool(re.search(r'直式|vertical|9:16',draft,re.I))
     result=dict(version=1,mode=mode,mode_reason=reason,draft=draft,aesthetic=copy['aesthetic'],fence=copy['fence'],
                 subject=copy['subject'],hard_constraints=constraints,pace=copy['pace'],duration=duration,fps=fps,width=1080,height=1920 if vertical else 1080,
                 beats=beats,refs=refs,assets=assets,structure=design,taste=taste,refstat=refstat or {},music=grid,
@@ -257,24 +317,20 @@ def expand(draft,project=None,taste=None,refstat=None,music=None,platform=None,o
         result['asset_spec']=asset_intent;result['route']='asset'
         result['pipeline_note']='asset pipeline pending: spec-14 is not built; retain asset_spec for handoff.'
         result.pop('missing_asset',None)
-    if copy['zh'] and not content.get('pace'):result['pace']='動作連續，轉折前留呼吸，細節清楚落定'
+    if copy['zh'] and not content.get('pace'):result['pace']='動作連續，轉折前留呼吸，細節保持清楚落定'
     if isinstance(music,(str,Path)) and Path(music).suffix!='.json':result['music_source']=str(Path(music).resolve())
     if copy['background']:
         result['rule_break']=dict(rule='hero_size',why='Background field behind plan cards intentionally has no hero subject')
         for b in result['beats']:b['hero_height']=0
     if mode=='batch':
-        n=re.search(r'(\d+)\s*(?:個|different|variations|versions)',draft,re.I);n=int(n[1]) if n else 3
-        if not 2<=n<=30:raise ValueError('E_SCHEMA batch: choose 2..30 items')
-        mechanics=['pull','pan','tilt','push','crane','dolly']
-        result['items']=[dict(id=i+1,mechanic=mechanics[i%6],layout=['centred','thirds','diagonal'][i//6%3],treatment=['paper','glass'][i//18],
-                              text=f'{mechanics[i%6]} to expose the subject; composition {i//6+1}') for i in range(n)]
-        result['dedupe']='Change mechanism, layout or material; reverse direction and mirror alone are not variations.'
+        _apply_batch(result,draft)
     from brief_refs import reference_sheets
     import hashlib
     key=hashlib.sha256(json.dumps(refs,sort_keys=True,ensure_ascii=False).encode()).hexdigest()[:16]
     sheets=reference_sheets(refs,ROOT/'.scratch'/'brief-refs'/key)
     result['contact_sheets']='; '.join(sheets) if sheets else 'ref_missing: no decodable local reference media'
     result['prompt']=prompt(result);return result
+
 
 
 def prompt(brief):
