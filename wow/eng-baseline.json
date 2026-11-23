@@ -1,5 +1,5 @@
 {
- "written": "2026-11-23T16:49:41.872Z",
+ "written": "2026-11-23T16:52:13.444Z",
  "keys": [
   "cc:scripts/animatic.py::to_plan",
   "cc:scripts/apply_mask_edits.py::apply_edits",
@@ -135,6 +135,10 @@
   "cc:scripts/music_sync.py::analyze",
   "cc:scripts/music_sync.py::mux_music",
   "cc:scripts/process_memory.py::tree_memory",
+  "cc:scripts/qa_media.py::analyse_audio",
+  "cc:scripts/qa_media.py::analyse_picture",
+  "cc:scripts/qa_media.py::qa",
+  "cc:scripts/qa_media.py::rhythm_cuts",
   "cc:scripts/qc_redraw.py::qc",
   "cc:scripts/reframe.py::plan_path",
   "cc:scripts/repair_material_boundary.py::repair",
@@ -166,7 +170,6 @@
   "cc:scripts/video_export.py::_legacy_export",
   "ccshare",
   "fanout:scripts.fx",
-  "fanout:scripts.fx.transitions.gl_ports",
   "filesize:scripts/fx_render.py",
   "filesize:scripts/vgs.py",
   "fnsize:scripts/assemble_edit.py::assemble",
@@ -190,11 +193,12 @@
   "fnsize:scripts/game_engines.py::godot4",
   "fnsize:scripts/image_motion.py::seam_qa",
   "fnsize:scripts/imagegen.py::main",
+  "fnsize:scripts/qa_media.py::analyse_picture",
+  "fnsize:scripts/qa_media.py::qa",
   "fnsize:scripts/qc_redraw.py::qc",
   "fnsize:scripts/review_shots.py::build",
   "fnsize:scripts/taste_report.py::analyze",
   "fnsize:scripts/vgs.py::make",
-  "fnsize:scripts/video_export.py::_legacy_export",
-  "parse:scripts/qa_media.py"
+  "fnsize:scripts/video_export.py::_legacy_export"
  ]
 }
