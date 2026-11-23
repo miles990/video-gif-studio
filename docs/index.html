@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Video GIF Studio — 把影片做成透明 GIF</title>
+  <meta name="description" content="本機 CLI 與 Claude / Codex skill：把既有影片做成透明 GIF、APNG、MP4 或 sprite sheet。$0，不經過雲端。">
+  <style>
+    :root {
+      --bg: #0e1116;
+      --bg-elev: #161b22;
+      --ink: #f0f3f7;
+      --muted: #9aa3af;
+      --line: #2b313a;
+      --accent: #3ee0b8;
+      --accent-ink: #06241c;
+      --hero-bg: #12161c;
+      --board-a: #1c2128;
+      --board-b: #151a20;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti TC", "Noto Serif TC", serif;
+      --sans: "IBM Plex Sans", "Noto Sans TC", "Segoe UI", sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+    [data-theme="light"] {
+      --bg: #f6f3ee;
+      --bg-elev: #fffdf8;
+      --ink: #1a1d21;
+      --muted: #5c6570;
+      --line: #d9d3c8;
+      --accent: #0b7a62;
+      --accent-ink: #f3fffb;
+      --hero-bg: #ece7de;
+      --board-a: #f3efe6;
+      --board-b: #e2dcd0;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+    body { min-height: 100vh; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    .wrap { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+    header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 0; }
+    .brand { font-family: var(--serif); font-size: 18px; letter-spacing: .01em; }
+    .brand span { color: var(--muted); font-family: var(--sans); font-size: 13px; margin-left: 10px; }
+    nav { display: flex; gap: 16px; align-items: center; font-size: 14px; }
+    nav a { color: var(--ink); text-decoration: none; }
+    .theme {
+      appearance: none; border: 1px solid var(--line); background: var(--bg-elev);
+      color: var(--ink); border-radius: 999px; padding: 6px 12px; cursor: pointer; font: inherit;
+    }
+    .hero {
+      min-height: calc(100vh - 58px);
+      display: grid; grid-template-columns: 1.05fr 1fr;
+      gap: 48px; align-items: center; padding: 24px 0 48px;
+    }
+    h1 {
+      font-family: var(--serif); font-weight: 600; font-size: clamp(40px, 5.4vw, 72px);
+      line-height: .95; letter-spacing: -0.03em; margin: 0 0 20px;
+    }
+    .lede { font-size: 18px; line-height: 1.55; color: var(--muted); margin: 0 0 28px; max-width: 38ch; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: var(--accent-ink); text-decoration: none;
+      padding: 11px 16px; border-radius: 999px; font-weight: 600; font-size: 14px;
+    }
+    .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+    pre, code { font-family: var(--mono); }
+    pre {
+      margin: 0; background: var(--bg-elev); border: 1px solid var(--line);
+      border-radius: 14px; padding: 16px 18px; font-size: 13px; line-height: 1.55; overflow: auto;
+    }
+    .stage {
+      position: relative; border: 1px solid var(--line); border-radius: 28px; overflow: hidden;
+      min-height: 420px; display: grid; place-items: center;
+      background-color: var(--board-b);
+      background-image:
+        linear-gradient(45deg, var(--board-a) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--board-a) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--board-a) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--board-a) 75%);
+      background-size: 28px 28px;
+      background-position: 0 0, 0 14px, 14px -14px, -14px 0;
+    }
+    .stage img { width: min(100%, 720px); height: auto; display: block; }
+    .caption { margin-top: 12px; font-size: 13px; color: var(--muted); text-align: center; }
+    section { padding: 64px 0; border-top: 1px solid var(--line); }
+    h2 { font-family: var(--serif); font-size: 32px; margin: 0 0 20px; letter-spacing: -0.02em; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+    .card h3 { margin: 0 0 8px; font-size: 16px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+    footer { padding: 28px 0 48px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+    @media (max-width: 900px) {
+      .hero, .pair, .grid { grid-template-columns: 1fr; }
+      .hero { min-height: auto; gap: 28px; padding-top: 28px; }
+      .stage { min-height: 280px; }
+      h1 { font-size: 42px; }
+      .lede { font-size: 16px; max-width: none; }
+      header.top { align-items: flex-start; gap: 10px; }
+      .brand span { display: block; margin: 4px 0 0; }
+      nav { flex-wrap: wrap; justify-content: flex-end; }
+      nav a, .theme { white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">Video GIF Studio <span>本機 · $0 · 透明輸出</span></div>
+      <nav>
+        <a href="#start">開始</a>
+        <a href="#examples">例子</a>
+        <a href="https://github.com/miles990/video-gif-studio">GitHub</a>
+        <button class="theme" type="button" id="theme">淺色</button>
+      </nav>
+    </header>
+
+    <section class="hero" style="border:0; padding-top:12px;">
+      <div>
+        <h1>把影片做成<br>透明 GIF。</h1>
+        <p class="lede">獨立 CLI，也是 Claude Code 與 Codex 的 skill。自動色鍵洋紅／綠幕、裁掉靜止尾段、跑 QA。全部在你的機器上，不必上傳、不必付雲端費。</p>
+        <div class="actions">
+          <a class="btn" href="#start">本機一條指令</a>
+          <a class="btn ghost" href="https://github.com/miles990/video-gif-studio">開原始碼</a>
+        </div>
+        <pre><code>python scripts/vgs.py make source.mp4 --out ./out</code></pre>
+      </div>
+      <div>
+        <div class="stage">
+          <img src="../examples/chibi-running-dash/hero.gif" width="720" height="450" alt="去背後的 Q 版角色衝刺循環 GIF">
+        </div>
+        <p class="caption">90 幀 · 3.75 秒 · 緊裁去溢色 · 頁面顏色就是背景</p>
+      </div>
+    </section>
+
+    <section id="start">
+      <h2>快速開始</h2>
+      <div class="pair">
+        <pre><code>python scripts/install.py --target claude
+# 或 --target codex
+
+python scripts/vgs.py make \
+  examples/chibi-running-dash/source.mp4 \
+  --out /tmp/chibi-gif</code></pre>
+        <div>
+          <div class="grid" style="grid-template-columns:1fr 1fr;">
+            <div class="card">
+              <h3>自動色鍵</h3>
+              <p>平坦高飽和棚景（洋紅／綠）會被去掉。低飽和白底會保留，免得誤傷膚色。</p>
+            </div>
+            <div class="card">
+              <h3>迴圈與 QA</h3>
+              <p>裁靜止尾段、量測閃爍與殘留鍵色。WARN 要人看，FAIL 不交付。</p>
+            </div>
+            <div class="card">
+              <h3>像素與 sprite</h3>
+              <p><code>--pixel</code> 做 96 格點陣，<code>--sprite</code> 與 <code>--mp4</code> 一併輸出。</p>
+            </div>
+            <div class="card">
+              <h3>Agent skill</h3>
+              <p>Claude Code 用 <code>/video-gif-studio</code>，Codex 用 <code>$video-gif-studio</code>。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="examples">
+      <h2>淺底、深底都成立</h2>
+      <img src="../examples/chibi-running-dash/hero-preview.png" alt="同一段透明 GIF 疊在淺色與深色棋盤上" style="width:100%;height:auto;border-radius:16px;border:1px solid var(--line);">
+      <p class="caption" style="text-align:left;margin-top:16px;">上排淺棋盤、下排深棋盤；開頭、中段與結尾各一幀。</p>
+    </section>
+
+    <footer>
+      Video GIF Studio 是公開儲存庫
+      <a href="https://github.com/miles990/video-gif-studio">miles990/video-gif-studio</a>
+      的本機預覽頁，不是正式上線站。此頁只作為靜態預覽，沒有部署。
+    </footer>
+  </div>
+  <script>
+    const btn = document.getElementById('theme');
+    const apply = (mode) => {
+      document.documentElement.dataset.theme = mode;
+      btn.textContent = mode === 'light' ? '深色' : '淺色';
+    };
+    apply(new URLSearchParams(location.search).get('theme') === 'light' ? 'light' : 'dark');
+    btn.addEventListener('click', () => apply(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'));
+  </script>
+</body>
+</html>

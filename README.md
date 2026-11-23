@@ -1,14 +1,17 @@
 # Video GIF Studio
 
+<p align="center">
+  <img src="examples/chibi-running-dash/hero.gif" width="720" alt="Transparent chibi dash GIF">
+</p>
+
+[![CI](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml/badge.svg)](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml)
 [![Release](https://img.shields.io/github/v/release/miles990/video-gif-studio)](https://github.com/miles990/video-gif-studio/releases/latest)
 
-**English** | [繁體中文](README.zh-TW.md)
+**English** | [繁體中文](README.zh-TW.md) · [Preview page](docs/index.html)
 
 Standalone CLI tool and a Codex + Claude Code skill to turn existing video (or generated clips) into transparent GIFs, APNGs, MP4s or sprite sheets.
 
-![Transparent chibi dash GIF](examples/chibi-running-dash/hero.gif)
-
-*Transparent GIF from one local `vgs make` run ($0, auto-trimmed to 90 frames / 3.75 s so `loop` QA passes; visual review still needs a human). On GitHub, the background behind the character is your page color.*
+*Transparent GIF from one local `vgs make` run ($0, auto-trimmed to 90 frames / 3.75 s so `loop` QA passes; visual review still needs a human). Tight-cropped and despilled so the first screen is the character, not padded studio space. On GitHub, the background behind the character is your page color.*
 
 ## Quick start
 
@@ -80,7 +83,7 @@ Installer: `--skills-dir` overrides everything; `--target claude` installs to `~
 python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --pixel --sprite --mp4 --out /tmp/chibi-pixel
 ```
 
-![Pixel art demo](examples/chibi-running-dash/hero-pixel.gif)
+<p align="center"><img src="examples/chibi-running-dash/hero-pixel.gif" width="480" alt="Pixel art demo"></p>
 
 `--pixel` uses a 96-pixel grid, 32 colors and integer nearest-neighbor scaling. Set `--pixel-width`, `--pixel-scale` and `--colors` to customize it. `--sprite` exports frames and sheets at GIF output size; engine validation is not performed. `--mp4` composites onto #141820 and repeats complete loops; use `--loop-count` to set repetitions. The default aims for 8–15 seconds when possible. `--loop auto` searches a natural trim; `--loop crossfade` explicitly blends the end; `--loop off` uses ordinary tail trimming. Auto-key requires a flat border and saturation `(max-min)/max >= 0.35`; low-saturation neutral backgrounds stay opaque so skin and white highlights are not erased (only force `--key HEX` when the foreground has no overlapping neutral tones, or use optional `scripts/background_remove.py` / a saturated backdrop). Global keying can remove enclosed key-colored artwork; the warning identifies it, and `--keep-interior-key` preserves it. `vgs qa` checks both border opacity and remaining key colors. Visual approval remains necessary.
 
@@ -113,7 +116,7 @@ Adapted from [win4r/video-director](https://github.com/win4r/video-director), MI
 
 **Chibi dash attack** — Running steps, sword trails and recovery. Full-speed loop review remains pending.
 
-![Chibi dash attack](examples/chibi-running-dash/hero.gif)
+<p align="center"><img src="examples/chibi-running-dash/hero.gif" width="560" alt="Chibi dash attack"></p>
 
 [GIF](examples/chibi-running-dash/final.gif) · [APNG](examples/chibi-running-dash/final.apng) · [Sprite pack](examples/chibi-running-dash/sprites.zip) · [Production record](examples/chibi-running-dash/README.md)
 

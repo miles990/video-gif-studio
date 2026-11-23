@@ -1,14 +1,17 @@
 # Video GIF Studio
 
+<p align="center">
+  <img src="examples/chibi-running-dash/hero.gif" width="720" alt="透明 Q 版前衝 GIF">
+</p>
+
+[![CI](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml/badge.svg)](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml)
 [![Release](https://img.shields.io/github/v/release/miles990/video-gif-studio)](https://github.com/miles990/video-gif-studio/releases/latest)
 
-[English](README.md) | **繁體中文**
+[English](README.md) | **繁體中文** · [預覽頁](docs/index.html)
 
 這是獨立 CLI 工具，同時也是 Codex 與 Claude Code skill，把既有影片（或生成片段）做成透明 GIF、APNG、MP4 或 sprite sheet。
 
-![透明 Q 版前衝 GIF](examples/chibi-running-dash/hero.gif)
-
-*本機單條 `vgs make` 產出的透明 GIF（$0，已自動裁切至 90 幀／3.75 秒使 `loop` 量測通過；視覺無縫仍須人看）。你在 GitHub 看到的底色是頁面顏色，不是棚景。*
+*本機單條 `vgs make` 產出的透明 GIF（$0，已自動裁切至 90 幀／3.75 秒使 `loop` 量測通過；視覺無縫仍須人看）。已緊裁並去除洋紅溢色，第一屏是角色本身，不是大片留白。你在 GitHub 看到的底色是頁面顏色，不是棚景。*
 
 ## 快速開始
 
@@ -78,7 +81,7 @@ flowchart LR
 python scripts/vgs.py make examples/chibi-running-dash/source.mp4 --pixel --sprite --mp4 --out /tmp/chibi-pixel
 ```
 
-![Pixel art demo](examples/chibi-running-dash/hero-pixel.gif)
+<p align="center"><img src="examples/chibi-running-dash/hero-pixel.gif" width="480" alt="像素風格示範"></p>
 
 `--pixel` 預設 96 像素網格、32 色與整數最近鄰放大，可用 `--pixel-width`、`--pixel-scale`、`--colors` 調整。`--sprite` 以 GIF 輸出尺寸匯出影格和圖集，未做引擎驗證；`--mp4` 合成深色底並重複完整循環，`--loop-count` 指定次數，預設盡可能落在 8–15 秒。`--loop auto` 尋找自然裁切點，`--loop crossfade` 明確混合尾端，`--loop off` 只裁靜止尾端。自動去背需要平坦邊框且飽和度 `(max-min)/max >= 0.35`；低飽和背景會保留不透明以免誤傷膚色與白衣高光（僅在主體不含近白／膚色時才強制 `--key HEX`，或改用可選去背 `scripts/background_remove.py`／高飽和棚景）。全域色鍵可能挖掉封閉的同色圖案；警告列出內島，`--keep-interior-key` 可保留。`vgs qa` 檢查邊框不透明度與殘留鍵色；仍需人看核准。
 
@@ -111,7 +114,7 @@ PASS 表示量測門檻通過；WARN 要依格號／秒數檢視；FAIL 阻擋�
 
 **Q 版前衝攻擊** — 小跑步、劍光與收招；正常速度下的循環驗收仍待完成。
 
-![Q 版前衝攻擊](examples/chibi-running-dash/hero.gif)
+<p align="center"><img src="examples/chibi-running-dash/hero.gif" width="560" alt="Q 版前衝攻擊"></p>
 
 [GIF](examples/chibi-running-dash/final.gif) · [APNG](examples/chibi-running-dash/final.apng) · [Sprite 素材包](examples/chibi-running-dash/sprites.zip) · [製作紀錄](examples/chibi-running-dash/README.zh-TW.md)
 
