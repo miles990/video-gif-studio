@@ -431,18 +431,53 @@ def render(plan_path, out, formats=('gif',), background='000000', experimental=F
         return {'out':str(out),'formats':list(formats)}
     return _render(plan_path,out,formats,background,experimental,interpolate,fps,platform,proxy,keep_audio,duck,loudnorm,_silent_derivative)
 
-def _render(plan_path, out, formats, background, experimental, interpolate, fps, platform, proxy, keep_audio, duck, loudnorm, _silent_derivative=False):
-    out = Path(out); path = Path(plan_path).resolve()
-    if out.exists(): raise ValueError('Use a new output directory')
-    if not formats or not set(formats)<=FORMATS: raise ValueError(f'formats: valid options {sorted(FORMATS)}')
-    plan,items,segments,ctx,effects,transitions = validate_plan(path,formats,experimental,interpolate,proxy,_silent_derivative)
-    from delivery import settings, quantize, encode_frames, audio_delivery
-    streaming=bool(set(formats)&{'mp4','mov','webm'})
+def _require_source_audio(plan, streaming, keep_audio, _silent_derivative):
     retaining=keep_audio if keep_audio is not None else plan.get('keep_audio',False)
     if retaining and not plan.get('source_audio'):
         raise ValueError('keep_audio requires a timeline-aligned source_audio file')
     if retaining and not streaming and not _silent_derivative:
         raise ValueError('Source audio requires MP4, MOV or WebM')
+    return retaining
+
+def _attach_reframe(plan, ctx, items, path, config, delivery_size, streaming, fps, original_size):
+    if not plan.get('reframe'):
+        return None, config
+    from reframe import Reframer
+    target=config['size'] if streaming else delivery_size
+    ctx.width,ctx.height=target
+    if not streaming: config=settings_for_size(target,fps)
+    follower=Reframer(path.parent/plan['reframe']['masks'],original_size,target,sum(t for _,t in items),ctx.fps)
+    return follower, config
+
+def settings_for_size(target, fps):
+    from delivery import settings
+    return settings(target,fps)
+
+def _attach_captions(ctx, config, follower):
+    if not ctx.captions:
+        return None
+    from captions import CaptionRenderer
+    caption_zone=dict(config['safe_zone'])
+    if follower:
+        caption_zone['y']=max(caption_zone['y'],math.ceil(ctx.height*.64))
+        caption_zone['bottom']=min(caption_zone['bottom'],math.floor(ctx.height*.79))
+    caption_renderer=CaptionRenderer(ctx.captions,(ctx.width,ctx.height),caption_zone,fps=ctx.fps)
+    ctx.captions['lines']=caption_renderer.lines
+    return caption_renderer
+
+def _collect_origin_clocks(plan, path):
+    origins={}
+    for s in plan['segments']:
+        if s.get('type') in ('animation','loop') and s.get('manifest'):
+            manifest=path.parent/s['manifest'];data=json.loads(manifest.read_text());clock=0
+            for file,duration in zip(sorted((manifest.parent/'frames').glob('*.png')),data['durations_ms']):
+                origins[str(file.resolve())]=clock;clock+=duration
+    return origins
+
+def _configure_render_output(plan, items, ctx, formats, fps, platform, proxy, keep_audio, path, _silent_derivative):
+    from delivery import settings, quantize, encode_frames, audio_delivery
+    streaming=bool(set(formats)&{'mp4','mov','webm'})
+    retaining=_require_source_audio(plan, streaming, keep_audio, _silent_derivative)
     cfr=streaming and fps!=100
     delivery_size=(ctx.width,ctx.height)
     if plan.get('reframe') and not platform: delivery_size=(max(2,round(ctx.height*9/16/2)*2),ctx.height)
@@ -453,277 +488,352 @@ def _render(plan_path, out, formats, background, experimental, interpolate, fps,
     if streaming:
         ctx.width,ctx.height=config['size']
         if cfr: ctx.fps=fps
-    follower=None
-    if plan.get('reframe'):
-        from reframe import Reframer
-        target=config['size'] if streaming else delivery_size
-        ctx.width,ctx.height=target
-        if not streaming: config=settings(target,fps)
-        follower=Reframer(path.parent/plan['reframe']['masks'],original_size,target,sum(t for _,t in items),ctx.fps)
-    caption_renderer=None
-    if ctx.captions:
-        from captions import CaptionRenderer
-        caption_zone=dict(config['safe_zone'])
-        if follower:
-            caption_zone['y']=max(caption_zone['y'],math.ceil(ctx.height*.64))
-            caption_zone['bottom']=min(caption_zone['bottom'],math.floor(ctx.height*.79))
-        caption_renderer=CaptionRenderer(ctx.captions,(ctx.width,ctx.height),caption_zone,fps=ctx.fps)
-        ctx.captions['lines']=caption_renderer.lines
-    origins={}
+    follower, config = _attach_reframe(plan, ctx, items, path, config, delivery_size, streaming, fps, original_size)
+    caption_renderer=_attach_captions(ctx, config, follower)
+    origins=_collect_origin_clocks(plan, path)
+    return dict(settings=settings, quantize=quantize, encode_frames=encode_frames, audio_delivery=audio_delivery,
+                streaming=streaming, retaining=retaining, cfr=cfr, config=config, follower=follower,
+                caption_renderer=caption_renderer, origins=origins)
+
+def _passthrough_eligible(plan, streaming, effects, transitions, caption_renderer, follower, ctx):
+    if any((streaming, effects, transitions, caption_renderer, follower, ctx.layer_design)):
+        return False
     for s in plan['segments']:
-        if s.get('type') in ('animation','loop') and s.get('manifest'):
-            manifest=path.parent/s['manifest'];data=json.loads(manifest.read_text());clock=0
-            for file,duration in zip(sorted((manifest.parent/'frames').glob('*.png')),data['durations_ms']):
-                origins[str(file.resolve())]=clock;clock+=duration
-    if not streaming and not effects and not transitions and not caption_renderer and not follower and not ctx.layer_design and not any('end_downbeat' in s or 'ramp' in s or s.get('speed',1)!=1 for s in plan['segments']):
-        if ctx.source_trimmed or any('speed' in s for s in plan['segments']) or _silent_derivative:
-            # Explicit unity shares the exact legacy frame/exposure path.
-            images=[]
-            for file,_ in items:
-                with open_image(file) as im:images.append(im.convert('RGBA'))
-            result=export_timeline(path,out,formats,background,plan,items,segments,images,[t for _,t in items])
-        else:result=compose(path,out,formats,background)
-        manifest_path=out/'manifest.json';record=json.loads(manifest_path.read_text());clock=0;record['source_samples']=[]
-        for file,duration in items:
-            index=max(0,bisect.bisect_right([s['start_ms'] for s in segments],clock)-1)
-            record['source_samples'].append({'output_ms':clock,'segment_index':index,'source_ms':origins.get(str(file.resolve()),0),'interpolation':'none','extended_last_frame':False});clock+=duration
-        record['experimental_items']=experimental_items(plan)
-        manifest_path.write_text(json.dumps(record,indent=2));return result
-    started = time.perf_counter()
-    edges = np.cumsum([0]+[t for _,t in items]).tolist(); total = edges[-1]
-    # 10ms exposures retain existing exporters, with the mean requested rate.
-    events = [s['start_ms'] for s in segments]
-    events += [round(t/10)*10 for e in effects for t in e['trigger_times_ms']]
-    # Resolve the first decay step too: repeated maximum-white frames otherwise
-    # let tiny codec differences move the measured peak several encoded frames.
-    events += [round(t/10)*10+10 for e in effects if e['name']=='flash_white' for t in e['trigger_times_ms']]
-    events += [tr['cut_ms']+10 for tr in transitions if tr['name']=='flash_cut']
-    sample_edges = sorted(set([round(k*1000/ctx.fps/10)*10 for k in range(math.ceil(total*ctx.fps/1000))]+[t for t in events if 0<=t<=total]+[total]))
-    if len(sample_edges)>2 and sample_edges[-1]-sample_edges[-2]<20: sample_edges.pop(-2)
-    if streaming and fps==100 and not effects and not transitions and not any('ramp' in s or s.get('speed',1)!=1 for s in plan['segments']):
-        sample_edges=edges
-    quantized=[]
-    cuts=[dict(quantize(s['start_ms'],fps),segment_index=i) for i,s in enumerate(segments)] if cfr else []
-    if cfr:
-        frame_count=math.floor(total*fps/1000+.5)
-        if frame_count<1: raise ValueError('Timeline rounds to zero video frames; choose a higher fps or longer duration')
-        sample_edges=[k*1000/fps for k in range(frame_count+1)]
-        for i,effect in enumerate(effects):
-            effect['requested_start_ms']=effect['start_ms']
-            times=effect['trigger_times_ms'] or [effect['start_ms']]
-            effect['quantization']=[dict(quantize(t,fps),effect_index=i) for t in times]
-            groups={}
-            for event_index,event in enumerate(effect['quantization']):
-                groups.setdefault(event['frame'],[]).append(event_index)
-            for event_index,event in enumerate(effect['quantization']):
-                peers=groups[event['frame']]
-                event.update(event_index=event_index,merged=len(peers)>1,
-                             merged_event_indices=peers if len(peers)>1 else [])
-            quantized.extend(effect['quantization'])
-            for edge in ('start_ms','end_ms'):
-                effect[edge]=quantize(effect[edge],fps)['quantized_ms']
-        for segment in segments:
-            segment['start_ms']=quantize(segment['start_ms'],fps)['quantized_ms']
-        for tr in transitions:
-            tr['requested_cut_ms']=tr['cut_ms']
-            delta=quantize(tr['cut_ms'],fps)['quantized_ms']-tr['cut_ms']
-            for key in ('start_ms','end_ms','cut_ms'):tr[key]+=delta
-    cache = {}
-    remaps={}; source_records=[]; flow_cache={}
-    from fx.timewarp import source_clock, interpolate, flow_pair
-    from fx.core import floating
-    from fx.core import restore
+        if 'end_downbeat' in s or 'ramp' in s or s.get('speed',1)!=1:
+            return False
+    return True
+
+def _short_circuit_export(plan, items, segments, ctx, formats, background, path, out, origins, streaming, effects, transitions, caption_renderer, follower, _silent_derivative):
+    if not _passthrough_eligible(plan, streaming, effects, transitions, caption_renderer, follower, ctx):
+        return None
+    if ctx.source_trimmed or any('speed' in s for s in plan['segments']) or _silent_derivative:
+        images=[]
+        for file,_ in items:
+            with open_image(file) as im:images.append(im.convert('RGBA'))
+        result=export_timeline(path,out,formats,background,plan,items,segments,images,[t for _,t in items])
+    else:result=compose(path,out,formats,background)
+    manifest_path=out/'manifest.json';record=json.loads(manifest_path.read_text());clock=0;record['source_samples']=[]
+    for file,duration in items:
+        index=max(0,bisect.bisect_right([s['start_ms'] for s in segments],clock)-1)
+        record['source_samples'].append({'output_ms':clock,'segment_index':index,'source_ms':origins.get(str(file.resolve()),0),'interpolation':'none','extended_last_frame':False});clock+=duration
+    record['experimental_items']=experimental_items(plan)
+    manifest_path.write_text(json.dumps(record,indent=2));return result
+
+def _segment_time_remaps(plan, path):
+    remaps={}
     for i,original in enumerate(plan['segments']):
         if original.get('type')=='animation' and ('ramp' in original or original.get('speed',1)!=1):
             manifest=path.parent/original['manifest']; data=json.loads(manifest.read_text())
             files=sorted((manifest.parent/'frames').glob('*.png'))
             remaps[i]=(files,np.cumsum([0]+data['durations_ms']),original)
-    def read(file):
-        if file not in cache:
-            if len(cache)>=3:cache.pop(next(iter(cache)))
-            with open_image(file) as im:
-                rgba=im.convert('RGBA')
-                if streaming and not follower and rgba.size!=(ctx.width,ctx.height):
-                    from PIL import ImageOps
-                    rgba=ImageOps.pad(rgba,(ctx.width,ctx.height),method=Image.Resampling.NEAREST if ctx.sampling=='nearest' else Image.Resampling.LANCZOS,color=(0,0,0,0))
-                cache[file]=np.array(rgba)
-        return cache[file]
-    def parameters(effect,t,end=None):
-        result = {}
-        for key,value in effect['params'].items():
-            at = t
-            if isinstance(value,dict) and value.get('on') in ('beats','downbeats'):
-                candidates = [beat for beat in triggers(value,ctx) if (abs(quantize(beat,fps)['quantized_ms']-t)<1e-6 if cfr else round(beat/10)*10==t)]
-                if candidates: at = min(candidates,key=lambda beat:abs(beat-t))
-            result[key] = evaluate(value,at,ctx)
-            if isinstance(value,dict) and value.get('on') in ('onset','energy') and end is not None:
-                # Integrate peaks over the exposure; a subframe onset cannot disappear.
-                samples = [s-ctx.audio.get('offset_ms',0) for s in ctx.audio['times_ms']
-                           if t<=s-ctx.audio.get('offset_ms',0)<end]
-                result[key] = max([result[key]]+[evaluate(value,s,ctx) for s in samples])
-        return result
-    def source(t, index=None):
-        index = max(0,bisect.bisect_right([s['start_ms'] for s in segments],t)-1) if index is None else index
-        j = max(0,min(len(items)-1,bisect.bisect_right(edges,t)-1))
-        if index is not None: j = max(segments[index]['start_frame'],min(segments[index]['end_frame_exclusive']-1,j))
-        file = items[j][0]
-        frame = read(file)
-        previous_segment = ctx.segment
-        ctx.segment = dict(segments[index],index=index,end_ms=segments[index]['start_ms']+segments[index]['duration_ms'])
-        active_t = max(segments[index]['start_ms'],min(t,segments[index]['start_ms']+segments[index]['duration_ms']-1e-6))
-        source_ms=origins.get(str(file.resolve()),0);method='none';extended=False
-        if index in remaps:
-            files,source_edges,original=remaps[index]
-            local=active_t-segments[index]['start_ms'];begin=original.get('in_ms',0)
-            requested=begin+source_clock(original,local,ctx)
-            limit=original.get('out_ms',int(source_edges[-1]))
-            extended=requested>=limit;source_ms=min(requested,limit-1e-5)
-            k=max(0,min(len(files)-1,bisect.bisect_right(source_edges,source_ms)-1))
-            file=files[k];frame=read(file)
-            speed=(source_clock(original,local+1,ctx)-source_clock(original,local,ctx))
-            phase=(source_ms-source_edges[k])/(source_edges[k+1]-source_edges[k])
-            if speed<1-1e-6 and phase>1e-6 and k+1<len(files) and source_edges[k+1]<limit:
-                method=plan.get('interpolate','none');other=read(files[k+1]);flows=None
-                if method=='flow':
-                    key=(str(file),str(files[k+1]))
-                    if key not in flow_cache:
-                        flow_cache.clear();flow_cache[key]=flow_pair(floating(frame),floating(other))
-                    flows=flow_cache[key]
-                frame=interpolate(frame,other,phase,method,model=plan.get('rife_model',''),flows=flows)
-        if t==ctx.t_ms and index==ctx.segment['index']:
-            current_source.update(source_ms=round(float(source_ms),3),interpolation=method,extended_last_frame=extended)
-        if follower: frame=np.asarray(follower.apply(frame,t))
-        frame=floating(frame)
-        for effect in effects:
-            if effect['stage']=='source' and not effect.get('proxy_skipped') and effect['start_ms']<=active_t<effect['end_ms']:
-                ctx.effect_start_ms=effect['start_ms']
-                frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
-        ctx.segment = previous_segment
-        return frame,file
-    images, output_items = [], []
-    history_size=max([EFFECTS[e['name']].get('history',0) for e in effects]+[0])
-    history=deque(maxlen=history_size);history_times=deque(maxlen=history_size);previous_index=None
-    end=0;current_source={}
-    def rendered_frames():
-        nonlocal end,current_source,previous_index
-        for t,end in zip(sample_edges,sample_edges[1:]):
-            index = max(0,bisect.bisect_right([s['start_ms'] for s in segments],t)-1)
-            ctx.t_ms = t; ctx.segment = dict(segments[index],index=index,end_ms=segments[index]['start_ms']+segments[index]['duration_ms'])
-            if index!=previous_index:history.clear();history_times.clear()
-            previous_index=index;ctx.history=tuple(reversed(history));ctx.history_times_ms=tuple(reversed(history_times))
-            current_source={'output_ms':t,'segment_index':index}
-            frame,file = source(t)
-            source_records.append(current_source.copy())
-            for tr in transitions:
-                if tr['start_ms']<=t<tr['end_ms']:
-                    j = tr['segment_index']; a,_ = source(t,j-1); b,_ = source(t,j)
-                    p = (t-tr['start_ms'])/(tr['end_ms']-tr['start_ms'])
-                    frame = TRANSITIONS[tr['name']]['owned'](a,b,p,ctx,**parameters(tr,t,end))
-            before_effects=frame.copy() if history_size else None
-            recipe_reference=frame.copy() if plan.get('recipe_events') else None
-            for effect in effects:
-                if effect['stage']=='post' and not effect.get('proxy_skipped') and effect['start_ms']<=t<effect['end_ms']:
-                    ctx.effect_start_ms=effect['start_ms']
-                    if 'director_mix' in effect:
-                        from fx.core import premultiply,straight
-                        original=frame.copy()
-                        mixed=EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
-                        weight=evaluate(effect['director_mix'],t,ctx)
-                        frame=straight(premultiply(original)*(1-weight)+premultiply(mixed)*weight)
-                    else:
-                        frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**parameters(effect,t,end))
-            if recipe_reference is not None:
-                active=[r for r in plan['recipe_events'] if any(e.get('recipe_event_id')==r['event_id'] and e['start_ms']<=t<e['end_ms'] for e in effects)]
-                if active:
-                    from fx_measure import measures
-                    measured=measures(restore(recipe_reference,np.uint8),restore(frame,np.uint8))
-                    for event in active:
-                        if measured['perceived'] is not None and measured['perceived']>event.get('measured_peak_perceived',-1):
-                            event['measured_peak_perceived']=measured['perceived']
-                            if event.get('sfx_anchor')!='onset':event['sfx_at_ms']=t
-                            event['peak_measurement']='pre-encode paired MEAS; decoded validation remains required'
-            output_items.append((file,end-t))
-            image=Image.fromarray(restore(frame,np.uint8))
-            if caption_renderer: image=caption_renderer.overlay(image,t)
-            yield image
-            if history_size:history.append(floating(before_effects));history_times.append(t)
-    if streaming:
-        import tempfile
-        out.parent.mkdir(parents=True,exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=out.parent) as temporary:
-            root=Path(temporary)/'delivery';root.mkdir()
-            movie=root/('animation.'+formats[0])
-            def delivery_frames():
-                for image in rendered_frames():
-                    count=round(output_items[-1][1]/10) if fps==100 else 1
-                    for _ in range(count): yield image
-            report=encode_frames(delivery_frames(),movie,config,background)
-            source=plan.get('source_audio') if (keep_audio if keep_audio is not None else plan.get('keep_audio',False)) else None
-            music=plan.get('music')
-            sfx_spec=None;sfx_events=[]
-            if 'sfx' in plan:
-                from sfx import events_from_plan,render_track
-                options={} if plan['sfx']=='auto' else plan['sfx']
-                for segment in segments:
-                    if 'ramp' in segment.get('edit',{}):
-                        segment['edit']['ramp']['hit_at_ms']=ctx.beats_ms[segment['edit']['ramp']['into_beat']]
-                requested=events_from_plan(plan,effects,transitions,segments,ctx.captions,fps if cfr else None)
-                sfx_file=Path(temporary)/'sfx.wav'
-                sfx_events=render_track(requested,report['container_duration_ms'],sfx_file,
-                    path.parent/options['user_folder'] if options.get('user_folder') else None,
-                    path.parent/options['kenney_folder'] if options.get('kenney_folder') else None,options.get('gain_db',0))
-                sfx_spec={'file':str(sfx_file)}
-            def audio_spec(value):
-                if not value:return None
-                value=dict(file=value) if isinstance(value,str) else dict(value)
-                value['file']=str((path.parent/value['file']).resolve());return value
-            if not platform and not source and not sfx_spec and loudnorm is None and 'loudnorm' not in plan and music:
-                from music_sync import mux_music
-                spec=audio_spec(music)
-                audio=mux_music(movie,spec['file'],report['container_duration_ms'],spec.get('in_ms',0),spec.get('gain_db',0),spec.get('fade_in_ms',30),spec.get('fade_out_ms',30))
+    return remaps
+
+def _trigger_edge_times(segments, effects, transitions):
+    events = [s['start_ms'] for s in segments]
+    events += [round(t/10)*10 for e in effects for t in e['trigger_times_ms']]
+    events += [round(t/10)*10+10 for e in effects if e['name']=='flash_white' for t in e['trigger_times_ms']]
+    events += [tr['cut_ms']+10 for tr in transitions if tr['name']=='flash_cut']
+    return events
+
+def _nominal_sample_edges(items, events, ctx, plan, streaming, fps, effects, transitions):
+    edges = np.cumsum([0]+[t for _,t in items]).tolist(); total = edges[-1]
+    sample_edges = sorted(set([round(k*1000/ctx.fps/10)*10 for k in range(math.ceil(total*ctx.fps/1000))]+[t for t in events if 0<=t<=total]+[total]))
+    if len(sample_edges)>2 and sample_edges[-1]-sample_edges[-2]<20: sample_edges.pop(-2)
+    if streaming and fps==100 and not effects and not transitions and not any('ramp' in s or s.get('speed',1)!=1 for s in plan['segments']):
+        sample_edges=edges
+    return edges, total, sample_edges
+
+def _build_sample_edges(items, segments, effects, transitions, ctx, plan, streaming, fps, cfr, quantize):
+    events = _trigger_edge_times(segments, effects, transitions)
+    edges, total, sample_edges = _nominal_sample_edges(items, events, ctx, plan, streaming, fps, effects, transitions)
+    quantized, cuts = [], []
+    if cfr:
+        frame_count=math.floor(total*fps/1000+.5)
+        if frame_count<1: raise ValueError('Timeline rounds to zero video frames; choose a higher fps or longer duration')
+        sample_edges=[k*1000/fps for k in range(frame_count+1)]
+        quantized, cuts = _quantize_cfr_timeline(effects, segments, transitions, fps, quantize, total)
+    return edges, total, sample_edges, quantized, cuts
+
+def _quantize_cfr_timeline(effects, segments, transitions, fps, quantize, total):
+    quantized=[]
+    cuts=[dict(quantize(s['start_ms'],fps),segment_index=i) for i,s in enumerate(segments)]
+    for i,effect in enumerate(effects):
+        effect['requested_start_ms']=effect['start_ms']
+        times=effect['trigger_times_ms'] or [effect['start_ms']]
+        effect['quantization']=[dict(quantize(t,fps),effect_index=i) for t in times]
+        groups={}
+        for event_index,event in enumerate(effect['quantization']):
+            groups.setdefault(event['frame'],[]).append(event_index)
+        for event_index,event in enumerate(effect['quantization']):
+            peers=groups[event['frame']]
+            event.update(event_index=event_index,merged=len(peers)>1,
+                         merged_event_indices=peers if len(peers)>1 else [])
+        quantized.extend(effect['quantization'])
+        for edge in ('start_ms','end_ms'):
+            effect[edge]=quantize(effect[edge],fps)['quantized_ms']
+    for segment in segments:
+        segment['start_ms']=quantize(segment['start_ms'],fps)['quantized_ms']
+    for tr in transitions:
+        tr['requested_cut_ms']=tr['cut_ms']
+        delta=quantize(tr['cut_ms'],fps)['quantized_ms']-tr['cut_ms']
+        for key in ('start_ms','end_ms','cut_ms'):tr[key]+=delta
+    return quantized, cuts
+
+def _read_frame(job, file):
+    cache=job.cache
+    if file not in cache:
+        if len(cache)>=3:cache.pop(next(iter(cache)))
+        with open_image(file) as im:
+            rgba=im.convert('RGBA')
+            if job.streaming and not job.follower and rgba.size!=(job.ctx.width,job.ctx.height):
+                from PIL import ImageOps
+                rgba=ImageOps.pad(rgba,(job.ctx.width,job.ctx.height),method=Image.Resampling.NEAREST if job.ctx.sampling=='nearest' else Image.Resampling.LANCZOS,color=(0,0,0,0))
+            cache[file]=np.array(rgba)
+    return cache[file]
+
+def _effect_parameters(job, effect, t, end=None):
+    result = {}
+    ctx, cfr, fps, quantize = job.ctx, job.cfr, job.fps, job.quantize
+    for key,value in effect['params'].items():
+        at = t
+        if isinstance(value,dict) and value.get('on') in ('beats','downbeats'):
+            candidates = [beat for beat in triggers(value,ctx) if (abs(quantize(beat,fps)['quantized_ms']-t)<1e-6 if cfr else round(beat/10)*10==t)]
+            if candidates: at = min(candidates,key=lambda beat:abs(beat-t))
+        result[key] = evaluate(value,at,ctx)
+        if isinstance(value,dict) and value.get('on') in ('onset','energy') and end is not None:
+            samples = [s-ctx.audio.get('offset_ms',0) for s in ctx.audio['times_ms']
+                       if t<=s-ctx.audio.get('offset_ms',0)<end]
+            result[key] = max([result[key]]+[evaluate(value,s,ctx) for s in samples])
+    return result
+
+def _remap_animated_source(job, index, active_t, file, frame):
+    from fx.timewarp import source_clock, interpolate, flow_pair
+    from fx.core import floating
+    files,source_edges,original=job.remaps[index]
+    local=active_t-job.segments[index]['start_ms'];begin=original.get('in_ms',0)
+    requested=begin+source_clock(original,local,job.ctx)
+    limit=original.get('out_ms',int(source_edges[-1]))
+    extended=requested>=limit;source_ms=min(requested,limit-1e-5)
+    k=max(0,min(len(files)-1,bisect.bisect_right(source_edges,source_ms)-1))
+    file=files[k];frame=_read_frame(job,file)
+    speed=(source_clock(original,local+1,job.ctx)-source_clock(original,local,job.ctx))
+    phase=(source_ms-source_edges[k])/(source_edges[k+1]-source_edges[k])
+    method='none'
+    if speed<1-1e-6 and phase>1e-6 and k+1<len(files) and source_edges[k+1]<limit:
+        method=job.plan.get('interpolate','none');other=_read_frame(job,files[k+1]);flows=None
+        if method=='flow':
+            key=(str(file),str(files[k+1]))
+            if key not in job.flow_cache:
+                job.flow_cache.clear();job.flow_cache[key]=flow_pair(floating(frame),floating(other))
+            flows=job.flow_cache[key]
+        frame=interpolate(frame,other,phase,method,model=job.plan.get('rife_model',''),flows=flows)
+    return frame, file, source_ms, method, extended
+
+def _source_frame(job, t, index=None, end=None):
+    from fx.core import floating
+    segments, items, edges, ctx = job.segments, job.items, job.edges, job.ctx
+    index = max(0,bisect.bisect_right([s['start_ms'] for s in segments],t)-1) if index is None else index
+    j = max(0,min(len(items)-1,bisect.bisect_right(edges,t)-1))
+    if index is not None: j = max(segments[index]['start_frame'],min(segments[index]['end_frame_exclusive']-1,j))
+    file = items[j][0]
+    frame = _read_frame(job, file)
+    previous_segment = ctx.segment
+    ctx.segment = dict(segments[index],index=index,end_ms=segments[index]['start_ms']+segments[index]['duration_ms'])
+    active_t = max(segments[index]['start_ms'],min(t,segments[index]['start_ms']+segments[index]['duration_ms']-1e-6))
+    source_ms=job.origins.get(str(file.resolve()),0);method='none';extended=False
+    if index in job.remaps:
+        frame,file,source_ms,method,extended = _remap_animated_source(job, index, active_t, file, frame)
+    if t==ctx.t_ms and index==ctx.segment['index']:
+        job.current_source.update(source_ms=round(float(source_ms),3),interpolation=method,extended_last_frame=extended)
+    if job.follower: frame=np.asarray(job.follower.apply(frame,t))
+    frame=floating(frame)
+    for effect in job.effects:
+        if effect['stage']=='source' and not effect.get('proxy_skipped') and effect['start_ms']<=active_t<effect['end_ms']:
+            ctx.effect_start_ms=effect['start_ms']
+            frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**_effect_parameters(job,effect,t,end))
+    ctx.segment = previous_segment
+    return frame,file
+
+def _apply_post_effects(job, frame, t, end):
+    ctx=job.ctx
+    for effect in job.effects:
+        if effect['stage']=='post' and not effect.get('proxy_skipped') and effect['start_ms']<=t<effect['end_ms']:
+            ctx.effect_start_ms=effect['start_ms']
+            if 'director_mix' in effect:
+                from fx.core import premultiply,straight
+                original=frame.copy()
+                mixed=EFFECTS[effect['name']]['owned'](frame,t,ctx,**_effect_parameters(job,effect,t,end))
+                weight=evaluate(effect['director_mix'],t,ctx)
+                frame=straight(premultiply(original)*(1-weight)+premultiply(mixed)*weight)
             else:
-                audio=audio_delivery(movie,report['container_duration_ms'],audio_spec(music),audio_spec(source),
-                    duck if duck is not None else plan.get('duck',True), True if sfx_spec else (loudnorm if loudnorm is not None else plan.get('loudnorm',True)),sfx=sfx_spec)
-            elapsed=time.perf_counter()-started
-            report['audio']=audio
-            movie.with_suffix(movie.suffix+'.json').write_text(json.dumps(report,indent=2))
-            manifest=dict(duration_ms=report['container_duration_ms'],durations_ms=[1000/fps]*report['encoded_frames'],
-                plan_file=str(path),timeline_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-                size=config['size'],delivery=config,events=quantized,cuts=cuts,effects=effects,transitions=transitions,segments=segments,
-                source_samples=source_records,experimental_items=experimental_items(plan),audio=audio,
-                collision_policy='same-frame events evaluated together; maximum envelope wins',
-                render=dict(seconds=elapsed,fps=len(output_items)/elapsed,requested_fps=fps,streaming=True))
-            from threshold_registry import snapshot
-            manifest['threshold_registry']=snapshot()
-            if ctx.captions: manifest['captions']=ctx.captions
-            if sfx_spec: manifest['sfx']=sfx_events
-            if ctx.layer_design: manifest['beat_layers']=ctx.layer_design
-            if follower: manifest['reframe']=follower.report
-            if plan.get('recipe_events'):manifest['recipe_events']=plan['recipe_events']
-            if plan.get('fx_checks'):
-                from fx_check import check_render
-                report['fx_checks']=check_render(movie,plan,path,fps,root,experimental)
-                manifest['fx_checks']=report['fx_checks']
-                for effect,event in zip(manifest['effects'],report['fx_checks']['events']):effect['visibility']=event['visibility']
-            (root/'manifest.json').write_text(json.dumps(manifest,indent=2))
-            (root/'qc.json').write_text(json.dumps(report,indent=2))
-            rename_delivery(root,out)
-        return dict(out=str(out),frames=report['encoded_frames'],duration_ms=report['container_duration_ms'],formats=list(formats))
-    images=list(rendered_frames())
-    elapsed = time.perf_counter()-started
-    extra = {'effects':effects,'transitions':transitions,'fx_overrides':list(OVERRIDES),'render':{'seconds':elapsed,'fps':len(images)/elapsed,'requested_fps':ctx.fps},'semantics':'Centered transitions; source endpoints extended; effect intervals end-exclusive; no motion synthesized.'}
-    extra['warnings'] = [tr['warning'] for tr in transitions if 'warning' in tr]
+                frame = EFFECTS[effect['name']]['owned'](frame,t,ctx,**_effect_parameters(job,effect,t,end))
+    return frame
+
+def _record_recipe_peak(job, recipe_reference, frame, t):
+    from fx.core import restore
+    active=[r for r in job.plan['recipe_events'] if any(e.get('recipe_event_id')==r['event_id'] and e['start_ms']<=t<e['end_ms'] for e in job.effects)]
+    if not active: return
+    from fx_measure import measures
+    measured=measures(restore(recipe_reference,np.uint8),restore(frame,np.uint8))
+    for event in active:
+        if measured['perceived'] is not None and measured['perceived']>event.get('measured_peak_perceived',-1):
+            event['measured_peak_perceived']=measured['perceived']
+            if event.get('sfx_anchor')!='onset':event['sfx_at_ms']=t
+            event['peak_measurement']='pre-encode paired MEAS; decoded validation remains required'
+
+def _iter_rendered_frames(job):
+    from fx.core import floating, restore
+    ctx=job.ctx
+    for t,end in zip(job.sample_edges,job.sample_edges[1:]):
+        index = max(0,bisect.bisect_right([s['start_ms'] for s in job.segments],t)-1)
+        ctx.t_ms = t; ctx.segment = dict(job.segments[index],index=index,end_ms=job.segments[index]['start_ms']+job.segments[index]['duration_ms'])
+        if index!=job.previous_index:job.history.clear();job.history_times.clear()
+        job.previous_index=index;ctx.history=tuple(reversed(job.history));ctx.history_times_ms=tuple(reversed(job.history_times))
+        job.current_source={'output_ms':t,'segment_index':index}
+        job.end=end
+        frame,file = _source_frame(job, t, end=end)
+        job.source_records.append(job.current_source.copy())
+        for tr in job.transitions:
+            if tr['start_ms']<=t<tr['end_ms']:
+                j = tr['segment_index']; a,_ = _source_frame(job,t,j-1,end); b,_ = _source_frame(job,t,j,end)
+                p = (t-tr['start_ms'])/(tr['end_ms']-tr['start_ms'])
+                frame = TRANSITIONS[tr['name']]['owned'](a,b,p,ctx,**_effect_parameters(job,tr,t,end))
+        before_effects=frame.copy() if job.history_size else None
+        recipe_reference=frame.copy() if job.plan.get('recipe_events') else None
+        frame=_apply_post_effects(job, frame, t, end)
+        if recipe_reference is not None:
+            _record_recipe_peak(job, recipe_reference, frame, t)
+        job.output_items.append((file,end-t))
+        image=Image.fromarray(restore(frame,np.uint8))
+        if job.caption_renderer: image=job.caption_renderer.overlay(image,t)
+        yield image
+        if job.history_size:job.history.append(floating(before_effects));job.history_times.append(t)
+
+def _audio_file_spec(value, path):
+    if not value:return None
+    value=dict(file=value) if isinstance(value,str) else dict(value)
+    value['file']=str((path.parent/value['file']).resolve());return value
+
+def _render_plan_sfx(job, report, temporary):
+    plan, path = job.plan, job.path
+    if 'sfx' not in plan:
+        return None, []
+    from sfx import events_from_plan,render_track
+    options={} if plan['sfx']=='auto' else plan['sfx']
+    for segment in job.segments:
+        if 'ramp' in segment.get('edit',{}):
+            segment['edit']['ramp']['hit_at_ms']=job.ctx.beats_ms[segment['edit']['ramp']['into_beat']]
+    requested=events_from_plan(plan,job.effects,job.transitions,job.segments,job.ctx.captions,job.fps if job.cfr else None)
+    sfx_file=Path(temporary)/'sfx.wav'
+    sfx_events=render_track(requested,report['container_duration_ms'],sfx_file,
+        path.parent/options['user_folder'] if options.get('user_folder') else None,
+        path.parent/options['kenney_folder'] if options.get('kenney_folder') else None,options.get('gain_db',0))
+    return {'file':str(sfx_file)}, sfx_events
+
+def _mux_streaming_audio(job, movie, report, temporary):
+    plan, path = job.plan, job.path
+    source=plan.get('source_audio') if (job.keep_audio if job.keep_audio is not None else plan.get('keep_audio',False)) else None
+    music=plan.get('music')
+    sfx_spec, sfx_events = _render_plan_sfx(job, report, temporary)
+    simple = not job.platform and not source and not sfx_spec and job.loudnorm is None and 'loudnorm' not in plan and music
+    if simple:
+        from music_sync import mux_music
+        spec=_audio_file_spec(music, path)
+        audio=mux_music(movie,spec['file'],report['container_duration_ms'],spec.get('in_ms',0),spec.get('gain_db',0),spec.get('fade_in_ms',30),spec.get('fade_out_ms',30))
+    else:
+        audio=job.audio_delivery(movie,report['container_duration_ms'],_audio_file_spec(music, path),_audio_file_spec(source, path),
+            job.duck if job.duck is not None else plan.get('duck',True), True if sfx_spec else (job.loudnorm if job.loudnorm is not None else plan.get('loudnorm',True)),sfx=sfx_spec)
+    return audio, sfx_spec, sfx_events
+
+def _write_streaming_manifest(job, root, movie, report, audio, sfx_spec, sfx_events, elapsed, out):
+    plan, path, config, fps = job.plan, job.path, job.config, job.fps
+    report['audio']=audio
+    movie.with_suffix(movie.suffix+'.json').write_text(json.dumps(report,indent=2))
+    manifest=dict(duration_ms=report['container_duration_ms'],durations_ms=[1000/fps]*report['encoded_frames'],
+        plan_file=str(path),timeline_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+        size=config['size'],delivery=config,events=job.quantized,cuts=job.cuts,effects=job.effects,transitions=job.transitions,segments=job.segments,
+        source_samples=job.source_records,experimental_items=experimental_items(plan),audio=audio,
+        collision_policy='same-frame events evaluated together; maximum envelope wins',
+        render=dict(seconds=elapsed,fps=len(job.output_items)/elapsed,requested_fps=fps,streaming=True))
+    from threshold_registry import snapshot
+    manifest['threshold_registry']=snapshot()
+    if job.ctx.captions: manifest['captions']=job.ctx.captions
+    if sfx_spec: manifest['sfx']=sfx_events
+    if job.ctx.layer_design: manifest['beat_layers']=job.ctx.layer_design
+    if job.follower: manifest['reframe']=job.follower.report
+    if plan.get('recipe_events'):manifest['recipe_events']=plan['recipe_events']
+    if plan.get('fx_checks'):
+        from fx_check import check_render
+        report['fx_checks']=check_render(movie,plan,path,fps,root,job.experimental)
+        manifest['fx_checks']=report['fx_checks']
+        for effect,event in zip(manifest['effects'],report['fx_checks']['events']):effect['visibility']=event['visibility']
+    (root/'manifest.json').write_text(json.dumps(manifest,indent=2))
+    (root/'qc.json').write_text(json.dumps(report,indent=2))
+    rename_delivery(root,out)
+    return dict(out=str(out),frames=report['encoded_frames'],duration_ms=report['container_duration_ms'],formats=list(job.formats))
+
+def _export_streaming(job, out):
+    import tempfile
+    out.parent.mkdir(parents=True,exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=out.parent) as temporary:
+        root=Path(temporary)/'delivery';root.mkdir()
+        movie=root/('animation.'+job.formats[0])
+        def delivery_frames():
+            for image in _iter_rendered_frames(job):
+                count=round(job.output_items[-1][1]/10) if job.fps==100 else 1
+                for _ in range(count): yield image
+        report=job.encode_frames(delivery_frames(),movie,job.config,job.background)
+        audio, sfx_spec, sfx_events = _mux_streaming_audio(job, movie, report, temporary)
+        elapsed=time.perf_counter()-job.started
+        return _write_streaming_manifest(job, root, movie, report, audio, sfx_spec, sfx_events, elapsed, out)
+
+def _export_still_timeline(job, out):
+    from fx.core import restore
+    images=list(_iter_rendered_frames(job))
+    elapsed = time.perf_counter()-job.started
+    extra = {'effects':job.effects,'transitions':job.transitions,'fx_overrides':list(OVERRIDES),'render':{'seconds':elapsed,'fps':len(images)/elapsed,'requested_fps':job.ctx.fps},'semantics':'Centered transitions; source endpoints extended; effect intervals end-exclusive; no motion synthesized.'}
+    extra['warnings'] = [tr['warning'] for tr in job.transitions if 'warning' in tr]
     from threshold_registry import snapshot
     extra['threshold_registry']=snapshot()
-    extra['source_samples']=source_records
-    extra['experimental_items']=experimental_items(plan)
-    if ctx.captions: extra['captions']=ctx.captions
-    if ctx.layer_design: extra['beat_layers']=ctx.layer_design
-    if follower: extra['reframe']=follower.report
-    for segment in segments:
-        segment['start_frame'] = bisect.bisect_left(sample_edges,segment['start_ms'])
-        segment['end_frame_exclusive'] = bisect.bisect_left(sample_edges,segment['start_ms']+segment['duration_ms'])
-    return export_timeline(path,out,formats,background,plan,output_items,segments,images,[t for _,t in output_items],extra)
+    extra['source_samples']=job.source_records
+    extra['experimental_items']=experimental_items(job.plan)
+    if job.ctx.captions: extra['captions']=job.ctx.captions
+    if job.ctx.layer_design: extra['beat_layers']=job.ctx.layer_design
+    if job.follower: extra['reframe']=job.follower.report
+    for segment in job.segments:
+        segment['start_frame'] = bisect.bisect_left(job.sample_edges,segment['start_ms'])
+        segment['end_frame_exclusive'] = bisect.bisect_left(job.sample_edges,segment['start_ms']+segment['duration_ms'])
+    return export_timeline(job.path,out,job.formats,job.background,job.plan,job.output_items,job.segments,images,[t for _,t in job.output_items],extra)
+
+class _RenderJob:
+    def __init__(self, **fields):
+        self.__dict__.update(fields)
+
+def _render(plan_path, out, formats, background, experimental, interpolate, fps, platform, proxy, keep_audio, duck, loudnorm, _silent_derivative=False):
+    out = Path(out); path = Path(plan_path).resolve()
+    if out.exists(): raise ValueError('Use a new output directory')
+    if not formats or not set(formats)<=FORMATS: raise ValueError(f'formats: valid options {sorted(FORMATS)}')
+    plan,items,segments,ctx,effects,transitions = validate_plan(path,formats,experimental,interpolate,proxy,_silent_derivative)
+    setup=_configure_render_output(plan, items, ctx, formats, fps, platform, proxy, keep_audio, path, _silent_derivative)
+    early=_short_circuit_export(plan, items, segments, ctx, formats, background, path, out, setup['origins'], setup['streaming'], effects, transitions, setup['caption_renderer'], setup['follower'], _silent_derivative)
+    if early is not None: return early
+    started = time.perf_counter()
+    edges, total, sample_edges, quantized, cuts = _build_sample_edges(items, segments, effects, transitions, ctx, plan, setup['streaming'], fps, setup['cfr'], setup['quantize'])
+    remaps=_segment_time_remaps(plan, path)
+    history_size=max([EFFECTS[e['name']].get('history',0) for e in effects]+[0])
+    job=_RenderJob(plan=plan, items=items, segments=segments, ctx=ctx, effects=effects, transitions=transitions,
+        path=path, formats=formats, background=background, fps=fps, platform=platform, experimental=experimental,
+        keep_audio=keep_audio, duck=duck, loudnorm=loudnorm, started=started,
+        streaming=setup['streaming'], cfr=setup['cfr'], config=setup['config'], follower=setup['follower'],
+        caption_renderer=setup['caption_renderer'], origins=setup['origins'], quantize=setup['quantize'],
+        encode_frames=setup['encode_frames'], audio_delivery=setup['audio_delivery'],
+        edges=edges, sample_edges=sample_edges, quantized=quantized, cuts=cuts, remaps=remaps,
+        cache={}, flow_cache={}, source_records=[], output_items=[],
+        history=deque(maxlen=history_size), history_times=deque(maxlen=history_size),
+        history_size=history_size, previous_index=None, current_source={}, end=0)
+    if job.streaming:
+        return _export_streaming(job, out)
+    return _export_still_timeline(job, out)
 
 def preview(out, image_path=None, experimental=False):
     if image_path:
