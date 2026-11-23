@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wow:schema:problem:rfc9457",
+  "title": "Problem Details (RFC 9457), as a CLI writes it to stderr with --json",
+  "type": "object",
+  "required": ["type", "title"],
+  "properties": {
+    "type": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "status": {"type": "integer"},
+    "detail": {"type": "string"},
+    "instance": {"type": "string"},
+    "exit_code": {"type": "integer"},
+    "next": {"type": "string"}
+  }
+}

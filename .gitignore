@@ -9,3 +9,5 @@ local-settings.json
 .scratch/
 private-manifest.json
 .cache/suno-preview/
+# wow-eng intermediates and local evidence (process notes stay in wow/)
+wow/work/

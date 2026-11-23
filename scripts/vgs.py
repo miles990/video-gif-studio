@@ -12,6 +12,44 @@ import shutil
 import sys
 from pathlib import Path
 
+def _light_argv(argv):
+    names = [a for a in argv if not a.startswith('-')]
+    return 'make' not in names and 'qa' not in names
+
+
+def _light_main(argv):
+    """--help, --version, doctor, and usage errors without importing OpenCV."""
+    from cli_common import VERSION, emit_problem, problem, wants_json
+    json_mode = wants_json(argv)
+    argv = [a for a in argv if a != '--json']
+    if '--version' in argv and all(a in ('--version', '-h', '--help') for a in argv):
+        print(VERSION)
+        return 0
+    if argv in ([], ['-h'], ['--help']) or (not argv):
+        text = (
+            'usage: vgs.py [-h] [--json] [--version] {make,qa,doctor} ...\n\n'
+            'Convert local video or PNG frames to a GIF. Auto-key only when the\n'
+            'border is a stable flat color; trim a long still tail; run QA.\n\n'
+            'commands:\n'
+            '  make     One-command local delivery: auto-key, trim, encode, QA\n'
+            '  qa       Check opaque 4px border and residual key-colored pixels\n'
+            '  doctor   Read-only check of the local skill and media runtime\n'
+        )
+        print(text)
+        return 0
+    if argv and argv[0] == 'doctor':
+        import doctor as doctor_cli
+        return doctor_cli.main(argv[1:] + (['--json'] if json_mode else []))
+    message = f"參數無效：argument command: invalid choice: {argv[0]!r} (choose from make, qa, doctor)；不寫入檔案。請查看 --help 後修正參數。"
+    if json_mode:
+        return emit_problem(problem('usage', 'Invalid arguments', message, exit_code=2))
+    print(message, file=sys.stderr)
+    return 1
+
+
+if __name__ == '__main__' and _light_argv(sys.argv[1:]):
+    raise SystemExit(_light_main(sys.argv[1:]))
+
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageSequence
@@ -610,19 +648,33 @@ def make(a) -> int:
     return 1 if bg_fail else 0
 
 
-def qa_gif(path: Path) -> int:
+def qa_gif(path: Path, json_mode=False) -> int:
     if not path.exists():
-        print(f'來源 {path} 不存在；無法檢查。請改成正確的 GIF 路徑。', file=sys.stderr)
+        message = f'來源 {path} 不存在；無法檢查。請改成正確的 GIF 路徑。'
+        if json_mode:
+            from cli_common import emit_problem, problem
+            return emit_problem(problem('not-found', 'Input not found', message, status=404, exit_code=1))
+        print(message, file=sys.stderr)
         return 1
     ring, share, frame = key_metrics(path)
     failed = ring > .01 or share > .10
     status = 'FAIL' if failed else ('WARN' if share > .02 else 'PASS')
     reason = '背景未去除，不是透明 GIF' if ring > .01 else ('中央或封閉區殘留大面積鍵色' if share > .10 else '')
-    print(f'背景檢查 {status}：{reason}；border_opaque_max {ring:.4f}；key_share_max {share:.4f}（第 {frame} 幀）')
     flicker = flicker_metrics(path)
     rate = flicker['quiet_flicker_rate']
     flicker_status = 'FAIL' if rate > .15 else ('WARN' if rate > .05 else 'PASS')
-    print(f"閃爍檢查 {flicker_status}；quiet_flicker_rate {rate:.4f}；aba_fg_rate {flicker['aba_fg_rate']:.4f}；LCT {flicker['lct_count']}")
+    payload = {
+        'schema_version': 1,
+        'input': str(path),
+        'background': {'status': status, 'reason': reason, 'border_opaque_max': ring, 'key_share_max': share, 'frame': frame},
+        'flicker': {'status': flicker_status, **flicker},
+        'ok': not (failed or rate > .15),
+    }
+    if json_mode:
+        print(json.dumps(payload, ensure_ascii=False))
+    else:
+        print(f'背景檢查 {status}：{reason}；border_opaque_max {ring:.4f}；key_share_max {share:.4f}（第 {frame} 幀）')
+        print(f"閃爍檢查 {flicker_status}；quiet_flicker_rate {rate:.4f}；aba_fg_rate {flicker['aba_fg_rate']:.4f}；LCT {flicker['lct_count']}")
     return int(failed or rate > .15)
 
 
@@ -632,10 +684,17 @@ class HumanParser(argparse.ArgumentParser):
 
 
 def main(argv=None) -> int:
+    from cli_common import VERSION, emit_problem, problem, wants_json
+    argv = list(sys.argv[1:] if argv is None else argv)
+    json_mode = wants_json(argv)
+    # Accept --json before or after the subcommand; it is not a make/qa operand.
+    argv = [a for a in argv if a != '--json']
     parser = HumanParser(
         description='Convert local video or PNG frames to a GIF. '
-        'Auto-key only when the border is a stable flat color; trim a long still tail; run QA.'
+        'Auto-key only when the border is a stable flat color; trim a long still tail; run QA.',
     )
+    parser.add_argument('--json', action='store_true', help='Write machine-readable JSON to stdout; errors as RFC 9457 on stderr')
+    parser.add_argument('--version', action='version', version=VERSION)
     sub = parser.add_subparsers(dest='command', required=True)
     make_p = sub.add_parser('make', help='One-command local delivery: auto-key, trim, encode, QA')
     make_p.add_argument('input', type=Path, help='Video file or PNG directory')
@@ -660,18 +719,32 @@ def main(argv=None) -> int:
     make_p.add_argument('--loop-count', type=int, help='MP4 repetitions; default closest to 10.5s within 8..15s when possible')
     qa_p = sub.add_parser('qa', help='Check opaque 4px border and residual key-colored pixels', description='Check GIF border opacity and residual magenta or green key share; large remnants fail.')
     qa_p.add_argument('input', type=Path, help='GIF to check')
+    doc_p = sub.add_parser('doctor', help='Read-only check of the local skill and media runtime')
+    doc_p.add_argument('--human', action='store_true', help='Write a short prose summary instead of JSON')
     try:
         args = parser.parse_args(argv)
         if args.command == 'qa':
-            return qa_gif(args.input)
+            return qa_gif(args.input, json_mode=json_mode or getattr(args, 'json', False))
+        if args.command == 'doctor':
+            import doctor as doctor_cli
+            flags = ['--json']
+            if getattr(args, 'human', False) and not json_mode:
+                flags = ['--human']
+            return doctor_cli.main(flags)
         return make(args)
     except ValueError as exc:
         src = getattr(locals().get('args'), 'input', None)
-        print(human_error(exc, src), file=sys.stderr)
+        message = human_error(exc, src)
+        if json_mode:
+            return emit_problem(problem('usage', 'Invalid arguments', message, exit_code=2))
+        print(message, file=sys.stderr)
         return 1
     except Exception as exc:  # noqa: BLE001 — convert unexpected errors into a human message
         src = getattr(locals().get('args'), 'input', None)
-        print(human_error(exc, src), file=sys.stderr)
+        message = human_error(exc, src)
+        if json_mode:
+            return emit_problem(problem('internal', 'Unexpected error', message, status=500, exit_code=1))
+        print(message, file=sys.stderr)
         return 1
 
 

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:video-gif-studio:schema:doctor-output:1",
+  "title": "Doctor report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "skill_entry_exists",
+    "local_gif_runtime_ready",
+    "media_runtime_ready",
+    "ready",
+    "report_ok"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "skill_entry_exists": {
+      "type": "boolean"
+    },
+    "python": {
+      "type": "string"
+    },
+    "python_version_supported": {
+      "type": "boolean"
+    },
+    "packages": {
+      "type": "object"
+    },
+    "ffmpeg": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "ffprobe": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "local_gif_runtime_ready": {
+      "type": "boolean"
+    },
+    "media_runtime_ready": {
+      "type": "boolean"
+    },
+    "ready": {
+      "type": "boolean"
+    },
+    "report_ok": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+}

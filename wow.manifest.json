@@ -1,0 +1,74 @@
+{
+  "$schema": "urn:wow:schema:manifest:1",
+  "manifestVersion": "1",
+  "name": "video-gif-studio",
+  "version": "1.0.0",
+  "description": "Local CLI and Claude/Codex skill that turns existing video into transparent GIFs, APNGs, MP4s or sprite sheets.",
+  "entrypoints": {
+    "cli": {
+      "command": [
+        "python3",
+        "scripts/vgs.py"
+      ],
+      "jsonFlag": "--json",
+      "errorsAsProblemJson": true
+    },
+    "skill": "SKILL.md"
+  },
+  "skills": [
+    {
+      "id": "doctor",
+      "name": "Doctor",
+      "description": "Read-only check of the installed skill and local GIF/media runtime; no generation or login.",
+      "tags": [
+        "doctor",
+        "runtime"
+      ],
+      "cli": [
+        "doctor",
+        "--json"
+      ],
+      "output": {
+        "mediaType": "application/json",
+        "schema": "schemas/doctor-output-1.schema.json"
+      },
+      "evidence": {
+        "verified": "/report_ok"
+      }
+    },
+    {
+      "id": "make",
+      "name": "Make GIF",
+      "description": "Auto-key, trim, encode and QA a local video or PNG sequence into a transparent GIF.",
+      "tags": [
+        "gif",
+        "delivery"
+      ],
+      "cli": [
+        "make",
+        "--help"
+      ]
+    },
+    {
+      "id": "qa",
+      "name": "QA GIF",
+      "description": "Check a GIF for opaque borders, residual key color, and flicker.",
+      "tags": [
+        "qa"
+      ],
+      "cli": [
+        "qa",
+        "--help"
+      ]
+    }
+  ],
+  "errors": {
+    "mediaType": "application/problem+json",
+    "schema": "schemas/problem-rfc9457.schema.json",
+    "typeBase": "urn:video-gif-studio:problem:"
+  },
+  "conformsTo": {
+    "wow-common": "1.0",
+    "wow-interop": "1.0"
+  }
+}
