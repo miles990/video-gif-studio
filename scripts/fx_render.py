@@ -90,10 +90,7 @@ def validate_entry(entry, registry, ctx, where, metadata, experimental=False, sk
             except ValueError as exc:raise ValueError(f'{where}: {exc}; .runtime/models/depth-anything-v2-small.onnx; use beat_bounce/zoom_punch instead') from None
     return {'name':name,'status':spec['status'],'params':params,'source':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest()}
 
-def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=None, proxy=False, _silent_derivative=False):
-    path = Path(plan_path).resolve()
-    plan = json.loads(path.read_text(encoding='utf-8-sig'))
-    # Validate SVG before any renderer/resource can load it, even nested assets.
+def _check_plan_svg(plan, path):
     def check_svg(value):
         if isinstance(value,dict):
             for v in value.values():check_svg(v)
@@ -107,9 +104,12 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
                 exc.error['location']=str(asset)
                 raise
     check_svg(plan)
+
+def _bind_interpolate(plan, interpolate):
     if os.environ.get('VIDEO_GIF_INTERPOLATE'):plan['interpolate']=os.environ['VIDEO_GIF_INTERPOLATE']
     if interpolate is not None: plan['interpolate']=interpolate
-    keys(plan,TOP,'plan')
+
+def _validate_plan_flags(plan, experimental):
     if 'assets' in plan:
         from brief_refs import validate_assets
         validate_assets(plan['assets'])
@@ -122,12 +122,11 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
     features = experimental_items(plan)
     if features and not experimental:
         raise ValueError(f'Experimental items: {", ".join(features)}; pass --experimental or set "experimental": true in the plan')
-    proxy_skipped=[]
-    if proxy and plan.get('interpolate')=='rife':
-        proxy_skipped.append('interpolate:rife');plan['interpolate']='none'
-    # RIFE is lazy: unity speed, stills and exact source samples need no model.
     if plan.get('sampling','linear') not in ('linear','nearest'): raise ValueError('sampling: valid options linear, nearest')
     if type(plan.get('seed',0)) is not int: raise ValueError('seed: expected integer')
+    return experimental, fps
+
+def _validate_audio_tracks(plan, path):
     music = plan.get('music',{})
     for key in ('keep_audio','duck','loudnorm'):
         if key in plan and type(plan[key]) is not bool: raise ValueError(key+': expected boolean')
@@ -143,18 +142,9 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
         if not (path.parent/music.get('file','')).is_file(): raise ValueError('music.file: expected existing audio file')
         for k in ('in_ms','fade_in_ms','fade_out_ms'): number(music.get(k,0),'music.'+k)
         number(music.get('gain_db',0),'music.gain_db',-60,20)
-    offset = music.get('in_ms',0)
-    beats = json.loads((path.parent/plan['beatmap']).read_text()) if 'beatmap' in plan else {}
-    perceived_requested=any('perceived' in e for e in plan.get('effects',[]))
-    if any('recipe' in e or 'perceived' in e for e in plan.get('effects',[])):
-        from fx_recipes import expand
-        plan=expand(plan,[t-offset for t in beats.get('beats_ms',[])],experimental)
-    layer_design=None
-    if 'cut_density' in plan:
-        if offset: raise ValueError('cut_density requires a zero-origin beatmap; use music_fit first')
-        from beat_layers import apply_layers
-        plan,layer_design=apply_layers(plan,beats)
-        beats=dict(beats,downbeats_ms=layer_design['downbeats_ms'])
+    return music, music.get('in_ms',0)
+
+def _validate_beat_lists(beats):
     for k in ('beats_ms','downbeats_ms'):
         values = beats.get(k,[])
         if not isinstance(values,list) or any(type(v) not in (int,float) or not math.isfinite(v) or v<0 for v in values) or any(b<=a for a,b in zip(values,values[1:])):
@@ -162,13 +152,8 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
     for t in beats.get('downbeats_ms',[]):
         if not any(abs(t-b)<=1 for b in beats.get('beats_ms',[])):
             raise ValueError(f'beatmap.downbeats_ms: {t} is not in beats_ms (1ms rounding tolerance)')
-    ctx = Context(0,0,fps,[v-offset for v in beats.get('beats_ms',[])],seed=plan.get('seed',0),downbeats_ms=[v-offset for v in beats.get('downbeats_ms',[])],sampling=plan.get('sampling','linear'))
-    ctx.proxy_skipped=proxy_skipped
-    ctx.layer_design=layer_design
-    ctx.captions=None
-    if 'captions' in plan:
-        from captions import prepare
-        ctx.captions=prepare(plan['captions'],path.parent,experimental)
+
+def _validate_sfx_and_reframe(plan, path, formats, _silent_derivative):
     if 'sfx' in plan:
         spec=plan['sfx']
         if spec!='auto' and not isinstance(spec,dict): raise ValueError('sfx: use auto or an options object')
@@ -182,56 +167,78 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
     if 'reframe' in plan:
         keys(plan['reframe'],{'masks'},'reframe')
         if not (path.parent/plan['reframe'].get('masks','')).is_file(): raise ValueError('reframe.masks: existing timeline-aligned mask manifest required')
-    prepared = dict(plan); prepared['segments'] = []
-    cursor = 0;extra_source_files=[]
-    for i, original in enumerate(plan['segments']):
-        where = f'segments[{i}]'; keys(original,SEGMENT,where)
-        segment = dict(original)
-        if 'speed' in segment:
-            speed=segment.pop('speed')
-            if isinstance(speed,dict):
-                validate_envelope(speed,ctx,where+'.speed')
-                values=[v for _,v in speed['keyframes']] if 'keyframes' in speed else [speed.get('min',0),speed.get('max',1)]
-                for value in values: number(value,where+'.speed',.001,100)
-            else:number(speed,where+'.speed',.001,100)
-        if 'ramp' in segment:
-            ramp=segment.pop('ramp');keys(ramp,{'into_beat','slow','hit_ms'},where+'.ramp')
-            beat_index(ramp.get('into_beat'),ctx.beats_ms,where+'.ramp.into_beat')
-            number(ramp.get('slow',.3),where+'.ramp.slow',.001,.999)
-            number(ramp.get('hit_ms',200),where+'.ramp.hit_ms',10)
-            if 'speed' in original:raise ValueError(where+': choose speed or ramp')
-        if 'duration_ms' in segment:
-            duration = number(segment['duration_ms'],where+'.duration_ms',10)
-            if duration%10: raise ValueError(f'{where}.duration_ms: must be a multiple of 10')
-        if 'end_downbeat' in segment:
-            if not ctx.downbeats_ms: raise ValueError(f'{where}.end_downbeat: downbeats_ms missing; use --engine beat_this')
-            if 'end_beat' in segment or 'duration_ms' in segment: raise ValueError(f'{where}: choose end_downbeat, end_beat or duration_ms')
-            segment['duration_ms'] = round(beat_index(segment.pop('end_downbeat'),ctx.downbeats_ms,where+'.end_downbeat')/10)*10-cursor
-        if 'end_beat' in segment: beat_index(segment['end_beat'],ctx.beats_ms,where+'.end_beat')
-        segment.pop('transition',None)
-        # An implicit source out-point follows the output cut at unity speed.
-        # Explicit in/out duration-fitting remains the legacy editorial operation.
-        if original.get('type')=='animation' and 'out_ms' not in original and 'ramp' not in original and original.get('speed',1)==1:
-            data=json.loads((path.parent/original['manifest']).read_text());available=sum(data['durations_ms'])
-            target=round(ctx.beats_ms[segment['end_beat']]/10)*10-cursor if 'end_beat' in segment else segment.get('duration_ms',available)
-            end=original.get('in_ms',0)+target
-            if end<available:segment['out_ms']=end;ctx.source_trimmed=True
-        if original.get('type')=='animation' and ('ramp' in original or original.get('speed',1)!=1):
-            manifest=path.parent/original['manifest'];data=json.loads(manifest.read_text())
-            files=sorted((manifest.parent/'frames').glob('*.png'));available=sum(data['durations_ms'])
-            extra_source_files.extend(files)
-            if not files or len(files)!=len(data['durations_ms']):raise ValueError(where+': source frames/timing mismatch')
-            begin=number(original.get('in_ms',0),where+'.in_ms',0,available)
-            finish=number(original.get('out_ms',available),where+'.out_ms',begin+1,available)
-            duration=segment.get('duration_ms',finish-begin)
-            segment={k:v for k,v in segment.items() if k in ('end_beat','duration_ms','review')}
-            segment.update(type='still',image=str(files[0]))
-            if 'end_beat' not in segment:segment['duration_ms']=duration
-        prepared['segments'].append(segment)
-        # Resolve incrementally for exact loop/trim/still semantics and useful location errors.
-        try: items, segments = resolve_plan(prepared,path,('mp4',) if _silent_derivative else formats)
-        except (ValueError,KeyError,TypeError,OSError) as exc: raise ValueError(f'{where}: {exc}') from None
-        cursor = sum(t for _,t in items)
+
+def _expand_beatmap_and_context(plan, path, offset, experimental, proxy_skipped, fps):
+    beats = json.loads((path.parent/plan['beatmap']).read_text()) if 'beatmap' in plan else {}
+    perceived_requested=any('perceived' in e for e in plan.get('effects',[]))
+    if any('recipe' in e or 'perceived' in e for e in plan.get('effects',[])):
+        from fx_recipes import expand
+        plan=expand(plan,[t-offset for t in beats.get('beats_ms',[])],experimental)
+    layer_design=None
+    if 'cut_density' in plan:
+        if offset: raise ValueError('cut_density requires a zero-origin beatmap; use music_fit first')
+        from beat_layers import apply_layers
+        plan,layer_design=apply_layers(plan,beats)
+        beats=dict(beats,downbeats_ms=layer_design['downbeats_ms'])
+    _validate_beat_lists(beats)
+    ctx = Context(0,0,fps,[v-offset for v in beats.get('beats_ms',[])],seed=plan.get('seed',0),downbeats_ms=[v-offset for v in beats.get('downbeats_ms',[])],sampling=plan.get('sampling','linear'))
+    ctx.proxy_skipped=proxy_skipped
+    ctx.layer_design=layer_design
+    ctx.captions=None
+    if 'captions' in plan:
+        from captions import prepare
+        ctx.captions=prepare(plan['captions'],path.parent,experimental)
+    return plan, ctx, perceived_requested
+
+def _apply_segment_speed_ramp(segment, original, where, ctx):
+    if 'speed' in segment:
+        speed=segment.pop('speed')
+        if isinstance(speed,dict):
+            validate_envelope(speed,ctx,where+'.speed')
+            values=[v for _,v in speed['keyframes']] if 'keyframes' in speed else [speed.get('min',0),speed.get('max',1)]
+            for value in values: number(value,where+'.speed',.001,100)
+        else:number(speed,where+'.speed',.001,100)
+    if 'ramp' in segment:
+        ramp=segment.pop('ramp');keys(ramp,{'into_beat','slow','hit_ms'},where+'.ramp')
+        beat_index(ramp.get('into_beat'),ctx.beats_ms,where+'.ramp.into_beat')
+        number(ramp.get('slow',.3),where+'.ramp.slow',.001,.999)
+        number(ramp.get('hit_ms',200),where+'.ramp.hit_ms',10)
+        if 'speed' in original:raise ValueError(where+': choose speed or ramp')
+    return segment
+
+def _apply_segment_duration(segment, where, ctx, cursor):
+    if 'duration_ms' in segment:
+        duration = number(segment['duration_ms'],where+'.duration_ms',10)
+        if duration%10: raise ValueError(f'{where}.duration_ms: must be a multiple of 10')
+    if 'end_downbeat' in segment:
+        if not ctx.downbeats_ms: raise ValueError(f'{where}.end_downbeat: downbeats_ms missing; use --engine beat_this')
+        if 'end_beat' in segment or 'duration_ms' in segment: raise ValueError(f'{where}: choose end_downbeat, end_beat or duration_ms')
+        segment['duration_ms'] = round(beat_index(segment.pop('end_downbeat'),ctx.downbeats_ms,where+'.end_downbeat')/10)*10-cursor
+    if 'end_beat' in segment: beat_index(segment['end_beat'],ctx.beats_ms,where+'.end_beat')
+    segment.pop('transition',None)
+    return segment
+
+def _maybe_trim_or_remap_animation(segment, original, where, ctx, cursor, path):
+    extra_files=[]
+    if original.get('type')=='animation' and 'out_ms' not in original and 'ramp' not in original and original.get('speed',1)==1:
+        data=json.loads((path.parent/original['manifest']).read_text());available=sum(data['durations_ms'])
+        target=round(ctx.beats_ms[segment['end_beat']]/10)*10-cursor if 'end_beat' in segment else segment.get('duration_ms',available)
+        end=original.get('in_ms',0)+target
+        if end<available:segment['out_ms']=end;ctx.source_trimmed=True
+    if original.get('type')=='animation' and ('ramp' in original or original.get('speed',1)!=1):
+        manifest=path.parent/original['manifest'];data=json.loads(manifest.read_text())
+        files=sorted((manifest.parent/'frames').glob('*.png'));available=sum(data['durations_ms'])
+        extra_files.extend(files)
+        if not files or len(files)!=len(data['durations_ms']):raise ValueError(where+': source frames/timing mismatch')
+        begin=number(original.get('in_ms',0),where+'.in_ms',0,available)
+        finish=number(original.get('out_ms',available),where+'.out_ms',begin+1,available)
+        duration=segment.get('duration_ms',finish-begin)
+        segment={k:v for k,v in segment.items() if k in ('end_beat','duration_ms','review')}
+        segment.update(type='still',image=str(files[0]))
+        if 'end_beat' not in segment:segment['duration_ms']=duration
+    return segment, extra_files
+
+def _attach_edits_and_canvas(plan, items, segments, extra_source_files, ctx, music, cursor):
     for i,s in enumerate(segments):
         s['edit']=plan['segments'][i];s['type']=plan['segments'][i]['type']
         if 'ramp' in s['edit']:
@@ -244,12 +251,58 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
             if size is not None and im.size!=size: raise ValueError(f'segments: {file}: all images must share one canvas {size}')
             size = im.size
     ctx.width,ctx.height = size
-    if perceived_requested and min(size)<32:
-        raise ValueError('Perceived calibration unsupported below 32 pixels on either axis; use native controls')
     for k in ('fade_in_ms','fade_out_ms'):
         if music.get(k,0)>cursor: raise ValueError(f'music.{k}: valid range 0..{cursor}')
-    effects, transitions = [], []
+    return size
+
+def _resolve_all_segments(plan, path, formats, ctx, _silent_derivative, music):
+    prepared = dict(plan); prepared['segments'] = []
+    cursor = 0;extra_source_files=[]
+    for i, original in enumerate(plan['segments']):
+        where = f'segments[{i}]'; keys(original,SEGMENT,where)
+        segment = _apply_segment_duration(_apply_segment_speed_ramp(dict(original), original, where, ctx), where, ctx, cursor)
+        segment, extra = _maybe_trim_or_remap_animation(segment, original, where, ctx, cursor, path)
+        extra_source_files.extend(extra)
+        prepared['segments'].append(segment)
+        try: items, segments = resolve_plan(prepared,path,('mp4',) if _silent_derivative else formats)
+        except (ValueError,KeyError,TypeError,OSError) as exc: raise ValueError(f'{where}: {exc}') from None
+        cursor = sum(t for _,t in items)
+    size = _attach_edits_and_canvas(plan, items, segments, extra_source_files, ctx, music, cursor)
+    return items, segments, cursor, size
+
+def _effect_interval(entry, effect, where, ctx, cursor):
+    for edge,default in [('start',0),('end',cursor)]:
+        if edge+'_beat' in entry and edge+'_ms' in entry: raise ValueError(f'{where}: choose {edge}_beat or {edge}_ms')
+        value = beat_index(entry[edge+'_beat'],ctx.beats_ms,where+'.'+edge+'_beat') if edge+'_beat' in entry else entry.get(edge+'_ms',default)
+        effect[edge+'_ms'] = number(value,where+'.'+edge+'_ms',0,cursor)
+    if effect['end_ms']<=effect['start_ms']: raise ValueError(f'{where}: end must follow start')
+
+def _effect_camera_constraints(effect, where):
+    if effect['name']=='camera_move' and effect['params']['move']=='crash_out':
+        duration=effect['params']['duration_ms'] or min(600,effect['end_ms']-effect['start_ms'])
+        if duration<300 or duration>effect['end_ms']-effect['start_ms']:
+            raise ValueError(f'{where}: crash_out requires at least 300 ms and its full duration inside the effect interval')
+        effect['params']['duration_ms']=duration
+    if effect['name']=='camera_move' and effect['params']['move']=='whip':
+        from fx.effects.camera import MOVES
+        duration=effect['params']['duration_ms'] or MOVES['whip'][0]
+        if effect['end_ms']-effect['start_ms']<duration:
+            raise ValueError(f'{where}: whip end_ms must include its full duration ({duration:g} ms) to return to original framing')
+
+def _effect_resource_paths(effect, entry, where, path, ctx):
+    if 'sampling' in effect['params'] and 'sampling' not in entry: effect['params']['sampling'] = ctx.sampling
+    if effect['params'].get('background'):
+        effect['params']['background'] = str((path.parent/effect['params']['background']).resolve())
+        if not Path(effect['params']['background']).is_file(): raise ValueError(f'{where}.background: expected existing image')
+    for key in ('depth',):
+        if effect['params'].get(key):
+            effect['params'][key]=str((path.parent/effect['params'][key]).resolve())
+            if not Path(effect['params'][key]).is_file():raise ValueError(where+'.'+key+': expected existing image')
+    effect['trigger_times_ms'] = sorted(set(t for v in effect['params'].values() if isinstance(v,dict) and v.get('on') in ('beats','downbeats') for t in triggers(v,ctx) if effect['start_ms']<=t<effect['end_ms']))
+
+def _collect_effects(plan, ctx, path, experimental, proxy, cursor):
     if not isinstance(plan.get('effects',[]),list): raise ValueError('effects: expected list of effect objects')
+    effects, proxy_skipped = [], list(ctx.proxy_skipped)
     for i, entry in enumerate(plan.get('effects',[])):
         where = f'effects[{i}]'
         effect = validate_entry(entry,EFFECTS,ctx,where,META,experimental,skip_models=proxy)
@@ -262,31 +315,15 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
             proxy_skipped.append('effect:parallax');effect['proxy_skipped']=True
         effect['stage'] = entry.get('stage','post')
         if effect['stage'] not in ('source','post'): raise ValueError(f'{where}.stage: valid options source, post')
-        for edge,default in [('start',0),('end',cursor)]:
-            if edge+'_beat' in entry and edge+'_ms' in entry: raise ValueError(f'{where}: choose {edge}_beat or {edge}_ms')
-            value = beat_index(entry[edge+'_beat'],ctx.beats_ms,where+'.'+edge+'_beat') if edge+'_beat' in entry else entry.get(edge+'_ms',default)
-            effect[edge+'_ms'] = number(value,where+'.'+edge+'_ms',0,cursor)
-        if effect['end_ms']<=effect['start_ms']: raise ValueError(f'{where}: end must follow start')
-        if effect['name']=='camera_move' and effect['params']['move']=='crash_out':
-            duration=effect['params']['duration_ms'] or min(600,effect['end_ms']-effect['start_ms'])
-            if duration<300 or duration>effect['end_ms']-effect['start_ms']:
-                raise ValueError(f'{where}: crash_out requires at least 300 ms and its full duration inside the effect interval')
-            effect['params']['duration_ms']=duration
-        if effect['name']=='camera_move' and effect['params']['move']=='whip':
-            from fx.effects.camera import MOVES
-            duration=effect['params']['duration_ms'] or MOVES['whip'][0]
-            if effect['end_ms']-effect['start_ms']<duration:
-                raise ValueError(f'{where}: whip end_ms must include its full duration ({duration:g} ms) to return to original framing')
-        if 'sampling' in effect['params'] and 'sampling' not in entry: effect['params']['sampling'] = ctx.sampling
-        if effect['params'].get('background'):
-            effect['params']['background'] = str((path.parent/effect['params']['background']).resolve())
-            if not Path(effect['params']['background']).is_file(): raise ValueError(f'{where}.background: expected existing image')
-        for key in ('depth',):
-            if effect['params'].get(key):
-                effect['params'][key]=str((path.parent/effect['params'][key]).resolve())
-                if not Path(effect['params'][key]).is_file():raise ValueError(where+'.'+key+': expected existing image')
-        effect['trigger_times_ms'] = sorted(set(t for v in effect['params'].values() if isinstance(v,dict) and v.get('on') in ('beats','downbeats') for t in triggers(v,ctx) if effect['start_ms']<=t<effect['end_ms']))
+        _effect_interval(entry, effect, where, ctx, cursor)
+        _effect_camera_constraints(effect, where)
+        _effect_resource_paths(effect, entry, where, path, ctx)
         effects.append(effect)
+    ctx.proxy_skipped=proxy_skipped
+    return effects
+
+def _collect_transitions(plan, segments, ctx, path, experimental, fps):
+    transitions=[]
     for i, segment in enumerate(plan['segments']):
         if 'transition' not in segment: continue
         where = f'segments[{i}].transition'
@@ -308,6 +345,9 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
         transitions.append(tr)
     for a,b in zip(transitions,transitions[1:]):
         if a['end_ms']>b['start_ms']: raise ValueError('segments: adjacent transition windows overlap; shorten duration_ms')
+    return transitions
+
+def _attach_audio_triggers(effects, transitions, music, path, offset, ctx):
     needs_audio = any(isinstance(v,dict) and v.get('on') in ('onset','energy') for e in effects+transitions for v in e['params'].values())
     if needs_audio:
         if not music: raise ValueError('effects: onset/energy require music.file for 10ms RMS analysis')
@@ -317,6 +357,27 @@ def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=N
             effect['trigger_times_ms'] = sorted(set(effect['trigger_times_ms']+[
                 t for value in effect['params'].values() if isinstance(value,dict) and value.get('on') in ('onset','energy')
                 for t,_ in audio_peaks(ctx.audio,value['on']) if effect['start_ms']<=t<effect['end_ms']]))
+
+def validate_plan(plan_path, formats=('png',), experimental=False, interpolate=None, proxy=False, _silent_derivative=False):
+    path = Path(plan_path).resolve()
+    plan = json.loads(path.read_text(encoding='utf-8-sig'))
+    # Validate SVG before any renderer/resource can load it, even nested assets.
+    _check_plan_svg(plan, path)
+    _bind_interpolate(plan, interpolate)
+    keys(plan,TOP,'plan')
+    experimental, fps = _validate_plan_flags(plan, experimental)
+    proxy_skipped=[]
+    if proxy and plan.get('interpolate')=='rife':
+        proxy_skipped.append('interpolate:rife');plan['interpolate']='none'
+    music, offset = _validate_audio_tracks(plan, path)
+    plan, ctx, perceived_requested = _expand_beatmap_and_context(plan, path, offset, experimental, proxy_skipped, fps)
+    _validate_sfx_and_reframe(plan, path, formats, _silent_derivative)
+    items, segments, cursor, size = _resolve_all_segments(plan, path, formats, ctx, _silent_derivative, music)
+    if perceived_requested and min(size)<32:
+        raise ValueError('Perceived calibration unsupported below 32 pixels on either axis; use native controls')
+    effects = _collect_effects(plan, ctx, path, experimental, proxy, cursor)
+    transitions = _collect_transitions(plan, segments, ctx, path, experimental, fps)
+    _attach_audio_triggers(effects, transitions, music, path, offset, ctx)
     return plan, items, segments, ctx, effects, transitions
 
 def experimental_items(plan):
