@@ -2,7 +2,28 @@
 
 本目錄是過程紀錄與索引。最終示範成品在產品路徑（`examples/`、`README.md` 等），不要在 `wow/` 再複製一份。
 
-## 本輪（2026-11-23 八關稽核）
+## 本輪（2026-11-24 A→B→C 修復）
+
+| 路徑 | 內容 |
+|---|---|
+| [followup-2026-11-24.md](followup-2026-11-24.md) | 三階段交付、Fable／Codex 摘要、剩餘缺口 |
+| [audit-2026-11-23.md](audit-2026-11-23.md) | 修復前的八關稽核（對照基準） |
+| [adr-existing-product.md](adr-existing-product.md) | 既有產品採用 COMMON／INTEROP 1.0 |
+| [eng-baseline.json](eng-baseline.json)、[eng.json](eng.json) | W8 棘輪與共同編輯宣告 |
+| [INDEX.md](INDEX.md) | 本檔 |
+
+中間產物在 `wow/work/`（**不要 commit**）：
+
+| 路徑 | 內容 |
+|---|---|
+| `work/evidence/eng/`、`work/evidence/eng-phase-*` | `wow-eng all --run` 輸出 |
+| `work/evidence/visual/preview-page/` | landing 390／1440、淺／深、首屏與全頁截圖 |
+| `work/evidence/visual/github-readme/` | 公開 README 390／1440、淺／深截圖 |
+| `work/hero-inspect/` | hero 去溢色前後對照 |
+| `work/logs/` | 完整單元測試 log |
+| `work/reviews-raw/` | Fable／Codex 提示詞與原文 |
+
+## 稽核原文（2026-11-23 八關）
 
 | 路徑 | 內容 |
 |---|---|
