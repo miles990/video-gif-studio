@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Measured QA for GIF/APNG, RGBA PNG sequences and video.
 
 Adapted from win4r/video-director scripts/qa_video.py (MIT).
