@@ -83,7 +83,7 @@
       background-size: 28px 28px;
       background-position: 0 0, 0 14px, 14px -14px, -14px 0;
     }
-    .stage img { width: min(100%, 720px); height: auto; display: block; }
+    .stage img { width: min(100%, 534px); height: auto; display: block; image-rendering: auto; }
     .caption { margin-top: 12px; font-size: 13px; color: var(--muted); text-align: center; }
     section { padding: 64px 0; border-top: 1px solid var(--line); }
     h2 { font-family: var(--serif); font-size: 32px; margin: 0 0 20px; letter-spacing: -0.02em; }
@@ -93,6 +93,10 @@
     .card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
     footer { padding: 28px 0 48px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+    figure.sheet { margin: 0; padding: 16px; background: #fffdf8; border: 1px solid var(--line); border-radius: 16px; }
+    figure.sheet img { width: 100%; height: auto; display: block; border-radius: 8px; }
+    figure.sheet .caption { text-align: left; margin-top: 12px; }
+
     @media (max-width: 900px) {
       .hero, .pair, .grid { grid-template-columns: 1fr; }
       .hero { min-height: auto; gap: 28px; padding-top: 28px; }
@@ -135,9 +139,9 @@
       </div>
       <div>
         <div class="stage">
-          <img src="../examples/chibi-running-dash/hero.gif" width="720" height="450" alt="去背後的 Q 版角色衝刺循環 GIF">
+          <img src="../examples/chibi-running-dash/hero.gif" width="534" height="334" alt="去背後的 Q 版角色衝刺循環 GIF">
         </div>
-        <p class="caption">90 幀 · 3.75 秒 · 緊裁去溢色 · 頁面顏色就是背景</p>
+        <p class="caption">90 幀 · 3.75 秒 · 緊裁去溢色 · 棋盤格顯示透明區域</p>
       </div>
     </section>
 
@@ -175,8 +179,10 @@ python scripts/vgs.py make \
 
     <section id="examples">
       <h2>淺底、深底都成立</h2>
-      <img src="../examples/chibi-running-dash/hero-preview.png" alt="同一段透明 GIF 疊在淺色與深色棋盤上" style="width:100%;height:auto;border-radius:16px;border:1px solid var(--line);">
-      <p class="caption" style="text-align:left;margin-top:16px;">上排淺棋盤、下排深棋盤；開頭、中段與結尾各一幀。</p>
+      <figure class="sheet">
+        <img src="../examples/chibi-running-dash/hero-preview.png" alt="同一段透明 GIF 疊在淺色與深色棋盤上，上排淺棋盤、下排深棋盤">
+        <figcaption class="caption">對照表本身是淺底圖：上排淺棋盤、下排深棋盤；開頭、中段與結尾各一幀。</figcaption>
+      </figure>
     </section>
 
     <footer>

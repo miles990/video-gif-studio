@@ -1,7 +1,7 @@
 # Video GIF Studio
 
 <p align="center">
-  <img src="examples/chibi-running-dash/hero.gif" width="720" alt="Transparent chibi dash GIF">
+  <img src="examples/chibi-running-dash/hero.gif" width="534" alt="Transparent chibi dash GIF">
 </p>
 
 [![CI](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml/badge.svg)](https://github.com/miles990/video-gif-studio/actions/workflows/test.yml)
@@ -237,6 +237,6 @@ License: [MIT](LICENSE)
 
 Use the [character replacement workflow](references/character-video-edit.md) and `scripts/assemble_edit.py` for frame-based assembly, explicit FPS conform, time-bounded source-region restoration, and complete original-audio stream verification. This local tool does not guarantee generated identity or choreography; its report keeps visual review pending.
 
-## Beat-synchronized post-production FX / ??????
+## Beat-synchronized post-production FX
 
 Explicitly requested effects use `python scripts/fx_render.py plan.json --out delivery --formats gif mp4`: six pure effects, four transitions, beat/onset/energy envelopes, a reusable local library, and reference breakdown drafts. Effects never replace physical motion. See [FX guide](references/fx.md), [demo and measurements](wow/fx/demo/README.md), and [build status](wow/fx/build-notes.md).
