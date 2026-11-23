@@ -36,18 +36,17 @@ def words(text):
     return len(cjk)+len(latin),bool(cjk)
 
 
-def lint(brief):
-    findings=[]
-    limits={k:value('brief.'+k) for k in ('hero_height.min','text_px.min','end_hold.max','turn_end.min','words.en.max','words.cjk.max','edit_words.en.max','edit_words.cjk.max','word_error_ratio','forks.max')}
-    def add(rule,location,message,fix,severity='error',obj=None):
-        annotations=[]
-        for data in (brief,obj or {}):
-            breaks=data.get('rule_break',[])
-            annotations.extend([breaks] if isinstance(breaks,dict) else breaks)
-        reason=next((a.get('why',a.get('reason','')).strip() for a in annotations if a.get('rule')==rule and meaningful_reason(a.get('why',a.get('reason','')))),None)
-        if reason and rule not in NONEXEMPT: severity='exempted'
-        findings.append(dict(rule=rule,severity=severity,location=location,message=message,fix=fix,**({'reason':reason} if reason else {})))
-    if not isinstance(brief,dict): return dict(errors=1,findings=[dict(rule='schema',severity='error',location='$',message='Expected brief object',fix='Use brief.json')])
+def _add(findings,brief,rule,location,message,fix,severity='error',obj=None):
+    annotations=[]
+    for data in (brief,obj or {}):
+        breaks=data.get('rule_break',[])
+        annotations.extend([breaks] if isinstance(breaks,dict) else breaks)
+    reason=next((a.get('why',a.get('reason','')).strip() for a in annotations if a.get('rule')==rule and meaningful_reason(a.get('why',a.get('reason','')))),None)
+    if reason and rule not in NONEXEMPT: severity='exempted'
+    findings.append(dict(rule=rule,severity=severity,location=location,message=message,fix=fix,**({'reason':reason} if reason else {})))
+
+
+def _lint_schema(add,brief):
     for i,ref in enumerate(brief.get('refs',[]) if isinstance(brief.get('refs',[]),list) else []):
         if isinstance(ref,dict) and (isinstance(ref.get('role'),list) and len(ref['role'])>1 or len(ref.get('roles',[]))>1):
             add('one_ref_one_job',f'refs[{i}]','One record has multiple roles','List the file separately for each scoped role')
@@ -61,20 +60,25 @@ def lint(brief):
     try:validate_schema(brief,schema)
     except ValueError as exc:
         add('schema','$',str(exc),'Use the brief schema and repair the named field')
-        return result(findings)
-    def check_exemptions(obj,path='$'):
-        if isinstance(obj,dict):
-            breaks=obj.get('rule_break',[]);breaks=[breaks] if isinstance(breaks,dict) else breaks
-            for a in breaks:
-                if not meaningful_reason(a.get('why',a.get('reason',''))):
-                    add('exemption_reason',path+'.rule_break','Exemption lacks a specific creative or user reason','Describe why this particular scene needs the exception')
-                if a.get('rule') in NONEXEMPT or a.get('rule') in ('*','all'):
-                    add('exemption_not_allowed',path+'.rule_break','Cannot waive provenance, licences, embedding or schema','Remove this exemption')
-            for k,v in obj.items():
-                if k!='rule_break': check_exemptions(v,path+'.'+k)
-        elif isinstance(obj,list):
-            for i,v in enumerate(obj): check_exemptions(v,f'{path}[{i}]')
-    check_exemptions(brief)
+        return True
+    return False
+
+
+def _check_exemptions(add,obj,path='$'):
+    if isinstance(obj,dict):
+        breaks=obj.get('rule_break',[]);breaks=[breaks] if isinstance(breaks,dict) else breaks
+        for a in breaks:
+            if not meaningful_reason(a.get('why',a.get('reason',''))):
+                add('exemption_reason',path+'.rule_break','Exemption lacks a specific creative or user reason','Describe why this particular scene needs the exception')
+            if a.get('rule') in NONEXEMPT or a.get('rule') in ('*','all'):
+                add('exemption_not_allowed',path+'.rule_break','Cannot waive provenance, licences, embedding or schema','Remove this exemption')
+        for k,v in obj.items():
+            if k!='rule_break': _check_exemptions(add,v,path+'.'+k)
+    elif isinstance(obj,list):
+        for i,v in enumerate(obj): _check_exemptions(add,v,f'{path}[{i}]')
+
+
+def _lint_mode_and_words(add,brief,limits):
     mode=brief.get('mode','brief')
     if mode not in ('brief','batch','delta','image_feedback','sequence','housekeeping'):
         add('schema','mode','Unknown mode','Choose a supported mode')
@@ -82,7 +86,10 @@ def lint(brief):
     count,cjk=words(prompt.split('refs:')[0])
     editing=mode in ('delta','image_feedback');cap=limits[('edit_words.' if editing else 'words.')+('cjk.max' if cjk else 'en.max')]
     if count>cap: add('word_cap_edit' if editing else 'word_cap','prompt',f'{count} words; advisory cap {cap}','Drop optional globals first; retain all beats and the turn','error' if count>cap*limits['word_error_ratio'] else 'warning')
-    if mode in ('housekeeping','delta','image_feedback'): return result(findings)
+    return mode,prompt,mode in ('housekeeping','delta','image_feedback')
+
+
+def _lint_constraints(add,brief,prompt):
     from brief import hard_constraints
     for constraint in hard_constraints(brief.get('draft','')):
         if constraint not in brief.get('hard_constraints',[]) or constraint not in prompt.split('refs:')[0]:
@@ -92,72 +99,117 @@ def lint(brief):
         add('hard_constraint',location,message,'Repair the authored beat or shot to satisfy the explicit constraint')
     if brief.get('status')=='skeleton' and not brief.get('forks'):
         add('skeleton_fork','forks','Skeleton requires a real creative fork','Offer two materially different treatments')
+
+
+def _lint_aesthetic(add,brief):
     aesthetic=brief.get('aesthetic')
     generic={'modern','clean','minimal','simple','warm','cozy','cool','sleek','professional','現代','簡約','溫暖','質感','高級','專業'}
-    first_line=prompt.splitlines()[0] if prompt else ''
     named={family for family,pattern in AESTHETIC_FAMILIES.items() if re.search(pattern,str(aesthetic),re.I)}
     if not isinstance(aesthetic,str) or not aesthetic.strip() or len(named)>1 or set(aesthetic.lower().split())<=generic or not re.sub(r'現代|簡約|溫暖|質感|高級|專業|\s','',aesthetic):
         add('one_aesthetic','aesthetic','Commit to one named aesthetic','Name one child of the fence, e.g. morning-window warm film')
-    beats=brief.get('beats',[]);refs=brief.get('refs',[])
     from brief_language import transformation, results
     source_turn=transformation(brief.get('draft',''))
-    turn_text=' '.join(b.get('text','') for b in beats if b.get('is_turn'))
+    turn_text=' '.join(b.get('text','') for b in brief.get('beats',[]) if isinstance(b,dict) and b.get('is_turn'))
     if source_turn and (not transformation(turn_text) or any(h.casefold() not in turn_text.casefold() for h in results(source_turn))):
         add('transformation_preserved','beats','Draft transformation results are missing','Preserve the result complements in the authored turn; do not replace it with the raw draft')
-    if not isinstance(beats,list) or not beats or not all(isinstance(b,dict) for b in beats):
-        add('schema','beats','Nonempty beat objects required','Provide numbered beats with t_start, t_end and text');return result(findings)
-    duration=brief.get('duration',0)
-    if not isinstance(duration,(int,float)) or not math.isfinite(duration) or duration<=0:
-        add('schema','duration','Positive finite duration required','Set duration in seconds');return result(findings)
-    cursor=0.;turns=[]
-    for i,b in enumerate(beats):
-        loc=f'beats[{i}]'
-        start,end=b.get('t_start'),b.get('t_end')
-        if any(not isinstance(t,(int,float)) or not math.isfinite(t) for t in (start,end)) or start<0 or end<=start or abs(start-cursor)>.001:
-            add('schema',loc,'Timeline must be positive and contiguous','Set this start to the previous end and a later end');continue
-        cursor=end
-        if b.get('id')!=i+1:add('schema',loc+'.id','Beat numbers must be consecutive','Renumber from 1')
-        if b.get('is_turn'):
-            turns.append(b)
-            from brief import TRANSFORMATION
-            if not re.search(TRANSFORMATION+r'|reveal|morph|comes back as|snaps into|becomes|turns into|zoom.?out|揭露|變成|化為|拉遠|翻開',b.get('text',''),re.I):
-                add('no_turn',loc+'.text','Turn has no transformation mechanism','Describe what opens/reveals/changes medium',obj=b)
-            if end<=limits['turn_end.min']*duration: add('turn_too_early',loc+'.t_end','Turn ends before 32% of duration','Extend the action beyond 0.32 × duration',obj=b)
-            if b.get('hero_height',brief.get('hero_height',0))<limits['hero_height.min']: add('hero_size',loc+'.hero_height','Hero occupies less than 40% frame height','Enlarge the hero to at least 0.4 frame height',obj=b)
-        if re.search(r'editorial|編輯感',b.get('text',''),re.I) and not re.search(r'from|under|reveal|corner|底下|角落|揭露',b.get('text',''),re.I):
-            add('mechanism_not_adjective',loc+'.text','Adjective does not specify the mechanism','State what peels from which corner and what is underneath','warning',b)
-        short=min(brief.get('width',1080),brief.get('height',1080))
-        font=b.get('min_text_px',brief.get('min_text_px',24))
-        if short<=0 or font*1080/max(1,short)<limits['text_px.min']: add('min_text',loc+'.min_text_px','Text below 24 px at short side 1080','Increase the smallest text to 24 × short_side / 1080',obj=b)
+
+
+def _lint_constraints_and_aesthetic(add,brief,prompt):
+    _lint_constraints(add,brief,prompt)
+    _lint_aesthetic(add,brief)
+
+
+def _lint_turn_beat(add,brief,limits,b,loc,end,duration):
+    from brief import TRANSFORMATION
+    if not re.search(TRANSFORMATION+r'|reveal|morph|comes back as|snaps into|becomes|turns into|zoom.?out|揭露|變成|化為|拉遠|翻開',b.get('text',''),re.I):
+        add('no_turn',loc+'.text','Turn has no transformation mechanism','Describe what opens/reveals/changes medium',obj=b)
+    if end<=limits['turn_end.min']*duration: add('turn_too_early',loc+'.t_end','Turn ends before 32% of duration','Extend the action beyond 0.32 × duration',obj=b)
+    if b.get('hero_height',brief.get('hero_height',0))<limits['hero_height.min']: add('hero_size',loc+'.hero_height','Hero occupies less than 40% frame height','Enlarge the hero to at least 0.4 frame height',obj=b)
+
+
+def _lint_one_beat(add,brief,limits,b,i,cursor,duration):
+    loc=f'beats[{i}]'
+    start,end=b.get('t_start'),b.get('t_end')
+    if any(not isinstance(t,(int,float)) or not math.isfinite(t) for t in (start,end)) or start<0 or end<=start or abs(start-cursor)>.001:
+        add('schema',loc,'Timeline must be positive and contiguous','Set this start to the previous end and a later end')
+        return cursor,False
+    if b.get('id')!=i+1:add('schema',loc+'.id','Beat numbers must be consecutive','Renumber from 1')
+    if b.get('is_turn'):
+        _lint_turn_beat(add,brief,limits,b,loc,end,duration)
+    if re.search(r'editorial|編輯感',b.get('text',''),re.I) and not re.search(r'from|under|reveal|corner|底下|角落|揭露',b.get('text',''),re.I):
+        add('mechanism_not_adjective',loc+'.text','Adjective does not specify the mechanism','State what peels from which corner and what is underneath','warning',b)
+    short=min(brief.get('width',1080),brief.get('height',1080))
+    font=b.get('min_text_px',brief.get('min_text_px',24))
+    if short<=0 or font*1080/max(1,short)<limits['text_px.min']: add('min_text',loc+'.min_text_px','Text below 24 px at short side 1080','Increase the smallest text to 24 × short_side / 1080',obj=b)
+    return end,b.get('is_turn')
+
+
+def _lint_beat_totals(add,brief,limits,beats,turns,cursor,duration):
     if abs(cursor-duration)>.034:add('schema','duration','Beat coverage differs from duration','End the last beat at duration')
     icons=brief.get('asset_spec',{}).get('kind')=='icon_set'
     if not turns and not icons:add('no_turn','beats','No turn','Give one beat a reveal or transformation and is_turn=true')
     if len(turns)>math.ceil(duration/5):add('one_idea','beats','Too many transformations','Keep one main idea per five seconds')
     hold=brief.get('end_hold',duration-max((b['t_end'] for b in beats if b.get('action',True)),default=0))
     if hold>=limits['end_hold.max']: add('end_hold','end_hold','Ending hold is at least one second','Continue the final action; reduce hold below 1 second')
+    return icons
+
+
+def _lint_beats(add,brief,limits):
+    beats=brief.get('beats',[])
+    if not isinstance(beats,list) or not beats or not all(isinstance(b,dict) for b in beats):
+        add('schema','beats','Nonempty beat objects required','Provide numbered beats with t_start, t_end and text');return None
+    duration=brief.get('duration',0)
+    if not isinstance(duration,(int,float)) or not math.isfinite(duration) or duration<=0:
+        add('schema','duration','Positive finite duration required','Set duration in seconds');return None
+    cursor=0.;turns=[]
+    for i,b in enumerate(beats):
+        cursor,is_turn=_lint_one_beat(add,brief,limits,b,i,cursor,duration)
+        if is_turn:turns.append(b)
+    icons=_lint_beat_totals(add,brief,limits,beats,turns,cursor,duration)
+    return beats,duration,icons
+
+
+def _lint_ref_citations(add,beats,r,handle,loc):
+    cited=[b['id'] for b in beats if re.search(r'(?<!\w)'+re.escape(handle)+r'(?!\w)',b.get('text',''))] if handle else []
+    if not cited:add('ref_unused',loc,'Reference not used by a beat','Delete it or cite its scoped take inline in a beat')
+    if cited!=r.get('cited_by',[]):add('ref_citations',loc+'.cited_by','Inline citations and cited_by disagree','Regenerate cited_by from beat text')
+
+
+def _lint_ref_use_and_licence(add,r,loc):
+    use=r.get('use','');n,is_cjk=words(use)
+    if n<(6 if is_cjk else 4) or use.lower() in ('reference','inspiration','參考'):
+        add('ref_no_use',loc+'.use','Reference has no specific use','Name the beat, scoped quality and mechanic/time range')
+    role=r.get('role')
+    if not isinstance(role,str) or any(x in role for x in ('/',' + ',' and ')):
+        add('one_ref_one_job',loc+'.role','One record has multiple roles','List the file separately for each scoped role')
+    if r.get('source')=='web' and (not r.get('source_url') or not r.get('licence')):
+        add('ref_provenance',loc,'Web reference lacks source or licence','Record actual source_url and licence; use unknown when unavailable')
+    if r.get('embed') or r.get('in_output'):add('refs_in_output',loc,'Reference is marked for embedding','Move an explicitly licensed usable asset to assets; never embed reference media')
+
+
+def _lint_one_ref(add,beats,r,i,seen):
+    handle=r.get('handle','');loc=f'refs[{i}]({handle})'
+    if r.get('placeholder') or r.get('status')=='ref_missing':
+        add('ref_missing',loc,'Reference media is missing','Supply a vetted local file for this role','warning')
+    if handle in seen:add('schema',loc,'Duplicate handle','Give each scoped role its own handle')
+    seen.add(handle)
+    _lint_ref_citations(add,beats,r,handle,loc)
+    _lint_ref_use_and_licence(add,r,loc)
+    return handle
+
+
+def _lint_refs(add,brief,beats,icons):
+    refs=brief.get('refs',[])
     seen=set()
     for i,r in enumerate(refs):
-        handle=r.get('handle','');loc=f'refs[{i}]({handle})'
-        if r.get('placeholder') or r.get('status')=='ref_missing':
-            add('ref_missing',loc,'Reference media is missing','Supply a vetted local file for this role','warning')
-        if handle in seen:add('schema',loc,'Duplicate handle','Give each scoped role its own handle')
-        seen.add(handle)
-        cited=[b['id'] for b in beats if re.search(r'(?<!\w)'+re.escape(handle)+r'(?!\w)',b.get('text',''))] if handle else []
-        if not cited:add('ref_unused',loc,'Reference not used by a beat','Delete it or cite its scoped take inline in a beat')
-        if cited!=r.get('cited_by',[]):add('ref_citations',loc+'.cited_by','Inline citations and cited_by disagree','Regenerate cited_by from beat text')
-        use=r.get('use','');n,is_cjk=words(use)
-        if n<(6 if is_cjk else 4) or use.lower() in ('reference','inspiration','參考'):
-            add('ref_no_use',loc+'.use','Reference has no specific use','Name the beat, scoped quality and mechanic/time range')
-        role=r.get('role')
-        if not isinstance(role,str) or any(x in role for x in ('/',' + ',' and ')):
-            add('one_ref_one_job',loc+'.role','One record has multiple roles','List the file separately for each scoped role')
-        if r.get('source')=='web' and (not r.get('source_url') or not r.get('licence')):
-            add('ref_provenance',loc,'Web reference lacks source or licence','Record actual source_url and licence; use unknown when unavailable')
-        if r.get('embed') or r.get('in_output'):add('refs_in_output',loc,'Reference is marked for embedding','Move an explicitly licensed usable asset to assets; never embed reference media')
+        _lint_one_ref(add,beats,r,i,seen)
     if set(HANDLES)-seen:add('schema','refs','Missing 5+3 reference slots','Use a1–a5 and m1–m3; mark unavailable slots with placeholders')
     turn_refs=[r for r in refs if r.get('is_turn') and r.get('handle','').startswith('m')]
     if not icons and (len(turn_refs)!=1 or not any(b.get('is_turn') and b['id'] in turn_refs[0].get('cited_by',[]) for b in beats)):
         add('turn_reference','refs','Exactly one motion reference must feed the turn','Mark the turn motion handle and cite it in the turn beat')
+
+
+def _lint_forks_and_assets(add,brief,prompt,limits):
     forks=brief.get('forks',[])
     markers=[m for m in re.findall(r'\[\?\s*([^]]+)\]',prompt.split('refs:')[0]) if m not in ('visual ref','motion ref','download')]
     if max(len(forks),len(markers))>limits['forks.max']:add('forks_max','forks','More than three creative forks','Keep only the three choices that change the idea')
@@ -167,6 +219,27 @@ def lint(brief):
     for i,a in enumerate(brief.get('assets',[])):
         status=licence_status(a)
         if status!='allowed':add('licence',f'assets[{i}]',f'Asset licence: {status}','Use CC0, attributed CC-BY or explicit user ownership')
+
+
+def lint(brief):
+    findings=[]
+    limits={k:value('brief.'+k) for k in ('hero_height.min','text_px.min','end_hold.max','turn_end.min','words.en.max','words.cjk.max','edit_words.en.max','edit_words.cjk.max','word_error_ratio','forks.max')}
+    def add(rule,location,message,fix,severity='error',obj=None):
+        _add(findings,brief,rule,location,message,fix,severity,obj)
+    if not isinstance(brief,dict): return dict(errors=1,findings=[dict(rule='schema',severity='error',location='$',message='Expected brief object',fix='Use brief.json')])
+    if _lint_schema(add,brief):
+        return result(findings)
+    _check_exemptions(add,brief)
+    mode,prompt,early=_lint_mode_and_words(add,brief,limits)
+    if early:
+        return result(findings)
+    _lint_constraints_and_aesthetic(add,brief,prompt)
+    parsed=_lint_beats(add,brief,limits)
+    if parsed is None:
+        return result(findings)
+    beats,_duration,icons=parsed
+    _lint_refs(add,brief,beats,icons)
+    _lint_forks_and_assets(add,brief,prompt,limits)
     return result(findings)
 
 
