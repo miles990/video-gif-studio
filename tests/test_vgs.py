@@ -157,5 +157,15 @@ class VgsTests(unittest.TestCase):
         self.assertEqual(np.asarray(pooled[1])[0,0,3], 0)
         self.assertEqual(np.asarray(pooled[2])[0,0,3], 255)
 
+    def test_despill_key_chroma_clears_magenta_keeps_hair(self):
+        im = Image.new('RGBA', (8, 8), (0, 0, 0, 0))
+        # Orange hair-like pixel and a magenta spill blotch.
+        im.putpixel((2, 2), (191, 72, 34, 255))
+        im.putpixel((5, 5), (250, 40, 230, 255))
+        out = vgs.despill_key_chroma([im], (0xFC, 0x01, 0xF9))[0]
+        self.assertEqual(out.getpixel((2, 2)), (191, 72, 34, 255))
+        self.assertEqual(out.getpixel((5, 5))[3], 0)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -165,6 +165,35 @@ def key_metrics(path):
 
 
 
+def despill_key_chroma(frames, key_rgb, proj_min=20.0, green_gap=60):
+    """Remove residual key chroma from visible pixels without washing warm subjects.
+
+    Only pixels whose R and B both sit well above G, and whose chroma projects
+    onto the key, are neutralized. Orange hair and teal cloth are left alone.
+    """
+    k = np.asarray(key_rgb, dtype=float)
+    k_chroma = k - k.mean()
+    k_norm = float(np.linalg.norm(k_chroma))
+    if k_norm < 1e-6:
+        return frames
+    k_dir = k_chroma / k_norm
+    out = []
+    for f in frames:
+        arr = np.array(f.convert('RGBA'))
+        rgb = arr[:, :, :3].astype(float)
+        alpha = arr[:, :, 3]
+        visible = alpha > 8
+        chroma = rgb - rgb.mean(axis=2, keepdims=True)
+        proj = np.tensordot(chroma, k_dir, axes=([2], [0]))
+        magenta = (rgb[:, :, 0] > rgb[:, :, 1] + green_gap) & (rgb[:, :, 2] > rgb[:, :, 1] + green_gap)
+        spill = visible & (proj > proj_min) & magenta
+        if spill.any():
+            # Punch the blotch out of the alpha; neutralizing RGB alone leaves a pale ghost.
+            arr[:, :, 3] = np.where(spill, 0, arr[:, :, 3])
+        out.append(Image.fromarray(arr))
+    return out
+
+
 def despill_pixel_edges(frames, key_rgb):
     """Suppress chroma spill on 1px opaque silhouette pixels touching alpha=0."""
     k = np.asarray(key_rgb, dtype=float)
@@ -431,6 +460,7 @@ def make(a) -> int:
     islands = None
     if keyed:
         frames, islands = apply_key_connected(frames, key, TOLERANCE, SOFTNESS, a.keep_interior_key)
+        frames = despill_key_chroma(frames, key)
         if a.key and all(np.mean(np.asarray(f)[:,:,3]>=128)<.005 for f in frames):
             raise ValueError(f'--key {a.key} 與主體太接近，會挖空主體；不寫入檔案。請省略 --key 重試。')
     trimmed, treatment, last = trim_tail(frames, fps)
