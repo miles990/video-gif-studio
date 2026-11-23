@@ -1,0 +1,45 @@
+{
+  "lang": "python",
+  "roots": [
+    "scripts"
+  ],
+  "entry": [
+    "scripts/vgs.py",
+    "scripts/doctor.py"
+  ],
+  "coedit": {
+    "text": [
+      {
+        "file": "wow.manifest.json",
+        "schema": "schemas/wow-manifest-1.schema.json"
+      }
+    ],
+    "binaryAllow": [
+      "**/*.png",
+      "**/*.jpg",
+      "**/*.jpeg",
+      "**/*.gif",
+      "**/*.svg",
+      "**/*.ico",
+      "**/*.woff2",
+      "**/*.pdf",
+      "**/*.mp4",
+      "**/*.apng",
+      "**/*.zip",
+      "**/*.wav",
+      "**/*.webm",
+      "**/*.mov",
+      "**/*.flac"
+    ],
+    "review": [
+      "wow/adr-existing-product.md"
+    ]
+  },
+  "common": {
+    "sharedRuntime": [
+      "wow",
+      "wow-*",
+      "@wow/*"
+    ]
+  }
+}

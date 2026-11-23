@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wow:schema:manifest:1",
+  "title": "wow capability manifest v1 (wow.manifest.json)",
+  "description": "What a tool can do, how to start it and what it reads and writes. Field names follow the A2A AgentCard (skills[].id/name/description/tags/inputModes/outputModes), Claude plugin.json (name/version/description/mcpServers) and the MCP registry server.json (packages/transport). Schemas are JSON Schema 2020-12, errors RFC 9457, events CloudEvents 1.0. See spec/INTEROP.md.",
+  "type": "object",
+  "required": [
+    "manifestVersion",
+    "name",
+    "version",
+    "description",
+    "entrypoints",
+    "skills"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "manifestVersion": {
+      "const": "1"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,63}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+([-+].*)?$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10
+    },
+    "license": {
+      "type": "string"
+    },
+    "homepage": {
+      "type": "string"
+    },
+    "entrypoints": {
+      "type": "object",
+      "properties": {
+        "cli": {
+          "type": "object",
+          "required": [
+            "command"
+          ],
+          "properties": {
+            "command": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "jsonFlag": {
+              "type": "string"
+            },
+            "errorsAsProblemJson": {
+              "type": "boolean"
+            }
+          }
+        },
+        "mcp": {
+          "type": "object",
+          "oneOf": [
+            {
+              "required": [
+                "transport",
+                "command"
+              ],
+              "properties": {
+                "transport": {
+                  "const": "stdio"
+                },
+                "command": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "required": [
+                "transport",
+                "url"
+              ],
+              "properties": {
+                "transport": {
+                  "const": "streamable-http"
+                },
+                "url": {
+                  "type": "string",
+                  "pattern": "^https?://"
+                }
+              }
+            }
+          ]
+        },
+        "skill": {
+          "type": "string"
+        },
+        "plugin": {
+          "type": "string"
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "tags"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{1,63}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "inputModes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputModes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cli": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mcpTool": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}$"
+          },
+          "input": {
+            "$ref": "#/$defs/io"
+          },
+          "output": {
+            "$ref": "#/$defs/io"
+          },
+          "evidence": {
+            "type": "object",
+            "description": "wow gate evidence this skill's output carries: name -> RFC 6901 JSON Pointer into the output",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "errors": {
+      "type": "object",
+      "properties": {
+        "mediaType": {
+          "const": "application/problem+json"
+        },
+        "schema": {
+          "type": "string"
+        },
+        "typeBase": {
+          "type": "string"
+        }
+      }
+    },
+    "events": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cloudevents-1.0+json"
+        },
+        "source": {
+          "type": "string"
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cli": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "conformsTo": {
+      "type": "object",
+      "description": "Spec versions this product follows, e.g. {\"wow-common\":\"1.0\",\"wow-interop\":\"1.0\"}",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9]+\\.[0-9]+$"
+      }
+    },
+    "design": {
+      "type": "object",
+      "description": "Human-interface design system: DTCG token file and the UI files that must use only tokens",
+      "properties": {
+        "tokens": {
+          "type": "string"
+        },
+        "uiFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "io": {
+      "type": "object",
+      "properties": {
+        "mediaType": {
+          "type": "string"
+        },
+        "schema": {
+          "type": "string",
+          "description": "path (relative to the manifest) or URL of a versioned JSON Schema"
+        },
+        "schemaVersion": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
