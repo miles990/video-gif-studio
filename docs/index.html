@@ -17,9 +17,9 @@
       --hero-bg: #12161c;
       --board-a: #1c2128;
       --board-b: #151a20;
-      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti TC", "Noto Serif TC", serif;
-      --sans: "IBM Plex Sans", "Noto Sans TC", "Segoe UI", sans-serif;
-      --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      --serif: "Noto Serif CJK TC", "Noto Serif TC", "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+      --sans: "Noto Sans CJK TC", "Noto Sans TC", "IBM Plex Sans", "Segoe UI", sans-serif;
+      --mono: "Noto Sans Mono CJK TC", "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
     }
     [data-theme="light"] {
       --bg: #f6f3ee;
@@ -35,9 +35,10 @@
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+    html { overflow-x: hidden; }
     body { min-height: 100vh; }
     a { color: var(--accent); text-underline-offset: 3px; }
-    .wrap { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+    .wrap { width: min(1120px, 100%); margin: 0 auto; padding: 0 24px; }
     header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 0; }
     .brand { font-family: var(--serif); font-size: 18px; letter-spacing: .01em; }
     .brand span { color: var(--muted); font-family: var(--sans); font-size: 13px; margin-left: 10px; }
@@ -56,7 +57,7 @@
       font-family: var(--serif); font-weight: 600; font-size: clamp(40px, 5.4vw, 72px);
       line-height: .95; letter-spacing: -0.03em; margin: 0 0 20px;
     }
-    .lede { font-size: 18px; line-height: 1.55; color: var(--muted); margin: 0 0 28px; max-width: 38ch; }
+    .lede { font-size: 18px; line-height: 1.6; color: var(--muted); margin: 0 0 28px; max-width: 46ch; overflow-wrap: break-word; }
     .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
@@ -67,7 +68,8 @@
     pre, code { font-family: var(--mono); }
     pre {
       margin: 0; background: var(--bg-elev); border: 1px solid var(--line);
-      border-radius: 14px; padding: 16px 18px; font-size: 13px; line-height: 1.55; overflow: auto;
+      border-radius: 14px; padding: 16px 18px; font-size: 13px; line-height: 1.55;
+      overflow-x: auto; max-width: 100%;
     }
     .stage {
       position: relative; border: 1px solid var(--line); border-radius: 28px; overflow: hidden;
@@ -95,12 +97,17 @@
       .hero, .pair, .grid { grid-template-columns: 1fr; }
       .hero { min-height: auto; gap: 28px; padding-top: 28px; }
       .stage { min-height: 280px; }
-      h1 { font-size: 42px; }
-      .lede { font-size: 16px; max-width: none; }
-      header.top { align-items: flex-start; gap: 10px; }
-      .brand span { display: block; margin: 4px 0 0; }
+      h1 { font-size: clamp(34px, 11vw, 42px); line-height: 1.08; letter-spacing: -0.02em; }
+      .lede { font-size: 16px; line-height: 1.65; max-width: none; }
+      header.top {
+        display: grid; grid-template-columns: 1fr auto;
+        gap: 8px 16px; align-items: start;
+      }
+      .brand { font-size: 16px; white-space: nowrap; }
+      .brand span { display: block; margin: 4px 0 0; white-space: normal; font-size: 12px; }
       nav { flex-wrap: wrap; justify-content: flex-end; }
       nav a, .theme { white-space: nowrap; }
+      pre { white-space: pre-wrap; word-break: break-word; }
     }
   </style>
 </head>
