@@ -24,6 +24,30 @@ class InteropTests(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn(man['version'], r.stdout + r.stderr)
 
+    def test_make_json_emits_one_object(self):
+        import tempfile
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            src, out = tmp / 'frames', tmp / 'out'
+            src.mkdir()
+            for i, shift in enumerate((0, 2)):
+                im = Image.new('RGBA', (32, 32), (0xFC, 0x01, 0xF9, 255))
+                for y in range(8 + shift, 24 + shift):
+                    for x in range(8, 24):
+                        if 0 <= y < 32:
+                            im.putpixel((x, y), (40, 160, 90, 255))
+                im.save(src / f'{i:03d}.png')
+            r = run(VGS + ['--json', 'make', str(src), '--fps', '8', '--loop', 'off', '--out', str(out)])
+            self.assertEqual(r.returncode, 0, r.stderr)
+            payload = json.loads(r.stdout)
+            self.assertEqual(payload['schema_version'], 1)
+            self.assertTrue(payload['ok'])
+            self.assertTrue(payload['output'].endswith('animation.gif'))
+            self.assertTrue((out / 'animation.gif').is_file())
+            # Human logs belong on stderr, not mixed into the JSON object.
+            self.assertTrue(r.stderr.strip())
+
     def test_help_exits_zero(self):
         r = run(VGS + ['--help'])
         self.assertEqual(r.returncode, 0, r.stderr)

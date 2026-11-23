@@ -166,6 +166,21 @@ class VgsTests(unittest.TestCase):
         self.assertEqual(out.getpixel((2, 2)), (191, 72, 34, 255))
         self.assertEqual(out.getpixel((5, 5))[3], 0)
 
+    def test_despill_key_chroma_keeps_enclosed_key_art(self):
+        im = Image.new('RGBA', (9, 9), (0, 0, 0, 0))
+        teal, magenta = (20, 140, 110, 255), (250, 40, 230, 255)
+        for y in range(2, 7):
+            for x in range(2, 7):
+                im.putpixel((x, y), teal)
+        im.putpixel((4, 4), magenta)
+        out = vgs.despill_key_chroma([im], (0xFC, 0x01, 0xF9))[0]
+        self.assertEqual(out.getpixel((4, 4)), magenta)
+        # A fringe blotch that touches transparency is still punched.
+        im.putpixel((1, 1), magenta)
+        out = vgs.despill_key_chroma([im], (0xFC, 0x01, 0xF9))[0]
+        self.assertEqual(out.getpixel((4, 4)), magenta)
+        self.assertEqual(out.getpixel((1, 1))[3], 0)
+
 
 if __name__ == '__main__':
     unittest.main()
