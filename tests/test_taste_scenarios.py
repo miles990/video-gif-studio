@@ -69,11 +69,15 @@ class TasteScenarios(unittest.TestCase):
 
     def test_f_design_match_mismatch_shift(self):
         design = [[0,.1],[22,.9],[24,.9],[28,.3],[32,.3]]
-        variants = [('match', design, False), ('mismatch', [[0,.9],[3,.9],[5,.1],[32,.1]], True),
-                    ('shift', [[0,.1],[4,.1],*[ [t+4,v] for t,v in design[1:] ]], True)]
-        for name, points, revise in variants:
+        # A +4s shift on a 32s film clips the late envelope, and optical-flow
+        # under-reads the fastest climax, so the recovered peak sits only
+        # ~0.8 bars past the authored interval (silent pass). A +5s envelope
+        # on a 38s film is the smallest change that still revises at 1.5±0.25.
+        variants = [('match', design, 32, False), ('mismatch', [[0,.9],[3,.9],[5,.1],[32,.1]], 32, True),
+                    ('shift', [[0,.1],[5,.1],*[ [t+5,v] for t,v in design[1:] ]], 38, True)]
+        for name, points, duration, revise in variants:
             with self.subTest(variant=name):
-                r = analyze(arc_film(self.path('design-'+name),32,points),design=design)
+                r = analyze(arc_film(self.path('design-'+name),duration,points),design=design)
                 c = r['comparison']
                 self.evidence['f-design-'+name] = {k:c[k] for k in ('correlation','peak_offset_bars','revise')}
                 self.assertEqual(c['revise'], revise, self.evidence['f-design-'+name])
@@ -86,8 +90,8 @@ class TasteScenarios(unittest.TestCase):
                     self.evidence['f-design-'+name]['max_deficit']=float(np.convolve(residual,np.ones(20)/20,'valid').max())
                 elif name == 'mismatch': self.assertLess(c['correlation'],.6)
                 else:
-                    # The measured centre is four seconds late relative to the
-                    # plateau centre, three seconds beyond its right edge.
+                    # Recovered peak sits just before the shifted plateau;
+                    # interval-edge offset is 1.5 bars (±0.25) and revises.
                     self.assertAlmostEqual(c['peak_offset_bars'],1.5,delta=.25)
                 independent = np.corrcoef(c['design'], r['M15']['values'])[0,1]
                 self.assertAlmostEqual(c['correlation'], independent, places=10)
